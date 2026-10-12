@@ -1,6 +1,6 @@
 # La bibliothèque d'effets
 
-Des effets éprouvés pour des annonces verticales. La plupart existent déjà comme recettes dans le
+Des effets éprouvés pour des vidéos qui vendent, en vertical comme en paysage. La plupart existent déjà comme recettes dans le
 skill `hyperframes-animation` de Monteur IA (nom entre crochets : cherche-le dans
 `blueprints-index.md`, `rules-index.md` ou `techniques.md` du skill). **Lis la recette avant de
 coder** : elle donne la technique, pas le style. Le style vient de `style.md`.
@@ -58,6 +58,15 @@ Une story = un seul effet principal. Un Reel = trois ou quatre effets au plus, q
 19. **Rafale de ce qui est livré** (1,5 s au plus) : les éléments de l'offre défilent vite et
     s'arrêtent sur le principal. Pour une story.
 20. **Révélation par masque** : la couverture de l'offre apparaît par un iris ou un volet.
+
+## Vidéos longues (page de vente, YouTube)
+
+21. **Titre de chapitre** : un mot discret en haut (« Le problème », « L'offre ») qui change à
+    chaque bloc, le spectateur sait où il en est.
+22. **La comparaison des options** [comparison-split ou grid-card-assemble] : monteur, agence,
+    faire seul, l'offre ; temps et prix de chacun, vrais chiffres seulement.
+23. **Le grand écran qui raconte** : l'interface ou la page en grand, la caméra qui va d'un détail
+    à l'autre au rythme du texte. Le paysage laisse de la place : un texte à gauche, l'image à droite.
 
 ## Combiner
 

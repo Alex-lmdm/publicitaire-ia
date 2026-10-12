@@ -56,8 +56,8 @@ avec `id="musique"` : c'est ce que retrouve la version sans musique.
 Sans voix, Monteur IA ne règle pas le niveau final : c'est à toi. Après le rendu :
 
 ```bash
-python3 tools/annonce.py son exports/reel.mp4         # mesure
-python3 tools/annonce.py mastering exports/reel.mp4 exports/reel-master.mp4
+python3 tools/studio_motion.py son exports/reel.mp4         # mesure
+python3 tools/studio_motion.py mastering exports/reel.mp4 exports/reel-master.mp4
 ```
 
 Cible : **-16 LUFS ±1, crêtes sous -1 dBTP**, le même niveau que ses Reels habituels. Le fichier
@@ -67,6 +67,6 @@ livré est la version masterisée.
 
 Beaucoup de créateurs ajoutent un son tendance dans Instagram. Livre toujours
 `reel-sans-musique.mp4` : mêmes bruitages, pas de musique.
-`python3 <dossier Monteur IA>/tools/annonce.py sans-musique .` prépare `index-sans-musique.html`
+`python3 <dossier Monteur IA>/tools/studio_motion.py sans-musique .` prépare `index-sans-musique.html`
 et affiche la commande de rendu (`npx hyperframes render -c index-sans-musique.html -o …`).
 Refais-le après toute retouche du Reel, puis masterise ce fichier comme l'autre.

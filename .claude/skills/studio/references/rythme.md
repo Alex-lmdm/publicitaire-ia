@@ -6,7 +6,7 @@ lu, la caméra court, tout bouge en même temps. Ces règles sont des planchers 
 ## Lire avant de bouger
 
 - Un texte reste **immobile** au moins `0,35 s par mot + 0,3 s`, jamais moins de 1,2 s.
-  `python3 tools/annonce.py lecture "<texte>"` fait le calcul. L'écran final tient 2,5 s ou plus.
+  `python3 tools/studio_motion.py lecture "<texte>"` fait le calcul. L'écran final tient 2,5 s ou plus.
 - On ne déplace pas un texte pendant qu'on le lit. Il entre, il se pose, il reste, il sort.
 - « Entrée rapide, puis tenue » : jamais « entrée rapide, puis disparu ».
 - Sur une musique rapide (plus de 110 temps par minute), le texte ne suit pas chaque temps :

@@ -1,6 +1,6 @@
 # Crédits
 
-Extension de Monteur IA, par LeMondeDuMarketing.
+Studio Motion IA, extension de Monteur IA, par LeMondeDuMarketing.
 
 Elle s'appuie sur des outils et des idées open source. Merci à leurs auteurs.
 
@@ -38,3 +38,6 @@ elles (la plus stricte a été retenue) et adaptées au format vertical d'Instag
   marchent (aucun prompt n'est repris).
 - Leo (@leomeethewoo), « Make your product videos look expensive (Apple Framework) » : un plan,
   une idée ; le vide ; la couleur sur le produit.
+- Repères publics des plateformes (zones de sécurité Meta, TikTok, YouTube ; durées LinkedIn et X)
+  et étude Motion « Creative Benchmarks 2026 » sur 550 000 publicités Meta (le motion design
+  décoratif gagne moins que la démonstration, le texte lisible et l'offre claire).

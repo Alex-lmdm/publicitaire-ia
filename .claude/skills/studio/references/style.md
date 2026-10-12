@@ -2,7 +2,7 @@
 
 ## Trois niveaux d'identité
 
-1. **La marque du client** porte l'annonce : couleurs, polices et mot-clé de `brand.config.json`,
+1. **La marque du client** porte la vidéo : couleurs, polices et mot-clé de `brand.config.json`,
    déjà dans `brand/tokens.css` du projet (`var(--brand-bg)`, `var(--brand-accent)`,
    `var(--brand-font-display)`…). Jamais une couleur ou une police de marque écrite en dur.
 2. **Les surfaces de son offre** gardent leur propre identité : sa page de vente, son espace de
@@ -39,7 +39,7 @@ Matière disponible, de la meilleure à la plus faible :
 | Une page de vente en ligne | Capture, puis tu réutilises ses vrais textes, images, couleurs et polices |
 | Des captures de son produit | Plaques fidèles pour le fixe, reconstruction HTML pour ce qui bouge |
 | Le document, le template, l'ebook | Le vrai support, avec des données d'exemple cohérentes |
-| Rien que deux phrases | Une annonce typographique sobre, à ses couleurs, sans fausse interface. Dis-lui ce qu'une capture apporterait |
+| Rien que deux phrases | Une vidéo typographique sobre, à ses couleurs, sans fausse interface. Dis-lui ce qu'une capture apporterait |
 
 ## Ce qui trahit une vidéo faite par IA (à ne jamais faire)
 
@@ -53,7 +53,7 @@ Matière disponible, de la meilleure à la plus faible :
 | Cartes et éléments qui respirent ou oscillent en boucle | Immobile quand on lit |
 | Fausse interface vague dans un faux navigateur | Sa vraie page, ou une typographie franche |
 | Étiquettes et cadres décoratifs dans les coins | Rien dans les coins (c'est là qu'Instagram met son interface) |
-| Le même enchaînement d'une annonce à l'autre | Change l'angle, la structure et au moins quatre réglages (fond, cadrage, transitions, tempo, typographie) d'un client à l'autre et d'un lancement à l'autre |
+| Le même enchaînement d'une vidéo à l'autre | Change l'angle, la structure et au moins quatre réglages (fond, cadrage, transitions, tempo, typographie) d'un client à l'autre et d'une vidéo à l'autre |
 
 Test final : si cette vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom,
 elle est trop générique. Recommence par l'offre.
