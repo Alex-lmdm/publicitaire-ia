@@ -13,6 +13,7 @@ Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
     python3 tools/studio_motion.py verifier
     python3 tools/studio_motion.py supports                      # supports, formats, durées
     python3 tools/studio_motion.py nouvelle "<sujet>" --objectif vente --videos reel,page [--ouvrir]
+    python3 tools/studio_motion.py ajouter <dossier> --videos linkedin,story   # « la même pour LinkedIn »
     python3 tools/studio_motion.py offre <dossier de la vidéo>
     python3 tools/studio_motion.py lecture "<texte affiché>" [--final]
     python3 tools/studio_motion.py zones <support> [--format 16x9]
@@ -568,40 +569,72 @@ def creer(m: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
                     "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
                     "|---|---|---|---|---|---|---|\n")
     (dossier / "PLAN.md").write_text("\n".join(plan), encoding="utf-8")
+    for v in videos:
+        creer_projet(m, dossier, sujet, objectif, v, date)
+    return dossier
+
+
+def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, date: str) -> Path:
+    """Un projet de l'app HyperFrames pour une vidéo du dossier : style copié, gabarit, instructions."""
     gabarit_md, gabarit_html = _gabarits(m)
     maintenant = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+    s = SUPPORTS[v["support"]]
+    largeur, hauteur = FORMATS[v["format"]]
+    cle, duree = cle_video(v), duree_cible(v)
+    projet = dossier / propre(f"{sujet} · {nom_video(v)}", 60)
+    projet.mkdir(parents=True)
+    for sous in ("assets/images", "assets/audio", "exports", "work"):
+        (projet / sous).mkdir(parents=True, exist_ok=True)
+    _copier_style(m, projet)
+    if (m / "hyperframes.json").is_file():
+        shutil.copy2(m / "hyperframes.json", projet / "hyperframes.json")
+    lo, hi = s["ideal"]
+    valeurs = {"SUJET": sujet, "VIDEO": cle, "VIDEO_NOM": nom_video(v), "SUPPORT": v["support"],
+               "SUPPORT_TITRE": s["titre"], "FORMAT": v["format"], "LARGEUR": str(largeur),
+               "HAUTEUR": str(hauteur), "DUREE": str(duree), "IDEAL": f"{lo} à {hi}",
+               "DUREE_MIN": str(s["min"]), "DUREE_MAX": str(s["max"]), "SON": s["son"], "CTA": s["cta"],
+               "OBJECTIF": OBJECTIFS[objectif]["nom"], "MAISON": "../../../", "DOSSIER": "../"}
+    if gabarit_html.is_file():
+        (projet / "index.html").write_text(_remplir(gabarit_html.read_text(encoding="utf-8"), **valeurs), encoding="utf-8")
+    if gabarit_md.is_file():
+        texte = _remplir(gabarit_md.read_text(encoding="utf-8"), **valeurs)
+        (projet / "CLAUDE.md").write_text(texte, encoding="utf-8")
+        (projet / "AGENTS.md").write_text(texte, encoding="utf-8")
+    meta = {"id": projet.name, "name": projet.name, "createdAt": maintenant,
+            "monteurIa": {"lieu": "studio-motion", "objectif": objectif, "video": cle, "support": v["support"],
+                          "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date}}
+    (projet / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    paquet = {"name": f"studio-motion-{cle}", "private": True, "type": "module",
+              "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
+                          "render": f"hyperframes render -o exports/{cle}.mp4"}}
+    (projet / "package.json").write_text(json.dumps(paquet, indent=2) + "\n", encoding="utf-8")
+    return projet
+
+
+def ajouter(m: Path, dossier: Path, videos: list[dict]) -> list[Path]:
+    """Ajoute des vidéos (un autre support, un autre format) à un dossier existant : même fiche, même
+    plan, même sujet. Une vidéo déjà présente n'est jamais recréée."""
+    existants = projets(dossier)
+    if not existants:
+        sys.exit(f"ERREUR : {dossier} n'a aucun projet de vidéo : crée-le avec `nouvelle`.")
+    deja = {meta["video"] for _p, meta in existants}
+    doublons = [cle_video(v) for v in videos if cle_video(v) in deja]
+    if doublons:
+        sys.exit(f"ERREUR : déjà dans ce dossier : {', '.join(doublons)}. Donne un autre format (@4x5) ou un rôle.")
+    meta0 = existants[0][1]
+    sujet, objectif, date = meta0.get("sujet", dossier.name), meta0.get("objectif", "vente"), meta0.get("date", "")
+    plan = dossier / "PLAN.md"
+    ajouts = []
     for v in videos:
-        s = SUPPORTS[v["support"]]
-        largeur, hauteur = FORMATS[v["format"]]
-        cle, duree = cle_video(v), duree_cible(v)
-        projet = dossier / propre(f"{sujet} · {nom_video(v)}", 60)
-        projet.mkdir(parents=True)
-        for sous in ("assets/images", "assets/audio", "exports", "work"):
-            (projet / sous).mkdir(parents=True, exist_ok=True)
-        _copier_style(m, projet)
-        if (m / "hyperframes.json").is_file():
-            shutil.copy2(m / "hyperframes.json", projet / "hyperframes.json")
-        lo, hi = s["ideal"]
-        valeurs = {"SUJET": sujet, "VIDEO": cle, "VIDEO_NOM": nom_video(v), "SUPPORT": v["support"],
-                   "SUPPORT_TITRE": s["titre"], "FORMAT": v["format"], "LARGEUR": str(largeur),
-                   "HAUTEUR": str(hauteur), "DUREE": str(duree), "IDEAL": f"{lo} à {hi}",
-                   "DUREE_MIN": str(s["min"]), "DUREE_MAX": str(s["max"]), "SON": s["son"], "CTA": s["cta"],
-                   "OBJECTIF": OBJECTIFS[objectif]["nom"], "MAISON": "../../../", "DOSSIER": "../"}
-        if gabarit_html.is_file():
-            (projet / "index.html").write_text(_remplir(gabarit_html.read_text(encoding="utf-8"), **valeurs), encoding="utf-8")
-        if gabarit_md.is_file():
-            texte = _remplir(gabarit_md.read_text(encoding="utf-8"), **valeurs)
-            (projet / "CLAUDE.md").write_text(texte, encoding="utf-8")
-            (projet / "AGENTS.md").write_text(texte, encoding="utf-8")
-        meta = {"id": projet.name, "name": projet.name, "createdAt": maintenant,
-                "monteurIa": {"lieu": "studio-motion", "objectif": objectif, "video": cle, "support": v["support"],
-                              "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date}}
-        (projet / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        paquet = {"name": f"studio-motion-{cle}", "private": True, "type": "module",
-                  "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
-                              "render": f"hyperframes render -o exports/{cle}.mp4"}}
-        (projet / "package.json").write_text(json.dumps(paquet, indent=2) + "\n", encoding="utf-8")
-    return dossier
+        ajouts.append(creer_projet(m, dossier, sujet, objectif, v, date))
+        sup = SUPPORTS[v["support"]]
+        lo, hi = sup["ideal"]
+        if plan.is_file():
+            plan.write_text(plan.read_text(encoding="utf-8").rstrip("\n") + f"\n\n### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {sup['son']})\n\n"
+                            "Déclinaison : même structure et même texte, remis en page pour ce format.\n\n"
+                            "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
+                            "|---|---|---|---|---|---|---|\n", encoding="utf-8")
+    return ajouts
 
 
 def projets(dossier: Path) -> list[tuple[Path, dict]]:
@@ -613,6 +646,18 @@ def projets(dossier: Path) -> list[tuple[Path, dict]]:
             except (ValueError, KeyError):
                 continue
     return sortie
+
+
+def cmd_ajouter(a) -> None:
+    m = maison()
+    dossier = _dossier_fiche(Path(a.dossier))
+    try:
+        videos = [lire_video(x) for x in a.videos.split(",") if x.strip()]
+    except ValueError as e:
+        sys.exit(f"ERREUR : {e}")
+    for projet in ajouter(m, dossier, videos):
+        print(f"• ajouté : {projet.name}")
+    print("• même fiche (OFFRE.json) ; complète sa section dans PLAN.md, puis remets la vidéo en page pour ce format")
 
 
 def cmd_nouvelle(a) -> None:
@@ -1050,6 +1095,10 @@ def main(argv: list[str] | None = None) -> None:
     n.add_argument("--date", default=datetime.date.today().isoformat())
     n.add_argument("--ouvrir", action="store_true")
     n.set_defaults(f=cmd_nouvelle)
+    aj = s.add_parser("ajouter", help="Ajoute une vidéo (un autre support ou format) à un dossier existant.")
+    aj.add_argument("dossier")
+    aj.add_argument("--videos", required=True, help="support[:rôle][@format], séparés par des virgules.")
+    aj.set_defaults(f=cmd_ajouter)
     o = s.add_parser("offre", help="Vérifie OFFRE.json : chaque fait a sa source.")
     o.add_argument("dossier")
     o.set_defaults(f=cmd_offre)

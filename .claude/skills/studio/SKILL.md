@@ -111,8 +111,9 @@ répondre « ok ». Puis un message court : ce qu'il a, où le mettre, comment d
 Une demande = la vidéo concernée seulement. Modifie ce qui est demandé, refais son rendu, sa
 planche et son export, remplace le fichier dans `livraison/`. Ne repropose pas d'idées, ne refais
 pas la fiche. Une nouvelle info sur l'offre (prix, date) passe d'abord dans `OFFRE.json`. Une
-autre version (« la même pour LinkedIn ») crée un nouveau projet avec `nouvelle` et reprend la
-même fiche.
+autre version (« la même pour LinkedIn ») s'ajoute au même dossier, même fiche et même plan :
+`python3 tools/studio_motion.py ajouter "<dossier>" --videos linkedin`. Elle se remet en page pour
+son format (et se raccourcit pour une story), elle ne se recadre pas.
 
 ## Ce que tu ne fais jamais
 

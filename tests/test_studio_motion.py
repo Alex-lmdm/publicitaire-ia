@@ -375,6 +375,19 @@ class Creation(unittest.TestCase):
             deuxieme = sm.creer(maison, "Ma formation", "vente", [sm.lire_video("reel")], "2026-10-12")
             self.assertEqual(deuxieme.name, "Ma formation · 2026-10-12 (2)")
 
+    def test_ajouter_une_declinaison(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = maison_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-12")
+            ajouts = sm.ajouter(maison, dossier, [sm.lire_video("linkedin"), sm.lire_video("story")])
+            self.assertEqual([p.name for p in ajouts], ["Offre · LinkedIn", "Offre · Story"])
+            metas = {meta["video"]: meta for _p, meta in sm.projets(dossier)}
+            self.assertEqual(sorted(metas), ["linkedin", "reel", "story"])
+            self.assertEqual((metas["linkedin"]["format"], metas["linkedin"]["objectif"]), ("4x5", "vente"))
+            self.assertIn("### LinkedIn (4x5", (dossier / "PLAN.md").read_text(encoding="utf-8"))
+            with self.assertRaises(SystemExit):
+                sm.ajouter(maison, dossier, [sm.lire_video("reel")])
+
     def test_doublon_refuse(self):
         with tempfile.TemporaryDirectory() as d:
             maison = maison_de_test(Path(d))
