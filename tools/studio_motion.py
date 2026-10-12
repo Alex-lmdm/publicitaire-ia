@@ -17,10 +17,12 @@ Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
     python3 tools/studio_motion.py lecture "<texte affiché>" [--final]
     python3 tools/studio_motion.py zones <support> [--format 16x9]
     python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2]
-    python3 tools/studio_motion.py son <video.mp4>
-    python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4>
+    python3 tools/studio_motion.py son <video.mp4> [--cible -16]
+    python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
     python3 tools/studio_motion.py sans-musique <projet>
     python3 tools/studio_motion.py couverture <video.mp4> <image.jpg> <sortie.mp4>
+    python3 tools/studio_motion.py affiche <video.mp4> <affiche.jpg> [--temps 0]
+    python3 tools/studio_motion.py preparer-video <entree.mp4> <sortie.mp4> [--avec-son]
     python3 tools/studio_motion.py export <video.mp4> [--support reel]
     python3 tools/studio_motion.py livrer <dossier de la vidéo>
 
@@ -47,7 +49,7 @@ for _flux in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 OUTILS = Path(__file__).resolve().parent
 FPS = 30
 
@@ -244,6 +246,7 @@ FICHE_VIDE = {
     "bonus": [],
     "garantie": {"texte": "", "source": ""},
     "dates": {"ouverture": None, "fermeture": None, "source": ""},
+    "echeances": [],
     "preuves": [],
     "objections": [],
     "cta": {"mot_cle": "", "phrase": "", "lien": "", "source": ""},
@@ -260,6 +263,34 @@ def _source(element: dict) -> str:
 
 def _texte(element) -> str:
     return str((element or {}).get("texte") or "").strip() if isinstance(element, dict) else ""
+
+
+def _date(valeur) -> datetime.datetime | None:
+    try:
+        return datetime.datetime.fromisoformat(str(valeur))
+    except ValueError:
+        return None
+
+
+FICHIER_SOURCE = re.compile(r"^[^\s/]+\.[a-z0-9]{2,5}$", re.I)
+
+
+def sources_absentes(fiche: dict, dossier: Path) -> list[str]:
+    """Les sources qui nomment un fichier (« capture-prix.png ») absent de sources/ ou du dossier."""
+    trouvees: list[str] = []
+
+    def visiter(x) -> None:
+        if isinstance(x, dict):
+            src = str(x.get("source") or "").strip()
+            if FICHIER_SOURCE.match(src) and not any((d / src).is_file() for d in (dossier / "sources", dossier)):
+                trouvees.append(src)
+            for v in x.values():
+                visiter(v)
+        elif isinstance(x, list):
+            for v in x:
+                visiter(v)
+    visiter(fiche)
+    return sorted(set(trouvees))
 
 
 def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
@@ -313,6 +344,13 @@ def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
         pb.append("dates : sans source.")
     if "ouverture" in lues and "fermeture" in lues and lues["fermeture"] <= lues["ouverture"]:
         pb.append("dates : la fermeture doit suivre l'ouverture.")
+    for i, e in enumerate(fiche.get("echeances") or []):
+        if not _texte(e):
+            pb.append(f"echeances[{i}] : dis ce qui se termine (ex. « Bonus Reel Cloneur offert »).")
+        elif _date(e.get("date")) is None:
+            pb.append(f"echeances[{i}] : date « {e.get('date')} » illisible (AAAA-MM-JJ[THH:MM]).")
+        elif not _source(e):
+            pb.append(f"echeances[{i}] « {e['texte'][:40]} » : sans source.")
     for i, p in enumerate(fiche.get("preuves") or []):
         if not _texte(p):
             pb.append(f"preuves[{i}] : texte manquant.")
@@ -393,6 +431,33 @@ def binaire(m: Path | None, nom: str) -> str | None:
     return None
 
 
+def polices_manquantes(dossier: Path) -> list[str]:
+    """Les polices de la marque (titres, texte) qui n'ont aucun @font-face dans brand/fonts.css.
+
+    Au rendu, HyperFrames ne télécharge pas une police absente : il prend la suivante de la liste
+    (souvent Impact ou une police système), alors que `check` et les captures, eux, la trouvent
+    sur Google Fonts. Le défaut ne se voit donc que sur le MP4 rendu, d'où ce contrôle en amont."""
+    tokens, fonts = dossier / "brand" / "tokens.css", dossier / "brand" / "fonts.css"
+    if not tokens.is_file():
+        return []
+    css = tokens.read_text(encoding="utf-8")
+    declarees = set(re.findall(r'font-family:\s*"?([^";]+?)"?\s*;', fonts.read_text(encoding="utf-8"))) if fonts.is_file() else set()
+    manquantes = []
+    for role in ("display", "body"):
+        m = re.search(rf"--brand-font-{role}:\s*([^;]+);", css)
+        if not m:
+            continue
+        famille = m.group(1).split(",")[0].strip().strip('"')
+        if famille and famille not in declarees and famille not in manquantes:
+            manquantes.append(famille)
+    return manquantes
+
+
+CONSEIL_POLICE = ("dépose ses fichiers .woff2 dans assets/fonts/ du dossier Monteur IA, déclare-la dans la table "
+                  "`fonts` de templates/style-presets.json, puis `npm run sync` ; ou choisis une police livrée "
+                  "avec /setup visuel")
+
+
 def lancer(cmd: list[str], **kw) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", **kw)
 
@@ -429,10 +494,12 @@ def cmd_verifier(_a) -> None:
         ("HyperFrames", (m / "node_modules" / ".bin" / "hyperframes").exists() or shutil.which("hyperframes") is not None),
         ("ffmpeg", binaire(m, "ffmpeg") is not None),
         ("ffprobe", binaire(m, "ffprobe") is not None),
-        ("Node", shutil.which("node") is not None),
+        ("Node", shutil.which("node") is not None or any(Path.home().glob(".nvm/versions/node/*/bin/node"))),
     ):
         print(f"{'✅' if present else '❌'} {nom}")
         ok = ok and present
+    for famille in polices_manquantes(m):
+        print(f"⚠️ police « {famille} » sans fichier : au rendu, elle serait remplacée par une autre. Pour la garder, {CONSEIL_POLICE}.")
     print("ok" if ok else "à corriger")
     if not ok:
         sys.exit(1)
@@ -562,6 +629,9 @@ def cmd_nouvelle(a) -> None:
     for projet, meta in projets(dossier):
         print(f"  - {projet.name} ({meta['format']})")
     print("• à remplir d'abord : OFFRE.json (puis `studio_motion.py offre`), puis PLAN.md")
+    for famille in polices_manquantes(m):
+        print(f"⚠️ police « {famille} » sans fichier : le MP4 la remplacerait. Pour la garder, {CONSEIL_POLICE}. "
+              "Sinon, utilise une police déclarée dans brand/fonts.css.")
     if a.ouvrir:
         ouvreur = m / "scripts" / "app-hyperframes.mjs"
         for projet, _meta in projets(dossier):
@@ -582,6 +652,7 @@ def cmd_offre(a) -> None:
     dossier = _dossier_fiche(Path(a.dossier))
     fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
     pb = verifier_fiche(fiche, [meta for _p, meta in projets(dossier)])
+    pb += [f"source « {f} » introuvable dans sources/ : la fiche cite un fichier qui n'existe pas." for f in sources_absentes(fiche, dossier)]
     if pb:
         print("\n".join(f"❌ {p}" for p in pb))
         sys.exit(1)
@@ -695,8 +766,8 @@ def mesure_sonore(ffmpeg: str, video: Path) -> dict | None:
     return json.loads(bloc.group(0))
 
 
-def verdict_sonore(mesure: dict) -> list[str]:
-    """Écarts à la cible de livraison : -16 LUFS (±1) et crête vraie sous -1 dBTP."""
+def verdict_sonore(mesure: dict, cible: float = CIBLE_LUFS) -> list[str]:
+    """Écarts à la cible de livraison : -16 LUFS (±1) par défaut, crête vraie sous -1 dBTP."""
     pb = []
     try:
         i, tp = float(mesure["input_i"]), float(mesure["input_tp"])
@@ -704,8 +775,8 @@ def verdict_sonore(mesure: dict) -> list[str]:
         return ["mesure illisible"]
     if math.isinf(i) or i < -60:
         return ["vidéo muette (aucun son mesurable)"]
-    if abs(i - CIBLE_LUFS) > 1.0:
-        pb.append(f"sonie {i:.1f} LUFS, cible {CIBLE_LUFS:.0f} ±1 : lance `studio_motion.py mastering`")
+    if abs(i - cible) > 1.0:
+        pb.append(f"sonie {i:.1f} LUFS, cible {cible:.0f} ±1 : lance `studio_motion.py mastering`")
     if tp > PLAFOND_TP:
         pb.append(f"crête {tp:.1f} dBTP au-dessus de {PLAFOND_TP:.0f} : risque de saturation sur téléphone")
     return pb
@@ -720,7 +791,7 @@ def cmd_son(a) -> None:
     if mesure is None:
         print("ℹ️ pas de piste son : version muette (normal pour une boucle de page ou une story sans musique)")
         return
-    pb = verdict_sonore(mesure)
+    pb = verdict_sonore(mesure, a.cible)
     print(f"sonie {float(mesure['input_i']):.1f} LUFS, crête {float(mesure['input_tp']):.1f} dBTP")
     print("\n".join(f"❌ {p}" for p in pb) if pb else "ok")
 
@@ -741,7 +812,7 @@ def cmd_mastering(a) -> None:
     mesure = mesure_sonore(ffmpeg, Path(a.entree))
     if mesure is None or math.isinf(float(mesure["input_i"])):
         sys.exit("ERREUR : pas de son à masteriser (vidéo muette).")
-    gain = CIBLE_LUFS - float(mesure["input_i"])
+    gain = a.cible - float(mesure["input_i"])
     apres = None
     for _ in range(4):  # chaque passe corrige l'écart de la précédente ; deux suffisent d'habitude
         r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "copy", "-af", chaine_mastering(gain),
@@ -751,18 +822,52 @@ def cmd_mastering(a) -> None:
         apres = mesure_sonore(ffmpeg, Path(a.sortie))
         if apres is None:
             break
-        ecart = CIBLE_LUFS - float(apres["input_i"])
+        ecart = a.cible - float(apres["input_i"])
         if abs(ecart) <= 0.5:
             break
         gain += ecart
     if apres:
         print(f"• {a.sortie} : {float(apres['input_i']):.1f} LUFS, crête {float(apres['input_tp']):.1f} dBTP")
-        pb = verdict_sonore(apres)
+        pb = verdict_sonore(apres, a.cible)
         if pb:
             print("\n".join(f"❌ {p}" for p in pb))
             sys.exit(1)
     else:
         print(f"• {a.sortie}")
+
+
+def cmd_preparer_video(a) -> None:
+    """Prépare une vraie vidéo (un Reel du client, une capture d'écran filmée) pour une composition :
+    une image clé par seconde (sinon HyperFrames saute ou fige des images au rendu), H.264, sans son
+    par défaut (la vidéo de vente a sa propre bande son)."""
+    m = maison_de(Path(a.entree)) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    son = ["-c:a", "aac", "-b:a", "160k"] if a.avec_son else ["-an"]
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "libx264", "-crf", "18", "-preset", "medium",
+                "-pix_fmt", "yuv420p", "-g", str(FPS), "-keyint_min", str(FPS), "-r", str(FPS), *son,
+                "-movflags", "+faststart", a.sortie])
+    if r.returncode != 0:
+        sys.exit(f"ERREUR : préparation impossible : {r.stderr[-400:]}")
+    print(f"• {a.sortie} : prête pour la composition (une image clé par seconde{', son gardé' if a.avec_son else ', sans son'})")
+
+
+def cmd_affiche(a) -> None:
+    """L'affiche d'une vidéo de page : une image de la vidéo (la première par défaut, qui doit déjà
+    porter la promesse), en JPEG de moins de 100 Ko, montrée avant la lecture ou si elle est bloquée."""
+    m = maison_de(Path(a.video)) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    for qualite in range(2, 32, 2):
+        r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{a.temps:.3f}", "-i", a.video, "-frames:v", "1",
+                    "-q:v", str(qualite), a.sortie])
+        if r.returncode != 0 or not Path(a.sortie).is_file():
+            sys.exit(f"ERREUR : affiche impossible : {r.stderr[-400:]}")
+        if Path(a.sortie).stat().st_size <= 100 * 1024:
+            break
+    print(f"• {a.sortie} : {Path(a.sortie).stat().st_size // 1024} Ko (image à {a.temps:.1f} s)")
 
 
 def sans_musique_html(html: str) -> tuple[str, int]:
@@ -780,7 +885,8 @@ def cmd_sans_musique(a) -> None:
         sys.exit(f"ERREUR : {projet} n'a pas d'index.html.")
     html, n = sans_musique_html(index.read_text(encoding="utf-8"))
     if n == 0:
-        sys.exit("ERREUR : aucune piste de musique (id=\"musique\") dans index.html : rien à retirer.")
+        print("• pas de musique dans cette vidéo : elle est déjà la version sans musique, rien à faire.")
+        return
     # À côté d'index.html : ses chemins (assets/, brand/) restent valides au rendu.
     cible = projet / "index-sans-musique.html"
     cible.write_text(html, encoding="utf-8")
@@ -862,12 +968,23 @@ def verdict_export(info: dict, support: str, fmt: str | None = None, poids: int 
     return pb, avis
 
 
+def meta_par_nom(video: Path) -> dict | None:
+    """Une vidéo de livraison/ n'a pas de meta.json : on la retrouve par son nom (reel.mp4,
+    story-ouverture.mp4, page-1x1.mp4, reel-sans-musique.mp4) parmi les projets du dossier."""
+    p = Path(video).resolve()
+    dossier = next((d for d in (p.parent, *p.parents) if (d / "OFFRE.json").is_file()), None)
+    if dossier is None:
+        return None
+    nom = re.sub(r"-(sans-musique|master)$", "", p.stem)
+    return next((meta for _projet, meta in projets(dossier) if meta.get("video") == nom), None)
+
+
 def cmd_export(a) -> None:
     m = maison_de(Path(a.video)) or maison_de(OUTILS)
     ffprobe = binaire(m, "ffprobe")
     if not ffprobe:
         sys.exit("ERREUR : ffprobe introuvable.")
-    meta = meta_de(Path(a.video)) or {}
+    meta = meta_de(Path(a.video)) or meta_par_nom(Path(a.video)) or {}
     support = a.support or meta.get("support")
     if support not in SUPPORTS:
         sys.exit("ERREUR : précise le support (--support reel, story, pub, page…).")
@@ -953,11 +1070,23 @@ def main(argv: list[str] | None = None) -> None:
     pl.set_defaults(f=cmd_planche)
     so = s.add_parser("son", help="Mesure la sonie et la crête.")
     so.add_argument("video")
+    so.add_argument("--cible", type=float, default=CIBLE_LUFS, help="Sonie visée en LUFS (défaut -16 ; -20 pour des bruitages seuls).")
     so.set_defaults(f=cmd_son)
-    ma = s.add_parser("mastering", help="Met le son à -16 LUFS, crêtes sous -1 dBTP.")
+    ma = s.add_parser("mastering", help="Met le son à -16 LUFS (ou --cible), crêtes sous -1 dBTP.")
     ma.add_argument("entree")
     ma.add_argument("sortie")
+    ma.add_argument("--cible", type=float, default=CIBLE_LUFS, help="Sonie visée en LUFS (défaut -16 ; -20 pour des bruitages seuls).")
     ma.set_defaults(f=cmd_mastering)
+    pv = s.add_parser("preparer-video", help="Prépare une vraie vidéo pour une composition (images clés, sans son).")
+    pv.add_argument("entree")
+    pv.add_argument("sortie")
+    pv.add_argument("--avec-son", action="store_true")
+    pv.set_defaults(f=cmd_preparer_video)
+    af = s.add_parser("affiche", help="L'affiche d'une vidéo de page, en JPEG de moins de 100 Ko.")
+    af.add_argument("video")
+    af.add_argument("sortie")
+    af.add_argument("--temps", type=float, default=0.0)
+    af.set_defaults(f=cmd_affiche)
     sm = s.add_parser("sans-musique", help="Prépare la version sans musique d'un projet.")
     sm.add_argument("projet")
     sm.set_defaults(f=cmd_sans_musique)

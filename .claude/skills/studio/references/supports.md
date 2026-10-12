@@ -27,7 +27,9 @@ page reste sous 2 minutes sauf si l'offre le demande vraiment.
 ## Les zones de sécurité
 
 Tout texte important (promesse, prix, date, mot-clé, bouton dessiné) tient **dans** la zone.
-Le décor peut déborder.
+Le décor peut déborder. N'utilise pas la classe `.brand-safe` ni les variables `--brand-safe-*`
+de Monteur IA : elles sont réglées pour les Reels face caméra, pas pour ces vidéos. La zone, c'est
+`studio_motion.py zones`.
 
 | Support | Haut | Bas | Gauche | Droite | Ce qui recouvre |
 |---|---|---|---|---|---|

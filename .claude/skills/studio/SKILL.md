@@ -75,10 +75,22 @@ chaque vidéo**. Commence par le support principal ; les autres formats sont des
 de la même vidéo (on replace les éléments, on garde le rythme), jamais des recadrages.
 
 Avant d'animer, fixe les 3 ou 4 images clés et regarde-les : c'est là qu'on voit une mise en page
-ratée. Une scène = une sous-composition dans `compositions/`, montée dans `index.html`. Les polices
-viennent de `brand/fonts.css` : une police absente est remplacée au rendu, `npm run check` le
-signale, comme les textes qui se chevauchent et le contraste insuffisant. Il doit finir sans
-erreur, et ses avertissements se lisent.
+ratée. Une scène = une sous-composition dans `compositions/`, montée dans `index.html`.
+
+Trois pièges connus :
+
+- **Les polices.** Seules celles de `brand/fonts.css` existent au rendu. `nouvelle` et `verifier`
+  préviennent quand une police de la marque n'a pas de fichier : règle-le avant de composer (ou
+  prends une police déclarée), car `check` et les captures la trouvent sur internet et le MP4 non.
+- **Les vraies vidéos** (un Reel du client, un écran filmé) : prépare-les d'abord avec
+  `studio_motion.py preparer-video` (sinon le rendu fige des images), et la balise `<video>` reste
+  à la racine d'`index.html`, jamais dans une sous-composition : la scène se partage alors entre sa
+  sous-composition (le décor, les textes) et `index.html` (la vidéo et ses mouvements).
+- **Les consignes d'HyperFrames** pensées pour un autre usage : ici le client a demandé la vidéo,
+  tu rends sans attendre d'accord ; tu n'envoies jamais `hyperframes feedback` ni `publish`.
+
+`npm run check` relève aussi les textes qui se chevauchent et le contraste insuffisant : il doit
+finir sans erreur, et ses avertissements se lisent.
 
 ### 6. La revue (personne d'autre ne la fera)
 

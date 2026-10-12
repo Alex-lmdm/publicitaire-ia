@@ -200,6 +200,42 @@ class Fiche(unittest.TestCase):
             self.assertTrue(any(p.startswith(debut) for p in pb), debut)
 
 
+class Echeances(unittest.TestCase):
+    def test_echeance_valide(self):
+        f = fiche_valide()
+        f["echeances"] = [{"texte": "Bonus Reel Cloneur offert", "date": "2026-10-17T23:59", "source": "page"}]
+        self.assertEqual(sm.verifier_fiche(f), [])
+
+    def test_echeance_sans_date_ni_source(self):
+        f = fiche_valide()
+        f["echeances"] = [{"texte": "Bonus", "date": "samedi", "source": "page"}, {"texte": "Prix", "date": "2026-10-20", "source": ""}]
+        pb = sm.verifier_fiche(f)
+        self.assertTrue(any("echeances[0]" in p and "date" in p for p in pb))
+        self.assertTrue(any("echeances[1]" in p and "source" in p for p in pb))
+
+    def test_source_fichier_absente(self):
+        with tempfile.TemporaryDirectory() as d:
+            dossier = Path(d)
+            (dossier / "sources").mkdir()
+            (dossier / "sources" / "prix.png").write_bytes(b"x")
+            f = fiche_valide()
+            f["prix"]["source"] = "prix.png"
+            f["bonus"][0]["source"] = "bonus.png"
+            self.assertEqual(sm.sources_absentes(f, dossier), ["bonus.png"])
+
+
+class Polices(unittest.TestCase):
+    def test_police_sans_fichier(self):
+        with tempfile.TemporaryDirectory() as d:
+            m = Path(d)
+            (m / "brand").mkdir()
+            (m / "brand" / "tokens.css").write_text(':root{ --brand-font-display: Poppins, Impact, sans-serif; --brand-font-body: Inter, Arial; }', encoding="utf-8")
+            (m / "brand" / "fonts.css").write_text('@font-face { font-family: "Inter"; src: url(x.woff2); }', encoding="utf-8")
+            self.assertEqual(sm.polices_manquantes(m), ["Poppins"])
+            (m / "brand" / "fonts.css").write_text('@font-face { font-family: "Inter"; } @font-face { font-family: "Poppins"; }', encoding="utf-8")
+            self.assertEqual(sm.polices_manquantes(m), [])
+
+
 class Planche(unittest.TestCase):
     def test_un_par_seconde_et_derniere_image(self):
         t = sm.instants_planche(3.0, None)
@@ -223,6 +259,10 @@ class Son(unittest.TestCase):
 
     def test_muet(self):
         self.assertIn("muette", sm.verdict_sonore({"input_i": "-inf", "input_tp": "-inf"})[0])
+
+    def test_cible_reglable(self):
+        self.assertEqual(sm.verdict_sonore({"input_i": "-20.2", "input_tp": "-3"}, -20), [])
+        self.assertEqual(len(sm.verdict_sonore({"input_i": "-20.2", "input_tp": "-3"})), 1)
 
     def test_chaine_mastering(self):
         self.assertIn("volume=12.50dB", sm.chaine_mastering(12.5))
@@ -340,6 +380,27 @@ class Creation(unittest.TestCase):
             maison = maison_de_test(Path(d))
             with self.assertRaises(SystemExit):
                 sm.creer(maison, "X", "vente", [sm.lire_video("reel"), sm.lire_video("reel")], "2026-10-12")
+
+    def test_meta_par_nom_en_livraison(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = maison_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel"), sm.lire_video("page")], "2026-10-12")
+            for nom, support in (("reel.mp4", "reel"), ("page.mp4", "page"), ("reel-sans-musique.mp4", "reel")):
+                video = dossier / "livraison" / nom
+                video.write_bytes(b"x")
+                self.assertIsNone(sm.meta_de(video))
+                self.assertEqual(sm.meta_par_nom(video)["support"], support)
+            inconnue = dossier / "livraison" / "autre.mp4"
+            inconnue.write_bytes(b"x")
+            self.assertIsNone(sm.meta_par_nom(inconnue))
+
+    def test_gabarit_sans_tween_vide(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = maison_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-12")
+            html = (sm.projets(dossier)[0][0] / "index.html").read_text(encoding="utf-8")
+            self.assertNotIn("tl.to({}", html)
+            self.assertIn("Reel · à composer", html)
 
     def test_meta_retrouvee_depuis_un_export(self):
         with tempfile.TemporaryDirectory() as d:

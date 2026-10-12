@@ -28,7 +28,8 @@ en première image :
 python3 tools/studio_motion.py couverture exports/reel-master.mp4 livraison/couverture.jpg livraison/reel.mp4
 ```
 
-Pour une page, l'affiche (`page.jpg`) est la première image de la vidéo, de moins de 100 Ko.
+Pour une page, l'affiche (`page.jpg`) est la première image de la vidéo, de moins de 100 Ko :
+`python3 tools/studio_motion.py affiche livraison/page.mp4 livraison/page.jpg`.
 
 ## Les textes de publication
 

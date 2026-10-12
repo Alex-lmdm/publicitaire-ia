@@ -20,7 +20,7 @@ timeline (ils apparaissent dans l'app, le bouton Export sort la vidéo complète
 
 ```bash
 python3 -c "import sys; from pathlib import Path; sys.path.insert(0, '<dossier Monteur IA>/tools'); \
-import sons; print(sons.poser(Path('.'), [<évènements>], musique=Path('<musique>'), musique_db=-14))"
+import sons; print(sons.poser(Path('.'), [<évènements>], musique=<Path('…') ou None>, musique_db=-14))"
 ```
 
 Lance-le depuis le dossier de la vidéo : il écrit à l'emplacement `<!-- SONS -->` de
@@ -63,9 +63,13 @@ python3 tools/studio_motion.py mastering exports/reel.mp4 exports/reel-master.mp
 Cible : **-16 LUFS ±1, crêtes sous -1 dBTP**, le même niveau que ses Reels habituels. Le fichier
 livré est la version masterisée.
 
+**Bruitages seuls, sans musique ni voix** : -16 LUFS les fait sonner maigres et trop forts, chaque
+clic monté de 12 dB. Vise **-20 LUFS** : `mastering … --cible -20` puis `son … --cible -20`. Mieux :
+propose au client d'ajouter une musique, c'est elle qui porte une vidéo sans voix.
+
 ## La version sans musique du Reel
 
-Beaucoup de créateurs ajoutent un son tendance dans Instagram. Livre toujours
+Beaucoup de créateurs ajoutent un son tendance dans Instagram. Quand le Reel a une musique, livre
 `reel-sans-musique.mp4` : mêmes bruitages, pas de musique.
 `python3 <dossier Monteur IA>/tools/studio_motion.py sans-musique .` prépare `index-sans-musique.html`
 et affiche la commande de rendu (`npx hyperframes render -c index-sans-musique.html -o …`).

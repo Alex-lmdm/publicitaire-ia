@@ -42,11 +42,20 @@ ce que l'objectif demande ; les autres champs restent vides.
 | `prix` | `montant` en nombre ; `barre` seulement si la page affiche un vrai prix précédent | Un « valeur 997 € » n'est pas un prix barré |
 | `bonus` | Chaque bonus tel que la page le nomme | |
 | `garantie` | La garantie, mot pour mot | Aucune garantie inventée |
-| `dates` | `ouverture` et `fermeture` en `AAAA-MM-JJ` ou `AAAA-MM-JJTHH:MM` | Sans fermeture réelle : pas de « dernier jour », pas de compte à rebours |
-| `preuves` | `type` : `chiffre`, `temoignage`, `resultat` ou `media` | Un témoignage se cite **mot pour mot** (`mot_pour_mot: true`) avec son prénom tel qu'affiché |
+| `dates` | `ouverture` et `fermeture` de l'offre, en `AAAA-MM-JJ` ou `AAAA-MM-JJTHH:MM` | Sans fermeture réelle : pas de « dernier jour », pas de compte à rebours |
+| `echeances` | Les autres vraies échéances : `{texte, date, source}` (un bonus retiré, un prix qui change) | Seules urgences permises, avec `dates.fermeture` |
+| `preuves` | `type` : `chiffre`, `temoignage`, `resultat` ou `media` | Un témoignage se cite **mot pour mot** (`mot_pour_mot: true`), avec le prénom s'il est affiché ; jamais de prénom inventé |
 | `objections` | Les doutes que la page lève (« pas besoin de savoir monter ») | |
 | `cta` | `mot_cle` (un mot en MAJUSCULES), `phrase`, ou `lien` | La phrase reprend le geste réel |
 | `interdits` | Ce que le client ne veut pas voir (un concurrent, un ancien prix, un sujet) | |
+
+Pour les chiffres attachés à des médias (les vues de chaque Reel affiché sur la page), regarde
+aussi `sources/capture/extracted/video-manifest.json` et `asset-descriptions.md` : ils relient
+chaque vidéo de la page à son texte.
+
+**Dates et vidéo qui dure** : une vidéo de page ou un Reel reste en ligne des mois. N'y mets pas
+une date qui sera dépassée dans une semaine (« bonus jusqu'au 17 ») : elle va dans la légende, la
+story ou la pub, qui vivent moins longtemps.
 
 Arrondis toujours **vers le bas** : « 3 354 000 vues » devient « 3,3 millions », jamais
 « 3,4 millions ». Un chiffre sans contexte (« +200 % ») ne s'utilise pas seul.

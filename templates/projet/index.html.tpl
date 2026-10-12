@@ -24,14 +24,22 @@
       <!-- Fond opaque, tout en bas de la pile : sans lui, une image vide passe en noir au rendu. -->
       <div id="fond" class="clip" data-start="0" data-duration="{{DUREE}}" data-track-index="0" style="position:absolute; inset:0; background:var(--brand-bg);"></div>
 
+      <!-- Repère de départ, à remplacer par les scènes (une sous-composition par scène). -->
+      <div id="attente" class="clip" data-start="0" data-duration="{{DUREE}}" data-track-index="1" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
+        <p id="attente-texte" style="font:600 48px/1.2 var(--brand-font-body); color:var(--brand-muted); text-align:center;">{{VIDEO_NOM}} · à composer</p>
+        <div id="attente-barre" style="position:absolute; left:10%; right:10%; bottom:50%; margin-bottom:-60px; height:6px; border-radius:3px; background:var(--brand-accent); transform-origin:left center;"></div>
+      </div>
+
       <!-- Les sons (voix, musique et bruitages) s'écrivent ici par tools/sons.py de Monteur IA. -->
       <!-- SONS -->
     </div>
     <script>
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
-      // La timeline couvre toute la durée, sinon les dernières images clignotent en noir.
-      tl.to({}, { duration: {{DUREE}} }, 0);
+      // La durée vient de data-duration ; pas de tween vide pour l'allonger (règle HyperFrames).
+      // La barre avance sur toute la durée : `check` vérifie que l'image change jusqu'à la fin.
+      tl.from("#attente-texte", { y: 20, opacity: 0, duration: 0.4, ease: "power3.out" }, 0.2);
+      tl.fromTo("#attente-barre", { scaleX: 0 }, { scaleX: 1, duration: {{DUREE}}, ease: "none" }, 0);
       window.__timelines["main"] = tl;
     </script>
   </body>

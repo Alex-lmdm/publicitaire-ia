@@ -11,8 +11,10 @@ Une story = un seul effet principal. Un Reel = trois ou quatre effets au plus, q
 
 1. **Accroche mot par mot sur les temps** [kinetic-type-beats]. Chaque mot arrive sur un temps,
    puis la phrase entière tient. Pour l'accroche du Reel.
-2. **Texte qui monte d'une ligne-masque** [animate-text]. Chaque ligne sort d'un masque,
-   décalée de 60 à 120 ms. Le plus sûr pour une promesse.
+2. **Texte qui monte d'une ligne-masque.** Chaque ligne est dans un conteneur `overflow:hidden` de
+   sa hauteur ; la ligne part de `yPercent: 100` et monte à 0 en 0,5 à 0,7 s (`power3.out`), les
+   lignes décalées de 60 à 120 ms. Le plus sûr pour une promesse. (Pas de recette toute faite : le
+   catalogue « animate-text » d'HyperFrames demande une installation réseau, ne l'utilise pas.)
 3. **Une ligne sert de masque à la suivante.** La phrase sortante découpe l'entrante. Pour
    enchaîner deux idées sans transition.
 4. **La question tapée, l'offre y répond.** Le problème de l'audience se tape (en quelques
@@ -28,7 +30,8 @@ Une story = un seul effet principal. Un Reel = trois ou quatre effets au plus, q
 7. **Pastille qui grandit** [card-morph-anchor]. « Inscription » devient le programme, puis les
    modules : un seul objet qui se transforme.
 8. **La page de vente dans un téléphone** [device-surface-showcase]. La vraie capture défile
-   dans un cadre de téléphone qui recule. Pour la révélation.
+   dans un cadre de téléphone qui recule. Pour la révélation. Avec une vraie vidéo dedans (un Reel
+   du client), la balise `<video>` reste dans `index.html` (voir SKILL.md, étape 5).
 9. **Clic guidé** [cursor-ui-demo]. Le curseur va sur « Rejoindre », la page réagit, le zoom
    suit. Pour une story d'ouverture ou un logiciel.
 10. **Avant / après en volet** [comparison-split]. Le même cadre, sans puis avec l'offre.

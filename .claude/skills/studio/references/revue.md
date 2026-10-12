@@ -10,6 +10,10 @@ franchie.
 `npm run check` dans le dossier de la vidéo (contrôles HyperFrames). Corrige toute erreur. Puis
 `npm run render`.
 
+**Seul le MP4 rendu fait foi.** `check` et `snapshot` téléchargent une police qui manque, le rendu
+non : une police sans fichier passe en Impact ou en police système seulement dans le MP4. Regarde
+donc la planche du fichier rendu, jamais seulement les captures de `check`.
+
 ## Porte 2 : la planche
 
 ```bash
@@ -61,7 +65,7 @@ Réécoute le début et la révélation : le temps fort tombe-t-il sur l'offre ?
 ## Porte 5 : l'export
 
 ```bash
-python3 …/studio_motion.py export livraison/reel.mp4
+python3 …/studio_motion.py export livraison/reel.mp4   # le support se déduit du nom du fichier
 ```
 
 « ok : prêt pour Instagram » ou on corrige (taille, codec, images par seconde, démarrage rapide,

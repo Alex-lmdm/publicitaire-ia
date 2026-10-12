@@ -1,5 +1,10 @@
 # Rythme, mouvement et caméra
 
+Ce fichier fait foi pour les vidéos de Studio Motion IA. La doctrine de mouvement de Monteur IA
+(`motion-doctrine`) reste utile pour les raccords (sens du mouvement, objet qui relie deux plans),
+mais sa porte des coutures (`ledger.json`, `seam-stamp`, `seam-gate`) n'est pas exigée ici, et en
+cas de désaccord, **la lecture prime** : un texte se lit immobile.
+
 La faute numéro un des vidéos faites par IA : **ça va trop vite**. Le texte passe avant d'être
 lu, la caméra court, tout bouge en même temps. Ces règles sont des planchers mesurables.
 
@@ -16,13 +21,15 @@ lu, la caméra court, tout bouge en même temps. Ces règles sont des planchers 
 ## La grammaire du mouvement
 
 - Entrées de **0,24 à 0,38 s**, en décélération (`power3.out` ou proche), avec un déplacement de
-  10 à 28 px. Jamais un simple fondu d'opacité seul.
+  10 à 28 px. Jamais un simple fondu d'opacité seul. Exception : une ligne qui sort d'un masque
+  (recette 2) monte de toute sa hauteur, c'est le masque qui la cache.
 - Sorties **plus rapides** que les entrées (50 à 75 % de leur durée).
 - Aucun mouvement à vitesse constante (sauf une barre de progression). Pas de rebond ni
   d'élastique sur les titres ; un très léger dépassement à l'arrivée est permis sur un élément
   d'interface.
 - Une seule chose bouge à la fois. Le reste se stabilise pendant qu'on lit ou qu'on regarde.
-- Rien ne bouge au moment d'une coupe : au moins 0,15 s de calme avant.
+- Un texte a fini d'être lu avant la coupe qui l'emporte. La coupe elle-même peut partir en
+  mouvement (raccord en pleine vitesse, ci-dessous) : c'est la lecture qui se fait au calme, pas la coupe.
 - **Interdits** : flottements, respirations et oscillations en boucle pour « remplir » ;
   tremblements de caméra ; effets qui se répètent sans cible.
 
