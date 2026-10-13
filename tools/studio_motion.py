@@ -55,7 +55,7 @@ for _flux in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 OUTILS = Path(__file__).resolve().parent
 FPS = 30
 
@@ -540,6 +540,27 @@ def _copier_style(m: Path, projet: Path) -> None:
                             ignore=shutil.ignore_patterns("atoms.html", "BRAND.md", "*.ttf", ".DS_Store"))
 
 
+POLICES_INTERFACES = ((400, "normal", "Inter-400.woff2"), (400, "italic", "Inter-400-italic.woff2"),
+                      (600, "normal", "Inter-600.woff2"), (700, "normal", "Inter-700.woff2"),
+                      (900, "normal", "Inter-900.woff2"))
+
+
+def _polices_interfaces(projet: Path) -> Path:
+    """Inter (licence SIL OFL), la police des interfaces reconstruites (Claude, Codex, un logiciel).
+    Sa feuille s'écrit à côté de ses fichiers, dans assets/fonts/ : le rendu refuse un chemin qui
+    remonte (« ../ »), et une feuille rangée dans kit/ en aurait besoin. Seuls les fichiers présents
+    sont déclarés ; sans eux, la feuille reste vide et le texte prend la police de secours."""
+    fonts = projet / "assets" / "fonts"
+    fonts.mkdir(parents=True, exist_ok=True)
+    lignes = [f'@font-face {{ font-family: "Inter"; font-style: {style}; font-weight: {poids}; '
+              f'font-display: block; src: url("{nom}") format("woff2"); }}'
+              for poids, style, nom in POLICES_INTERFACES if (fonts / nom).is_file()]
+    feuille = fonts / "interfaces.css"
+    feuille.write_text("/* Inter (licence SIL OFL), pour les interfaces reconstruites. Écrit par studio_motion.py. */\n"
+                       + "".join(l + "\n" for l in lignes), encoding="utf-8")
+    return feuille
+
+
 def _kit(m: Path) -> Path | None:
     """Le kit de briques (fonds, curseur, objets flottants, chapitres, interfaces) : celui de
     l'extension, sinon celui installé dans le dossier Monteur IA."""
@@ -608,6 +629,7 @@ def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
     for sous in ("assets/images", "assets/audio", "exports", "work"):
         (projet / sous).mkdir(parents=True, exist_ok=True)
     _copier_style(m, projet)
+    _polices_interfaces(projet)
     kit = _kit(m)
     if kit:
         shutil.copytree(kit, projet / "kit", dirs_exist_ok=True, ignore=shutil.ignore_patterns(".DS_Store"))
@@ -658,6 +680,7 @@ def ajouter(m: Path, dossier: Path, videos: list[dict]) -> list[Path]:
         for sous in ("assets/fonts", "assets/images", "assets/video"):
             if (frere / sous).is_dir():
                 shutil.copytree(frere / sous, projet / sous, dirs_exist_ok=True)
+        _polices_interfaces(projet)
         ajouts.append(projet)
         sup = SUPPORTS[v["support"]]
         lo, hi = sup["ideal"]

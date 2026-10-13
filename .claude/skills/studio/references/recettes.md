@@ -73,6 +73,16 @@ reliées par des raccords d'objet.
     jusqu'à 3:00:00 et vire au rouge. À droite, clair : « Avec **ton IA** », le résultat, une
     bulle de demande, une pastille « Prêt · 0:42 », « Quelques **clics.** ». Sortie : le panneau
     clair glisse sur toute la largeur, le résultat revient au centre.
+12 bis. **Le balai dans le téléphone** (6,5 s, vertical). Un téléphone au centre montre la
+    prise brute (une image de la vraie vidéo), une mini ligne de temps en bas ; une tête de
+    lecture blanche la balaie et chaque raté s'allume à son passage (étiquettes rouges « raté »,
+    « blanc », en quinconce pour ne pas se toucher). Sur le temps fort de la musique, un balai
+    jaune traverse l'écran de droite à gauche et révèle le Reel monté, qui **joue vraiment**
+    (une `<video>` posée à la racine de `index.html`, aux coordonnées exactes de l'écran du
+    téléphone, avec pour vignette l'image exacte de son premier instant joué). L'étiquette passe
+    de « Avant · brut 3:50 » à « Après · monté 0:42 », puis ce que l'IA a fait arrive en puces
+    qui **chevauchent le bord du téléphone** (jamais collées au bord de l'image, hors zone sûre).
+    Sortie : le téléphone rétrécit et devient la carte centrale de l'éventail (14).
 13. **La comparaison des options** [comparison-split] : monteur, agence, faire seul, l'offre ;
     vrais chiffres seulement.
 
@@ -123,3 +133,9 @@ La vidéo de page de démonstration enchaîne : 1 (la corvée) → 3 (le choix, 
 (le dossier Monteur IA glissé dans Claude, puis la démo) → 7 + 8 (chapitre Dérushage) → 9 + 10 (le style, la retouche) → 12 (l'écran
 coupé) → 14 + 15 + 16 (la preuve) → 17 + 18 (l'offre) → 19 (le prix) → 21 (le final). Chaque
 recette part d'un objet déjà à l'écran : rien n'apparaît sans cause.
+
+La pub verticale de démonstration (30 s, `pub`) en reprend le cœur, remis en page pour le
+téléphone : 1 (« 3 heures sur CapCut pour un Reel ? », lisible dès la première image) → 3 (le
+choix, le nom) → 5 bis + 5 + 6 (« Monte cette vidéo. » dans Claude) → 12 bis (avant/après) → 14
++ 15 (la preuve) → 19 sans ancrage (le nom, le prix, « Découvre-le » et une flèche vers le bouton
+de la pub). Six scènes de 2,5 à 8,5 s ; la démo est la plus longue, c'est l'angle.

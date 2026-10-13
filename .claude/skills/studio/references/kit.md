@@ -6,8 +6,9 @@ GSAP déterministes. **Pars de lui** : il porte le niveau de finition, et c'est 
 d'une vidéo à l'autre. Les recettes complètes (enchaînements éprouvés) sont dans `recettes.md`.
 
 Fichiers : `kit.css` (classes `k-*`), `kit.js` (objet `K`), `icones.js` (82 icônes Lucide),
-`ajouts.js` (les logos et icônes ajoutés par `studio_motion.py logos`), `polices-interfaces.css`
-(Inter, pour les interfaces reconstruites).
+`ajouts.js` (les logos et icônes ajoutés par `studio_motion.py logos`). Inter, la police des
+interfaces reconstruites, se déclare dans `assets/fonts/interfaces.css`, écrit à la création du
+projet à côté de ses fichiers : une feuille ne pointe jamais vers `../` (le rendu la refuse).
 
 ## Le squelette d'une scène
 

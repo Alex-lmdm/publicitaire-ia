@@ -66,9 +66,22 @@ seconde perd sa portée.
 | 60–90 % | **Quoi** | Le résultat, et « ce que tu peux faire » |
 | 90–100 % | **Comment, suggéré** | Le nom de l'offre, le geste à faire (« En savoir plus ») |
 
-Pas de prix dans la pub : il fait baisser les clics. Chaque scène dure 2 à 4 s ; le premier
-plan tient sans le son et arrête le pouce. Prépare 2 ou 3 accroches différentes sur le même
-corps : c'est ainsi qu'on teste une pub.
+Par défaut, pas de prix dans la pub : il fait baisser les clics. Si le client le veut (une
+offre d'entrée à petit prix, qui trie les clics), il vient à la fin, **sans prix barré ni
+ancrage** (risque de refus de la pub et règle européenne des 30 jours) ; propose une variante
+sans prix pour le test. Chaque scène dure 2 à 4 s, la démonstration jusqu'à 8 s si l'angle est
+la démo ; le premier plan tient sans le son et arrête le pouce : **le texte de l'accroche est
+déjà là à la première image** (la pub démarre muette, sans fondu au noir), la question complète
+arrive avant 0,5 s. Prépare 2 ou 3 accroches différentes sur le même corps : c'est ainsi qu'on
+teste une pub.
+
+**Mise en page verticale (1080 × 1920).** La zone sûre est x 65 → 1015, y 269 → 1248 : le haut
+(14 %) porte le nom du compte et « Sponsorisé », le bas (35 %) la légende et le bouton, les
+bords les icônes. Tout texte et tout sujet y tiennent ; les objets décoratifs (logos qui
+flottent) peuvent en sortir. On ne reprend pas les scènes 16:9 en les rétrécissant : chaque
+scène se recompose en hauteur (textes empilés et plus gros, interface en carte verticale,
+téléphone au centre, deux logos côte à côte plutôt qu'en ligne). La fin pointe vers le bouton
+de la pub (« Découvre-le » et une flèche vers le bas), sans dessiner de bouton.
 
 ## 4. Annoncer une nouveauté (15 à 45 s, `reel`, `story`, `linkedin`, `x`)
 

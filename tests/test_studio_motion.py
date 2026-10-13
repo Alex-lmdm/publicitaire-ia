@@ -385,7 +385,7 @@ class Svg(unittest.TestCase):
 class Kit(unittest.TestCase):
     def test_kit_livre(self):
         kit = RACINE / "templates" / "kit"
-        for f in ("kit.css", "kit.js", "icones.js", "ajouts.js", "polices-interfaces.css"):
+        for f in ("kit.css", "kit.js", "icones.js", "ajouts.js"):
             self.assertTrue((kit / f).is_file(), f)
         js = (kit / "kit.js").read_text(encoding="utf-8")
         for fonction in ("K.champ", "K.curseur", "K.trajet", "K.clic", "K.taper", "K.compteur", "K.flash", "K.chapitre", "K.cacher", "K.tuileMarque"):
@@ -393,8 +393,10 @@ class Kit(unittest.TestCase):
         self.assertNotIn("Math.random", js)
         self.assertNotIn("o.flouPres || 70", js)   # un flou demandé à 0 doit valoir 0
         gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")
-        for f in ("kit/kit.css", "kit/icones.js", "kit/ajouts.js", "kit/kit.js"):
+        for f in ("kit/kit.css", "kit/icones.js", "kit/ajouts.js", "kit/kit.js", "assets/fonts/interfaces.css"):
             self.assertIn(f, gabarit)
+        for css in kit.glob("*.css"):   # le rendu refuse une feuille qui remonte d'un dossier
+            self.assertNotIn("../", css.read_text(encoding="utf-8"), css.name)
 
 
 class Planche(unittest.TestCase):
@@ -560,6 +562,19 @@ class Creation(unittest.TestCase):
             self.assertFalse(metas["linkedin"]["sticker"])
             with self.assertRaises(SystemExit):
                 sm.ajouter(maison, dossier, [sm.lire_video("reel")])
+
+    def test_police_des_interfaces_dans_le_projet(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = maison_de_test(Path(d))
+            (maison / "assets" / "fonts").mkdir(parents=True, exist_ok=True)
+            (maison / "assets" / "fonts" / "Inter-400.woff2").write_bytes(b"x")
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("pub")], "2026-10-13")
+            projet = sm.projets(dossier)[0][0]
+            css = (projet / "assets" / "fonts" / "interfaces.css").read_text(encoding="utf-8")
+            self.assertIn('url("Inter-400.woff2")', css)
+            self.assertNotIn("Inter-700", css)
+            self.assertNotIn("../", css)
+            self.assertIn("assets/fonts/interfaces.css", (projet / "index.html").read_text(encoding="utf-8"))
 
     def test_doublon_refuse(self):
         with tempfile.TemporaryDirectory() as d:

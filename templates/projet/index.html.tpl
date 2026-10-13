@@ -18,7 +18,8 @@
     <!-- Le kit (fonds vivants, curseur, objets flottants, chapitres, fenêtres, téléphone) : mode
          d'emploi dans references/kit.md du skill `studio`. Une scène = une sous-composition. -->
     <link rel="stylesheet" href="kit/kit.css">
-    <link rel="stylesheet" href="kit/polices-interfaces.css">
+    <!-- Inter, pour les interfaces reconstruites : feuille écrite à côté de ses fichiers. -->
+    <link rel="stylesheet" href="assets/fonts/interfaces.css">
     <script src="kit/icones.js"></script>
     <script src="kit/ajouts.js"></script>
     <script src="kit/kit.js"></script>
