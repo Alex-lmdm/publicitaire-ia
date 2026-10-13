@@ -17,7 +17,11 @@ l'écriture, du format, du rythme, du son et de la revue de cette vidéo.
 - Ta part du plan : la section « {{VIDEO_NOM}} » de `{{DOSSIER}}PLAN.md`. Ne la change pas sans le
   dire au client.
 - Le rendu ne voit que ce dossier : une capture, un logo, un son ou une voix va d'abord dans `assets/`.
-- Outil : `python3 {{MAISON}}tools/studio_motion.py` (zones, lecture, planche, son, export).
+- Le kit `kit/` (fonds vivants, curseur, objets flottants, chapitres, fenêtres, téléphone) est
+  chargé par `index.html` : pars de lui (mode d'emploi : `references/kit.md` du skill), ne le
+  réécris pas scène par scène. Logos des outils montrés : `studio_motion.py logos . claude openai`.
+- Outil : `python3 {{MAISON}}tools/studio_motion.py` (zones, lecture, logos, planche, rythme, son, export).
 - Retouche demandée : modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
-- Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check`.
+- Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check`. Puis
+  `studio_motion.py rythme exports/{{VIDEO}}.mp4` : il doit répondre « ok ».

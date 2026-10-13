@@ -3,7 +3,14 @@
 Le motion design qui décore vend mal : dans l'étude Motion de 550 000 publicités Meta
 (septembre 2025 à janvier 2026), l'animation seule gagne dans 4,6 % des cas, quand le texte clair
 (11,6 %), l'annonce d'une nouveauté (11,4 %) ou d'une promo et le prix d'ancrage gagnent plus de
-deux fois plus souvent. **Le mouvement sert les mots et la démonstration, jamais l'inverse.**
+deux fois plus souvent. **Le mouvement sert le message et la démonstration, jamais l'inverse.**
+
+Mais un message clair n'est pas un message long. Dans une vidéo de motion design, **l'image
+raconte et le texte titre** : 1 à 4 mots par écran, le reste montré (une interface, un objet,
+un compteur, un avant / après). Le message complet vit dans le plan ; à l'écran, il n'en reste
+que les mots qui portent. Une phrase de la fiche devient une séquence : « Tu filmes, tu donnes
+la vidéo brute, l'IA monte » se montre (un fichier glissé dans Claude, une demande tapée, des
+étapes qui se cochent), elle ne s'écrit pas.
 
 Le client est le créateur ; tu écris dans **sa** voix (relis sa page de vente, ses légendes s'il
 y en a dans le dossier). Le tutoiement suit le sien.
@@ -21,8 +28,8 @@ Elle dit ce que le spectateur gagne à rester. Choisis selon ce que l'audience s
 | ne sait pas encore qu'il a un problème | Une situation qu'il reconnaît, une question | « Pourquoi la plupart des créateurs arrêtent au bout d'un mois » |
 
 Formules qui marchent, à remplir avec la fiche :
-- « Passe de [ce que tu vis] à [résultat], grâce à [mécanisme]. » (en vidéo de page ; en vertical,
-  coupe-la en deux écrans)
+- « Passe de [ce que tu vis] à [résultat], grâce à [mécanisme]. » : en motion design, elle se
+  joue en images (la corvée chiffrée, puis le mécanisme qui la supprime) plutôt qu'en phrase
 - « Je pensais que [résultat] demandait [ancienne méthode]… jusqu'à [mécanisme]. »
 - « Nouveau : [fait]. [Ce que ça change pour toi]. »
 - « Voici comment tu [résultat] en trois étapes. »
@@ -50,13 +57,21 @@ secret ». Une question entre dans la tête ; une affirmation se juge vraie ou f
 
 ## Les mots à l'écran
 
-- Une idée par écran. En vertical (Reel, story, TikTok, pub) : 5 mots au plus pour un titre,
-  12 pour une phrase d'appui, 2 lignes. En paysage ou en 4:5 (page, section, LinkedIn, X,
-  YouTube) : 12 mots par ligne au plus, 3 lignes au plus. Une liste : 6 éléments courts au plus.
-- Des mots qu'on comprend en une seconde ; aucun jargon que l'audience ne connaît pas.
+- **1 à 4 mots par écran**, 6 au plus et rarement, quel que soit le format
+  (`studio_motion.py lecture "<texte>"` prévient au-delà). Une ligne d'appui légère sous un titre
+  peut aller jusqu'à 5 mots. Une liste se montre en objets (pastilles, cartes, coches), 6 au plus,
+  chacun de 2 à 5 mots.
+- Les mots d'une interface reconstruite (une demande tapée, une étape cochée, un nom de fichier)
+  ne comptent pas comme texte de la vidéo : ils font partie de ce qu'on montre, et sont vrais.
+- Des mots qu'on comprend en une seconde, ceux que l'audience emploie ; aucun jargon, aucun mot
+  rare ou inventé (« Bruiter. » sonnait faux : « Les bruitages. »). Une liste peut mêler verbes et
+  noms si c'est plus naturel (« Couper. Sous-titrer. Les bruitages. Recadrer. »).
+- **La douleur se ressent, elle ne se constate pas.** Un chiffre seul (« 3:00:00 ») ne dit pas
+  que c'est pénible : nomme l'outil et le contexte (« sur CapCut, pour un seul Reel. »), puis le
+  ressenti en un mot qui tombe lourdement (« Épuisant. »), avec une image qui s'effondre.
 - Verbes d'action et « tu vas… » plutôt que « imagine… » ou « regarde… ».
-- Pour une vidéo de plus de 45 s : un titre de chapitre discret par bloc (« Le problème »,
-  « Comment ça marche », « L'offre »).
+- Pour une vidéo de plus de 45 s : le motif des chapitres (`K.chapitre`) porte le nom de chaque
+  fonction (« Dérushage », « Ton style »), pas un intitulé de partie (« Le problème »).
 - Aucun tiret long, aucun emoji comme icône, pas de points d'exclamation en série.
 
 ## L'appel à l'action

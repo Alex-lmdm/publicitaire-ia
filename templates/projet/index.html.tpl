@@ -6,17 +6,27 @@
     <!-- {{VIDEO_NOM}} : « {{SUJET}} » ({{OBJECTIF}}). Point de départ VIDE : la composition s'écrit
          après le choix de la structure et de l'angle, et le PLAN.md (skill `studio`).
          {{SUPPORT_TITRE}}, format {{FORMAT}} ({{LARGEUR}}×{{HAUTEUR}}), 30 images/s, {{IDEAL}} s visées.
-         Zones : `python3 {{MAISON}}tools/studio_motion.py zones {{SUPPORT}} --format {{FORMAT}}`. -->
+         Zones : `python3 {{MAISON}}tools/studio_motion.py zones {{SUPPORT}} --format {{FORMAT}}`.
+         Rythme visé : un événement toutes les demi-secondes, 1 à 4 mots par écran, des fonds qui
+         alternent ; `studio_motion.py rythme exports/{{VIDEO}}.mp4` le vérifie après le rendu. -->
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/CustomEase.min.js"></script>
     <!-- Style de la marque, copié du dossier Monteur IA à la création : polices et couleurs
          s'utilisent par var(--brand-*), jamais en dur (sauf les surfaces d'un produit montré). -->
     <link rel="stylesheet" href="brand/fonts.css">
     <link rel="stylesheet" href="brand/tokens.css">
+    <!-- Le kit (fonds vivants, curseur, objets flottants, chapitres, fenêtres, téléphone) : mode
+         d'emploi dans references/kit.md du skill `studio`. Une scène = une sous-composition. -->
+    <link rel="stylesheet" href="kit/kit.css">
+    <link rel="stylesheet" href="kit/polices-interfaces.css">
+    <script src="kit/icones.js"></script>
+    <script src="kit/ajouts.js"></script>
+    <script src="kit/kit.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: {{LARGEUR}}px; height: {{HAUTEUR}}px; overflow: hidden; background: var(--brand-bg); }
       #root { position: relative; width: {{LARGEUR}}px; height: {{HAUTEUR}}px; overflow: hidden; background: var(--brand-bg); }
+      [data-composition-id="main"] > div[data-composition-src] { position: absolute; inset: 0; z-index: 1; }
     </style>
   </head>
   <body>

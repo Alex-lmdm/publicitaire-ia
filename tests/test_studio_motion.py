@@ -75,10 +75,15 @@ class Videos(unittest.TestCase):
 
 class Lecture(unittest.TestCase):
     def test_plancher(self):
-        self.assertEqual(sm.lecture("Nouveau"), 1.2)
+        self.assertEqual(sm.lecture("Nouveau"), 0.8)
 
     def test_par_mot(self):
-        self.assertEqual(sm.lecture("Tes Reels montés par ton IA"), 2.4)
+        self.assertEqual(sm.lecture("Ton nouveau monteur"), 1.3)
+        self.assertEqual(sm.lecture("Tes Reels montés par ton IA"), 2.0)
+
+    def test_ecran_court(self):
+        # Un écran porte 1 à 4 mots ; au-delà de 6, l'outil prévient.
+        self.assertEqual((sm.MOTS_CONSEILLES, sm.MOTS_MAX), (4, 6))
 
     def test_ecran_final(self):
         self.assertEqual(sm.lecture("Commente MONTEUR", final=True), 2.5)
@@ -236,6 +241,162 @@ class Polices(unittest.TestCase):
             self.assertEqual(sm.polices_manquantes(m), [])
 
 
+class Sticker(unittest.TestCase):
+    def test_story_avec_lien_par_defaut(self):
+        self.assertTrue(sm.avec_sticker(sm.lire_video("story")))
+        self.assertTrue(sm.avec_sticker(sm.lire_video("story:ouverture")))
+        self.assertFalse(sm.avec_sticker(sm.lire_video("story:teaser")))
+        self.assertFalse(sm.avec_sticker(sm.lire_video("reel")))
+
+    def test_inserer_section(self):
+        plan = "# T\n\n## Vidéos\n\n### Reel\n\n## Livraison\n\nx\n"
+        sortie = sm.inserer_section(plan, "### Story\n")
+        self.assertLess(sortie.index("### Story"), sortie.index("## Livraison"))
+        self.assertGreater(sortie.index("### Story"), sortie.index("### Reel"))
+        self.assertTrue(sm.inserer_section("# T\n", "### Story\n").endswith("### Story\n"))
+
+
+class Rythme(unittest.TestCase):
+    """Le verdict se calcule sur les écarts entre images (10 par seconde)."""
+
+    def test_video_vivante(self):
+        # Un pic toutes les 0,5 s, un léger mouvement entre deux : ok.
+        ecarts = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 300)]
+        v = sm.verdict_rythme(ecarts)
+        self.assertEqual(v["problemes"], [])
+        self.assertGreaterEqual(v["evenements_par_s"], 1.9)
+        self.assertLessEqual(v["ecart_median"], 0.5)
+
+    def test_slides_refusees(self):
+        # Un changement toutes les 4 s, rien entre deux : figé, trop peu d'événements.
+        ecarts = [5.0 if i % 40 == 0 else 0.0 for i in range(1, 400)]
+        v = sm.verdict_rythme(ecarts)
+        self.assertTrue(v["figees"])
+        self.assertEqual(len(v["problemes"]), 3)
+
+    def test_ecran_final_libre(self):
+        vivant = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 200)]
+        v = sm.verdict_rythme(vivant + [0.0] * 30)   # 3 s tenues à la fin
+        self.assertEqual(v["figees"], [])
+        self.assertEqual(v["problemes"], [])
+        v = sm.verdict_rythme(vivant[:100] + [0.0] * 30 + vivant[100:])   # 3 s figées au milieu
+        self.assertEqual(v["figees"], [(10.0, 3.0)])
+
+    def test_boucle_sans_ecran_final(self):
+        ecarts = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 100)] + [0.0] * 20
+        self.assertTrue(sm.verdict_rythme(ecarts, fin_libre=0.0)["figees"])
+
+
+class Musique(unittest.TestCase):
+    FPS = 100.0
+
+    def pulsations(self, bpm, duree=40.0, debut=0.0):
+        env, pas = [], 60 * self.FPS / bpm
+        for i in range(int(duree * self.FPS)):
+            k = (i - debut * self.FPS) / pas
+            env.append(1000.0 if i >= debut * self.FPS and k - int(k) < 0.08 else 10.0)
+        return env
+
+    def test_tempo(self):
+        self.assertAlmostEqual(sm.tempo_de(self.pulsations(122.7), self.FPS), 122.7, delta=0.3)
+        self.assertAlmostEqual(sm.tempo_de(self.pulsations(100.0), self.FPS), 100.0, delta=0.3)
+
+    def test_phase_sur_l_attaque(self):
+        env = self.pulsations(120.0, debut=0.2)
+        self.assertAlmostEqual(sm.phase_de(env, self.FPS, 120.0) % 0.5, 0.2, delta=0.02)
+
+    def test_entree_franche(self):
+        env = [10.0] * 800 + [1000.0] * 800      # silence relatif puis entrée à 8 s
+        self.assertAlmostEqual(sm.entree_de(env, self.FPS), 8.0, delta=0.26)
+        self.assertIsNone(sm.entree_de([10.0] * 2000, self.FPS))
+
+    def test_calage(self):
+        # Le morceau de la démo : 122,7 bpm, temps fort à 0,39 s, entrée à 7,73 s -> 8,0 s dans la vidéo.
+        c = sm.calage(7.73, 0.39, 122.7, 120.0, 8.0)
+        self.assertAlmostEqual(c["facteur"], 0.977995, places=4)
+        self.assertAlmostEqual(c["entree"] - c["decalage"], 8.0, places=2)
+        self.assertEqual(sm.calage(7.73, 0.39, 122.7, 0, 8.0)["facteur"], 1.0)      # tempo gardé
+        self.assertEqual(sm.calage(5.0, 0.0, 150.0, 120.0, 8.0)["facteur"], 1.0)    # écart trop grand
+        self.assertLess(sm.calage(2.0, 0.0, 120.0, 120.0, 8.0)["decalage"], 0)      # démarre plus tard
+
+
+class Emergence(unittest.TestCase):
+    def test_bruitage_au_dessus_du_fond(self):
+        musique = [-25.0] * 400                        # 20 s de musique à -25 dB (50 ms par case)
+        mix = list(musique)
+        mix[100] = -18.0                               # un clic à 5 s : +7 dB
+        mix[200] = -23.5                               # un clic à 10 s : +1,5 dB, couvert
+        res = sm.verdict_emergence(mix, musique, [{"src": "a/clic.mp3", "debut": 5.0, "duree": 0.1},
+                                                  {"src": "a/doux.mp3", "debut": 10.0, "duree": 0.1}])
+        self.assertEqual([(r[1], r[2]) for r in res], [("clic", 7.0), ("doux", 1.5)])
+
+    def test_fond_local_d_une_intro_calme(self):
+        musique = [-33.0] * 100 + [-25.0] * 300        # intro 8 dB plus calme
+        mix = list(musique)
+        mix[40] = -27.0                                 # pendant l'intro : +6 dB sur le fond local
+        res = sm.verdict_emergence(mix, musique, [{"src": "clic.mp3", "debut": 2.0, "duree": 0.1}])
+        self.assertEqual(res[0][2], 6.0)
+
+    def test_lecture_du_bloc_sons(self):
+        with tempfile.TemporaryDirectory() as d:
+            index = Path(d) / "index.html"
+            index.write_text(
+                '<audio id="musique" src="assets/audio/m.wav" data-start="0" data-duration="67.0" data-media-start="0" '
+                'data-volume="0.1413" data-audio-group="mixage" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:'
+                '[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:0.4,&quot;v&quot;:0.1413}]}]}"></audio>\n'
+                '<audio id="sfx-01" src="assets/sons/clic.mp3" data-start="1.000" data-duration="0.186" data-media-start="0.000" '
+                'data-volume="1.7783" data-audio-group="mixage"></audio>', encoding="utf-8")
+            musique, sons = sm.sons_poses(index)
+            self.assertAlmostEqual(musique["vol"], 0.1413)
+            self.assertEqual(len(sons), 1)
+            self.assertEqual((sons[0]["debut"], sons[0]["vol"]), (1.0, 1.7783))
+
+
+class Svg(unittest.TestCase):
+    def test_logo_monochrome_recolorable(self):
+        brut = ('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" width="256" height="260" viewBox="0 0 256 260">'
+                '<title>OpenAI</title><path fill="#fff" d="M1 1h10v10z"/></svg>')
+        propre = sm.nettoyer_svg(brut)
+        self.assertTrue(propre.startswith('<svg width="100%" height="100%"'))
+        self.assertIn('fill="currentColor"', propre)
+        self.assertNotIn("<title>", propre)
+        self.assertNotIn('width="256"', propre)
+
+    def test_logo_en_couleur_garde_sa_couleur(self):
+        propre = sm.nettoyer_svg('<svg viewBox="0 0 24 24"><path fill="#D97757" d="M0 0h1z"/></svg>')
+        self.assertIn('fill="#D97757"', propre)
+
+    def test_svg_actif_refuse(self):
+        for piege in ('<svg><script>alert(1)</script></svg>', '<svg onload="x()"></svg>',
+                      '<svg><image href="https://exemple.com/a.png"/></svg>', '<svg><foreignObject/></svg>'):
+            with self.assertRaises(ValueError):
+                sm.nettoyer_svg(piege)
+
+    def test_ajouts_fusionnes(self):
+        with tempfile.TemporaryDirectory() as d:
+            projet = Path(d)
+            sm.ecrire_ajouts(projet, {"logo-claude": "<svg/>"})
+            f = sm.ecrire_ajouts(projet, {"rocket": "<svg></svg>"})
+            texte = f.read_text(encoding="utf-8")
+            self.assertIn('"logo-claude"', texte)
+            self.assertIn('"rocket"', texte)
+
+
+class Kit(unittest.TestCase):
+    def test_kit_livre(self):
+        kit = RACINE / "templates" / "kit"
+        for f in ("kit.css", "kit.js", "icones.js", "ajouts.js", "polices-interfaces.css"):
+            self.assertTrue((kit / f).is_file(), f)
+        js = (kit / "kit.js").read_text(encoding="utf-8")
+        for fonction in ("K.champ", "K.curseur", "K.trajet", "K.clic", "K.taper", "K.compteur", "K.flash", "K.chapitre", "K.cacher", "K.tuileMarque"):
+            self.assertIn(fonction + " = function", js)
+        self.assertNotIn("Math.random", js)
+        self.assertNotIn("o.flouPres || 70", js)   # un flou demandé à 0 doit valoir 0
+        gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")
+        for f in ("kit/kit.css", "kit/icones.js", "kit/ajouts.js", "kit/kit.js"):
+            self.assertIn(f, gabarit)
+
+
 class Planche(unittest.TestCase):
     def test_un_par_seconde_et_derniere_image(self):
         t = sm.instants_planche(3.0, None)
@@ -363,6 +524,8 @@ class Creation(unittest.TestCase):
             self.assertEqual((meta["lieu"], meta["format"], meta["objectif"]), ("studio-motion", "16x9", "vente"))
             html = (page / "index.html").read_text(encoding="utf-8")
             self.assertIn('data-width="1920" data-height="1080"', html)
+            self.assertTrue((page / "kit" / "kit.js").is_file())
+            self.assertTrue((page / "kit" / "icones.js").is_file())
             self.assertNotIn("{{", html)
             carre = (liste["page-1x1"][0] / "index.html").read_text(encoding="utf-8")
             self.assertIn('data-width="1080" data-height="1080"', carre)
@@ -379,12 +542,22 @@ class Creation(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             maison = maison_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-12")
+            reel = sm.projets(dossier)[0][0]
+            (reel / "assets" / "fonts").mkdir(parents=True, exist_ok=True)
+            (reel / "assets" / "fonts" / "poppins.css").write_text("@font-face{}", encoding="utf-8")
+            plan = dossier / "PLAN.md"
+            plan.write_text(plan.read_text(encoding="utf-8") + "\n## Livraison\n\n(à venir)\n", encoding="utf-8")
             ajouts = sm.ajouter(maison, dossier, [sm.lire_video("linkedin"), sm.lire_video("story")])
             self.assertEqual([p.name for p in ajouts], ["Offre · LinkedIn", "Offre · Story"])
             metas = {meta["video"]: meta for _p, meta in sm.projets(dossier)}
             self.assertEqual(sorted(metas), ["linkedin", "reel", "story"])
             self.assertEqual((metas["linkedin"]["format"], metas["linkedin"]["objectif"]), ("4x5", "vente"))
-            self.assertIn("### LinkedIn (4x5", (dossier / "PLAN.md").read_text(encoding="utf-8"))
+            texte = (dossier / "PLAN.md").read_text(encoding="utf-8")
+            self.assertIn("### LinkedIn (4x5", texte)
+            self.assertLess(texte.index("### LinkedIn"), texte.index("## Livraison"))
+            self.assertTrue((ajouts[0] / "assets" / "fonts" / "poppins.css").is_file())
+            self.assertTrue(metas["story"]["sticker"])
+            self.assertFalse(metas["linkedin"]["sticker"])
             with self.assertRaises(SystemExit):
                 sm.ajouter(maison, dossier, [sm.lire_video("reel")])
 
@@ -432,13 +605,13 @@ class Creation(unittest.TestCase):
             dossier = sm.creer(maison, "Offre", "lancement", videos, "2026-10-12")
             manques = sm.manques_livraison(dossier)
             for attendu in ("reel.mp4", "page.mp4", "story-teaser.mp4", "page.jpg (l'affiche, montrée avant la lecture)",
-                            "legende-reel.txt (le texte de publication)"):
+                            "legende-reel.txt (le texte de publication)", "stories.txt (le texte de publication)"):
                 self.assertIn(attendu, manques)
             self.assertTrue(any("Quand publier" in m for m in manques))
             self.assertIn("couverture.jpg (la couverture du Reel)", manques)
             self.assertIn("integration.md (comment poser la vidéo sur la page)", manques)
             for f in ("reel.mp4", "page.mp4", "story-teaser.mp4", "page.jpg", "legende-reel.txt",
-                      "couverture.jpg", "integration.md"):
+                      "couverture.jpg", "integration.md", "stories.txt"):
                 (dossier / "livraison" / f).write_bytes(b"x")
             (dossier / "PLAN.md").write_text("## Quand publier\n", encoding="utf-8")
             self.assertEqual(sm.manques_livraison(dossier), [])

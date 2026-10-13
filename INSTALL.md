@@ -46,7 +46,9 @@ Installe l'extension étape par étape, sans jamais rien casser. Suis ces règle
    a) le dossier `.claude/skills/studio/` → dans `.claude/skills/` (s'il y est déjà, remplace
       le dossier entier par la nouvelle version) ;
    b) `tools/studio_motion.py` → dans `tools/` ;
-   c) les fichiers de `templates/projet/` → dans `templates/studio-motion/` (crée-le) ;
+   c) les fichiers de `templates/projet/` → dans `templates/studio-motion/` (crée-le), et le
+      dossier `templates/kit/` → dans `templates/studio-motion/kit/` (remplace-le entier s'il y
+      est déjà) ;
    d) crée le dossier `studio-motion/` s'il n'existe pas, et ajoute la ligne `studio-motion/` au
       `.gitignore` du dossier Monteur IA si elle n'y est pas (rien d'autre ne change) ;
    e) AIGUILLAGE : si `templates/AGENT.md.tpl` ne contient PAS le marqueur

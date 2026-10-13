@@ -1,0 +1,145 @@
+/* Kit Studio Motion : les briques d'un motion design produit (fonds vivants, curseur, objets
+   flottants, chapitres, fenêtres, téléphone, textes à deux graisses). Couleurs de la marque par
+   var(--brand-*) ; les interfaces d'outils tiers gardent leurs propres couleurs.
+   Mode d'emploi : skill `studio`, references/kit.md. */
+
+:root {
+  --k-noir: #1b1b1d;
+  --k-noir-2: #242426;
+  --k-clair: #f3f3ef;
+  --k-blanc: #ffffff;
+  --k-encre: #151515;
+  --k-gris: #8d8d88;
+  --k-grille-sombre: rgba(255, 255, 255, 0.045);
+  --k-grille-claire: rgba(0, 0, 0, 0.055);
+  --k-ombre: 0 30px 80px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --k-ombre-claire: 0 30px 70px rgba(20, 20, 10, 0.14), 0 6px 18px rgba(20, 20, 10, 0.08);
+}
+
+/* --- Les fonds : jamais un aplat vide ------------------------------------------------- */
+.k-scene { position: absolute; inset: 0; overflow: hidden; }
+.k-fond { position: absolute; inset: -2px; }
+.k-fond-sombre {
+  background-color: var(--k-noir);
+  background-image:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(255, 255, 255, 0.035), transparent 70%),
+    linear-gradient(var(--k-grille-sombre) 1px, transparent 1px),
+    linear-gradient(90deg, var(--k-grille-sombre) 1px, transparent 1px);
+  background-size: 100% 100%, 64px 64px, 64px 64px;
+  background-position: 0 0, -1px -1px, -1px -1px;
+}
+.k-fond-clair {
+  background-color: var(--k-clair);
+  background-image:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(255, 255, 255, 0.9), transparent 75%),
+    linear-gradient(var(--k-grille-claire) 1px, transparent 1px),
+    linear-gradient(90deg, var(--k-grille-claire) 1px, transparent 1px);
+  background-size: 100% 100%, 64px 64px, 64px 64px;
+  background-position: 0 0, -1px -1px, -1px -1px;
+}
+.k-fond-jaune { background-color: var(--brand-accent); }
+.k-vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 85% 75% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+.k-vignette-claire {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 85% 75% at 50% 50%, transparent 60%, rgba(120, 120, 100, 0.12) 100%);
+}
+
+/* La caméra : un plan en perspective dont on anime la profondeur et l'angle. */
+.k-scene3d { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 50% 50%; }
+.k-camera { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: 50% 50%; }
+.k-plan { position: absolute; transform-style: preserve-3d; }
+
+/* --- Les textes : courts, deux graisses ------------------------------------------------ */
+.k-titre {
+  position: absolute; left: 0; right: 0; text-align: center;
+  font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1.02; white-space: nowrap;
+}
+.k-titre .k-leger { font-weight: 400; opacity: 0.55; }
+.k-mot { display: inline-block; will-change: transform, filter, opacity; }
+.k-sur-sombre { color: var(--k-blanc); }
+.k-sur-clair { color: var(--k-encre); }
+.k-sur-jaune { color: var(--k-encre); }
+.k-accent { color: var(--brand-accent); }
+
+/* Le mot fantôme géant d'un chapitre, et son étiquette. */
+.k-chapitre { position: absolute; inset: 0; }
+.k-fantome {
+  position: absolute; left: 0; right: 0; top: 50%; text-align: center; white-space: nowrap;
+  font-family: var(--brand-font-display); font-weight: 800; font-size: 300px; letter-spacing: -0.04em;
+  transform: translateY(-58%); line-height: 1;
+}
+.k-fantome.k-sur-sombre { color: rgba(255, 255, 255, 0.05); }
+.k-fantome.k-sur-clair { color: rgba(0, 0, 0, 0.045); }
+.k-etiquette {
+  position: absolute; left: 0; right: 0; top: 50%; text-align: center; white-space: nowrap;
+  font-family: var(--brand-font-display); font-weight: 700; font-size: 58px; letter-spacing: -0.02em;
+  transform: translateY(-62%);
+}
+.k-interrupteur {
+  position: absolute; left: 50%; top: 50%; width: 92px; height: 52px; margin: 96px 0 0 -46px;
+  border-radius: 26px; background: rgba(255, 255, 255, 0.14);
+}
+.k-chapitre .k-sur-clair ~ .k-interrupteur, .k-interrupteur.k-sur-clair { background: rgba(0, 0, 0, 0.12); }
+.k-interrupteur .k-plein { position: absolute; inset: 0; border-radius: 26px; background: var(--brand-accent); transform-origin: 0 50%; }
+.k-interrupteur .k-bille {
+  position: absolute; left: 5px; top: 5px; width: 42px; height: 42px; border-radius: 50%;
+  background: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Le curseur ------------------------------------------------------------------------ */
+.k-curseur { position: absolute; left: 0; top: 0; width: 46px; height: 46px; z-index: 50; }
+.k-curseur svg { position: absolute; left: 0; top: 0; width: 46px; height: 46px; transform-origin: 6px 4px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35)); }
+.k-curseur .k-onde {
+  position: absolute; left: -34px; top: -36px; width: 80px; height: 80px; border-radius: 50%;
+  border: 3px solid var(--brand-accent); opacity: 0;
+}
+
+/* --- Les objets flottants -------------------------------------------------------------- */
+.k-champ { position: absolute; inset: 0; transform-style: preserve-3d; }
+.k-tuile {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  border-radius: 26%; will-change: transform, filter;
+}
+.k-tuile svg { width: 52%; height: 52%; }
+.k-tuile-sombre { background: #2c2c2f; color: var(--brand-accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.k-tuile-jaune { background: var(--brand-accent); color: var(--k-encre); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4); }
+.k-tuile-blanche { background: #fff; color: var(--k-encre); box-shadow: var(--k-ombre-claire); }
+.k-tuile-marque { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
+.k-tuile-marque svg { width: 58%; height: 58%; }
+.k-pastille {
+  position: absolute; display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 999px;
+  font-family: var(--brand-font-body); font-weight: 600; font-size: 24px; white-space: nowrap;
+}
+
+/* --- Les objets d'interface ------------------------------------------------------------ */
+.k-fenetre { position: absolute; border-radius: 18px; overflow: hidden; box-shadow: var(--k-ombre); }
+.k-feux { position: absolute; left: 20px; top: 18px; display: flex; gap: 9px; }
+.k-feux i { display: block; width: 14px; height: 14px; border-radius: 50%; }
+.k-feux i:nth-child(1) { background: #ff5f57; }
+.k-feux i:nth-child(2) { background: #febc2e; }
+.k-feux i:nth-child(3) { background: #28c840; }
+
+.k-tel {
+  position: absolute; border-radius: 54px; background: #0d0d0e; padding: 12px;
+  box-shadow: var(--k-ombre), inset 0 0 0 2px #3a3a3c;
+}
+.k-tel-ecran { position: relative; width: 100%; height: 100%; border-radius: 43px; overflow: hidden; background: #000; }
+.k-tel-ecran img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.k-tel-ilot { position: absolute; left: 50%; top: 14px; width: 120px; height: 34px; margin-left: -60px; border-radius: 20px; background: #000; z-index: 5; }
+
+.k-carte { position: absolute; border-radius: 22px; background: #fff; box-shadow: var(--k-ombre-claire); overflow: hidden; }
+.k-carte-sombre { position: absolute; border-radius: 22px; background: #2a2a2d; box-shadow: var(--k-ombre); overflow: hidden; }
+
+/* Le flash de couleur qui part d'un clic. */
+.k-disque { position: absolute; left: 0; top: 0; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; }
+
+/* Chapitre sur fond jaune : la variante de la marque. */
+.k-fantome.k-sur-jaune { color: rgba(0, 0, 0, 0.07); }
+.k-etiquette.k-sur-jaune { color: var(--k-encre); }
+.k-interrupteur.k-sur-jaune { background: rgba(0, 0, 0, 0.16); }
+.k-interrupteur.k-sur-jaune .k-plein { background: var(--k-encre); }

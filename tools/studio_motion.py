@@ -17,7 +17,12 @@ Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
     python3 tools/studio_motion.py offre <dossier de la vidéo>
     python3 tools/studio_motion.py lecture "<texte affiché>" [--final]
     python3 tools/studio_motion.py zones <support> [--format 16x9]
+    python3 tools/studio_motion.py reference <dossier> <lien ou fichier> [--nom taapit]   # la vidéo dont il aime le style
+    python3 tools/studio_motion.py logos <projet> claude openai codex [icone:rocket]      # logos des outils montrés
     python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2]
+    python3 tools/studio_motion.py rythme <video.mp4>                # au moins 1 événement/s, rien de figé
+    python3 tools/studio_motion.py musique <morceau.wav> [--sortie calee.wav --a 8 --duree 67]   # tempo, entrée, calage
+    python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique
     python3 tools/studio_motion.py son <video.mp4> [--cible -16]
     python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
     python3 tools/studio_motion.py sans-musique <projet>
@@ -50,7 +55,7 @@ for _flux in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 OUTILS = Path(__file__).resolve().parent
 FPS = 30
 
@@ -82,7 +87,7 @@ SUPPORTS: dict[str, dict] = {
     "story": {"nom": "Story", "titre": "Story Instagram ou Facebook", "format": "9x16",
               "min": 4, "ideal": (8, 30), "max": 60, "zones": (0.14, 0.15, 0.074, 0.074),
               "son": "souvent muette : tout se lit", "cta": "sticker lien (posé par le client) ou « réponds MOT »",
-              "sticker": True},
+              "sticker": True, "texte": "stories.txt"},
     "pub": {"nom": "Pub", "titre": "Publicité plein écran (Reels, Stories, TikTok)", "format": "9x16",
             "min": 6, "ideal": (15, 30), "max": 60, "zones": (0.14, 0.35, 0.06, 0.06),
             "son": "avec son, compréhensible sans", "cta": "bouton de la pub, jamais dessiné dans les 35 % du bas",
@@ -137,6 +142,11 @@ ROLES_STICKER = {"ouverture", "relance", "dernier-jour", "rappel"}
 ROLES_FERMETURE = {"dernier-jour"}
 # Bande réservée au sticker lien d'une story (fractions de 1080 × 1920) : rien d'important dedans.
 STICKER = (190 / 1080, 1180 / 1920, 700 / 1080, 240 / 1920)
+
+
+def avec_sticker(v: dict) -> bool:
+    """Une story renvoie vers un lien (sticker posé par le client), sauf le teaser d'un lancement."""
+    return bool(SUPPORTS[v["support"]].get("sticker")) and v.get("role") != "teaser"
 
 
 def lire_video(spec: str) -> dict:
@@ -209,7 +219,10 @@ def dans(a: dict, b: dict) -> bool:
 # ---------------------------------------------------------------------------
 # Temps de lecture : la règle la plus stricte des sources étudiées
 # ---------------------------------------------------------------------------
-PAR_MOT, ASSISE, PLANCHER, FINAL = 0.35, 0.3, 1.2, 2.5
+# Un écran porte 1 à 4 mots (6 au plus) : la vidéo montre, le texte titre. Lu vite, donc tenu
+# moins longtemps qu'une phrase ; ce qui l'entoure continue de vivre pendant la lecture.
+PAR_MOT, ASSISE, PLANCHER, FINAL = 0.25, 0.5, 0.8, 2.5
+MOTS_CONSEILLES, MOTS_MAX = 4, 6
 
 
 def mots(texte: str) -> int:
@@ -219,7 +232,7 @@ def mots(texte: str) -> int:
 def lecture(texte: str, final: bool = False) -> float:
     """Durée minimale (s) pendant laquelle un texte doit rester immobile et lisible.
 
-    0,35 s par mot + 0,3 s d'assise, jamais moins de 1,2 s ; l'écran final (appel à l'action)
+    0,25 s par mot + 0,5 s d'assise, jamais moins de 0,8 s ; l'écran final (appel à l'action)
     reste au moins 2,5 s. Arrondi au dixième supérieur."""
     n = mots(texte)
     if n == 0:
@@ -527,6 +540,15 @@ def _copier_style(m: Path, projet: Path) -> None:
                             ignore=shutil.ignore_patterns("atoms.html", "BRAND.md", "*.ttf", ".DS_Store"))
 
 
+def _kit(m: Path) -> Path | None:
+    """Le kit de briques (fonds, curseur, objets flottants, chapitres, interfaces) : celui de
+    l'extension, sinon celui installé dans le dossier Monteur IA."""
+    for dossier in (OUTILS.parent / "templates" / "kit", m / "templates" / "studio-motion" / "kit"):
+        if (dossier / "kit.js").is_file():
+            return dossier
+    return None
+
+
 def _remplir(gabarit: str, **valeurs: str) -> str:
     for cle, val in valeurs.items():
         gabarit = gabarit.replace("{{" + cle + "}}", val)
@@ -586,6 +608,9 @@ def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
     for sous in ("assets/images", "assets/audio", "exports", "work"):
         (projet / sous).mkdir(parents=True, exist_ok=True)
     _copier_style(m, projet)
+    kit = _kit(m)
+    if kit:
+        shutil.copytree(kit, projet / "kit", dirs_exist_ok=True, ignore=shutil.ignore_patterns(".DS_Store"))
     if (m / "hyperframes.json").is_file():
         shutil.copy2(m / "hyperframes.json", projet / "hyperframes.json")
     lo, hi = s["ideal"]
@@ -602,7 +627,8 @@ def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
         (projet / "AGENTS.md").write_text(texte, encoding="utf-8")
     meta = {"id": projet.name, "name": projet.name, "createdAt": maintenant,
             "monteurIa": {"lieu": "studio-motion", "objectif": objectif, "video": cle, "support": v["support"],
-                          "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date}}
+                          "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date,
+                          "sticker": avec_sticker(v)}}
     (projet / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     paquet = {"name": f"studio-motion-{cle}", "private": True, "type": "module",
               "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
@@ -621,20 +647,41 @@ def ajouter(m: Path, dossier: Path, videos: list[dict]) -> list[Path]:
     doublons = [cle_video(v) for v in videos if cle_video(v) in deja]
     if doublons:
         sys.exit(f"ERREUR : déjà dans ce dossier : {', '.join(doublons)}. Donne un autre format (@4x5) ou un rôle.")
-    meta0 = existants[0][1]
+    frere, meta0 = existants[0]
     sujet, objectif, date = meta0.get("sujet", dossier.name), meta0.get("objectif", "vente"), meta0.get("date", "")
     plan = dossier / "PLAN.md"
     ajouts = []
     for v in videos:
-        ajouts.append(creer_projet(m, dossier, sujet, objectif, v, date))
+        projet = creer_projet(m, dossier, sujet, objectif, v, date)
+        # La matière déjà préparée pour la première vidéo (polices locales, images, vidéos
+        # préparées) sert aussi à la déclinaison : on la reprend au lieu de la refaire.
+        for sous in ("assets/fonts", "assets/images", "assets/video"):
+            if (frere / sous).is_dir():
+                shutil.copytree(frere / sous, projet / sous, dirs_exist_ok=True)
+        ajouts.append(projet)
         sup = SUPPORTS[v["support"]]
         lo, hi = sup["ideal"]
+        section = (f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {sup['son']})\n\n"
+                   "Déclinaison : même structure et même message, remis en page pour ce format, "
+                   "raccourci si le support le demande (une story garde un geste par bloc).\n\n"
+                   "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
+                   "|---|---|---|---|---|---|---|\n")
         if plan.is_file():
-            plan.write_text(plan.read_text(encoding="utf-8").rstrip("\n") + f"\n\n### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {sup['son']})\n\n"
-                            "Déclinaison : même structure et même texte, remis en page pour ce format.\n\n"
-                            "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
-                            "|---|---|---|---|---|---|---|\n", encoding="utf-8")
+            plan.write_text(inserer_section(plan.read_text(encoding="utf-8"), section), encoding="utf-8")
     return ajouts
+
+
+def inserer_section(plan: str, section: str) -> str:
+    """Ajoute une section de vidéo à la fin de « ## Vidéos » (avant le titre de niveau 2 suivant),
+    ou à la fin du plan s'il n'a pas cette partie."""
+    m = re.search(r"^## Vidéos\s*$", plan, re.M)
+    if not m:
+        return plan.rstrip("\n") + "\n\n" + section
+    suite = re.search(r"^## ", plan[m.end():], re.M)
+    if not suite:
+        return plan.rstrip("\n") + "\n\n" + section
+    coupe = m.end() + suite.start()
+    return plan[:coupe].rstrip("\n") + "\n\n" + section + "\n" + plan[coupe:]
 
 
 def projets(dossier: Path) -> list[tuple[Path, dict]]:
@@ -656,8 +703,10 @@ def cmd_ajouter(a) -> None:
     except ValueError as e:
         sys.exit(f"ERREUR : {e}")
     for projet in ajouter(m, dossier, videos):
-        print(f"• ajouté : {projet.name}")
+        print(f"• ajouté : {projet.name} (polices, images et vidéos du premier projet reprises)")
     print("• même fiche (OFFRE.json) ; complète sa section dans PLAN.md, puis remets la vidéo en page pour ce format")
+    for famille in polices_manquantes(m):
+        print(f"⚠️ police « {famille} » sans fichier dans brand/fonts.css : vérifie que le projet a ses @font-face locaux, sinon {CONSEIL_POLICE}.")
 
 
 def cmd_nouvelle(a) -> None:
@@ -705,7 +754,12 @@ def cmd_offre(a) -> None:
 
 
 def cmd_lecture(a) -> None:
-    print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({mots(a.texte)} mots)")
+    n = mots(a.texte)
+    print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({n} mots)")
+    if n > MOTS_MAX:
+        print(f"⚠️ {n} mots : trop pour un écran ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus). Coupe, ou montre-le au lieu de l'écrire.")
+    elif n > MOTS_CONSEILLES:
+        print(f"• {n} mots : acceptable une fois, {MOTS_CONSEILLES} au plus d'habitude.")
 
 
 def cmd_zones(a) -> None:
@@ -766,7 +820,8 @@ def cmd_planche(a) -> None:
     z = zone_texte(support, fmt)
     trait = max(3, FORMATS[fmt][0] // 270)
     boites = [f"drawbox=x={z['x']}:y={z['y']}:w={z['largeur']}:h={z['hauteur']}:color=0x00ff88@0.9:t={trait}"]
-    sticker = SUPPORTS[support].get("sticker") and (a.sticker or meta.get("role") in ROLES_STICKER)
+    sticker = SUPPORTS[support].get("sticker") and not a.sans_sticker and (
+        a.sticker or meta.get("sticker") or meta.get("role") in ROLES_STICKER)
     if sticker:
         s = zone_sticker(fmt)
         boites.append(f"drawbox=x={s['x']}:y={s['y']}:w={s['largeur']}:h={s['hauteur']}:color=0xff3366@0.9:t={trait + 2}")
@@ -795,6 +850,480 @@ def cmd_planche(a) -> None:
     shutil.rmtree(travail, ignore_errors=True)
     print(f"• planche : {sortie} ({len(vignettes)} images : {', '.join(f'{t:.2f}' for t in instants)} s)")
     print("  vert = zone texte (rien d'important dehors)" + (", rouge = sticker lien (rien dedans)" if sticker else ""))
+
+
+# ---------------------------------------------------------------------------
+# Le rythme, mesuré sur le MP4 rendu. Étalonné le 12/10/2026 : une vidéo produit de référence
+# (motion design d'un lancement) fait 1,5 événement par seconde, un écart médian de 0,4 s entre
+# deux et 3 % d'image figée (son écran final) ; une vidéo en « slides » refusée par son client
+# faisait 0,33 événement par seconde, 1,75 s d'écart médian et 67 % d'image figée.
+# ---------------------------------------------------------------------------
+RYTHME_FPS, RYTHME_TAILLE = 10, (96, 54)
+SEUIL_FIGE, FIGE_MAX = 0.3, 1.0        # écart moyen des pixels (0-255) sous lequel rien ne bouge ; plage tolérée (s)
+SEUIL_EVENEMENT = 2.0                   # un pic d'écart au-dessus = un événement (entrée, clic, coupe, compteur)
+EVENEMENTS_MIN, ECART_MEDIAN_MAX = 1.0, 0.8
+CREUX_SIGNALE, FIN_LIBRE = 2.0, 3.5    # creux entre deux événements montrés ; l'écran final peut se tenir
+
+
+def ecarts_images(ffmpeg: str, video: Path) -> list[float]:
+    """Écart moyen entre deux images successives (10 par seconde, en petit, en gris)."""
+    w, h = RYTHME_TAILLE
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf",
+                        f"fps={RYTHME_FPS},scale={w}:{h},format=gray", "-f", "rawvideo", "-"], capture_output=True)
+    if r.returncode != 0:
+        raise RuntimeError(r.stderr.decode("utf-8", "replace")[-400:])
+    n, b = w * h, r.stdout
+    images = [b[i:i + n] for i in range(0, len(b) - n + 1, n)]
+    return [sum(abs(x - y) for x, y in zip(images[i], images[i - 1])) / n for i in range(1, len(images))]
+
+
+def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float = FIN_LIBRE) -> dict:
+    """Plages figées, événements par seconde, écart médian entre deux événements, plus longs creux.
+    L'écran final (les `fin_libre` dernières secondes) peut se tenir."""
+    duree = len(ecarts) / fps
+    limite = max(0, len(ecarts) - int(fin_libre * fps))
+    figees, debut = [], None
+    for i, v in enumerate(ecarts[:limite] + [SEUIL_FIGE]):
+        if v < SEUIL_FIGE:
+            debut = i if debut is None else debut
+        elif debut is not None:
+            if (i - debut) / fps >= FIGE_MAX:
+                figees.append((round(debut / fps, 1), round((i - debut) / fps, 1)))
+            debut = None
+    pics = [i for i in range(1, len(ecarts) - 1)
+            if ecarts[i] >= SEUIL_EVENEMENT and ecarts[i] >= ecarts[i - 1] and ecarts[i] >= ecarts[i + 1]]
+    utiles = [i for i in pics if i < limite]
+    intervalles = [(utiles[k] - utiles[k - 1]) / fps for k in range(1, len(utiles))]
+    par_s = len(utiles) / (limite / fps) if limite else 0.0
+    mediane = sorted(intervalles)[len(intervalles) // 2] if intervalles else round(limite / fps, 1)
+    creux = sorted(((round(utiles[k - 1] / fps, 1), round((utiles[k] - utiles[k - 1]) / fps, 1))
+                    for k in range(1, len(utiles)) if (utiles[k] - utiles[k - 1]) / fps > CREUX_SIGNALE),
+                   key=lambda c: -c[1])
+    problemes = []
+    if figees:
+        problemes.append("image figée : " + ", ".join(f"à {d:.1f} s pendant {l:.1f} s" for d, l in figees[:6]))
+    if par_s < EVENEMENTS_MIN:
+        problemes.append(f"{par_s:.2f} événement par seconde : il en faut {EVENEMENTS_MIN:.0f} au moins (une entrée, un clic, "
+                         "un compteur, une coche, un recadrage toutes les demi-secondes)")
+    if mediane > ECART_MEDIAN_MAX:
+        problemes.append(f"{mediane:.2f} s entre deux événements en général : {ECART_MEDIAN_MAX} s au plus")
+    return {"duree": round(duree, 1), "evenements_par_s": round(par_s, 2), "ecart_median": round(mediane, 2),
+            "figees": figees, "creux": creux[:5], "problemes": problemes}
+
+
+def cmd_rythme(a) -> None:
+    m = maison_de(Path(a.video)) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    meta = meta_de(Path(a.video)) or {}
+    fin = FIN_LIBRE if not (SUPPORTS.get(meta.get("support") or "", {}).get("boucle")) else 0.0
+    try:
+        v = verdict_rythme(ecarts_images(ffmpeg, Path(a.video)), fin_libre=fin)
+    except RuntimeError as e:
+        sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    print(f"• {v['duree']:.0f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.0f}) · "
+          f"écart médian {v['ecart_median']:.2f} s (≤ {ECART_MEDIAN_MAX}) · image figée : "
+          f"{sum(l for _d, l in v['figees']):.1f} s")
+    if v["creux"]:
+        print("  plus longs creux à regarder : " + ", ".join(f"{d:.1f} s (+{l:.1f} s)" for d, l in v["creux"]))
+    if v["problemes"]:
+        for pb in v["problemes"]:
+            print(f"✗ {pb}")
+        sys.exit(1)
+    print("ok : le rythme tient (ce contrôle ne dit pas si c'est beau : regarde la planche).")
+
+
+# ---------------------------------------------------------------------------
+# Une vidéo de référence (celle dont le client aime le style) : on en tire la grammaire
+# (fonds, mots par écran, motifs, transitions, caméra), jamais le contenu.
+# ---------------------------------------------------------------------------
+def ytdlp(m: Path | None) -> str | None:
+    """Le téléchargeur de Reel Cloneur s'il est installé (tenu à jour), sinon celui du système."""
+    if m is not None:
+        for sous in ("bin/yt-dlp", "Scripts/yt-dlp.exe"):
+            chemin = m / ".reel-cloneur-venv" / sous
+            if chemin.exists():
+                return str(chemin)
+    return shutil.which("yt-dlp")
+
+
+def coupes_video(ffmpeg: str, video: Path, seuil: float = 0.2) -> list[float]:
+    r = subprocess.run([ffmpeg, "-hide_banner", "-i", str(video), "-filter:v", f"select='gt(scene,{seuil})',showinfo",
+                        "-f", "null", "-"], capture_output=True, text=True)
+    return [round(float(t), 2) for t in re.findall(r"pts_time:([\d.]+)", r.stderr)]
+
+
+ANALYSE_GRILLE = """
+## Ce que la vidéo fait (à remplir en regardant les planches)
+
+Chaque case de planche dure 0,5 s, de gauche à droite puis de haut en bas (24 cases = 12 s).
+
+- **Fonds** : quelles couleurs, combien de bascules (sombre, clair, couleur pleine, écran coupé) ?
+- **Mots par écran** : combien en général, et le plus long ?
+- **Ce qui vit pendant qu'on lit** : caméra, objets flottants, curseur ?
+- **Le motif qui revient** (un geste, un cadre, un objet qui relie les parties) :
+- **Les transitions** : un objet devient le suivant, un flash depuis un clic, un volet, une coupe ?
+- **Les interfaces montrées** : lesquelles, reconstruites comment, animées comment ?
+- **La fin** :
+
+## Ce qu'on reprend pour la vidéo du client
+
+La grammaire seulement (rythme, densité, procédés), avec sa marque et son offre. Jamais le
+contenu, les textes, les images ni la musique de la référence.
+"""
+
+
+def cmd_reference(a) -> None:
+    m = maison_de(Path(a.dossier)) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    dossier = Path(a.dossier).resolve()
+    if not (dossier / "OFFRE.json").is_file():
+        sys.exit("ERREUR : donne le dossier de la vidéo (celui qui contient OFFRE.json).")
+    nom = propre(a.nom or "reference", 30)
+    sortie = dossier / "sources" / "reference" / nom
+    sortie.mkdir(parents=True, exist_ok=True)
+    if re.match(r"https?://", a.source):
+        dl = ytdlp(m)
+        if not dl:
+            sys.exit("ERREUR : pas de téléchargeur. Installe celui de Reel Cloneur (python3 tools/cloner_reel.py installer) "
+                     "ou télécharge la vidéo toi-même et donne son chemin.")
+        r = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(sortie / "video.%(ext)s"), a.source])
+        videos = sorted(sortie.glob("video.*"))
+        if r.returncode != 0 or not videos:
+            sys.exit(f"ERREUR : téléchargement impossible : {(r.stderr or '')[-300:]} Télécharge-la toi-même et donne son chemin.")
+        video = videos[0]
+    else:
+        source = Path(a.source).expanduser()
+        if not source.is_file():
+            sys.exit(f"ERREUR : fichier introuvable : {source}")
+        video = sortie / ("video" + source.suffix.lower())
+        shutil.copy2(source, video)
+    for ancien in sortie.glob("planche-*.jpg"):
+        ancien.unlink()
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), "-vf", "fps=2,scale=320:-2,tile=6x4:padding=4:color=gray",
+                "-start_number", "1", str(sortie / "planche-%02d.jpg")])
+    if r.returncode != 0:
+        sys.exit(f"ERREUR : planches impossibles : {r.stderr[-300:]}")
+    coupes = coupes_video(ffmpeg, video)
+    v = verdict_rythme(ecarts_images(ffmpeg, video), fin_libre=0.0)
+    planches = sorted(p.name for p in sortie.glob("planche-*.jpg"))
+    texte = (f"# Vidéo de référence : {nom}\n\nSource : {a.source}\n\n## Mesures\n\n"
+             f"- Durée : {v['duree']:.0f} s\n- Événements : {v['evenements_par_s']:.2f} par seconde, écart médian "
+             f"{v['ecart_median']:.2f} s\n- Image figée : {sum(l for _d, l in v['figees']):.1f} s\n"
+             f"- Coupes franches : {len(coupes)} ({', '.join(f'{t:.1f}' for t in coupes[:30])})\n"
+             f"- Planches : {', '.join(planches)}\n" + ANALYSE_GRILLE)
+    (sortie / "ANALYSE.md").write_text(texte, encoding="utf-8")
+    print(f"• référence analysée : {sortie}")
+    print(f"  {v['evenements_par_s']:.2f} événement/s, écart médian {v['ecart_median']:.2f} s, {len(coupes)} coupes franches, "
+          f"{len(planches)} planches. Regarde les planches et remplis ANALYSE.md.")
+
+
+# ---------------------------------------------------------------------------
+# Logos et icônes, posés dans le projet (le rendu est hors ligne). Les logos des outils que
+# l'offre utilise viennent de theSVG, les icônes de Lucide ; chacun est nettoyé avant d'entrer.
+# ---------------------------------------------------------------------------
+SOURCES_SVG = {
+    "logo": "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/{nom}/{variante}.svg",
+    "icone": "https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/{nom}.svg",
+}
+INTERDITS_SVG = re.compile(r"<script|<foreignObject|\son\w+\s*=|javascript:|(?:xlink:)?href\s*=\s*[\"']\s*(?:https?:|data:|//)", re.I)
+MONOCHROMES = {"#fff", "#ffffff", "#000", "#000000", "#111", "#111111", "white", "black"}
+
+
+def nettoyer_svg(svg: str, recolorable: bool = True) -> str:
+    """SVG prêt à poser en ligne : rien d'actif, taille fluide, couleur unique passée en currentColor."""
+    if INTERDITS_SVG.search(svg):
+        raise ValueError("SVG refusé : il contient un script, un lien externe ou un gestionnaire d'évènement")
+    svg = re.sub(r"<\?xml.*?\?>|<!--.*?-->|<title>.*?</title>|<desc>.*?</desc>", "", svg, flags=re.S)
+    debut = re.search(r"<svg\b[^>]*>", svg)
+    if not debut:
+        raise ValueError("pas de balise <svg>")
+    tete = re.sub(r'\s(?:width|height|class)="[^"]*"', "", debut.group(0))
+    tete = tete.replace("<svg", '<svg width="100%" height="100%"', 1)
+    svg = svg[:debut.start()] + tete + svg[debut.end():]
+    couleurs = {c.lower() for c in re.findall(r'fill="([^"]+)"', svg)} - {"none", "currentcolor"}
+    if recolorable and couleurs and couleurs <= MONOCHROMES:
+        svg = re.sub(r'fill="([^"]+)"', lambda mm: 'fill="currentColor"' if mm.group(1).lower() in MONOCHROMES else mm.group(0), svg)
+    return re.sub(r"\s*\n\s*", " ", svg).strip()
+
+
+def telecharger_svg(genre: str, nom: str) -> str:
+    import urllib.request
+    variantes = ("default", "color", "mono") if genre == "logo" else ("",)
+    for variante in variantes:
+        url = SOURCES_SVG[genre].format(nom=nom, variante=variante)
+        try:
+            with urllib.request.urlopen(url, timeout=15) as rep:
+                if rep.status == 200:
+                    return rep.read().decode("utf-8", "replace")
+        except Exception:
+            continue
+    raise ValueError(f"{genre} « {nom} » introuvable")
+
+
+def ecrire_ajouts(projet: Path, ajouts: dict[str, str]) -> Path:
+    fichier = projet / "kit" / "ajouts.js"
+    fichier.parent.mkdir(parents=True, exist_ok=True)
+    existants = {}
+    if fichier.is_file():
+        m = re.search(r"Object\.assign\(window\.K_ICONES \|\| \{\}, (\{.*\})\);", fichier.read_text(encoding="utf-8"), re.S)
+        if m:
+            existants = json.loads(m.group(1))
+    existants.update(ajouts)
+    fichier.write_text("/* Logos (theSVG) et icônes (Lucide, ISC) ajoutés à ce projet, nettoyés. Généré par studio_motion.py. */\n"
+                       "window.K_ICONES = Object.assign(window.K_ICONES || {}, " + json.dumps(existants, ensure_ascii=False, indent=0) + ");\n",
+                       encoding="utf-8")
+    return fichier
+
+
+def cmd_logos(a) -> None:
+    projet = Path(a.projet).resolve()
+    if not (projet / "index.html").is_file():
+        sys.exit("ERREUR : donne le dossier d'un projet de vidéo (celui qui contient index.html).")
+    ajouts, echecs = {}, []
+    for brut in a.noms:
+        genre, _, nom = brut.partition(":") if ":" in brut else (a.genre, "", brut)
+        try:
+            cle = ("logo-" if genre == "logo" else "") + nom
+            ajouts[cle] = nettoyer_svg(telecharger_svg(genre, nom))
+        except ValueError as e:
+            echecs.append(str(e))
+    if ajouts:
+        f = ecrire_ajouts(projet, ajouts)
+        print(f"• {len(ajouts)} ajouté(s) dans {f.relative_to(projet)} : {', '.join(ajouts)} (K.ic(\"logo-claude\"), K.ic(\"rocket\"))")
+    for e in echecs:
+        print(f"⚠️ {e}")
+    if not ajouts:
+        sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# La musique calée sur la vidéo : tempo, temps forts (la grosse caisse) et entrée franche du
+# morceau, puis une version ramenée au tempo de la grille (120 battements par minute = un temps
+# toutes les 0,5 s) et décalée pour que l'entrée tombe à l'instant choisi de la vidéo.
+# ---------------------------------------------------------------------------
+MUSIQUE_SR, MUSIQUE_PAS = 11025, 110        # échantillonnage d'analyse, pas de ~10 ms
+
+
+def enveloppe(ffmpeg: str, audio: Path, graves: bool = False) -> list[float]:
+    """Énergie toutes les ~10 ms (mono) ; `graves` ne garde que la grosse caisse et la basse."""
+    filtre = ["-af", "lowpass=f=150"] if graves else []
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(audio), *filtre, "-ac", "1", "-ar", str(MUSIQUE_SR),
+                        "-f", "s16le", "-"], capture_output=True)
+    if r.returncode != 0:
+        raise RuntimeError(r.stderr.decode("utf-8", "replace")[-300:])
+    import array
+    a = array.array("h")
+    a.frombytes(r.stdout[: len(r.stdout) // 2 * 2])
+    if sys.byteorder == "big":
+        a.byteswap()
+    n = MUSIQUE_PAS
+    return [math.sqrt(sum(v * v for v in a[i:i + n]) / n) for i in range(0, len(a) - n, n)]
+
+
+def tempo_de(env: list[float], fps: float, bas: float = 90.0, haut: float = 150.0) -> float:
+    """Tempo (battements par minute) par autocorrélation des attaques."""
+    lg = [math.log(1e-3 + e) for e in env]
+    att = [max(0.0, lg[i] - lg[i - 1]) for i in range(1, len(lg))]
+    milieu = len(att) // 2
+    seg = att[max(0, milieu - int(20 * fps)): milieu + int(20 * fps)] or att
+    meilleur = (0.0, 120.0)
+    bpm = bas
+    while bpm <= haut:
+        decal = 60 * fps / bpm
+        d0, fr = int(decal), decal - int(decal)
+        score = sum(seg[i] * ((1 - fr) * seg[i + d0] + fr * seg[i + d0 + 1]) for i in range(len(seg) - d0 - 1))
+        if score > meilleur[0]:
+            meilleur = (score, bpm)
+        bpm = round(bpm + 0.1, 1)
+    return meilleur[1]
+
+
+def phase_de(env_graves: list[float], fps: float, bpm: float) -> float:
+    """Instant du premier temps fort (s) : la grille qui ramasse le plus d'attaques de grosse caisse
+    (la montée de l'énergie des graves, pas son pic, qui arrive un huitième de seconde après)."""
+    lg = [math.log(1e-3 + e) for e in env_graves]
+    att = [0.0] + [max(0.0, lg[i] - lg[i - 1]) for i in range(1, len(lg))]
+    pas = 60 * fps / bpm
+    nb = int(len(att) / pas) - 1
+    meilleur = (-1.0, 0)
+    for k in range(int(pas)):
+        score = sum(att[int(k + j * pas)] for j in range(nb))
+        if score > meilleur[0]:
+            meilleur = (score, k)
+    return meilleur[1] / fps
+
+
+def entree_de(env: list[float], fps: float, saut_db: float = 6.0, jusqu_a: float = 40.0) -> float | None:
+    """Première entrée franche (s) : la seconde dont l'énergie dépasse de `saut_db` les 3 s d'avant."""
+    def db(i0: int, i1: int) -> float:
+        tranche = env[max(0, i0):max(i0 + 1, i1)]
+        return 20 * math.log10(1e-3 + sum(tranche) / len(tranche))
+    pas = int(fps / 4)
+    for i in range(int(3 * fps), min(len(env) - int(fps), int(jusqu_a * fps)), pas):
+        if db(i, i + int(fps)) - db(i - int(3 * fps), i) >= saut_db:
+            # au quart de seconde près, la montée la plus raide de cette seconde
+            fin = max(range(i, i + int(fps) + pas, pas), key=lambda j: db(j, j + pas) - db(j - pas, j))
+            return round(fin / fps, 2)
+    return None
+
+
+def calage(entree: float, phase: float, bpm: float, cible_bpm: float, a_t: float) -> dict:
+    """Facteur de tempo et décalage pour que l'entrée (posée sur le temps fort le plus proche)
+    tombe à `a_t` s dans la vidéo. decalage > 0 : on coupe le début du morceau ; < 0 : il démarre
+    plus tard dans la vidéo."""
+    facteur = cible_bpm / bpm if cible_bpm and 0.9 <= cible_bpm / bpm <= 1.1 else 1.0
+    temps = 60 / bpm
+    sur_temps = phase + round((entree - phase) / temps) * temps     # l'entrée recalée sur un temps fort
+    entree_etiree = sur_temps / facteur
+    return {"facteur": round(facteur, 6), "entree": round(entree_etiree, 3), "decalage": round(entree_etiree - a_t, 3)}
+
+
+def cmd_musique(a) -> None:
+    m = maison_de(Path(a.entree)) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    source = Path(a.entree)
+    fps = MUSIQUE_SR / MUSIQUE_PAS
+    env, graves = enveloppe(ffmpeg, source), enveloppe(ffmpeg, source, graves=True)
+    bpm = tempo_de(env, fps)
+    phase = phase_de(graves, fps, bpm)
+    entree = entree_de(env, fps)
+    print(f"• tempo {bpm:.1f} battements par minute (un temps toutes les {60 / bpm:.3f} s), premier temps fort à {phase:.2f} s, "
+          + (f"entrée franche à {entree:.2f} s" if entree is not None else "pas d'entrée franche dans les 40 premières secondes"))
+    if not a.sortie:
+        return
+    if a.a is None or entree is None:
+        sys.exit("ERREUR : donne --a <instant de la vidéo où l'entrée doit tomber> (le morceau doit avoir une entrée franche).")
+    c = calage(entree, phase, bpm, a.bpm, a.a)
+    filtres = []
+    if c["facteur"] != 1.0:
+        filtres.append(f"atempo={c['facteur']:.6f}")
+    if c["decalage"] >= 0:
+        filtres.append(f"atrim=start={c['decalage']:.3f},asetpts=PTS-STARTPTS")
+    else:
+        retard = int(round(-c["decalage"] * 1000))
+        filtres.append(f"adelay={retard}|{retard}")
+    if a.duree:
+        filtres.append(f"atrim=duration={a.duree + 0.6:.2f}")
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(source), "-af", ",".join(filtres), "-c:a", "pcm_s16le", str(a.sortie)])
+    if r.returncode != 0:
+        sys.exit(f"ERREUR : préparation impossible : {r.stderr[-300:]}")
+    vitesse = f"tempo ramené à {a.bpm:g} ({(c['facteur'] - 1) * 100:+.1f} %), " if c["facteur"] != 1.0 else ""
+    print(f"• {a.sortie} : {vitesse}l'entrée tombe à {a.a:g} s de la vidéo, sur un temps fort. "
+          "Pose-le comme musique (sons.poser, musique_db autour de -10 sans voix).")
+
+
+# ---------------------------------------------------------------------------
+# L'émergence des bruitages : chacun doit dépasser la musique de 4 dB au moins (méthode du Pack
+# SFX : énergie max sur 50 ms pendant le son, moins le fond musical), le fond étant pris autour
+# du son (une intro calme laisse passer des sons plus doux). Lu dans le bloc SONS d'index.html.
+# ---------------------------------------------------------------------------
+EMERGENCE_MIN, EMERGENCE_MAX, FENETRE_50MS = 4.0, 16.0, 2400   # 50 ms à 48 kHz
+
+
+def sons_poses(index: Path) -> tuple[dict | None, list[dict]]:
+    """(musique, bruitages) écrits par tools/sons.py dans index.html : src, début, durée, départ dans
+    le fichier, volume linéaire (le niveau porté par l'enveloppe quand il y en a une)."""
+    import html as _html
+    page = index.read_text(encoding="utf-8")
+    musique, bruitages = None, []
+    for balise in re.findall(r"<audio\b[^>]*>", page):
+        attr = dict(re.findall(r'([\w-]+)="([^"]*)"', balise))
+        if not attr.get("src") or attr.get("data-audio-group") != "mixage":
+            continue
+        vol = float(attr.get("data-volume", "1") or 1)
+        if "data-automation" in attr:
+            try:
+                pistes = json.loads(_html.unescape(attr["data-automation"]))["lanes"]
+                vol = max(pt["v"] for l in pistes if l.get("target") == "volume" for pt in l["points"])
+            except (ValueError, KeyError):
+                pass
+        son = {"src": index.parent / attr["src"], "debut": float(attr.get("data-start", 0)),
+               "duree": float(attr.get("data-duration", 0)), "depart": float(attr.get("data-media-start", 0)), "vol": vol}
+        if attr.get("id") == "musique":
+            musique = son
+        elif not attr.get("id", "").startswith("voix"):
+            bruitages.append(son)
+    return musique, bruitages
+
+
+def energies_50ms(echantillons) -> list[float]:
+    w = FENETRE_50MS
+    return [20 * math.log10(max(1e-9, math.sqrt(sum(v * v for v in echantillons[k * w:(k + 1) * w]) / w)) / 32768)
+            for k in range(len(echantillons) // w)]
+
+
+def verdict_emergence(e_mix: list[float], e_musique: list[float], sons: list[dict]) -> list[tuple[float, str, float]]:
+    """(début, nom, émergence en dB) pour chaque bruitage. Fond = médiane de la musique sur ±1,5 s,
+    jamais plus de 8 dB sous sa médiane générale."""
+    tri = sorted(e_musique)
+    general = tri[len(tri) // 2] if tri else -120.0
+    pas = 48000 / FENETRE_50MS
+    sortie = []
+    for s in sons:
+        k0 = int(s["debut"] * pas)
+        k1 = max(k0 + 1, int((s["debut"] + min(s["duree"], 2.0)) * pas) + 1)
+        autour = sorted(e_musique[max(0, k0 - 30):k0 + 30]) or [general]
+        fond = max(autour[len(autour) // 2], general - 8)
+        pic = max(e_mix[k0:k1]) if e_mix[k0:k1] else -120.0
+        sortie.append((s["debut"], Path(s["src"]).stem, round(pic - fond, 1)))
+    return sortie
+
+
+def cmd_emergence(a) -> None:
+    import array
+    projet = Path(a.projet).resolve()
+    index = projet / "index.html"
+    m = maison_de(projet) or maison_de(OUTILS)
+    ffmpeg = binaire(m, "ffmpeg")
+    if not index.is_file() or not ffmpeg:
+        sys.exit("ERREUR : donne le dossier d'un projet de vidéo, avec ffmpeg installé.")
+    musique, sons = sons_poses(index)
+    if not sons:
+        sys.exit("ERREUR : aucun bruitage posé dans index.html (bloc SONS).")
+    if musique is None:
+        print("• pas de musique : rien à masquer, l'émergence ne se mesure pas.")
+        return
+    m_ = re.search(r'data-composition-id="main"[^>]*data-duration="([\d.]+)"', index.read_text(encoding="utf-8"))
+    duree = float(m_.group(1)) if m_ else max(s["debut"] + s["duree"] for s in sons)
+
+    def piste(liste: list[dict]) -> "array.array":
+        entrees, filtres = [], []
+        for i, s in enumerate(liste):
+            entrees += ["-i", str(s["src"])]
+            filtres.append(f"[{i}:a]atrim=start={s['depart']:.3f}:duration={max(s['duree'], 0.05):.3f},asetpts=PTS-STARTPTS,"
+                           f"volume={s['vol']:.4f},adelay={int(s['debut'] * 1000)}:all=1,aresample=48000[s{i}]")
+        filtres.append("".join(f"[s{i}]" for i in range(len(liste))) +
+                       f"amix=inputs={len(liste)}:normalize=0:dropout_transition=0,apad=whole_dur={duree:.3f},atrim=0:{duree:.3f}[a]")
+        r = subprocess.run([ffmpeg, "-v", "error", *entrees, "-filter_complex", ";".join(filtres), "-map", "[a]",
+                            "-ac", "1", "-ar", "48000", "-f", "s16le", "-"], capture_output=True)
+        if r.returncode != 0:
+            sys.exit(f"ERREUR : mixage de contrôle impossible : {r.stderr.decode('utf-8', 'replace')[-300:]}")
+        x = array.array("h")
+        x.frombytes(r.stdout[: len(r.stdout) // 2 * 2])
+        return x
+
+    mus, sfx = piste([musique]), piste(sons)
+    n = min(len(mus), len(sfx))
+    somme = [max(-32768, min(32767, mus[i] + sfx[i])) for i in range(n)]
+    res = verdict_emergence(energies_50ms(somme), energies_50ms(mus[:n]), sons)
+    faibles = [r for r in res if r[2] < EMERGENCE_MIN]
+    forts = [r for r in res if r[2] > EMERGENCE_MAX]
+    print(f"• {len(res)} bruitages : {len(res) - len(faibles) - len(forts)} s'entendent (4 à 16 dB au-dessus de la musique), "
+          f"{len(faibles)} trop faibles, {len(forts)} trop forts")
+    for d, nom, em in faibles:
+        print(f"  faible : {d:6.2f} s {nom} ({em:+.1f} dB)")
+    for d, nom, em in forts:
+        print(f"  fort, à écouter : {d:6.2f} s {nom} ({em:+.1f} dB)")
+    if len(faibles) > max(1, len(res) // 20):
+        print("✗ trop de bruitages couverts par la musique : remonte-les (par famille) ou baisse la musique.")
+        sys.exit(1)
+    print("ok : les bruitages ressortent de la musique.")
 
 
 # Même niveau que les Reels de Monteur IA (tools/sons.py) : -16 LUFS, celui du fil Instagram ;
@@ -841,12 +1370,17 @@ def cmd_son(a) -> None:
     print("\n".join(f"❌ {p}" for p in pb) if pb else "ok")
 
 
-def chaine_mastering(gain_db: float) -> str:
+def chaine_mastering(gain_db: float, plafond: float = 0.7) -> str:
     """Gain puis limiteur suréchantillonné : le niveau monte, les crêtes restent sous -2 dBFS, donc
     sous -1 dBTP une fois encodées en AAC. Un loudnorm seul refuse de monter un clip court aux sons
     piqués (il protège ses crêtes) et s'arrête 2 à 3 LU sous la cible."""
+    # Attaque de 0,5 ms et plafond à -2,5 dBFS : les clics du Pack SFX ont des attaques si rapides
+    # qu'un limiteur à 3 ms les laissait passer à -0,9 dBTP (mesuré le 12/10/2026).
+    # Second étage après le retour à 48 kHz : le filtre de rééchantillonnage recrée des crêtes
+    # que l'AAC pousse ensuite jusqu'à -0,1 dBTP sur une vidéo pleine de clics.
     return (f"aresample=192000,volume={gain_db:.2f}dB,"
-            "alimiter=limit=0.79:attack=3:release=60:level=false,aresample=48000")
+            "alimiter=limit=0.75:attack=0.5:release=60:level=false,aresample=48000,"
+            f"alimiter=limit={plafond:.4f}:attack=0.1:release=40:level=false")
 
 
 def cmd_mastering(a) -> None:
@@ -858,16 +1392,21 @@ def cmd_mastering(a) -> None:
     if mesure is None or math.isinf(float(mesure["input_i"])):
         sys.exit("ERREUR : pas de son à masteriser (vidéo muette).")
     gain = a.cible - float(mesure["input_i"])
-    apres = None
-    for _ in range(4):  # chaque passe corrige l'écart de la précédente ; deux suffisent d'habitude
-        r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "copy", "-af", chaine_mastering(gain),
+    apres, plafond = None, 0.7
+    for _ in range(6):  # chaque passe corrige l'écart de la précédente ; deux suffisent d'habitude
+        r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "copy", "-af", chaine_mastering(gain, plafond),
                     "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", a.sortie])
         if r.returncode != 0:
             sys.exit(f"ERREUR : mastering impossible : {r.stderr[-400:]}")
         apres = mesure_sonore(ffmpeg, Path(a.sortie))
         if apres is None:
             break
-        ecart = a.cible - float(apres["input_i"])
+        ecart, crete = a.cible - float(apres["input_i"]), float(apres["input_tp"])
+        if crete > PLAFOND_TP - 0.2:
+            # L'AAC fait déborder les attaques très vives (clics) : on abaisse le plafond d'autant.
+            plafond *= 10 ** ((PLAFOND_TP - 0.4 - crete) / 20)
+            gain += max(0.0, ecart)
+            continue
         if abs(ecart) <= 0.5:
             break
         gain += ecart
@@ -1110,13 +1649,37 @@ def main(argv: list[str] | None = None) -> None:
     z.add_argument("support", choices=sorted(SUPPORTS))
     z.add_argument("--format", choices=sorted(FORMATS))
     z.set_defaults(f=cmd_zones)
+    rf = s.add_parser("reference", help="Analyse une vidéo dont le client aime le style (planches, coupes, rythme).")
+    rf.add_argument("dossier", help="Le dossier de la vidéo (celui de OFFRE.json).")
+    rf.add_argument("source", help="Lien (Instagram, YouTube, TikTok…) ou fichier vidéo.")
+    rf.add_argument("--nom", help="Nom court de la référence (défaut : reference).")
+    rf.set_defaults(f=cmd_reference)
+    lo = s.add_parser("logos", help="Ajoute au projet les logos des outils montrés (theSVG) ou des icônes (Lucide).")
+    lo.add_argument("projet")
+    lo.add_argument("noms", nargs="+", help="claude openai notion… ; icone:rocket pour une icône Lucide.")
+    lo.add_argument("--genre", default="logo", choices=("logo", "icone"))
+    lo.set_defaults(f=cmd_logos)
+    ry = s.add_parser("rythme", help="Mesure le rythme du MP4 : événements par seconde, images figées.")
+    ry.add_argument("video")
+    ry.set_defaults(f=cmd_rythme)
     pl = s.add_parser("planche", help="Planche de contrôle avec les zones dessinées.")
     pl.add_argument("video")
     pl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")
     pl.add_argument("--sticker", action="store_true", help="Dessine la zone du sticker lien (story).")
+    pl.add_argument("--sans-sticker", action="store_true", help="Story sans lien : ne dessine pas la zone du sticker.")
     pl.add_argument("--temps", help="Instants en secondes, séparés par des virgules (repères + 0,3 s).")
     pl.add_argument("--sortie")
     pl.set_defaults(f=cmd_planche)
+    mu = s.add_parser("musique", help="Tempo, temps forts et entrée d'un morceau ; version calée sur la vidéo.")
+    mu.add_argument("entree")
+    mu.add_argument("--sortie", help="Fichier WAV calé à écrire (sinon : analyse seule).")
+    mu.add_argument("--a", type=float, help="Instant de la vidéo (s) où l'entrée franche doit tomber.")
+    mu.add_argument("--bpm", type=float, default=120.0, help="Tempo de la grille de la vidéo (défaut 120 ; 0 = garder le sien).")
+    mu.add_argument("--duree", type=float, help="Durée de la vidéo (s), pour couper le morceau.")
+    mu.set_defaults(f=cmd_musique)
+    em = s.add_parser("emergence", help="Vérifie que chaque bruitage posé dépasse la musique de 4 dB au moins.")
+    em.add_argument("projet")
+    em.set_defaults(f=cmd_emergence)
     so = s.add_parser("son", help="Mesure la sonie et la crête.")
     so.add_argument("video")
     so.add_argument("--cible", type=float, default=CIBLE_LUFS, help="Sonie visée en LUFS (défaut -16 ; -20 pour des bruitages seuls).")

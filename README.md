@@ -25,12 +25,15 @@ d'un support à l'autre, remise en page, pas recadrée.
 
 1. **Une structure qui vend**, choisie selon le but : le problème avant le produit, une promesse
    claire, une démonstration, une preuve, un appel à l'action adapté au support.
-2. **Un motion design qui montre** ton offre (ta page, ton logiciel, ton espace de formation, ton
-   résultat) au lieu de la décorer.
+2. **Un motion design de niveau studio** : il se passe quelque chose toutes les demi-secondes,
+   très peu de texte, ton produit et les outils que tu utilises à l'écran (ta page, ton logiciel,
+   Claude, ChatGPT…), des fonds qui alternent. Donne une vidéo dont tu aimes le style : ton
+   monteur en tire le rythme et les procédés, jamais le contenu.
 3. **Rien d'inventé** : ton monteur lit ta page de vente et te montre ce qu'il a compris ; c'est
    tout ce que tes vidéos auront le droit d'affirmer.
-4. **Chaque vidéo regardée avant toi** : planche de contrôle avec les zones de chaque plateforme,
-   revue critique notée, son réglé au niveau de tes Reels, vérification de l'export.
+4. **Chaque vidéo regardée avant toi** : rythme mesuré (aucune image figée, au moins un
+   événement par seconde), planche de contrôle avec les zones de chaque plateforme, revue
+   critique notée, son réglé au niveau de tes Reels, vérification de l'export.
 5. **Prête à publier** : la vidéo, le texte de publication de chaque plateforme, la couverture ou
    l'affiche, la façon de la poser sur ta page, le calendrier d'un lancement.
 
@@ -45,12 +48,14 @@ ton abonnement Claude ou Codex habituel.
 
 ## Contenu
 
-- `.claude/skills/studio/` : la méthode (questions à choix, fiche de l'offre, structures par but,
-  idées, écriture, supports, voix, rythme, style, effets, son, revue, livraison).
+- `.claude/skills/studio/` : la méthode (questions à choix, fiche de l'offre, repérage,
+  structures par but, idées, écriture, supports, voix, rythme, style, kit, recettes, son, revue,
+  livraison).
 - `tools/studio_motion.py` : création des vidéos par support et par format, vérification de la
-  fiche, temps de lecture, zones, planche, son, couverture, export, livraison. Python 3.9+, sans
-  dépendance.
-- `templates/` : le point de départ de chaque vidéo et l'aiguillage ajouté à Monteur IA.
+  fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones, planche,
+  rythme, calage de la musique, émergence des bruitages, son, couverture, export, livraison. Python 3.9+, sans dépendance.
+- `templates/` : le point de départ de chaque vidéo, le kit de briques de motion design (fonds,
+  curseur, objets flottants, chapitres, interfaces, icônes) et l'aiguillage ajouté à Monteur IA.
 - `tests/` : `python3 -m unittest discover -s tests`.
 
 Version : voir [VERSION](VERSION). Crédits : [CREDITS.md](CREDITS.md).

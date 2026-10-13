@@ -23,22 +23,27 @@ Trois lois communes à toutes les structures :
 ## 1. Vendre l'offre : vidéo de page de vente (60 à 120 s, `page`)
 
 C'est une VSL courte en motion design : elle tourne souvent en lecture automatique muette en haut
-de la page, donc **chaque idée se lit à l'écran**, voix ou pas. Un titre de chapitre par bloc
-aide le spectateur à savoir où il en est.
+de la page, donc **chaque idée se comprend à l'image**, voix ou pas, avec 1 à 4 mots par écran.
+Chaque bloc est une ou deux recettes de `recettes.md`, reliées par des raccords d'objet ; le
+motif des chapitres annonce chaque fonction.
+
+Durées repères pour 60 à 75 s : la corvée 8 s, le pivot et le nom 5 s, la démo dans l'outil
+9 s, deux ou trois fonctions en chapitres 5 à 8 s chacune, l'écran coupé 5 s, la preuve 8 s,
+l'offre 8 s, le prix 4 s, le final cliqué 6 s.
 
 | Part | Bloc | Rôle | Fiche |
 |---|---|---|---|
-| 0–10 % | **Pivot** | La promesse et ce qu'on y gagne, en une phrase. Formule utile : « Passe de [ce que tu vis] à [résultat], grâce à [mécanisme] » | `promesse`, `mecanisme` |
-| 10–22 % | **Le vrai problème** | Ce que vit l'audience, concret, avec son identité (« tu postes, mais… »). Pas d'histoire si l'audience connaît déjà le problème | `probleme`, `public` |
-| 22–30 % | **Ce qui a changé** | Le fait nouveau qui rend la solution possible maintenant | `mecanisme`, `nouveaute` |
-| 30–45 % | **Le mécanisme montré** | L'offre en action : l'interface, le module, le livrable qui se remplit | `mecanisme`, `recoit` |
+| 0–12 % | **Le vrai problème, montré** | La corvée que vit l'audience, en image et chiffrée (la timeline chargée, le chrono qui file). Sur la première image, déjà quelque chose de fort : c'est l'affiche si la lecture est bloquée | `probleme`, `public` |
+| 12–20 % | **Le pivot et le nom** | Ce qui a changé (l'outil qu'elle connaît déjà, son IA) et le nom de l'offre en plein écran à la couleur de la marque | `mecanisme`, `nouveaute`, `promesse` |
+| 20–45 % | **Le mécanisme montré** | L'offre en action dans sa vraie interface, puis deux ou trois fonctions en chapitres, chacune avec le problème qu'elle supprime | `mecanisme`, `recoit` |
 | 45–58 % | **La preuve** | Pour d'autres (idéalement des gens comme eux), puis atteignable pour toi. Un chiffre découpé en morceaux crédibles | `preuves` |
 | 58–74 % | **L'offre** | « Voici ce qui se passe quand tu rejoins » : 3 bénéfices au plus, chacun avec son résultat | `recoit`, `bonus` |
 | 74–85 % | **Prix et garantie** | Le prix recadré (ce que ça coûte de ne pas le faire, ou ce que ça rapporte), la garantie si la page en a une | `prix`, `garantie` |
-| 85–100 % | **Clôture** | Une phrase d'identité ou « sans regret », l'appel à l'action, l'urgence seulement si elle est réelle | `cta`, `dates` |
+| 85–100 % | **Clôture** | Tout ce qu'on a vu se rassemble et devient le bouton, le curseur le clique ; l'urgence seulement si elle est réelle | `cta`, `dates` |
 
-Version 60 s : garde Pivot, Problème, Mécanisme, Preuve, Offre, Clôture (un écran chacun ou
-presque). L'appel à l'action est le bouton de la page, juste sous la vidéo : la fin le désigne.
+Version 45 s : garde le problème, le nom, la démo, une seule fonction, la preuve, le prix et le
+final. L'appel à l'action est le bouton de la page, juste sous la vidéo : la fin le désigne
+(le bouton de la vidéo porte le même texte que celui de la page).
 
 ## 2. Vendre l'offre : Reel de vente (20 à 45 s, `reel`)
 
