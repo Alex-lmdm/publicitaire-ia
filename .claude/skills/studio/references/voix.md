@@ -16,11 +16,12 @@ La plus convaincante pour une vidéo de page de vente ou un Reel : c'est lui qui
    seconde environ). Donne-le-lui avec la consigne : au dictaphone de son téléphone, dans un
    endroit calme, phrase par phrase ; il peut se reprendre, on garde la dernière version.
 2. Il glisse le fichier audio dans la conversation. Range-le dans `assets/audio/voix-brute.*`.
-3. Nettoie et coupe avec les outils de Monteur IA (skill `derush` pour les blancs et les reprises,
-   méthode « son qualité studio » s'il l'a), puis exporte `assets/audio/voix.wav`.
-4. Obtiens le temps de chaque mot : `npx hyperframes transcribe assets/audio/voix.wav` (ou le
-   Whisper réglé dans Monteur IA). Les animations se calent sur les mots : un élément arrive
-   **avec** le mot qui le nomme, pas après.
+3. Transcris-la (`npx hyperframes transcribe assets/audio/voix-brute.m4a`) : le texte daté
+   montre les reprises. Garde la dernière prise de chaque phrase, coupe les blancs de plus de
+   0,4 s avec ffmpeg (`atrim` + `concat`), normalise doucement (`loudnorm=I=-18`), puis exporte
+   `assets/audio/voix.wav`. Fais écouter le résultat avant de caler la vidéo dessus.
+4. Obtiens le temps de chaque mot : `npx hyperframes transcribe assets/audio/voix.wav`. Les
+   animations se calent sur les mots : un élément arrive **avec** le mot qui le nomme, pas après.
 5. Pose la voix avec les sons (`son.md`), au-dessus de la musique ; des sous-titres incrustés
    en plus si le support se regarde muet.
 

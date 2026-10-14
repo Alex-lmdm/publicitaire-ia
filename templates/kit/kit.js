@@ -1,4 +1,4 @@
-/* Kit Studio Motion : les briques d'un motion design produit, communes aux scènes (chargé dans
+/* Kit de motion design : les briques d'un motion design produit, communes aux scènes (chargé dans
    index.html après GSAP). Tout est déterministe : aucune horloge, aléatoire à graine, chaque état
    se calcule à partir du temps de la scène. Chaque fonction ajoute ses mouvements à la timeline
    donnée. Mode d'emploi : skill `studio`, references/kit.md.

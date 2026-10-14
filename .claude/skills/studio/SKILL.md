@@ -1,9 +1,9 @@
 ---
 name: studio
-description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », « una vídeo de venta », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là ». Pas pour monter un Reel face caméra (pipeline Monteur IA) ni une story face caméra (Système Stories).
+description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là ». Pas pour monter un Reel ou une story face caméra.
 ---
 
-# Studio Motion IA
+# Publicitaire IA : des vidéos en motion design qui vendent
 
 Le client vend quelque chose. Tu lui fabriques des **vidéos en motion design qui vendent son
 offre**, là où il veut les mettre. Le format n'est qu'un réglage de sortie ; ta valeur est
@@ -19,11 +19,16 @@ toujours qui agit maintenant. Ses réponses courtes (« a, A E », « 2 », « o
 
 ## Le parcours (dans cet ordre, sans en sauter)
 
-### 0. Le profil, une seule fois
+Toutes les commandes `python3 tools/studio_motion.py …` se lancent depuis la racine du dossier
+(Windows : `python`). Depuis le projet d'une vidéo, le même outil est `../../../tools/studio_motion.py`.
 
-Si `studio.config.json` n'existe pas à la racine du dossier Monteur IA, pose les trois questions
-du profil ([brief.md](references/brief.md)) avant tout le reste, puis enregistre-les. Ensuite,
-relis-le à chaque vidéo.
+### 0. La marque et le profil, une seule fois
+
+Si `marque.json` ou `studio.config.json` manque à la racine du dossier, pose d'abord les trois
+questions de bienvenue ([brief.md](references/brief.md)) : d'où vient sa marque (sa page de vente,
+des images, une vidéo dont il aime le style, ou son dossier Monteur IA), ce qu'il vend, la voix.
+Règle sa marque avec [marque.md](references/marque.md) : l'outil la lit, tu lui montres l'aperçu,
+**tu attends son accord** puis `marque valider`. Ensuite, relis `studio.config.json` à chaque vidéo.
 
 ### 1. Le brief à choix
 
@@ -33,8 +38,8 @@ présente** (le lien, ou deux phrases et des captures). Recommande toujours une 
 Saute ce que tu sais déjà.
 
 Crée le dossier : `python3 tools/studio_motion.py nouvelle "<sujet>" --objectif <objectif>
---videos <supports>` (depuis le dossier Monteur IA ; `--ouvrir` les ouvre dans l'app
-HyperFrames). Un projet de l'app par vidéo et par format.
+--videos <supports>` (`--ouvrir` les ouvre dans l'app HyperFrames). Il naît dans
+`videos/<sujet> · <date>/`, avec la marque à jour et un projet de l'app par vidéo et par format.
 
 ### 2. Ce que dit vraiment son offre (la porte de vérité)
 
@@ -83,8 +88,8 @@ valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui
 ### 5. La fabrication
 
 Lis [style.md](references/style.md), [kit.md](references/kit.md) et [son.md](references/son.md),
-puis le skill `hyperframes-core` de Monteur IA (contrat d'une composition) et, pour un effet
-nouveau, `hyperframes-animation`. Travaille **dans le dossier de chaque vidéo**, en partant du
+puis le skill `hyperframes-core` (contrat d'une composition, livré dans ce dossier) et, pour un
+effet nouveau, `hyperframes-animation`. Travaille **dans le dossier de chaque vidéo**, en partant du
 **kit** (`kit/`, chargé par `index.html`) : fonds vivants, curseur, objets flottants, chapitres,
 fenêtres, téléphone, frappe, compteurs. Commence par le support principal ; les autres formats
 sont des **mises en page** de la même vidéo (on replace les éléments, on garde le rythme), jamais
@@ -98,8 +103,9 @@ d'une scène, première de la suivante).
 Trois pièges connus :
 
 - **Les polices.** Seules celles de `brand/fonts.css` existent au rendu. `nouvelle` et `verifier`
-  préviennent quand une police de la marque n'a pas de fichier : règle-le avant de composer (ou
-  prends une police déclarée), car `check` et les captures la trouvent sur internet et le MP4 non.
+  préviennent quand une police de la marque n'a pas de fichier : règle-le avant de composer
+  (`studio_motion.py police "<Famille>"`), car `check` et les captures la trouvent sur internet et
+  le MP4 non.
 - **Les vraies vidéos** (un Reel du client, un écran filmé) : prépare-les d'abord avec
   `studio_motion.py preparer-video` (sinon le rendu fige des images), et la balise `<video>` reste
   à la racine d'`index.html`, jamais dans une sous-composition : la scène se partage alors entre sa
@@ -134,6 +140,13 @@ autre version (« la même pour LinkedIn ») s'ajoute au même dossier, même fi
 `python3 tools/studio_motion.py ajouter "<dossier>" --videos linkedin`. Elle se remet en page pour
 son format (et se raccourcit pour une story), elle ne se recadre pas.
 
+## Le Pack SFX
+
+Bibliothèque de 156 bruitages pro, vendue à part. « Installe le Pack SFX depuis pack-sfx.zip… » ou
+« reprends le Pack SFX de mon dossier Monteur IA » : suis [son.md](references/son.md), section
+« Le Pack SFX » (`studio_motion.py pack-sfx installer` ou `reprendre`), jamais l'INSTALL.md de
+l'archive. Une fois installé, le choix des bruitages pioche d'abord dans ses sons.
+
 ## Ce que tu ne fais jamais
 
 - **Inventer** un chiffre, un témoignage, un résultat, un nombre de places, une remise, une date de
@@ -153,6 +166,6 @@ son format (et se raccourcit pour une story), elle ne se recadre pas.
 
 ## Réglages
 
-`brand.config.json` (marque, couleurs, polices, mot-clé, musique) : les vidéos portent sa
-marque. `studio.config.json` : son profil et ses préférences propres aux vidéos de vente, relus à
-chaque vidéo.
+`marque.json` (nom, couleurs, polices, logo, mot-clé, musique, et son dossier Monteur IA s'il en a
+un) : les vidéos portent sa marque ([marque.md](references/marque.md)). `studio.config.json` :
+son profil et ses préférences propres aux vidéos de vente, relus à chaque vidéo.

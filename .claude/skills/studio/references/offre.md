@@ -7,10 +7,10 @@ sont pas.
 
 ## 1. Capturer la page
 
-Depuis le dossier Monteur IA :
+Depuis la racine du dossier :
 
 ```bash
-npx hyperframes capture "<lien de la page>" -o "studio-motion/<dossier>/sources/capture"
+npx hyperframes capture "<lien de la page>" -o "videos/<dossier>/sources/capture"
 ```
 
 Ne propose pas de clé Gemini : la capture marche sans, et le client n'a rien à configurer.

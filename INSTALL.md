@@ -1,105 +1,112 @@
-# Installation de Studio Motion IA
+# Installer Publicitaire IA
 
-**Pour l'IA :** guide l'utilisateur dans sa langue (espagnol s'il te parle espagnol), y compris
-les bilans. Garde les noms des fichiers et des commandes tels quels. Le client n'est pas
-technique : une phrase simple par étape, pas de jargon.
+Publicitaire IA fabrique des vidéos en motion design qui vendent ton offre. Il s'installe **tout
+seul**, sans autre logiciel de la formation : pas de compte à créer, pas de clé, pas d'abonnement
+en plus. Tout tourne sur ton ordinateur, avec ton abonnement Claude ou ChatGPT habituel.
 
-C'est une **extension** de Monteur IA : elle s'installe **dans ton dossier Monteur IA** existant
-et reprend ses réglages (couleurs, polices, mot-clé, sons). Pas de compte à créer, pas de clé,
-pas d'abonnement : tout tourne sur ton ordinateur.
-
-> ⚠️ **Prérequis : Monteur IA installé et fonctionnel.** Si ce n'est pas encore fait, installe
-> d'abord Monteur IA (son INSTALL.md), puis reviens ici.
-
----
-
-## 🚀 Le prompt d'installation
-
-> **Le plus simple :** ouvre ton agent (Claude Code ou Codex, ou l'app HyperFrames) **dans ton
-> dossier Monteur IA** et colle la phrase d'installation de ta formation. Il fait tout, en une à
-> deux minutes.
-
-Sinon, télécharge le ZIP de ce dépôt, dézippe-le où tu veux, ouvre ton agent **dans ton dossier
-Monteur IA**, et colle exactement le bloc ci-dessous comme premier message (remplace le chemin de
-la première ligne par l'endroit où tu as dézippé) :
+Ouvre **Claude Code** ou **Codex** et écris :
 
 ```text
-Tu es mon assistant d'installation pour l'extension « Studio Motion IA » de mon Monteur IA.
-Le dossier de l'extension dézippé est ici : ~/Downloads/studio-motion-ia-main
-(Si tu viens de la phrase « Télécharge l'extension… », ignore cette ligne : le dossier est celui
-que tu télécharges à l'étape 0.)
-Installe l'extension étape par étape, sans jamais rien casser. Suis ces règles :
-
-0. TÉLÉCHARGEMENT (seulement si tu n'as pas déjà le dossier de l'extension) : dans un dossier
-   temporaire, hors du dossier Monteur IA, télécharge l'archive de l'adresse donnée dans ma
-   phrase (bouton « Code » puis « Download ZIP » si tu ne peux pas la télécharger toi-même) et
-   décompresse-la.
-
-1. VÉRIFIE que le dossier courant est bien un dossier Monteur IA : `templates/AGENT.md.tpl`,
-   `tools/` et `.claude/skills/` existent, et `brand.config.json` ou `brand.config.example.json`
-   est présent. Si tu es dans « Accueil Monteur IA » (l'accueil de l'app HyperFrames), le dossier
-   Monteur IA est le dossier parent : travaille depuis lui. Sinon, ARRÊTE-TOI et dis-moi d'ouvrir
-   mon agent dans mon dossier Monteur IA.
-
-2. COPIE dans le dossier Monteur IA, depuis le dossier de l'extension (étapes sans risque à
-   refaire : un fichier identique ne se recopie pas, une version différente est remplacée) :
-   a) le dossier `.claude/skills/studio/` → dans `.claude/skills/` (s'il y est déjà, remplace
-      le dossier entier par la nouvelle version) ;
-   b) `tools/studio_motion.py` → dans `tools/` ;
-   c) les fichiers de `templates/projet/` → dans `templates/studio-motion/` (crée-le), et le
-      dossier `templates/kit/` → dans `templates/studio-motion/kit/` (remplace-le entier s'il y
-      est déjà) ;
-   d) crée le dossier `studio-motion/` s'il n'existe pas, et ajoute la ligne `studio-motion/` au
-      `.gitignore` du dossier Monteur IA si elle n'y est pas (rien d'autre ne change) ;
-   e) AIGUILLAGE : si `templates/AGENT.md.tpl` ne contient PAS le marqueur
-      « BEGIN EXTENSION: studio-motion », ajoute le contenu INTÉGRAL du fichier
-      `templates/agent-extension-studio.md` de l'extension À LA FIN de
-      `templates/AGENT.md.tpl` (sans le modifier, lignes vides du début comprises). S'il contient
-      déjà le marqueur, remplace tout le bloc, de la ligne `<!-- BEGIN EXTENSION: studio-motion …-->`
-      à la ligne `<!-- END EXTENSION: studio-motion -->` incluses, par le contenu du fichier ; ne
-      touche à rien d'autre.
-
-3. Lance `npm run sync` à la racine du dossier Monteur IA (il régénère CLAUDE.md / AGENTS.md avec
-   l'aiguillage et copie le skill pour Codex dans `.agents/skills/`). Si la commande échoue,
-   copie simplement `.claude/skills/studio/` dans `.agents/skills/` à la main. Ce que cette
-   commande affiche concerne Monteur IA, pas l'extension : ne le recopie pas, dis juste que c'est
-   fait.
-
-4. SMOKE TEST : `python3 tools/studio_motion.py verifier` (Windows : `python …`). La dernière ligne
-   doit être « ok ». Vérifie aussi que `CLAUDE.md` contient « Studio Motion IA ».
-
-RÈGLE POUR TOUTES LES ÉTAPES : ne passe jamais à l'étape suivante si l'étape en cours a échoué.
-En cas d'échec : diagnostique en trois lignes (message d'erreur → cause probable → UNE action
-corrective), puis retente.
-
-5. PREMIÈRE INSTALLATION : affiche un TABLEAU récapitulatif ✅ / ❌ (dossier Monteur IA, skill,
-   outil, gabarits, dossier studio-motion/ et .gitignore, aiguillage, sync, smoke test). Si tout
-   est ✅, conclus par : « C'est installé. Tape /studio : je te pose trois questions sur ce que tu
-   vends, une seule fois, puis on fait ta première vidéo. »
-   MISE À JOUR (l'extension était déjà là) : pas de tableau. Une seule ligne : « Studio Motion IA
-   est à jour, tout est ✅. » Le tableau ne s'affiche que si une étape a échoué.
+Télécharge Publicitaire IA depuis https://github.com/Alex-lmdm/publicitaire-ia et suis les instructions d'installation de son INSTALL.md
 ```
 
-C'est tout. Laisse l'IA travailler et réponds-lui si elle te pose une question.
+L'IA télécharge le dossier, vérifie ton ordinateur, te dit ce qu'il manque, puis installe tout.
+**Quand elle te propose de commencer, réponds « go ».** Elle exécute les commandes : tu n'as rien
+à recopier dans un terminal. Si une manipulation est nécessaire de ton côté, elle te guide.
+
+L'app **HyperFrames** (Mac) est en option : elle sert à voir et retoucher chaque vidéo à la
+souris. L'installation la branche si elle est là.
 
 ---
 
-## Installation manuelle (si tu préfères)
+## Pour l'IA : l'installation, étape par étape
 
-1. Télécharge et dézippe ce dépôt.
-2. Copie `.claude/skills/studio/` dans le dossier `.claude/skills/` de ton Monteur IA.
-3. Copie `tools/studio_motion.py` dans `tools/`, et le contenu de `templates/projet/` dans un
-   nouveau dossier `templates/studio-motion/`.
-4. Crée un dossier `studio-motion/` à la racine.
-5. Ajoute le contenu de `templates/agent-extension-studio.md` à la fin de `templates/AGENT.md.tpl`
-   (une seule fois), puis lance `npm run sync`.
-6. Lance `python3 tools/studio_motion.py verifier`.
+Parle-lui en français, simplement, une phrase par étape, sans jargon ; dis toujours qui agit
+maintenant. Garde les noms des fichiers et des commandes tels quels. Ne passe jamais à l'étape
+suivante si l'étape en cours a échoué ; en cas d'échec, diagnostique en trois lignes (message
+d'erreur → cause probable → UNE action corrective), puis retente.
+
+**0. Le dossier.** Si le dossier courant contient déjà `produit.json` et
+`tools/studio_motion.py`, c'est lui : passe à l'étape 1 (si tu es dans une vignette « Accueil … »
+de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
+
+- Emplacement : `~/Movies/Publicitaire IA` sur Mac, `%USERPROFILE%\Videos\Publicitaire IA` sous
+  Windows. Évite Documents et le Bureau : souvent synchronisés avec iCloud ou OneDrive, qui
+  retirent les fichiers du disque pour faire de la place.
+- Si ce dossier existe déjà et contient `produit.json`, c'est une **mise à jour** : voir « Mettre
+  à jour » plus bas, et ne touche à rien de ce qui appartient au client.
+- Sinon, avec git : `git clone https://github.com/Alex-lmdm/publicitaire-ia.git "<emplacement>"`.
+  Sans git : télécharge `https://github.com/Alex-lmdm/publicitaire-ia/archive/refs/heads/main.zip`
+  dans un dossier temporaire, décompresse-le, et range le dossier `publicitaire-ia-main` à
+  l'emplacement, renommé `Publicitaire IA`.
+- Travaille ensuite **dans ce dossier**, et dis au client qu'il y ouvrira son assistant pour ses
+  vidéos.
+
+**1. Bilan, sans rien installer.** `node --version` (22 ou plus), `python3 --version` (3.9 ou plus ;
+Windows : `python --version`), `ffmpeg -version`. Montre un tableau ✅ / ❌. S'il manque quelque
+chose, dis en une phrase ce que tu vas installer et attends qu'il réponde « go » :
+
+- Mac : Homebrew s'il manque (https://brew.sh), puis `brew install node ffmpeg` ; pour Python,
+  accepter l'installation des « outils de développement » que le Mac propose.
+- Windows : `winget install -e --id OpenJS.NodeJS.LTS`, `winget install -e --id Python.Python.3.12`,
+  `winget install -e --id Gyan.FFmpeg`, puis lui faire fermer et rouvrir l'assistant (sinon le
+  nouveau chemin n'est pas vu). Sous Windows, les commandes `python3` s'écrivent `python`.
+
+**2. `npm ci`** à la racine du dossier : il installe HyperFrames et GSAP aux versions prévues, puis
+prépare le dossier (instructions de l'assistant, style de départ, vignette d'accueil, copie des
+skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est fait.
+
+**3. `npx hyperframes browser ensure`** : le navigateur qui fabrique les images de la vidéo (il
+garde celui qui est déjà là). Jamais `npx puppeteer browsers install`.
+
+**4. App HyperFrames** (Mac, seulement si `/Applications/HyperFrames.app` existe) :
+`npm run app -- brancher`. Il permet à l'app de lire les instructions de ce dossier (une ligne
+ajoutée à la configuration de Claude Code, avec une sauvegarde). Explique-le en une phrase avant.
+Sans l'app, saute cette étape.
+
+**5. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
+Les lignes « marque pas encore réglée » et « Pack SFX : pas installé » sont normales.
+
+**6. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
+navigateur, app HyperFrames ou « sans l'app », test final). Si tout est ✅, conclus par :
+« C'est installé. Tape /studio : je te demande d'où prendre ta marque et ce que tu vends, une
+seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
+ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
+installé dans ton dossier Vidéos. Ouvre le dossier Publicitaire IA dans ton assistant, dans une
+nouvelle conversation, puis tape /studio : je te demande d'où prendre ta marque et ce que tu
+vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas de tableau, une seule ligne,
+« Publicitaire IA est à jour, tout est ✅. » (le tableau ne s'affiche que si une étape a échoué).
+
+---
+
+## Le Pack SFX (si tu l'as acheté)
+
+Une fois Publicitaire IA installé, écris à l'IA l'une de ces deux phrases :
+
+- « Installe le Pack SFX depuis le fichier pack-sfx.zip de mon dossier Téléchargements »
+- « Reprends le Pack SFX de mon dossier Monteur IA »
+
+Seuls les sons et leurs fiches sont copiés dans Publicitaire IA ; ton dossier Monteur IA n'est pas
+modifié. (Pour l'IA : `python3 tools/studio_motion.py pack-sfx installer "<archive>"` ou
+`pack-sfx reprendre "<dossier>"`, jamais l'INSTALL.md de l'archive, écrit pour Monteur IA.)
+
+## Mettre à jour
+
+Écris à l'IA : « Mets à jour Publicitaire IA ». Pour l'IA : dans le dossier, si c'est un clone git
+propre, `git pull --ff-only` ; sinon, télécharge l'archive de l'étape 0 et remplace les fichiers du
+dossier **sauf** ce qui appartient au client, qu'une nouvelle version ne contient jamais :
+`marque.json`, `studio.config.json`, les dossiers `marque/` et `videos/`, et le Pack SFX
+(`assets/sfx/pack/`, `assets/sfx/catalog.json`, `assets/sfx/sons-par-situation.md`). Puis refais les
+étapes 2 et 5.
 
 ## Problèmes courants
 
-- **« je ne trouve pas le dossier Monteur IA »** : l'agent n'est pas ouvert dans ton dossier
-  Monteur IA. Ouvre-le au bon endroit et recolle la phrase.
-- **❌ HyperFrames** : l'installation de Monteur IA n'est pas allée au bout. Relance son prompt
-  d'installation.
-- **La capture de ta page échoue** (page protégée, page de paiement) : donne deux ou trois
-  captures d'écran de ta page, ça suffit.
+- **« produit.json introuvable »** : l'assistant n'est pas ouvert dans le dossier Publicitaire IA.
+  Ouvre-le (celui qui contient `INSTALL.md`), puis redemande.
+- **❌ HyperFrames ou GSAP** : `npm ci` n'est pas allé au bout (connexion coupée, Node trop ancien).
+  Vérifie `node --version`, puis relance `npm ci`.
+- **❌ ffmpeg** juste après l'avoir installé (Windows) : ferme et rouvre l'assistant.
+- **La lecture de ta page échoue** (page protégée, page de paiement) : donne deux ou trois captures
+  d'écran de ta page, ça suffit pour ta marque et ton offre.
+- **Une police remplacée dans la vidéo** : dis « ma police est X » ; l'assistant la récupère
+  (polices libres) ou te demande ses fichiers.

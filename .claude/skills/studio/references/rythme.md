@@ -1,6 +1,6 @@
 # Rythme, mouvement et caméra
 
-Ce fichier fait foi pour les vidéos de Studio Motion IA. La référence de niveau est une vidéo de
+Ce fichier fait foi pour les vidéos du studio. La référence de niveau est une vidéo de
 lancement produit en motion design : il s'y passe quelque chose **toutes les demi-secondes**, le
 texte tient en quelques mots, la caméra ne s'arrête jamais vraiment, et un objet devient le
 suivant au lieu de laisser place à un écran vide. Une vidéo qui enchaîne des écrans de texte

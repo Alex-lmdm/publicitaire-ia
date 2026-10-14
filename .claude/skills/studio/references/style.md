@@ -1,24 +1,25 @@
 # Le style : vivant, dense, à sa marque
 
-Une vidéo de Studio Motion IA doit avoir le niveau d'une vidéo de lancement produit faite par un
+Une vidéo du studio doit avoir le niveau d'une vidéo de lancement produit faite par un
 studio de motion design : **beaucoup de choses montrées, très peu de texte**, des interfaces que
 les gens reconnaissent, des fonds qui changent, rien qui fasse vide. Le test : on coupe le son,
 on ne lit presque rien, et on a compris ce que fait l'offre.
 
 ## Trois niveaux d'identité
 
-1. **La marque du client** porte la vidéo : couleurs, polices et mot-clé de `brand.config.json`,
-   déjà dans `brand/tokens.css` du projet (`var(--brand-bg)`, `var(--brand-accent)`,
-   `var(--brand-font-display)`…). Jamais une couleur ou une police de marque écrite en dur.
+1. **La marque du client** porte la vidéo : couleurs, polices et logo de `marque.json`, déjà
+   dans `brand/` du projet (`var(--brand-bg)`, `var(--brand-accent)`, `var(--brand-secondary)`,
+   `var(--brand-font-display)`…, et `brand/logo.*` s'il en a un). Jamais une couleur ou une police
+   de marque écrite en dur.
 2. **Les surfaces de son offre** gardent leur propre identité : sa page, son espace de formation,
    son logiciel, dans leurs vraies couleurs et polices (relevées dans la capture).
 3. **Les outils tiers** qu'il utilise ou dont sa page parle (Claude, ChatGPT, Notion, Canva,
    CapCut, Instagram…) gardent leurs logos, leurs couleurs et leur allure. Ce sont des repères
    que l'audience connaît : montre-les (`studio_motion.py logos` pose leurs logos).
 
-Si sa marque n'est pas encore réglée (style « neutral » de départ), prends les couleurs de sa
-page de vente, et dis-lui qu'un `/setup visuel` de Monteur IA les fixera. Aucune question de
-couleur ou de police pour démarrer.
+Si sa marque n'est pas encore réglée (`marque.json` absent : style de départ noir et blanc),
+règle-la d'abord avec `marque.md` : une question sur la source, puis son accord. Aucune question
+de code couleur ou de nom de police : il valide un aperçu.
 
 ## Des fonds qui alternent, jamais un aplat vide
 

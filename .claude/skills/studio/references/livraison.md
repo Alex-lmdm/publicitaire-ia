@@ -49,7 +49,8 @@ lien est exactement celui de la vidéo.
 ```
 
 Pas de liste de hashtags (deux ou trois au plus, s'il en met d'habitude). Sans automatisation de
-DM (`cta.dmTool` vide dans `brand.config.json`), propose « Le lien est dans ma bio ».
+DM (`dm` vide dans `studio.config.json` : demande-le une fois s'il ne l'a pas dit), propose
+« Le lien est dans ma bio ».
 
 **Pub** : pour chaque accroche, un texte principal (3 à 5 lignes : problème, résultat, preuve),
 un titre de 5 mots, une description courte, et le bouton conseillé (« En savoir plus »,

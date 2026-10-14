@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""STUDIO MOTION : l'outil de l'extension Studio Motion IA de Monteur IA.
+"""L'outil de Publicitaire IA (nom et code lus dans produit.json ; le skill s'appelle `studio`).
 
 Des vidéos en motion design qui vendent l'offre du client, pour un objectif (vendre l'offre,
 annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer,
@@ -9,8 +9,14 @@ YouTube). Le support décide du format de sortie, des zones de sécurité et des
 Le skill `studio` décide quoi dire et quoi montrer ; cet outil fait le travail mécanique et
 vérifiable, pour que rien ne dépende de la mémoire de l'agent.
 
-Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
+Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon chemin) :
     python3 tools/studio_motion.py verifier
+    python3 tools/studio_motion.py marque [page <lien> | images <f>… | video <lien|f> | monteur <dossier>]
+    python3 tools/studio_motion.py marque regler --accent "#ffee00" --titres "Poppins"   # retouches
+    python3 tools/studio_motion.py marque valider
+    python3 tools/studio_motion.py police "Montserrat"           # une police libre, prête au rendu
+    python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
+    python3 tools/studio_motion.py pack-sfx [installer <pack-sfx.zip> | reprendre <dossier Monteur IA> | chercher <mots>]
     python3 tools/studio_motion.py supports                      # supports, formats, durées
     python3 tools/studio_motion.py nouvelle "<sujet>" --objectif vente --videos reel,page [--ouvrir]
     python3 tools/studio_motion.py ajouter <dossier> --videos linkedin,story   # « la même pour LinkedIn »
@@ -22,6 +28,7 @@ Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
     python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2]
     python3 tools/studio_motion.py rythme <video.mp4>                # au moins 1 événement/s, rien de figé
     python3 tools/studio_motion.py musique <morceau.wav> [--sortie calee.wav --a 8 --duree 67]   # tempo, entrée, calage
+    python3 tools/studio_motion.py sons <projet> <sons.json> [--ecraser]   # pose musique et bruitages
     python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique
     python3 tools/studio_motion.py son <video.mp4> [--cible -16]
     python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
@@ -33,15 +40,17 @@ Usage (depuis le dossier Monteur IA, ou depuis un projet de vidéo) :
     python3 tools/studio_motion.py livrer <dossier de la vidéo>
 
 Une syntaxe pour les vidéos : `support[:rôle][@format]`, par exemple `story:teaser`,
-`page@1x1`, `pub@4x5`. Python 3.9+ et la bibliothèque standard seulement. FFmpeg et ffprobe
-sont ceux de Monteur IA.
+`page@1x1`, `pub@4x5`. Python 3.9+ et la bibliothèque standard seulement ; FFmpeg et ffprobe
+installés sur l'ordinateur, HyperFrames dans node_modules/ (npm ci).
 """
 from __future__ import annotations
 
 import argparse
 import datetime
+import html
 import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -55,9 +64,31 @@ for _flux in (sys.stdout, sys.stderr):
     except (AttributeError, ValueError):
         pass
 
-VERSION = "0.4.1"
 OUTILS = Path(__file__).resolve().parent
+RACINE = OUTILS.parent
+sys.path.insert(0, str(OUTILS))
+import marque as mq  # noqa: E402
+import pack_sfx  # noqa: E402
+
 FPS = 30
+
+
+def _lire_texte(f: Path, defaut: str = "") -> str:
+    try:
+        return f.read_text(encoding="utf-8").strip()
+    except OSError:
+        return defaut
+
+
+VERSION = _lire_texte(RACINE / "VERSION", "0.0.0")
+
+
+def produit() -> dict:
+    """Le nom du produit et son code, lus dans produit.json."""
+    try:
+        return json.loads((RACINE / "produit.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {"nom": "ce dossier", "code": "publicitaire-ia"}
 
 # ---------------------------------------------------------------------------
 # Formats de sortie
@@ -389,10 +420,10 @@ def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Les lieux : le dossier Monteur IA et les vidéos
+# Les lieux : la racine du dossier (là où vit cet outil) et les vidéos
 # ---------------------------------------------------------------------------
 INTERDITS_NOM = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
-DOSSIER = "studio-motion"
+DOSSIER = "videos"
 
 
 def propre(texte: str, longueur: int = 40) -> str:
@@ -400,49 +431,34 @@ def propre(texte: str, longueur: int = 40) -> str:
     return texte[:longueur].rstrip(" .-")
 
 
-def maison_de(depart: Path) -> Path | None:
-    """Le dossier Monteur IA qui contient `depart` : celui qui porte templates/AGENT.md.tpl."""
-    p = Path(depart).resolve()
-    for d in (p, *p.parents):
-        if (d / "templates" / "AGENT.md.tpl").is_file():
-            return d
-    return None
+def racine() -> Path:
+    """La racine du dossier : celle qui contient cet outil (tools/) et produit.json."""
+    if not (RACINE / "produit.json").is_file():
+        sys.exit(f"ERREUR : {RACINE} n'a pas de produit.json : cet outil doit rester dans le dossier tools/ "
+                 "de son dossier d'origine (re-télécharge le dossier complet si besoin).")
+    return RACINE
 
 
-def maison() -> Path:
-    m = maison_de(OUTILS) or maison_de(Path.cwd())
-    if m is None:
-        sys.exit("ERREUR : je ne trouve pas le dossier Monteur IA (il contient templates/AGENT.md.tpl). "
-                 "Ouvre ton assistant dans ton dossier Monteur IA et relance.")
-    return m
-
-
-def config(m: Path) -> dict:
-    for nom in ("brand.config.json", "brand.config.example.json"):
-        f = m / nom
-        if f.is_file():
-            try:
-                return json.loads(f.read_text(encoding="utf-8"))
-            except ValueError:
-                return {}
-    return {}
-
-
-def binaire(m: Path | None, nom: str) -> str | None:
-    """ffmpeg / ffprobe : celui des réglages de Monteur IA, sinon celui du PATH, sinon Homebrew."""
-    if m is not None:
-        chemin = ((config(m).get("env") or {}).get("ffmpegPath") or "").strip()
-        if chemin:
-            candidat = Path(chemin).with_name(nom) if nom != "ffmpeg" else Path(chemin)
-            if candidat.exists():
-                return str(candidat)
+def binaire(nom: str) -> str | None:
+    """ffmpeg / ffprobe : celui du PATH, sinon Homebrew (Mac), sinon l'installation winget (Windows)."""
     trouve = shutil.which(nom)
     if trouve:
         return trouve
     for dossier in ("/opt/homebrew/bin", "/usr/local/bin"):
         if (Path(dossier) / nom).exists():
             return str(Path(dossier) / nom)
-    return None
+    winget = Path.home() / "AppData" / "Local" / "Microsoft" / "WinGet" / "Links" / f"{nom}.exe"
+    return str(winget) if winget.exists() else None
+
+
+def hyperframes_cli() -> list[str] | None:
+    """La CLI HyperFrames du dossier (version figée par package.json), sinon celle du système."""
+    for nom in ("hyperframes.cmd", "hyperframes") if os.name == "nt" else ("hyperframes",):
+        local = RACINE / "node_modules" / ".bin" / nom
+        if local.exists():
+            return [str(local)]
+    systeme = shutil.which("hyperframes")
+    return [systeme] if systeme else None
 
 
 def polices_manquantes(dossier: Path) -> list[str]:
@@ -467,27 +483,33 @@ def polices_manquantes(dossier: Path) -> list[str]:
     return manquantes
 
 
-CONSEIL_POLICE = ("dépose ses fichiers .woff2 dans assets/fonts/ du dossier Monteur IA, déclare-la dans la table "
-                  "`fonts` de templates/style-presets.json, puis `npm run sync` ; ou choisis une police livrée "
-                  "avec /setup visuel")
+CONSEIL_POLICE = ("lance `studio_motion.py police \"<Famille>\"` (police libre de Google Fonts), ou "
+                  "`studio_motion.py marque regler --titres \"<Famille>\"` avec une police déjà disponible")
 
 
 def lancer(cmd: list[str], **kw) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", **kw)
 
 
+def bloc_meta(meta: dict) -> dict | None:
+    """Le bloc de description d'un projet : `studioMotion` (0.5 et plus), ou `monteurIa` pour une
+    vidéo créée par l'extension 0.4 dans un dossier Monteur IA."""
+    bloc = meta.get("studioMotion") or meta.get("monteurIa")
+    return bloc if isinstance(bloc, dict) else None
+
+
 def meta_de(chemin: Path) -> dict | None:
-    """Le bloc monteurIa du projet qui contient `chemin` (une vidéo exportée, un dossier)."""
+    """Le bloc de description du projet qui contient `chemin` (une vidéo exportée, un dossier)."""
     p = Path(chemin).resolve()
     depart = p if p.is_dir() else p.parent
     for d in (depart, *depart.parents):
         f = d / "meta.json"
         if f.is_file():
             try:
-                return json.loads(f.read_text(encoding="utf-8")).get("monteurIa") or {}
+                return bloc_meta(json.loads(f.read_text(encoding="utf-8"))) or {}
             except ValueError:
                 return None
-        if (d / "templates" / "AGENT.md.tpl").is_file():
+        if (d / "produit.json").is_file():
             return None
     return None
 
@@ -496,27 +518,44 @@ def meta_de(chemin: Path) -> dict | None:
 # Commandes
 # ---------------------------------------------------------------------------
 def cmd_verifier(_a) -> None:
-    m = maison()
+    r = racine()
+    if not (r / "brand" / "tokens.css").is_file() or not accueils(r):
+        style_et_accueil(r)
     ok = True
+    python_ok = sys.version_info >= (3, 9)
     for nom, present in (
-        ("dossier Monteur IA", True),
-        ("skill studio", (m / ".claude" / "skills" / "studio" / "SKILL.md").is_file()),
-        ("aiguillage dans les instructions", "BEGIN EXTENSION: studio-motion" in (m / "templates" / "AGENT.md.tpl").read_text(encoding="utf-8")),
-        ("gabarits des vidéos", (m / "templates" / "studio-motion" / "index.html.tpl").is_file()
-         or (OUTILS.parent / "templates" / "projet" / "index.html.tpl").is_file()),
-        ("style de la marque (brand/)", (m / "brand" / "tokens.css").is_file()),
-        ("HyperFrames", (m / "node_modules" / ".bin" / "hyperframes").exists() or shutil.which("hyperframes") is not None),
-        ("ffmpeg", binaire(m, "ffmpeg") is not None),
-        ("ffprobe", binaire(m, "ffprobe") is not None),
+        ("dossier complet", (r / "produit.json").is_file() and (r / "tools" / "marque.py").is_file()),
+        ("Python 3.9 ou plus", python_ok),
+        ("skill studio", (r / ".claude" / "skills" / "studio" / "SKILL.md").is_file()),
+        ("skills HyperFrames", all((r / ".claude" / "skills" / s / "SKILL.md").is_file() for s in SKILLS_HYPERFRAMES)),
+        ("instructions de l'agent (CLAUDE.md, AGENTS.md)", (r / "CLAUDE.md").is_file() and (r / "AGENTS.md").is_file()),
+        ("gabarits et kit des vidéos", (r / "templates" / "projet" / "index.html.tpl").is_file()
+         and (r / "templates" / "kit" / "kit.js").is_file()),
+        ("style de la marque (brand/)", (r / "brand" / "tokens.css").is_file()),
+        ("HyperFrames", hyperframes_cli() is not None),
+        ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
+        ("ffmpeg", binaire("ffmpeg") is not None),
+        ("ffprobe", binaire("ffprobe") is not None),
         ("Node", shutil.which("node") is not None or any(Path.home().glob(".nvm/versions/node/*/bin/node"))),
     ):
         print(f"{'✅' if present else '❌'} {nom}")
         ok = ok and present
-    for famille in polices_manquantes(m):
+    pack = pack_sfx.etat(r)
+    print(f"ℹ️ Pack SFX : {pack['presents']}/{pack['attendus']} sons pro" if pack["attendus"]
+          else "ℹ️ Pack SFX : pas installé (optionnel, les 22 sons de démarrage suffisent pour commencer)")
+    marque = mq.lire(r)
+    if not marque:
+        print("ℹ️ marque pas encore réglée : le premier /studio s'en charge (une question sur la source)")
+    else:
+        print(f"ℹ️ marque : {marque.get('nom') or 'sans nom'} ({'validée' if marque.get('valide') else 'à valider'})")
+    for famille in polices_manquantes(r):
         print(f"⚠️ police « {famille} » sans fichier : au rendu, elle serait remplacée par une autre. Pour la garder, {CONSEIL_POLICE}.")
     print("ok" if ok else "à corriger")
     if not ok:
         sys.exit(1)
+
+
+SKILLS_HYPERFRAMES = ("hyperframes-core", "hyperframes-animation", "hyperframes-cli")
 
 
 def cmd_supports(_a) -> None:
@@ -531,18 +570,341 @@ def cmd_supports(_a) -> None:
     print(f"Rôles d'une campagne : {', '.join(ROLES)}")
 
 
-def _copier_style(m: Path, projet: Path) -> None:
-    """Le rendu ne voit que le dossier du projet : on y copie le style, les polices et GSAP."""
-    for sous in ("brand", "assets/vendor", "assets/fonts"):
-        src = m / sous
-        if src.is_dir():
-            shutil.copytree(src, projet / sous, dirs_exist_ok=True,
-                            ignore=shutil.ignore_patterns("atoms.html", "BRAND.md", "*.ttf", ".DS_Store"))
+# ---------------------------------------------------------------------------
+# La marque : style généré, accueil de l'app, aperçu à valider
+# ---------------------------------------------------------------------------
+def _ecrire_si_different(fichier: Path, contenu: str) -> None:
+    """L'app HyperFrames signale toute écriture dans un projet ouvert : on n'écrit que ce qui change."""
+    if fichier.is_file() and fichier.read_text(encoding="utf-8") == contenu:
+        return
+    fichier.parent.mkdir(parents=True, exist_ok=True)
+    fichier.write_text(contenu, encoding="utf-8")
 
 
+def _miroir(source: Path, dest: Path) -> None:
+    """dest devient une copie exacte de source (fichiers retirés compris), sans réécrire l'identique."""
+    if not source.is_dir():
+        return
+    dest.mkdir(parents=True, exist_ok=True)
+    for f in dest.rglob("*"):
+        if f.is_file() and not (source / f.relative_to(dest)).exists():
+            f.unlink()
+    for f in source.rglob("*"):
+        if f.is_file() and f.name != ".DS_Store":
+            cible = dest / f.relative_to(source)
+            if not cible.is_file() or cible.read_bytes() != f.read_bytes():
+                cible.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, cible)
+
+
+def accueils(r: Path) -> list[Path]:
+    sortie = []
+    for d in sorted(p for p in r.iterdir() if p.is_dir()):
+        try:
+            if (bloc_meta(json.loads((d / "meta.json").read_text(encoding="utf-8"))) or {}).get("lieu") == "accueil":
+                sortie.append(d)
+        except (OSError, ValueError):
+            continue
+    return sortie
+
+
+def assurer_accueil(r: Path, s: dict) -> Path:
+    """La vignette d'accueil de l'app HyperFrames : elle montre la marque (couleurs, polices, logo)
+    et dit quoi taper. Créée une fois, jamais renommée (l'app la suit par son chemin)."""
+    existants = accueils(r)
+    dossier = existants[0] if existants else r / propre(f"Accueil {produit().get('nom', '')}", 60)
+    dossier.mkdir(parents=True, exist_ok=True)
+    _miroir(r / "brand", dossier / "brand")
+    _miroir(r / "assets" / "vendor", dossier / "assets" / "vendor")
+    logo = next(iter(sorted((dossier / "brand").glob("logo.*"))), None)
+    valeurs = {
+        "PRODUIT": html.escape(str(produit().get("nom", ""))),
+        "MARQUE": html.escape(s.get("nom") or "Ta marque"),
+        "ETAT": "Ta marque, telle que tes vidéos la porteront" if s.get("personnalisee")
+                else "Style de départ : tape /studio, ta marque se règle en une question",
+        "FOND": s["fond"], "TEXTE": s["texte"], "ACCENT": s["accent"],
+        "PASTILLE_SECONDAIRE": (f'<div class="pastille"><i style="background:{s["secondaire"]}"></i>2e {s["secondaire"]}</div>'
+                                if s["secondaire"] != s["accent"] else ""),
+        # Le nom tient sur la largeur (860 px) : environ 0,62 em par caractère en graisse 800.
+        "TAILLE_MARQUE": str(max(56, min(118, int(860 / (0.62 * max(1, len(s.get("nom") or "Ta marque"))))))),
+        "TITRES": html.escape(s["titres"]), "CORPS": html.escape(s["corps"]),
+        "LOGO": f'<img id="logo" class="clip" data-start="0" data-duration="6" data-track-index="5" src="brand/{logo.name}" alt="">'
+                if logo else "",
+    }
+    gabarit = (r / "templates" / "accueil" / "index.html.tpl").read_text(encoding="utf-8")
+    _ecrire_si_different(dossier / "index.html", _remplir(gabarit, **valeurs))
+    _ecrire_si_different(dossier / "hyperframes.json", (r / "hyperframes.json").read_text(encoding="utf-8"))
+    if not (dossier / "meta.json").is_file():
+        meta = {"id": dossier.name, "name": dossier.name, "studioMotion": {"lieu": "accueil"}}
+        (dossier / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return dossier
+
+
+def style_et_accueil(r: Path) -> dict:
+    s = mq.ecrire_style(r)
+    s["accueil"] = assurer_accueil(r, s)
+    return s
+
+
+def apercu(r: Path, accueil: Path) -> Path | None:
+    """Une image de la vignette d'accueil (marque/apercu.png), à montrer au client pour validation."""
+    cli = hyperframes_cli()
+    if not cli:
+        return None
+    sortie = r / "marque" / "apercu"
+    shutil.rmtree(sortie, ignore_errors=True)
+    try:
+        res = lancer([*cli, "snapshot", str(accueil), "--at", "1.2", "--no-end", "-o", str(sortie)], timeout=180)
+    except (subprocess.TimeoutExpired, OSError):
+        return None
+    images = sorted(sortie.glob("*.png"))
+    if res.returncode != 0 or not images:
+        return None
+    cible = r / "marque" / "apercu.png"
+    shutil.copy2(images[0], cible)
+    shutil.rmtree(sortie, ignore_errors=True)
+    return cible
+
+
+def montrer_marque(r: Path, s: dict, marque: dict | None, journal: list[str] | None = None) -> None:
+    print("• marque.json :" + (" validée" if (marque or {}).get("valide") else " à valider avec le client"))
+    for ligne in mq.resume(marque, s):
+        print(f"  {ligne}")
+    if (marque or {}).get("notes"):
+        print("• comment je l'ai lue :")
+        for n in marque["notes"]:
+            print(f"  - {n}")
+    for j in journal or []:
+        print(f"⚠️ {j}")
+    for famille in s.get("manquantes") or []:
+        print(f"⚠️ police « {famille} » sans fichier : {CONSEIL_POLICE}.")
+    image = apercu(r, s["accueil"])
+    if image:
+        print(f"• aperçu : {image.relative_to(r)} (et la vignette « {s['accueil'].name} » dans l'app HyperFrames)")
+    if marque and not marque.get("valide"):
+        print("→ montre-la au client et demande si c'est bien sa marque ; une correction : `marque regler …`, "
+              "son accord : `marque valider`.")
+
+
+def cmd_style(_a) -> None:
+    r = racine()
+    s = style_et_accueil(r)
+    print(f"style généré dans brand/ ({'marque.json' if s['personnalisee'] else 'style de départ'}), accueil « {s['accueil'].name} »")
+    for famille in s["manquantes"]:
+        print(f"⚠️ police « {famille} » sans fichier : {CONSEIL_POLICE}.")
+
+
+def _source_video(r: Path, source: str) -> Path:
+    """Une vidéo locale, ou téléchargée (yt-dlp) dans marque/video/."""
+    if not re.match(r"https?://", source):
+        f = Path(source).expanduser()
+        if not f.is_file():
+            sys.exit(f"ERREUR : fichier introuvable : {f}")
+        return f
+    dl = ytdlp()
+    if not dl:
+        sys.exit("ERREUR : pas de téléchargeur de vidéos sur cet ordinateur : demande au client d'enregistrer la vidéo "
+                 "et de la glisser dans la conversation, puis donne son chemin.")
+    dossier = r / "marque" / "video"
+    dossier.mkdir(parents=True, exist_ok=True)
+    for ancien in dossier.glob("source.*"):
+        ancien.unlink()
+    res = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(dossier / "source.%(ext)s"), source])
+    trouves = sorted(dossier.glob("source.*"))
+    if res.returncode != 0 or not trouves:
+        sys.exit(f"ERREUR : téléchargement impossible ({(res.stderr or '')[-200:].strip()}). Demande la vidéo en fichier.")
+    return trouves[0]
+
+
+def cmd_marque(a) -> None:
+    r = racine()
+    action, valeurs = a.action, a.valeurs or []
+    actuelle = mq.lire(r)
+    journal: list[str] = []
+    try:
+        if action is None or action == "montrer":
+            s = style_et_accueil(r)
+            if not actuelle:
+                print("• pas encore de marque : style de départ. Demande au client d'où la tirer "
+                      "(page de vente, images, vidéo, ou son dossier Monteur IA).")
+            montrer_marque(r, s, actuelle)
+            return
+        if action == "valider":
+            if not actuelle:
+                sys.exit("ERREUR : rien à valider : règle d'abord la marque (`marque page …`).")
+            actuelle["valide"] = True
+            mq.ecrire(r, actuelle)
+            print("• marque validée : ses vidéos la porteront (`marque regler` pour la changer plus tard)")
+            return
+        if action == "regler":
+            nouvelle_marque = regler(r, actuelle, a)
+        else:
+            if not valeurs:
+                sys.exit(f"ERREUR : `marque {action}` attend {'un lien' if action == 'page' else 'un chemin'}.")
+            ffmpeg = binaire("ffmpeg")
+            if action == "page":
+                print("• lecture de la page et capture (1 à 2 minutes)…", flush=True)
+                nouvelle_marque, journal = mq.depuis_page(r, valeurs[0], None if a.sans_capture else hyperframes_cli())
+            elif action == "images":
+                if not ffmpeg:
+                    sys.exit("ERREUR : ffmpeg introuvable.")
+                fichiers = [Path(v).expanduser() for v in valeurs]
+                absents = [str(f) for f in fichiers if not f.is_file()]
+                if absents:
+                    sys.exit(f"ERREUR : introuvable : {', '.join(absents)}")
+                nouvelle_marque = mq.depuis_images(r, fichiers, ffmpeg)
+            elif action == "video":
+                if not ffmpeg:
+                    sys.exit("ERREUR : ffmpeg introuvable.")
+                nouvelle_marque = mq.depuis_video(r, _source_video(r, valeurs[0]), ffmpeg)
+                print("• planche de la vidéo : marque/video/planche.jpg (regarde-la pour les polices et le style)")
+            elif action == "monteur":
+                nouvelle_marque = mq.depuis_monteur(r, Path(valeurs[0]))
+            else:
+                sys.exit(f"ERREUR : source inconnue : {action}")
+    except mq.ErreurMarque as e:
+        sys.exit(f"ERREUR : {e}")
+    if actuelle:
+        (r / "marque").mkdir(exist_ok=True)
+        (r / "marque" / "precedente.json").write_text(json.dumps(actuelle, ensure_ascii=False, indent=2) + "\n",
+                                                      encoding="utf-8")
+    mq.ecrire(r, nouvelle_marque)
+    montrer_marque(r, style_et_accueil(r), nouvelle_marque, journal)
+
+
+def regler(r: Path, actuelle: dict | None, a) -> dict:
+    """Les retouches demandées par le client : une couleur, une police, le nom, le logo, le mot-clé."""
+    m = json.loads(json.dumps(actuelle)) if actuelle else mq.nouvelle(
+        "client", "réglée à la main", {}, {"titres": mq.DEFAUT["titres"], "corps": mq.DEFAUT["corps"]})
+    for cle in ("fond", "texte", "accent", "secondaire", "surface"):
+        valeur = getattr(a, cle, None)
+        if valeur is not None:
+            if valeur.lower() in ("aucune", "aucun", "none", ""):
+                m["couleurs"][cle] = None
+            elif not mq.hex_norme(valeur):
+                raise mq.ErreurMarque(f"« {valeur} » n'est pas une couleur (#rrggbb)")
+            else:
+                m["couleurs"][cle] = mq.hex_norme(valeur)
+    for role in ("titres", "corps"):
+        famille = getattr(a, role, None)
+        if famille:
+            origine = mq.acquerir_police(r, famille)
+            m["polices"][role] = famille
+            m.setdefault("notes", []).append(f"{role} en {famille} : {origine}")
+    if a.nom:
+        m["nom"] = a.nom
+    if a.mot_cle:
+        m["mot_cle"] = a.mot_cle.strip().upper()
+    if a.logo:
+        f = Path(a.logo).expanduser()
+        ext = mq.type_image(f.read_bytes()) if f.is_file() else None
+        if not ext or ext == ".ico":
+            raise mq.ErreurMarque(f"« {a.logo} » n'est pas une image (png, jpg, webp, svg)")
+        (r / "marque").mkdir(exist_ok=True)
+        for ancien in (r / "marque").glob("logo.*"):
+            ancien.unlink()
+        shutil.copy2(f, r / "marque" / f"logo{ext}")
+        m["logo"] = f"marque/logo{ext}"
+    m["valide"] = False
+    return m
+
+
+def cmd_police(a) -> None:
+    r = racine()
+    try:
+        origine = mq.acquerir_police(r, a.famille)
+    except mq.ErreurMarque as e:
+        sys.exit(f"ERREUR : {e}. Le client peut aussi donner les fichiers de sa police (woff2, ttf).")
+    print(f"• « {a.famille} » : {origine}")
+    print(f"  pour l'utiliser : studio_motion.py marque regler --titres \"{a.famille}\" (ou --corps)")
+
+
+def cmd_pack_sfx(a) -> None:
+    r = racine()
+    try:
+        if a.action == "installer":
+            if not a.valeurs:
+                sys.exit("ERREUR : donne le chemin de l'archive pack-sfx.zip.")
+            print("• installation du Pack SFX depuis l'archive (sons et fiches seulement)…", flush=True)
+            res = pack_sfx.installer_depuis_zip(r, Path(a.valeurs[0]))
+        elif a.action == "reprendre":
+            if not a.valeurs:
+                sys.exit("ERREUR : donne le chemin du dossier Monteur IA.")
+            res = pack_sfx.reprendre_depuis_monteur(r, Path(a.valeurs[0]))
+        elif a.action == "chercher":
+            trouves = pack_sfx.chercher(r, a.valeurs or [])
+            if not trouves:
+                print("• aucun son ne correspond (essaie un mot plus court : clic, whoosh, coche, argent…)")
+            for son in trouves:
+                print(f"- {pack_sfx.ligne(son)}")
+            return
+        else:
+            e = pack_sfx.etat(r)
+            if not e["attendus"]:
+                print("• Pack SFX : pas installé. Il s'installe depuis son archive (`pack-sfx installer "
+                      "<pack-sfx.zip>`) ou depuis un dossier Monteur IA (`pack-sfx reprendre <dossier>`).")
+            else:
+                print(f"• Pack SFX {e['version']} : {e['presents']}/{e['attendus']} sons pro"
+                      + (f", {len(e['manquants'])} manquent : réinstalle-le" if e["manquants"] else ""))
+            return
+    except pack_sfx.ErreurPack as e:
+        sys.exit(f"ERREUR : {e}")
+    retires = f", {res['retires']} anciens retirés" if res["retires"] else ""
+    print(f"• Pack SFX {res['version']} : {res['presents']}/{res['attendus']} sons pro dans assets/sfx/pack/ "
+          f"({res['ecrits']} copiés, {res['identiques']} déjà là{retires}), "
+          "fiches dans assets/sfx/catalog.json et assets/sfx/sons-par-situation.md")
+    print("  le choix des bruitages pioche maintenant dans ces sons (`pack-sfx chercher <mots>`)")
+
+
+def cmd_sons(a) -> None:
+    """Pose la musique et les bruitages décrits dans un fichier JSON (chemins relatifs au projet) :
+    {"musique": "assets/audio/musique.wav", "musique_db": -17, "evenements": [{"src": …, "start": s,
+    "vol": dB, "trim": [t0, t1], "fondu_entree": s, "fondu_sortie": s, "af": filtre}]}."""
+    import sons
+    projet = Path(a.projet).resolve()
+    liste = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
+
+    def chemin(x):
+        p = Path(x).expanduser()
+        return p if p.is_absolute() else (projet / p).resolve()
+    evenements = []
+    for e in liste.get("evenements") or []:
+        e = dict(e)
+        e["src"] = chemin(e["src"])
+        if e.get("trim"):
+            e["trim"] = tuple(e["trim"])
+        evenements.append(e)
+    musique = chemin(liste["musique"]) if liste.get("musique") else None
+    try:
+        rapport = sons.poser(projet, evenements, musique=musique, musique_db=float(liste.get("musique_db", -17)),
+                             ecraser=a.ecraser)
+    except sons.Erreur as e:
+        sys.exit(f"ERREUR : {e}")
+    print(f"• {len(evenements)} bruitage(s){' et la musique' if musique else ''} posés dans index.html")
+    print(f"  {sons.resume_niveau(rapport)}")
+
+
+# ---------------------------------------------------------------------------
+# Les vidéos : un dossier par sujet, un projet de l'app par format
+# ---------------------------------------------------------------------------
 POLICES_INTERFACES = ((400, "normal", "Inter-400.woff2"), (400, "italic", "Inter-400-italic.woff2"),
                       (600, "normal", "Inter-600.woff2"), (700, "normal", "Inter-700.woff2"),
                       (900, "normal", "Inter-900.woff2"))
+
+
+def _copier_style(r: Path, projet: Path) -> None:
+    """Le rendu ne voit que le dossier du projet : on y copie le style de la marque, GSAP et Inter
+    (la police des interfaces reconstruites), avec sa licence."""
+    for sous in ("brand", "assets/vendor"):
+        if (r / sous).is_dir():
+            shutil.copytree(r / sous, projet / sous, dirs_exist_ok=True, ignore=shutil.ignore_patterns(".DS_Store"))
+    fonts = projet / "assets" / "fonts"
+    fonts.mkdir(parents=True, exist_ok=True)
+    for _poids, _style, nom in POLICES_INTERFACES:
+        if (r / "assets" / "fonts" / nom).is_file():
+            shutil.copy2(r / "assets" / "fonts" / nom, fonts / nom)
+    if (r / "assets" / "fonts" / "OFL-Inter.txt").is_file():
+        shutil.copy2(r / "assets" / "fonts" / "OFL-Inter.txt", fonts / "OFL-Inter.txt")
 
 
 def _polices_interfaces(projet: Path) -> Path:
@@ -561,31 +923,15 @@ def _polices_interfaces(projet: Path) -> Path:
     return feuille
 
 
-def _kit(m: Path) -> Path | None:
-    """Le kit de briques (fonds, curseur, objets flottants, chapitres, interfaces) : celui de
-    l'extension, sinon celui installé dans le dossier Monteur IA."""
-    for dossier in (OUTILS.parent / "templates" / "kit", m / "templates" / "studio-motion" / "kit"):
-        if (dossier / "kit.js").is_file():
-            return dossier
-    return None
-
-
 def _remplir(gabarit: str, **valeurs: str) -> str:
     for cle, val in valeurs.items():
         gabarit = gabarit.replace("{{" + cle + "}}", val)
     return gabarit
 
 
-def _gabarits(m: Path) -> tuple[Path, Path]:
-    pres = OUTILS.parent / "templates" / "projet"
-    if (pres / "index.html.tpl").is_file():
-        return pres / "CLAUDE.md.tpl", pres / "index.html.tpl"
-    return m / "templates" / "studio-motion" / "CLAUDE.md.tpl", m / "templates" / "studio-motion" / "index.html.tpl"
-
-
-def creer(m: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> Path:
-    """studio-motion/<sujet> · <date>/ : la fiche, le plan, les sources, la livraison, et un projet de
-    l'app HyperFrames par vidéo. Rien n'est jamais écrasé."""
+def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> Path:
+    """videos/<sujet> · <date>/ : la fiche, le plan, les sources, la livraison, et un projet de l'app
+    HyperFrames par vidéo. Rien n'est jamais écrasé."""
     if objectif not in OBJECTIFS:
         sys.exit(f"ERREUR : objectif inconnu : {objectif} ({', '.join(OBJECTIFS)}).")
     if not videos:
@@ -593,7 +939,7 @@ def creer(m: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     cles = [cle_video(v) for v in videos]
     if len(set(cles)) != len(cles):
         sys.exit(f"ERREUR : deux vidéos portent le même nom ({', '.join(cles)}) : donne-leur un rôle ou un format.")
-    base = m / DOSSIER / " · ".join(p for p in (propre(sujet), date) if p)
+    base = r / DOSSIER / " · ".join(p for p in (propre(sujet), date) if p)
     dossier, n = base, 2
     while dossier.exists():
         dossier, n = base.with_name(f"{base.name} ({n})"), n + 1
@@ -601,6 +947,9 @@ def creer(m: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
         (dossier / sous).mkdir(parents=True, exist_ok=True)
     fiche = json.loads(json.dumps(FICHE_VIDE))
     fiche.update(produit=sujet, objectif=objectif)
+    marque = mq.lire(r) or {}
+    if marque.get("mot_cle"):
+        fiche["cta"].update(mot_cle=marque["mot_cle"], source="client")
     (dossier / "OFFRE.json").write_text(json.dumps(fiche, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     plan = [f"# {OBJECTIFS[objectif]['nom']} : {sujet}\n\nCréé le {date}. Objectif : {OBJECTIFS[objectif]['quoi']}.\n",
             "## Brief\n\n(objectif précis, public, supports, voix, ce que la vidéo doit faire faire)\n",
@@ -613,13 +962,13 @@ def creer(m: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
                     "|---|---|---|---|---|---|---|\n")
     (dossier / "PLAN.md").write_text("\n".join(plan), encoding="utf-8")
     for v in videos:
-        creer_projet(m, dossier, sujet, objectif, v, date)
+        creer_projet(r, dossier, sujet, objectif, v, date)
     return dossier
 
 
-def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, date: str) -> Path:
+def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, date: str) -> Path:
     """Un projet de l'app HyperFrames pour une vidéo du dossier : style copié, gabarit, instructions."""
-    gabarit_md, gabarit_html = _gabarits(m)
+    gabarits = r / "templates" / "projet"
     maintenant = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
     s = SUPPORTS[v["support"]]
     largeur, hauteur = FORMATS[v["format"]]
@@ -628,38 +977,39 @@ def creer_projet(m: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
     projet.mkdir(parents=True)
     for sous in ("assets/images", "assets/audio", "exports", "work"):
         (projet / sous).mkdir(parents=True, exist_ok=True)
-    _copier_style(m, projet)
+    _copier_style(r, projet)
     _polices_interfaces(projet)
-    kit = _kit(m)
-    if kit:
-        shutil.copytree(kit, projet / "kit", dirs_exist_ok=True, ignore=shutil.ignore_patterns(".DS_Store"))
-    if (m / "hyperframes.json").is_file():
-        shutil.copy2(m / "hyperframes.json", projet / "hyperframes.json")
+    if (r / "templates" / "kit" / "kit.js").is_file():
+        shutil.copytree(r / "templates" / "kit", projet / "kit", dirs_exist_ok=True, ignore=shutil.ignore_patterns(".DS_Store"))
+    if (r / "hyperframes.json").is_file():
+        shutil.copy2(r / "hyperframes.json", projet / "hyperframes.json")
     lo, hi = s["ideal"]
     valeurs = {"SUJET": sujet, "VIDEO": cle, "VIDEO_NOM": nom_video(v), "SUPPORT": v["support"],
                "SUPPORT_TITRE": s["titre"], "FORMAT": v["format"], "LARGEUR": str(largeur),
                "HAUTEUR": str(hauteur), "DUREE": str(duree), "IDEAL": f"{lo} à {hi}",
                "DUREE_MIN": str(s["min"]), "DUREE_MAX": str(s["max"]), "SON": s["son"], "CTA": s["cta"],
-               "OBJECTIF": OBJECTIFS[objectif]["nom"], "MAISON": "../../../", "DOSSIER": "../"}
-    if gabarit_html.is_file():
-        (projet / "index.html").write_text(_remplir(gabarit_html.read_text(encoding="utf-8"), **valeurs), encoding="utf-8")
-    if gabarit_md.is_file():
-        texte = _remplir(gabarit_md.read_text(encoding="utf-8"), **valeurs)
-        (projet / "CLAUDE.md").write_text(texte, encoding="utf-8")
-        (projet / "AGENTS.md").write_text(texte, encoding="utf-8")
+               "OBJECTIF": OBJECTIFS[objectif]["nom"], "MAISON": "../../../", "DOSSIER": "../",
+               "PRODUIT": str(produit().get("nom", ""))}
+    if (gabarits / "index.html.tpl").is_file():
+        (projet / "index.html").write_text(_remplir((gabarits / "index.html.tpl").read_text(encoding="utf-8"), **valeurs),
+                                           encoding="utf-8")
+    if (gabarits / "CLAUDE.md.tpl").is_file():
+        texte = _remplir((gabarits / "CLAUDE.md.tpl").read_text(encoding="utf-8"), **valeurs)
+        (projet / "CLAUDE.md").write_text(texte.replace("{{SKILLS}}", ".claude/skills"), encoding="utf-8")
+        (projet / "AGENTS.md").write_text(texte.replace("{{SKILLS}}", ".agents/skills"), encoding="utf-8")
     meta = {"id": projet.name, "name": projet.name, "createdAt": maintenant,
-            "monteurIa": {"lieu": "studio-motion", "objectif": objectif, "video": cle, "support": v["support"],
-                          "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date,
-                          "sticker": avec_sticker(v)}}
+            "studioMotion": {"lieu": "video", "objectif": objectif, "video": cle, "support": v["support"],
+                             "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date,
+                             "sticker": avec_sticker(v)}}
     (projet / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    paquet = {"name": f"studio-motion-{cle}", "private": True, "type": "module",
+    paquet = {"name": f"{produit().get('code', 'publicitaire-ia')}-{cle}", "private": True, "type": "module",
               "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
                           "render": f"hyperframes render -o exports/{cle}.mp4"}}
     (projet / "package.json").write_text(json.dumps(paquet, indent=2) + "\n", encoding="utf-8")
     return projet
 
 
-def ajouter(m: Path, dossier: Path, videos: list[dict]) -> list[Path]:
+def ajouter(r: Path, dossier: Path, videos: list[dict]) -> list[Path]:
     """Ajoute des vidéos (un autre support, un autre format) à un dossier existant : même fiche, même
     plan, même sujet. Une vidéo déjà présente n'est jamais recréée."""
     existants = projets(dossier)
@@ -674,7 +1024,7 @@ def ajouter(m: Path, dossier: Path, videos: list[dict]) -> list[Path]:
     plan = dossier / "PLAN.md"
     ajouts = []
     for v in videos:
-        projet = creer_projet(m, dossier, sujet, objectif, v, date)
+        projet = creer_projet(r, dossier, sujet, objectif, v, date)
         # La matière déjà préparée pour la première vidéo (polices locales, images, vidéos
         # préparées) sert aussi à la déclinaison : on la reprend au lieu de la refaire.
         for sous in ("assets/fonts", "assets/images", "assets/video"):
@@ -712,28 +1062,35 @@ def projets(dossier: Path) -> list[tuple[Path, dict]]:
     for p in sorted(dossier.iterdir()):
         if (p / "meta.json").is_file():
             try:
-                sortie.append((p, json.loads((p / "meta.json").read_text(encoding="utf-8"))["monteurIa"]))
-            except (ValueError, KeyError):
+                bloc = bloc_meta(json.loads((p / "meta.json").read_text(encoding="utf-8")))
+            except ValueError:
                 continue
+            if bloc and bloc.get("video"):
+                sortie.append((p, bloc))
     return sortie
 
 
 def cmd_ajouter(a) -> None:
-    m = maison()
+    r = racine()
     dossier = _dossier_fiche(Path(a.dossier))
     try:
         videos = [lire_video(x) for x in a.videos.split(",") if x.strip()]
     except ValueError as e:
         sys.exit(f"ERREUR : {e}")
-    for projet in ajouter(m, dossier, videos):
+    for projet in ajouter(r, dossier, videos):
         print(f"• ajouté : {projet.name} (polices, images et vidéos du premier projet reprises)")
     print("• même fiche (OFFRE.json) ; complète sa section dans PLAN.md, puis remets la vidéo en page pour ce format")
-    for famille in polices_manquantes(m):
-        print(f"⚠️ police « {famille} » sans fichier dans brand/fonts.css : vérifie que le projet a ses @font-face locaux, sinon {CONSEIL_POLICE}.")
+    for famille in polices_manquantes(r):
+        print(f"⚠️ police « {famille} » sans fichier dans brand/fonts.css : {CONSEIL_POLICE}.")
+
+
+def ouvrir_dans_app(r: Path, projet: Path) -> str:
+    res = lancer(["node", str(r / "scripts" / "app-hyperframes.mjs"), "ouvrir", str(projet)], cwd=r)
+    return (res.stdout or res.stderr or "").strip()
 
 
 def cmd_nouvelle(a) -> None:
-    m = maison()
+    r = racine()
     if not propre(a.sujet):
         sys.exit("ERREUR : donne un sujet, en quelques mots.")
     specs = a.videos.split(",") if a.videos else OBJECTIFS[a.objectif]["defaut"]
@@ -741,20 +1098,22 @@ def cmd_nouvelle(a) -> None:
         videos = [lire_video(s) for s in specs if s.strip()]
     except ValueError as e:
         sys.exit(f"ERREUR : {e}")
-    dossier = creer(m, a.sujet, a.objectif, videos, a.date)
-    print(f"• créé : {dossier.relative_to(m)} ({OBJECTIFS[a.objectif]['nom']})")
+    # Le style suit marque.json au moment de la création : la vidéo part avec la marque à jour.
+    style_et_accueil(r)
+    dossier = creer(r, a.sujet, a.objectif, videos, a.date)
+    print(f"• créé : {dossier.relative_to(r)} ({OBJECTIFS[a.objectif]['nom']})")
     for projet, meta in projets(dossier):
         print(f"  - {projet.name} ({meta['format']})")
+    if not mq.lire(r):
+        print("⚠️ marque pas encore réglée : la vidéo part avec le style de départ (étape 0 du skill).")
     print("• à remplir d'abord : OFFRE.json (puis `studio_motion.py offre`), puis PLAN.md")
-    for famille in polices_manquantes(m):
-        print(f"⚠️ police « {famille} » sans fichier : le MP4 la remplacerait. Pour la garder, {CONSEIL_POLICE}. "
-              "Sinon, utilise une police déclarée dans brand/fonts.css.")
+    for famille in polices_manquantes(r):
+        print(f"⚠️ police « {famille} » sans fichier : le MP4 la remplacerait. {CONSEIL_POLICE}.")
     if a.ouvrir:
-        ouvreur = m / "scripts" / "app-hyperframes.mjs"
         for projet, _meta in projets(dossier):
-            if ouvreur.is_file():
-                lancer(["node", str(ouvreur), "ouvrir", str(projet)], cwd=m)
-        print("• projets ouverts dans l'app HyperFrames")
+            message = ouvrir_dans_app(r, projet)
+            if message:
+                print(f"• {message}")
 
 
 def _dossier_fiche(chemin: Path) -> Path:
@@ -822,8 +1181,7 @@ def instants_planche(duree: float, temps: list[float] | None, pas: float = 1.0) 
 
 
 def cmd_planche(a) -> None:
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffmpeg, ffprobe = binaire(m, "ffmpeg"), binaire(m, "ffprobe")
+    ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
     if not ffmpeg or not ffprobe:
         sys.exit("ERREUR : ffmpeg introuvable.")
     video = Path(a.video).resolve()
@@ -935,8 +1293,7 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
 
 
 def cmd_rythme(a) -> None:
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     meta = meta_de(Path(a.video)) or {}
@@ -961,14 +1318,19 @@ def cmd_rythme(a) -> None:
 # Une vidéo de référence (celle dont le client aime le style) : on en tire la grammaire
 # (fonds, mots par écran, motifs, transitions, caméra), jamais le contenu.
 # ---------------------------------------------------------------------------
-def ytdlp(m: Path | None) -> str | None:
-    """Le téléchargeur de Reel Cloneur s'il est installé (tenu à jour), sinon celui du système."""
-    if m is not None:
+def ytdlp() -> str | None:
+    """Le téléchargeur de vidéos : celui du système, sinon celui de Reel Cloneur si le client a
+    relié son dossier Monteur IA (`marque monteur`) et qu'il y est installé (lu, jamais modifié)."""
+    systeme = shutil.which("yt-dlp")
+    if systeme:
+        return systeme
+    lie = (mq.lire(RACINE) or {}).get("monteur_ia")
+    if lie:
         for sous in ("bin/yt-dlp", "Scripts/yt-dlp.exe"):
-            chemin = m / ".reel-cloneur-venv" / sous
+            chemin = Path(lie) / ".reel-cloneur-venv" / sous
             if chemin.exists():
                 return str(chemin)
-    return shutil.which("yt-dlp")
+    return None
 
 
 def coupes_video(ffmpeg: str, video: Path, seuil: float = 0.2) -> list[float]:
@@ -998,8 +1360,7 @@ contenu, les textes, les images ni la musique de la référence.
 
 
 def cmd_reference(a) -> None:
-    m = maison_de(Path(a.dossier)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     dossier = Path(a.dossier).resolve()
@@ -1009,10 +1370,10 @@ def cmd_reference(a) -> None:
     sortie = dossier / "sources" / "reference" / nom
     sortie.mkdir(parents=True, exist_ok=True)
     if re.match(r"https?://", a.source):
-        dl = ytdlp(m)
+        dl = ytdlp()
         if not dl:
-            sys.exit("ERREUR : pas de téléchargeur. Installe celui de Reel Cloneur (python3 tools/cloner_reel.py installer) "
-                     "ou télécharge la vidéo toi-même et donne son chemin.")
+            sys.exit("ERREUR : pas de téléchargeur de vidéos sur cet ordinateur : demande au client d'enregistrer la "
+                     "vidéo et de la glisser dans la conversation, puis donne son chemin.")
         r = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(sortie / "video.%(ext)s"), a.source])
         videos = sorted(sortie.glob("video.*"))
         if r.returncode != 0 or not videos:
@@ -1206,8 +1567,7 @@ def calage(entree: float, phase: float, bpm: float, cible_bpm: float, a_t: float
 
 
 def cmd_musique(a) -> None:
-    m = maison_de(Path(a.entree)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     source = Path(a.entree)
@@ -1302,8 +1662,7 @@ def cmd_emergence(a) -> None:
     import array
     projet = Path(a.projet).resolve()
     index = projet / "index.html"
-    m = maison_de(projet) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not index.is_file() or not ffmpeg:
         sys.exit("ERREUR : donne le dossier d'un projet de vidéo, avec ffmpeg installé.")
     musique, sons = sons_poses(index)
@@ -1349,7 +1708,7 @@ def cmd_emergence(a) -> None:
     print("ok : les bruitages ressortent de la musique.")
 
 
-# Même niveau que les Reels de Monteur IA (tools/sons.py) : -16 LUFS, celui du fil Instagram ;
+# Même niveau que les Reels du fil Instagram (tools/sons.py vise aussi -16 LUFS) ;
 # plafond -1,5 dB pour garder les crêtes sous -1 dBTP une fois la vidéo encodée.
 CIBLE_LUFS, CIBLE_TP, PLAFOND_TP = -16.0, -1.5, -1.0
 
@@ -1380,8 +1739,7 @@ def verdict_sonore(mesure: dict, cible: float = CIBLE_LUFS) -> list[str]:
 
 
 def cmd_son(a) -> None:
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     mesure = mesure_sonore(ffmpeg, Path(a.video))
@@ -1407,8 +1765,7 @@ def chaine_mastering(gain_db: float, plafond: float = 0.7) -> str:
 
 
 def cmd_mastering(a) -> None:
-    m = maison_de(Path(a.entree)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     mesure = mesure_sonore(ffmpeg, Path(a.entree))
@@ -1447,8 +1804,7 @@ def cmd_preparer_video(a) -> None:
     """Prépare une vraie vidéo (un Reel du client, une capture d'écran filmée) pour une composition :
     une image clé par seconde (sinon HyperFrames saute ou fige des images au rendu), H.264, sans son
     par défaut (la vidéo de vente a sa propre bande son)."""
-    m = maison_de(Path(a.entree)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     son = ["-c:a", "aac", "-b:a", "160k"] if a.avec_son else ["-an"]
@@ -1463,8 +1819,7 @@ def cmd_preparer_video(a) -> None:
 def cmd_affiche(a) -> None:
     """L'affiche d'une vidéo de page : une image de la vidéo (la première par défaut, qui doit déjà
     porter la promesse), en JPEG de moins de 100 Ko, montrée avant la lecture ou si elle est bloquée."""
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffmpeg = binaire(m, "ffmpeg")
+    ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
         sys.exit("ERREUR : ffmpeg introuvable.")
     for qualite in range(2, 32, 2):
@@ -1478,7 +1833,7 @@ def cmd_affiche(a) -> None:
 
 
 def sans_musique_html(html: str) -> tuple[str, int]:
-    """Retire du master la musique de fond (`id="musique"`, posé par tools/sons.py de Monteur IA, ou
+    """Retire du master la musique de fond (`id="musique"`, posé par tools/sons.py, ou
     `data-role="musique"` posé à la main), pour la version que le client habillera d'un son
     Instagram. Les bruitages et la voix restent."""
     motif = re.compile(r'\s*<audio\b[^>]*(?:\bid="musique"|data-role="musique")[^>]*>(?:\s*</audio>)?', re.I)
@@ -1505,8 +1860,7 @@ def cmd_sans_musique(a) -> None:
 def cmd_couverture(a) -> None:
     """La couverture devient la toute première image : les aperçus (X, WhatsApp, Instagram avant
     lecture) montrent alors la bonne image. Une seule image remplacée, son conservé."""
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffmpeg, ffprobe = binaire(m, "ffmpeg"), binaire(m, "ffprobe")
+    ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
     if not ffmpeg or not ffprobe:
         sys.exit("ERREUR : ffmpeg introuvable.")
     fmt = format_de(_sonder(ffprobe, Path(a.video))) or "9x16"
@@ -1587,8 +1941,7 @@ def meta_par_nom(video: Path) -> dict | None:
 
 
 def cmd_export(a) -> None:
-    m = maison_de(Path(a.video)) or maison_de(OUTILS)
-    ffprobe = binaire(m, "ffprobe")
+    ffprobe = binaire("ffprobe")
     if not ffprobe:
         sys.exit("ERREUR : ffprobe introuvable.")
     meta = meta_de(Path(a.video)) or meta_par_nom(Path(a.video)) or {}
@@ -1645,10 +1998,35 @@ def cmd_livrer(a) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
-    p = argparse.ArgumentParser(description="Studio Motion IA : vidéos en motion design qui vendent (extension Monteur IA).")
+    p = argparse.ArgumentParser(description=f"{produit().get('nom', '')} : vidéos en motion design qui vendent.")
     p.add_argument("--version", action="version", version=VERSION)
     s = p.add_subparsers(dest="commande", required=True)
     s.add_parser("verifier", help="Vérifie l'installation.").set_defaults(f=cmd_verifier)
+    ma_ = s.add_parser("marque", help="La marque du client : la tirer d'une source, la retoucher, la valider, la montrer.")
+    ma_.add_argument("action", nargs="?", choices=("montrer", "page", "images", "video", "monteur", "regler", "valider"))
+    ma_.add_argument("valeurs", nargs="*", help="Le lien, les images, la vidéo ou le dossier Monteur IA.")
+    ma_.add_argument("--sans-capture", action="store_true", help="page : HTML et CSS seulement (plus rapide).")
+    for cle in ("fond", "texte", "accent", "secondaire", "surface"):
+        ma_.add_argument(f"--{cle}", help=f"regler : couleur {cle} (#rrggbb, ou « aucune »).")
+    ma_.add_argument("--titres", help="regler : police des titres.")
+    ma_.add_argument("--corps", help="regler : police du texte.")
+    ma_.add_argument("--nom", help="regler : nom de la marque.")
+    ma_.add_argument("--mot-cle", dest="mot_cle", help="regler : mot-clé d'appel à l'action (un mot).")
+    ma_.add_argument("--logo", help="regler : fichier du logo.")
+    ma_.set_defaults(f=cmd_marque)
+    po = s.add_parser("police", help="Rend une police libre (Google Fonts) disponible au rendu.")
+    po.add_argument("famille")
+    po.set_defaults(f=cmd_police)
+    s.add_parser("style", help="Régénère brand/ et l'accueil depuis marque.json.").set_defaults(f=cmd_style)
+    ps = s.add_parser("pack-sfx", help="Le Pack SFX : l'installer depuis son archive, le reprendre de Monteur IA, y chercher un son.")
+    ps.add_argument("action", nargs="?", choices=("etat", "installer", "reprendre", "chercher"))
+    ps.add_argument("valeurs", nargs="*", help="L'archive, le dossier Monteur IA, ou les mots cherchés.")
+    ps.set_defaults(f=cmd_pack_sfx)
+    so_ = s.add_parser("sons", help="Pose la musique et les bruitages d'un fichier JSON dans index.html.")
+    so_.add_argument("projet")
+    so_.add_argument("fichier", help="JSON : musique, musique_db, evenements (chemins relatifs au projet).")
+    so_.add_argument("--ecraser", action="store_true", help="Remplace un bloc de sons retouché à la main.")
+    so_.set_defaults(f=cmd_sons)
     s.add_parser("supports", help="Supports, objectifs et formats possibles.").set_defaults(f=cmd_supports)
     n = s.add_parser("nouvelle", help="Crée une vidéo (ou une série) et un projet par format.")
     n.add_argument("sujet")

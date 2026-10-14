@@ -12,7 +12,7 @@ texte net volontairement posé sur une couche floue se marque (`kit.md`, pièges
 `npm run render`, puis :
 
 ```bash
-python3 <dossier Monteur IA>/tools/studio_motion.py rythme exports/page.mp4
+python3 ../../../tools/studio_motion.py rythme exports/page.mp4
 ```
 
 Il doit répondre « ok » : au moins 1 événement par seconde, 0,8 s au plus d'écart médian entre
@@ -26,7 +26,7 @@ donc la planche du fichier rendu, jamais seulement les captures de `check`.
 ## Porte 2 : la planche
 
 ```bash
-python3 <dossier Monteur IA>/tools/studio_motion.py planche exports/reel.mp4 \
+python3 ../../../tools/studio_motion.py planche exports/reel.mp4 \
   --temps 0.3,1.8,4.3,8.3,12.3,17.8
 python3 <…>/tools/studio_motion.py planche exports/story-ouverture.mp4
 ```

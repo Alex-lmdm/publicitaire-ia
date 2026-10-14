@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import copy
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -502,28 +503,32 @@ class SansMusique(unittest.TestCase):
         self.assertEqual((n, sortie), (1, ""))
 
 
-def maison_de_test(racine: Path) -> Path:
-    maison = racine / "Monteur IA"
-    (maison / "templates").mkdir(parents=True)
-    (maison / "templates" / "AGENT.md.tpl").write_text("# test\n", encoding="utf-8")
-    (maison / "brand").mkdir()
-    (maison / "brand" / "tokens.css").write_text(":root{}", encoding="utf-8")
-    (maison / "hyperframes.json").write_text("{}", encoding="utf-8")
-    return maison
+def racine_de_test(base: Path) -> Path:
+    """Un dossier du produit, réduit à ce que la création d'une vidéo lit : produit.json, les
+    gabarits et le kit du dépôt, un style de marque."""
+    racine = base / "studio"
+    (racine / "templates").mkdir(parents=True)
+    for sous in ("projet", "kit", "accueil"):
+        shutil.copytree(RACINE / "templates" / sous, racine / "templates" / sous)
+    shutil.copy2(RACINE / "produit.json", racine / "produit.json")
+    (racine / "brand").mkdir()
+    (racine / "brand" / "tokens.css").write_text(":root{}", encoding="utf-8")
+    (racine / "hyperframes.json").write_text("{}", encoding="utf-8")
+    return racine
 
 
 class Creation(unittest.TestCase):
     def test_serie_multi_formats(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             videos = [sm.lire_video(s) for s in ("reel", "page", "page@1x1", "story:ouverture")]
             dossier = sm.creer(maison, "Ma formation", "vente", videos, "2026-10-12")
-            self.assertEqual(dossier.parent.name, "studio-motion")
+            self.assertEqual(dossier.parent.name, "videos")
             self.assertEqual(dossier.name, "Ma formation · 2026-10-12")
             liste = {meta["video"]: (p, meta) for p, meta in sm.projets(dossier)}
             self.assertEqual(sorted(liste), ["page", "page-1x1", "reel", "story-ouverture"])
             page, meta = liste["page"]
-            self.assertEqual((meta["lieu"], meta["format"], meta["objectif"]), ("studio-motion", "16x9", "vente"))
+            self.assertEqual((meta["lieu"], meta["format"], meta["objectif"]), ("video", "16x9", "vente"))
             html = (page / "index.html").read_text(encoding="utf-8")
             self.assertIn('data-width="1920" data-height="1080"', html)
             self.assertTrue((page / "kit" / "kit.js").is_file())
@@ -542,7 +547,7 @@ class Creation(unittest.TestCase):
 
     def test_ajouter_une_declinaison(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-12")
             reel = sm.projets(dossier)[0][0]
             (reel / "assets" / "fonts").mkdir(parents=True, exist_ok=True)
@@ -565,7 +570,7 @@ class Creation(unittest.TestCase):
 
     def test_police_des_interfaces_dans_le_projet(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             (maison / "assets" / "fonts").mkdir(parents=True, exist_ok=True)
             (maison / "assets" / "fonts" / "Inter-400.woff2").write_bytes(b"x")
             dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("pub")], "2026-10-13")
@@ -578,13 +583,13 @@ class Creation(unittest.TestCase):
 
     def test_doublon_refuse(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             with self.assertRaises(SystemExit):
                 sm.creer(maison, "X", "vente", [sm.lire_video("reel"), sm.lire_video("reel")], "2026-10-12")
 
     def test_meta_par_nom_en_livraison(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel"), sm.lire_video("page")], "2026-10-12")
             for nom, support in (("reel.mp4", "reel"), ("page.mp4", "page"), ("reel-sans-musique.mp4", "reel")):
                 video = dossier / "livraison" / nom
@@ -597,7 +602,7 @@ class Creation(unittest.TestCase):
 
     def test_gabarit_sans_tween_vide(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-12")
             html = (sm.projets(dossier)[0][0] / "index.html").read_text(encoding="utf-8")
             self.assertNotIn("tl.to({}", html)
@@ -605,7 +610,7 @@ class Creation(unittest.TestCase):
 
     def test_meta_retrouvee_depuis_un_export(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "fonctionnalite", [sm.lire_video("section")], "2026-10-12")
             projet = sm.projets(dossier)[0][0]
             video = projet / "exports" / "section.mp4"
@@ -615,7 +620,7 @@ class Creation(unittest.TestCase):
 
     def test_livraison(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             videos = [sm.lire_video(s) for s in ("reel", "page", "story:teaser")]
             dossier = sm.creer(maison, "Offre", "lancement", videos, "2026-10-12")
             manques = sm.manques_livraison(dossier)
@@ -633,7 +638,7 @@ class Creation(unittest.TestCase):
 
     def test_vente_sans_calendrier(self):
         with tempfile.TemporaryDirectory() as d:
-            maison = maison_de_test(Path(d))
+            maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "fonctionnalite", [sm.lire_video("section")], "2026-10-12")
             (dossier / "livraison" / "section.mp4").write_bytes(b"x")
             (dossier / "livraison" / "section.jpg").write_bytes(b"x")

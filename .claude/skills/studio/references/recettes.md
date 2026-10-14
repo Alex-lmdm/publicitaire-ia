@@ -2,9 +2,10 @@
 
 Chaque recette est une scène (ou un raccord) déjà fabriquée avec le kit et validée à l'image,
 avec ses temps. Adapte le contenu à l'offre, garde le mouvement et la densité. Le code de
-référence de chacune vit dans la vidéo de démonstration (vidéo de page de Monteur IA, 68 s) ; les
-fonctions sont décrites dans `kit.md`. Les recettes du skill `hyperframes-animation` de Monteur
-IA (nom entre crochets) donnent d'autres techniques : lis-les avant de coder un effet nouveau.
+référence de chacune vient d'une vraie vidéo de page (celle de Monteur IA, 68 s) ; les
+fonctions sont décrites dans `kit.md`. Les recettes du skill `hyperframes-animation` (nom entre
+crochets, livré dans ce dossier) donnent d'autres techniques : lis-les avant de coder un effet
+nouveau.
 
 Une story = une ou deux recettes. Un Reel = trois ou quatre. Une vidéo de page = huit à dix,
 reliées par des raccords d'objet.

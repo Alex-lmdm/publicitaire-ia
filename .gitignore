@@ -1,3 +1,35 @@
+# Le dépôt livre la méthode (skills, outils, kit, modèles). Ce qui est propre à chaque client ou
+# régénéré sur sa machine n'est jamais versionné.
+node_modules/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Générés par `npm run sync` : instructions de l'agent, copie des skills pour Codex, GSAP (installé
+# par npm, jamais redistribué ici).
+/CLAUDE.md
+/AGENTS.md
+/.agents/
+/assets/vendor/
+
+# Style généré depuis marque.json (`studio_motion.py style`) et accueil de l'app HyperFrames.
+/brand/
+/Accueil */
+
+# Ce qui appartient au client : sa marque (couleurs, polices, logo, captures), son profil, ses vidéos.
+/marque/
+/marque.json
+/studio.config.json
+/videos/
+
+# Le Pack SFX (produit vendu à part) : sons sous licence, jamais versionnés ; ils se réinstallent
+# depuis l'archive du client (`studio_motion.py pack-sfx installer`).
+/assets/sfx/pack/
+/assets/sfx/catalog.json
+/assets/sfx/sons-par-situation.md
+/assets/sfx/.pack-sfx-manifest.json
+
+# Caches de HyperFrames.
+.thumbnails/
+.waveform-cache/
+snapshots/

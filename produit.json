@@ -1,0 +1,7 @@
+{
+  "_comment": "Identité du produit. Le nom est lu ici par tout ce qui est généré (instructions de l'agent, vignette d'accueil, messages des outils) ; README, INSTALL et le skill l'écrivent en toutes lettres, et un test vérifie qu'ils disent le même. Le code est le nom du dépôt et du dossier livré.",
+  "nom": "Publicitaire IA",
+  "code": "publicitaire-ia",
+  "depot": "https://github.com/Alex-lmdm/publicitaire-ia",
+  "editeur": "LeMondeDuMarketing"
+}

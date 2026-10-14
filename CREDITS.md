@@ -1,24 +1,43 @@
-# Crédits
+# Crédits et licences
 
-Studio Motion IA, extension de Monteur IA, par LeMondeDuMarketing.
+Publicitaire IA, par LeMondeDuMarketing. Le dossier s'appuie sur des outils, des polices, des sons et des idées
+open source : merci à leurs auteurs. Chaque élément livré a été vérifié à la source avant d'être
+redistribué (13 octobre 2026).
 
-Elle s'appuie sur des outils et des idées open source. Merci à leurs auteurs.
+## Installés par npm, jamais copiés dans ce dépôt
 
-## Outils utilisés (installés avec Monteur IA, non inclus ici)
+- **HyperFrames** 0.8.136 (Apache-2.0), HeyGen : compositions HTML rendues en vidéo, capture de
+  site, contrôles, rendu. https://github.com/heygen-com/hyperframes
+- **GSAP** 3.14.2 (licence « Standard No Charge » de GreenSock) : animation. Installé depuis npm,
+  copié sur l'ordinateur du client par `npm run sync` (assets/vendor/, non versionné).
+  https://gsap.com/standard-license
 
-- **HyperFrames** (Apache-2.0), HeyGen : compositions HTML rendues en vidéo, capture de site,
-  contrôles. https://github.com/heygen-com/hyperframes
-- **GSAP** (licence « Standard No Charge » de GreenSock) : animation.
+## Outils de l'ordinateur, non livrés
+
 - **FFmpeg** (LGPL/GPL) : planches, mesure du rythme et du son, couverture, export.
-- **Inter** (SIL OFL), Rasmus Andersson : la police des interfaces reconstruites.
+- **Node.js** et **Python** : le moteur et les outils.
 
-## Inclus dans le kit
+## Livrés dans ce dossier
 
-- **Lucide** (ISC), icônes de `templates/kit/icones.js`, nettoyées et posées en ligne.
-  https://lucide.dev
+| Quoi | Où | Licence | Source |
+|---|---|---|---|
+| Skills `hyperframes-core`, `hyperframes-animation`, `hyperframes-cli` | `.claude/skills/hyperframes-*` (texte de licence dans chacun) | Apache-2.0, © HeyGen ; copies non modifiées de la version 0.8.136 (commit 4c4b857) | https://github.com/heygen-com/hyperframes |
+| Police **Inter** (400, 400 italique, 600, 700, 900) | `assets/fonts/` + `OFL-Inter.txt` | SIL OFL 1.1, © The Inter Project Authors | https://github.com/rsms/inter |
+| Police **Anton** (400) | `assets/fonts/` + `OFL-Anton.txt` | SIL OFL 1.1, © The Anton Project Authors | https://github.com/googlefonts/AntonFont |
+| 14 sons Freesound | `assets/sfx/starter/` | CC0 1.0 (domaine public), vérifiée sur chaque page | numéros dans `assets/sfx/starter/sounds.md` |
+| 8 sons Kenney « Interface Sounds » | `assets/sfx/starter/` | CC0 | https://kenney.nl/assets/interface-sounds |
+| Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
+| Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
+
+Aucun son du **Pack SFX** (produit vendu à part) n'est livré ici. Le client l'installe sur son
+ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monteur IA
+(`studio_motion.py pack-sfx`) ; ces fichiers sont exclus du dépôt (`.gitignore`).
 
 ## Récupérés à la demande, jamais livrés
 
+- **Polices de la marque du client** : de préférence la version libre de **Google Fonts** (SIL
+  OFL ou Apache), téléchargée sur son ordinateur ; à défaut, les fichiers de sa propre page (son
+  usage relève de sa licence, l'outil le lui signale) ou de son dossier Monteur IA.
 - **theSVG** : les logos des outils que l'offre du client utilise (`studio_motion.py logos`),
   posés dans son seul projet. Chaque logo reste la marque de son propriétaire et ne sert qu'à
   désigner l'outil réellement utilisé. https://thesvg.org

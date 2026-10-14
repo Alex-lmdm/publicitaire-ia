@@ -5,30 +5,37 @@ Le client n'est pas technique et ne sait pas toujours ce qu'il veut. Des choix n
 toujours toutes les questions d'une étape **dans un seul message**, avec une valeur par défaut
 recommandée, et saute celles dont tu connais déjà la réponse.
 
-## Au premier usage : le profil (une seule fois)
+## Au premier usage : la marque et le profil (une seule fois)
 
-Si `studio.config.json` n'existe pas à la racine du dossier Monteur IA, commence par là. Lis
-d'abord `brand.config.json` (nom, marque, mot-clé) pour ne pas reposer ce que Monteur IA sait.
+Si `marque.json` ou `studio.config.json` n'existe pas à la racine du dossier, commence par là, en
+un seul message (saute la question dont tu connais déjà la réponse) :
 
-> Bienvenue dans Studio Motion IA 🎬 Trois questions, une seule fois, pour que tes vidéos
-> partent toujours de ton offre :
+> Bienvenue dans Publicitaire IA 🎬 Trois questions, une seule fois, pour que tes vidéos portent ta marque et partent
+> toujours de ton offre :
 >
-> **1. Qu'est-ce que tu vends surtout ?** (plusieurs choix possibles)
+> **1. Ta marque (couleurs, polices, logo) : je la prends où ?**
+> a) sur ta page de vente : colle son lien (le plus simple) ·
+> b) sur des images ou des captures de ta marque : glisse-les ici ·
+> c) sur une vidéo dont tu aimes le style : son lien, ou le fichier ·
+> d) j'ai Monteur IA : je reprends ses réglages
+>
+> **2. Qu'est-ce que tu vends surtout ?** (plusieurs choix possibles)
 > a) une formation · b) un coaching ou un accompagnement · c) un logiciel ou une app ·
 > d) un template, un guide, un ebook · e) une communauté · f) autre chose (dis-moi)
->
-> **2. Le lien de ta page de vente principale ?** (ou « pas encore »)
 >
 > **3. Pour tes vidéos, tu préfères :**
 > A) du texte à l'écran et de la musique (le plus simple) ·
 > B) ta voix, enregistrée sur ton téléphone ·
 > C) une voix de synthèse, gratuite, générée sur ton ordinateur
 >
-> Réponds par exemple « a, monsite.fr/formation, A ».
+> Réponds par exemple « a monsite.fr/formation, a, A ».
 
-Enregistre dans `studio.config.json` : `{"vend": [...], "page": "...", "voix": "texte|ma-voix|voix-ia",
-"supports_habituels": [], "preferences": []}`. Les préférences dites plus tard (« toujours sans
-musique », « mes vidéos en noir ») s'y ajoutent et se relisent à chaque vidéo.
+La réponse 1 se traite avec [marque.md](marque.md) : l'outil lit la source, puis tu lui montres
+sa marque et tu attends son accord. Enregistre le reste dans `studio.config.json` :
+`{"vend": [...], "page": "...", "voix": "texte|ma-voix|voix-ia", "dm": null,
+"reference_style": null, "supports_habituels": [], "preferences": []}` (`page` vient de la
+réponse 1 a, sinon du premier brief). Les préférences dites plus tard (« toujours sans musique »,
+« mes vidéos en noir ») s'y ajoutent et se relisent à chaque vidéo.
 
 ## À chaque vidéo : le brief
 
@@ -82,4 +89,5 @@ sais pas » ou « choisis », prends ta recommandation et avance.
 | support G (LinkedIn) | | `linkedin` (4:5) |
 
 Un format différent du format habituel du support se demande avec `@` : `page@1x1` (page de
-vente sur téléphone), `x@1x1`. `python3 tools/studio_motion.py supports` liste tout.
+vente sur téléphone), `x@1x1`. `python3 tools/studio_motion.py supports` liste tout (depuis la
+racine du dossier).

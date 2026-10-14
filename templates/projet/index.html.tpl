@@ -11,8 +11,8 @@
          alternent ; `studio_motion.py rythme exports/{{VIDEO}}.mp4` le vérifie après le rendu. -->
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/CustomEase.min.js"></script>
-    <!-- Style de la marque, copié du dossier Monteur IA à la création : polices et couleurs
-         s'utilisent par var(--brand-*), jamais en dur (sauf les surfaces d'un produit montré). -->
+    <!-- Style de la marque, copié de brand/ (généré depuis marque.json) à la création : polices et
+         couleurs s'utilisent par var(--brand-*), jamais en dur (sauf les surfaces d'un produit montré). -->
     <link rel="stylesheet" href="brand/fonts.css">
     <link rel="stylesheet" href="brand/tokens.css">
     <!-- Le kit (fonds vivants, curseur, objets flottants, chapitres, fenêtres, téléphone) : mode
@@ -41,7 +41,7 @@
         <div id="attente-barre" style="position:absolute; left:10%; right:10%; bottom:50%; margin-bottom:-60px; height:6px; border-radius:3px; background:var(--brand-accent); transform-origin:left center;"></div>
       </div>
 
-      <!-- Les sons (voix, musique et bruitages) s'écrivent ici par tools/sons.py de Monteur IA. -->
+      <!-- Les sons (voix, musique et bruitages) s'écrivent ici par `studio_motion.py sons`. -->
       <!-- SONS -->
     </div>
     <script>
