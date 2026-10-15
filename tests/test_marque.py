@@ -334,7 +334,7 @@ class NomDuProduit(unittest.TestCase):
 
     def test_aucun_ancien_nom(self):
         """Le nom provisoire et la version espagnole ont été abandonnés le 13/10/2026."""
-        abandonnes = ("Studio " + "Motion IA", "INSTALL" + ".es")  # écrits en morceaux : ce test se lit aussi
+        abandonnes = ("Studio " + "Motion IA", "INSTALL" + ".es", "studio" + "-motion/")  # écrits en morceaux : ce test se lit aussi
         fautifs = [rel for rel, texte in self.fichiers() if any(x in texte for x in abandonnes)]
         self.assertEqual(fautifs, [])
         self.assertFalse((RACINE / ("INSTALL" + ".es.md")).exists())

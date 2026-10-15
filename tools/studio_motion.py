@@ -17,16 +17,23 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py police "Montserrat"           # une police libre, prête au rendu
     python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
     python3 tools/studio_motion.py pack-sfx [installer <pack-sfx.zip> | reprendre <dossier Monteur IA> | chercher <mots>]
+    python3 tools/studio_motion.py musiques [installer [<zip ou dossier>…]]   # les 17 musiques de lancement (bonus)
+    python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --ouvrir]   # depuis le projet
+    python3 tools/studio_motion.py musiques prendre <n> [--a 8 --duree 30]   # la copie dans le projet, calée
     python3 tools/studio_motion.py supports                      # supports, formats, durées
     python3 tools/studio_motion.py nouvelle "<sujet>" --objectif vente --videos reel,page [--ouvrir]
     python3 tools/studio_motion.py ajouter <dossier> --videos linkedin,story   # « la même pour LinkedIn »
+    python3 tools/studio_motion.py capture <dossier de la vidéo> <lien de sa page>   # sans les consignes de HyperFrames
     python3 tools/studio_motion.py offre <dossier de la vidéo>
     python3 tools/studio_motion.py lecture "<texte affiché>" [--final]
     python3 tools/studio_motion.py zones <support> [--format 16x9]
     python3 tools/studio_motion.py reference <dossier> <lien ou fichier> [--nom taapit]   # la vidéo dont il aime le style
-    python3 tools/studio_motion.py logos <projet> claude openai codex [icone:rocket]      # logos des outils montrés
+    python3 tools/studio_motion.py logos <projet> claude chatgpt notion [fichier:logo.png] [icone:rocket]   # vrais logos
+    python3 tools/studio_motion.py logos chercher "lemon squeezy"          # l'identifiant d'une marque
     python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2]
     python3 tools/studio_motion.py rythme <video.mp4>                # au moins 1 événement/s, rien de figé
+    python3 tools/studio_motion.py heygen [etat | connecter <clé> | musiques "<description>" | bruitages "<description>"
+                                          | prendre <n> [--bruitage] | voix | parler <texte> --voix <id> [--confirme]]
     python3 tools/studio_motion.py musique <morceau.wav> [--sortie calee.wav --a 8 --duree 67]   # tempo, entrée, calage
     python3 tools/studio_motion.py sons <projet> <sons.json> [--ecraser]   # pose musique et bruitages
     python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique
@@ -67,7 +74,9 @@ for _flux in (sys.stdout, sys.stderr):
 OUTILS = Path(__file__).resolve().parent
 RACINE = OUTILS.parent
 sys.path.insert(0, str(OUTILS))
+import heygen  # noqa: E402
 import marque as mq  # noqa: E402
+import musiques as banque  # noqa: E402
 import pack_sfx  # noqa: E402
 
 FPS = 30
@@ -312,12 +321,12 @@ def _texte(element) -> str:
 
 def _date(valeur) -> datetime.datetime | None:
     try:
-        return datetime.datetime.fromisoformat(str(valeur))
+        return datetime.datetime.fromisoformat(re.sub(r"Z$", "+00:00", str(valeur).strip()))
     except ValueError:
         return None
 
 
-FICHIER_SOURCE = re.compile(r"^[^\s/]+\.[a-z0-9]{2,5}$", re.I)
+FICHIER_SOURCE = re.compile(r"^[^\s/]+\.(?:png|jpe?g|webp|gif|heic|svg|pdf|txt|md|csv|json|html?|mp4|mov|m4v|webm|mp3|wav|m4a)$", re.I)
 
 
 def sources_absentes(fiche: dict, dossier: Path) -> list[str]:
@@ -382,7 +391,7 @@ def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
         valeur = dates.get(cle)
         if valeur:
             try:
-                lues[cle] = datetime.datetime.fromisoformat(str(valeur))
+                lues[cle] = datetime.datetime.fromisoformat(re.sub(r"Z$", "+00:00", str(valeur).strip()))
             except ValueError:
                 pb.append(f"dates.{cle} : « {valeur} » n'est pas une date AAAA-MM-JJ[THH:MM].")
     if lues and not _source(dates):
@@ -391,7 +400,7 @@ def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
         pb.append("dates : la fermeture doit suivre l'ouverture.")
     for i, e in enumerate(fiche.get("echeances") or []):
         if not _texte(e):
-            pb.append(f"echeances[{i}] : dis ce qui se termine (ex. « Bonus Reel Cloneur offert »).")
+            pb.append(f"echeances[{i}] : dis ce qui se termine (ex. « le bonus offert aux premiers inscrits »).")
         elif _date(e.get("date")) is None:
             pb.append(f"echeances[{i}] : date « {e.get('date')} » illisible (AAAA-MM-JJ[THH:MM]).")
         elif not _source(e):
@@ -517,6 +526,15 @@ def meta_de(chemin: Path) -> dict | None:
 # ---------------------------------------------------------------------------
 # Commandes
 # ---------------------------------------------------------------------------
+def node_ok() -> bool:
+    """Node 22 ou plus, trouvé dans le PATH (celui que npm et npx utiliseront)."""
+    node = shutil.which("node")
+    if not node:
+        return False
+    m = re.match(r"v(\d+)", lancer([node, "--version"]).stdout.strip())
+    return bool(m) and int(m.group(1)) >= 22
+
+
 def cmd_verifier(_a) -> None:
     r = racine()
     if not (r / "brand" / "tokens.css").is_file() or not accueils(r):
@@ -536,13 +554,30 @@ def cmd_verifier(_a) -> None:
         ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
         ("ffmpeg", binaire("ffmpeg") is not None),
         ("ffprobe", binaire("ffprobe") is not None),
-        ("Node", shutil.which("node") is not None or any(Path.home().glob(".nvm/versions/node/*/bin/node"))),
+        ("Node 22 ou plus", node_ok()),
     ):
         print(f"{'✅' if present else '❌'} {nom}")
         ok = ok and present
     pack = pack_sfx.etat(r)
     print(f"ℹ️ Pack SFX : {pack['presents']}/{pack['attendus']} sons pro" if pack["attendus"]
           else "ℹ️ Pack SFX : pas installé (optionnel, les 22 sons de démarrage suffisent pour commencer)")
+    mus = banque.etat(r)
+    print(f"ℹ️ musiques de lancement : {mus['total']} installées"
+          + (f" (il manque : {', '.join(mus['absentes'])})" if mus["absentes"] else "") if mus["installe"]
+          else "ℹ️ musiques de lancement : pas installées (le bonus de la formation : `musiques installer`)")
+    app = Path("/Applications/HyperFrames.app")
+    if sys.platform == "darwin" and app.is_dir():
+        try:
+            reglages = json.loads((Path.home() / ".claude" / "settings.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            reglages = {}
+        branchee = str((reglages.get("env") or {}).get("CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD", "")) == "1"
+        print("ℹ️ app HyperFrames : installée et branchée" if branchee else
+              "ℹ️ app HyperFrames : installée, pas encore branchée (`npm run app -- brancher`, étape 4 d'INSTALL.md)")
+    source_hg = heygen.source_cle()
+    print("ℹ️ HeyGen : relié (voix de synthèse)" if source_hg not in (None, "oauth") else
+          "ℹ️ HeyGen : connecté par le navigateur, sans clé lisible ici (`heygen` explique comment la relier)"
+          if source_hg == "oauth" else "ℹ️ HeyGen : pas relié (optionnel, pour une voix de synthèse)")
     marque = mq.lire(r)
     if not marque:
         print("ℹ️ marque pas encore réglée : le premier /studio s'en charge (une question sur la source)")
@@ -743,7 +778,7 @@ def cmd_marque(a) -> None:
                 sys.exit(f"ERREUR : `marque {action}` attend {'un lien' if action == 'page' else 'un chemin'}.")
             ffmpeg = binaire("ffmpeg")
             if action == "page":
-                print("• lecture de la page et capture (1 à 2 minutes)…", flush=True)
+                print("• lecture de la page" + ("…" if a.sans_capture else " et capture (1 à 2 minutes)…"), flush=True)
                 nouvelle_marque, journal = mq.depuis_page(r, valeurs[0], None if a.sans_capture else hyperframes_cli())
             elif action == "images":
                 if not ffmpeg:
@@ -794,18 +829,34 @@ def regler(r: Path, actuelle: dict | None, a) -> dict:
     if a.nom:
         m["nom"] = a.nom
     if a.mot_cle:
-        m["mot_cle"] = a.mot_cle.strip().upper()
+        mot = a.mot_cle.strip().upper()
+        if not re.fullmatch(r"[A-ZÀ-ÖØ-Þ0-9]{2,20}", mot):
+            raise mq.ErreurMarque(f"« {a.mot_cle} » : le mot-clé est un seul mot, sans espace (ex. FORMATION)")
+        m["mot_cle"] = mot
     if a.logo:
         f = Path(a.logo).expanduser()
         ext = mq.type_image(f.read_bytes()) if f.is_file() else None
         if not ext or ext == ".ico":
-            raise mq.ErreurMarque(f"« {a.logo} » n'est pas une image (png, jpg, webp, svg)")
+            raise mq.ErreurMarque(f"« {a.logo} » " + ("n'est pas une image (png, jpg, webp, svg)" if f.is_file() else "introuvable"))
         (r / "marque").mkdir(exist_ok=True)
         for ancien in (r / "marque").glob("logo.*"):
             ancien.unlink()
         shutil.copy2(f, r / "marque" / f"logo{ext}")
         m["logo"] = f"marque/logo{ext}"
-    m["valide"] = False
+    seulement_musique = bool(getattr(a, "musique", None)) and not any(
+        getattr(a, c, None) for c in ("fond", "texte", "accent", "secondaire", "surface", "titres", "corps", "nom",
+                                      "mot_cle", "logo"))
+    if getattr(a, "musique", None):
+        f = Path(a.musique).expanduser()
+        if not f.is_file() or f.suffix.lower() not in (".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"):
+            raise mq.ErreurMarque(f"« {a.musique} » n'est pas un fichier audio (mp3, wav, m4a, aac, flac, ogg)")
+        (r / "marque").mkdir(exist_ok=True)
+        for ancien in (r / "marque").glob("musique.*"):
+            ancien.unlink()
+        shutil.copy2(f, r / "marque" / f"musique{f.suffix.lower()}")
+        m["musique"] = f"marque/musique{f.suffix.lower()}"
+    if not seulement_musique:
+        m["valide"] = False     # une couleur, une police ou le logo changent : il revalide ; sa musique, non
     return m
 
 
@@ -833,6 +884,9 @@ def cmd_pack_sfx(a) -> None:
             res = pack_sfx.reprendre_depuis_monteur(r, Path(a.valeurs[0]))
         elif a.action == "chercher":
             trouves = pack_sfx.chercher(r, a.valeurs or [])
+            if not trouves and not pack_sfx.etat(r)["attendus"]:
+                print("• Pack SFX pas installé : les sons de démarrage sont dans assets/sfx/starter/ (index : sounds.md).")
+                return
             if not trouves:
                 print("• aucun son ne correspond (essaie un mot plus court : clic, whoosh, coche, argent…)")
             for son in trouves:
@@ -856,10 +910,287 @@ def cmd_pack_sfx(a) -> None:
     print("  le choix des bruitages pioche maintenant dans ces sons (`pack-sfx chercher <mots>`)")
 
 
+def _duree_projet(projet: Path) -> float | None:
+    """La durée de la vidéo, lue sur la composition principale d'index.html."""
+    m = re.search(r'id="root"[^>]*data-duration="([\d.]+)"', (projet / "index.html").read_text(encoding="utf-8"))
+    return float(m.group(1)) if m else None
+
+
+def cmd_musiques(a) -> None:
+    """Les musiques de lancement (bonus de la formation) : les installer, en choisir une pour une
+    vidéo selon son but et son support, la prendre dans le projet, calée."""
+    r = racine()
+    try:
+        if a.action == "installer":
+            sources = [Path(v).expanduser() for v in a.valeurs] or banque.sources_par_defaut()
+            print(f"• installation des musiques de lancement depuis {len(sources)} source(s)…", flush=True)
+            res = banque.installer(r, sources)
+            for err in res["erreurs"]:
+                print(f"  (ignoré : {err})")
+            detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in res["ambiances"].items())
+            print(f"✅ {res['total']} musiques de lancement dans {banque.DOSSIER}/ ({detail}) ; "
+                  f"{res['ecrits']} copiées, {res['identiques']} déjà là"
+                  + (f", {res['retires']} anciennes retirées" if res["retires"] else "") + ".")
+            if res["absentes"]:
+                print(f"  il manque : {', '.join(res['absentes'])}. Télécharge-les dans la formation (module Bonus), puis "
+                      "redis-moi de les installer.")
+            print("  à chaque vidéo, `musiques choisir` propose les meilleures pour son but et son support.")
+            return
+        if a.action in ("choisir", "prendre"):
+            projet = _projet_ou_none(a.dans)
+            if not projet:
+                sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>).")
+            if not banque.etat(r)["installe"]:
+                sys.exit("ERREUR : les musiques de lancement ne sont pas installées : `musiques installer` depuis la "
+                         "racine (le client télécharge les cinq ambiances dans sa formation, module Bonus).")
+            liste_f = projet / "work" / "musiques.json"
+        if a.action == "choisir":
+            meta = meta_de(projet) or {}
+            objectif, support = a.objectif or meta.get("objectif") or "vente", meta.get("support") or "reel"
+            if support in banque.MUETS:
+                print("• cette vidéo est une boucle muette de section de page : pas de musique.")
+                return
+            duree = a.duree or _duree_projet(projet) or 30.0
+            ambiance = banque.ambiance_demandee(a.ambiance) if a.ambiance else None
+            if a.ambiance and not ambiance:
+                sys.exit(f"ERREUR : ambiance inconnue « {a.ambiance} ». Au choix : {', '.join(banque.AMBIANCES.values())}.")
+            avant = json.loads(liste_f.read_text(encoding="utf-8")) if liste_f.is_file() else {}
+            exclure = set(avant.get("deja_proposes") or []) if a.autres else set()
+            choix = banque.choisir(r, objectif, support, duree, a.a, ambiance, exclure, a.nombre, projet)
+            if not choix:
+                print("• aucun morceau ne convient" + (" (tous déjà proposés)" if exclure else
+                      f" : la vidéo ({duree:g} s) est plus longue que ce qu'ils couvrent après leur entrée")
+                      + ". Propose sa propre musique, ou une autre ambiance.")
+                return
+            liste_f.parent.mkdir(exist_ok=True)
+            liste_f.write_text(json.dumps({"proposes": [m["id"] for m in choix],
+                                           "deja_proposes": sorted(exclure | {m["id"] for m in choix}),
+                                           "duree": duree, "a": choix[0]["a"]}, ensure_ascii=False, indent=1),
+                               encoding="utf-8")
+            for i, m in enumerate(choix, 1):
+                print(f"{i}. {banque.ligne(m)}")
+            pistes = [{"numero": i, **banque.page(m)} for i, m in enumerate(choix, 1)]
+            page = heygen.page_ecoute(
+                "Les musiques pour cette vidéo",
+                "Chaque extrait démarre quelques secondes avant l'entrée de la batterie. Dis le numéro de celle "
+                "que tu préfères (ou « choisis » : je prends la 1, la plus juste pour ta vidéo).",
+                pistes, projet / "work" / "ecoute-musiques.html")
+            ouverte = a.ouvrir and heygen.ouvrir(page)
+            print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
+            print(f"  puis `musiques prendre <numéro> --a <instant de l'entrée> --duree {duree:g}` depuis ce projet.")
+            return
+        if a.action == "prendre":
+            if not liste_f.is_file():
+                sys.exit("ERREUR : pas de proposition dans ce projet : `musiques choisir` d'abord.")
+            proposes = json.loads(liste_f.read_text(encoding="utf-8"))["proposes"]
+            if not a.valeurs or not a.valeurs[0].isdigit() or not 1 <= int(a.valeurs[0]) <= len(proposes):
+                sys.exit(f"ERREUR : donne le numéro choisi (1 à {len(proposes)}).")
+            ident = proposes[int(a.valeurs[0]) - 1]
+            m = next((x for x in banque.morceaux(r) if x["id"] == ident), None)
+            if not m:
+                sys.exit(f"ERREUR : {ident} n'est plus dans les musiques installées : `musiques choisir` à nouveau.")
+            dest = projet / "assets" / "audio" / m["chemin"].name
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(m["chemin"], dest)
+            _source_audio(projet, f"- `{dest.name}` : « {m.get('style', '')} », musiques de lancement, {m['id']} "
+                                  f"(ambiance {m['nom_ambiance']}), offertes avec la formation ; licence dans "
+                                  f"{banque.DOSSIER}/LICENCE.md du dossier ; prise le {datetime.date.today().isoformat()}.")
+            print(f"• {dest.relative_to(projet)} ({m['nom_ambiance']}, batterie à {float(m.get('entree_franche_s') or 0):.1f} s), "
+                  "source notée dans assets/audio/SOURCE.md.")
+            if a.a is None or not a.duree:
+                print(f"  ensuite : `musique {dest.relative_to(projet)} --sortie assets/audio/musique.wav --a <instant> "
+                      "--duree <durée>` pour la caler.")
+                return
+            cmd_musique(argparse.Namespace(entree=str(dest), sortie=str(projet / "assets" / "audio" / "musique.wav"),
+                                           a=a.a, duree=a.duree, bpm=120.0 if m.get("recale_a_120") else 0.0))
+            return
+        e = banque.etat(r)
+        if not e["installe"]:
+            print("• musiques de lancement : pas installées. Le client télécharge les cinq ambiances dans sa formation "
+                  "(module Bonus), puis `musiques installer` les range depuis son dossier Téléchargements.")
+            return
+        detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in e["ambiances"].items())
+        print(f"• musiques de lancement {e['version'] or ''} : {e['total']} installées ({detail})"
+              + (f" ; il manque : {', '.join(e['absentes'])}" if e["absentes"] else "")
+              + (f" ; {len(e['manquants'])} fichiers absents : réinstalle-les" if e["manquants"] else ""))
+    except banque.ErreurMusiques as e:
+        sys.exit(f"ERREUR : {e}")
+
+
+def _projet_ou_none(chemin: str | None) -> Path | None:
+    """Le projet d'une vidéo (dossier avec index.html) : celui donné, sinon le dossier courant."""
+    d = Path(chemin).resolve() if chemin else Path.cwd()
+    return d if (d / "index.html").is_file() else None
+
+
+def _ecoute(projet: Path | None) -> Path:
+    """Où ranger les pages d'écoute : work/ du projet, sinon marque/ à la racine (au client)."""
+    return projet / "work" if projet else racine() / "marque"
+
+
+def _source_audio(projet: Path, ligne: str) -> None:
+    f = projet / "assets" / "audio" / "SOURCE.md"
+    f.parent.mkdir(parents=True, exist_ok=True)
+    avant = f.read_text(encoding="utf-8") if f.is_file() else "# Sources des sons de cette vidéo\n"
+    if ligne not in avant:
+        f.write_text(avant.rstrip("\n") + "\n\n" + ligne + "\n", encoding="utf-8")
+
+
+def cmd_heygen(a) -> None:
+    """La bibliothèque de musiques (gratuite) et les voix (payantes) de HeyGen, avec le compte du client."""
+    try:
+        if a.action == "connecter":
+            valeur = " ".join(a.valeurs).strip() or sys.stdin.readline().strip()
+            fichier = heygen.enregistrer_cle(valeur, remplacer=a.remplacer)
+            print(f"✅ HeyGen relié : la clé est acceptée et rangée dans {fichier} (sur cet ordinateur seulement).")
+            print("  Les voix de synthèse de HeyGen sont maintenant disponibles (écoute gratuite, génération payante).")
+            return
+        if a.action == "bruitages":
+            requete = " ".join(a.valeurs).strip()
+            projet = _projet_ou_none(a.dans)
+            if not requete or not projet:
+                sys.exit('ERREUR : depuis le projet de la vidéo, décris le bruitage en anglais ("whoosh for a scene change").')
+            pistes = heygen.chercher_musiques(requete, nombre=a.nombre, genre="sound_effects")
+            (projet / "work").mkdir(exist_ok=True)
+            (projet / "work" / "bruitages-heygen.json").write_text(json.dumps(
+                {"requete": requete, "pistes": pistes}, ensure_ascii=False, indent=1), encoding="utf-8")
+            for i, p in enumerate(pistes, 1):
+                impact = f", impact à {p['peak_offset']:.2f} s" if isinstance(p.get("peak_offset"), (int, float)) else ""
+                print(f"{i}. {p.get('duration') or 0:.1f} s{impact} · {p.get('description', '')}")
+            print("• `heygen prendre <numéro> --bruitage` le range dans assets/sons/ (début du son = instant de "
+                  "l'événement - impact).")
+            return
+        if a.action == "musiques":
+            requete = " ".join(a.valeurs).strip()
+            if not requete:
+                sys.exit('ERREUR : décris le morceau en anglais, par exemple "upbeat modern product launch, driving drums, 120 BPM, no vocals".')
+            projet = _projet_ou_none(a.dans)
+            pistes = heygen.chercher_musiques(requete, nombre=a.nombre, duree_min=a.duree_min)
+            if not pistes:
+                print("• aucun morceau ne correspond : décris autrement (l'énergie, le tempo, les instruments), "
+                      "ou baisse --duree-min.")
+                return
+            dossier = _ecoute(projet)
+            dossier.mkdir(parents=True, exist_ok=True)
+            (dossier / "musiques-heygen.json").write_text(json.dumps(
+                {"requete": requete, "pistes": pistes}, ensure_ascii=False, indent=1), encoding="utf-8")
+            page = heygen.page_ecoute(
+                "Les musiques proposées", "Écoute les premières secondes de chacune, puis dis le numéro de celle que tu "
+                "préfères (ou « aucune » pour en chercher d'autres).",
+                [{"numero": i, "nom": f"Musique {i}", "detail": f"{round(p.get('duration') or 0)} secondes",
+                  "url": p["audio_url"]} for i, p in enumerate(pistes, 1)], dossier / "ecoute-musiques.html")
+            for i, p in enumerate(pistes, 1):
+                print(f"{i}. {round(p.get('duration') or 0)} s · {p.get('description', '')}")
+            ouverte = a.ouvrir and heygen.ouvrir(page)
+            print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
+            print("  le client choisit un numéro, puis : `heygen prendre <numéro>` depuis le projet de la vidéo "
+                  "(les liens expirent dans 7 jours).")
+            return
+        if a.action == "prendre":
+            projet = _projet_ou_none(a.dans)
+            if not projet:
+                sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>) : la musique va dans ses assets/.")
+            liste = projet / "work" / ("bruitages-heygen.json" if a.bruitage else "musiques-heygen.json")
+            if not liste.is_file():
+                sys.exit("ERREUR : pas de recherche dans ce projet : `heygen " + ("bruitages" if a.bruitage else "musiques")
+                         + " \"<description>\"` d'abord.")
+            pistes = json.loads(liste.read_text(encoding="utf-8"))["pistes"]
+            if not a.valeurs or not a.valeurs[0].isdigit() or not 1 <= int(a.valeurs[0]) <= len(pistes):
+                sys.exit(f"ERREUR : donne le numéro choisi (1 à {len(pistes)}).")
+            p = pistes[int(a.valeurs[0]) - 1]
+            if a.bruitage:
+                dest = projet / "assets" / "sons" / f"heygen-{p['id'][:8]}{heygen.extension(p['audio_url'], '.wav')}"
+                heygen.telecharger(p["audio_url"], dest)
+                _source_audio(projet, f"- `{dest.name}` : bruitage de la bibliothèque HeyGen (id {p['id']}), "
+                                      f"« {p.get('description', '')} », pris avec le compte du client (recherche gratuite).")
+                impact = p.get("peak_offset")
+                print(f"• {dest.relative_to(projet)}" + (f" (impact à {impact:.2f} s du début)" if isinstance(impact, (int, float)) else ""))
+                return
+            dest = projet / "assets" / "audio" / f"heygen-{p['id'][:8]}{heygen.extension(p['audio_url'], '.wav')}"
+            heygen.telecharger(p["audio_url"], dest)
+            _source_audio(projet, f"- `{dest.name}` : « {p.get('name')} » (id {p['id']}), bibliothèque de musiques de HeyGen, "
+                                  f"« {p.get('description', '')} », {round(p.get('duration') or 0)} s, prise le "
+                                  f"{datetime.date.today().isoformat()} avec le compte HeyGen du client (recherche gratuite).")
+            print(f"• {dest.relative_to(projet)} ({round(p.get('duration') or 0)} s), source notée dans assets/audio/SOURCE.md.")
+            print(f"  ensuite : `musique {dest.relative_to(projet)}` pour l'analyser, puis le caler (--sortie --a --duree).")
+            return
+        if a.action == "voix":
+            projet = _projet_ou_none(a.dans)
+            genre = {"femme": "female", "homme": "male"}.get(a.genre or "", a.genre)
+            liste = heygen.voix_disponibles(langue=a.langue, genre=genre, nombre=a.nombre)
+            if not liste:
+                print("• aucune voix trouvée pour ce filtre.")
+                return
+            dossier = _ecoute(projet)
+            page = heygen.page_ecoute(
+                "Les voix proposées", "Écoute chaque voix, puis dis le numéro de celle que tu préfères. L'écoute est "
+                "gratuite ; la voix de ta vidéo, elle, sera payante (quelques centimes, annoncés avant).",
+                [{"numero": i, "nom": v.get("name"), "detail": {"female": "femme", "male": "homme"}.get(v.get("gender"), ""),
+                  "url": v.get("preview_audio_url")} for i, v in enumerate(liste, 1) if v.get("preview_audio_url")],
+                dossier / "ecoute-voix.html")
+            for i, v in enumerate(liste, 1):
+                print(f"{i}. {v.get('name')} ({ {'female': 'femme', 'male': 'homme'}.get(v.get('gender'), '?') }) · id {v.get('voice_id')}")
+            ouverte = a.ouvrir and heygen.ouvrir(page)
+            print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
+            print("  attention : ces aperçus sont souvent en anglais ; la voix parlera la langue du texte. Note l'id choisi "
+                  "dans studio.config.json (voix_heygen) pour les prochaines vidéos.")
+            return
+        if a.action == "parler":
+            projet = _projet_ou_none(a.dans)
+            if not projet:
+                sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>) : la voix va dans ses assets/.")
+            source = " ".join(a.valeurs).strip()
+            fichier_texte = projet / source if source and (projet / source).is_file() else None
+            texte = fichier_texte.read_text(encoding="utf-8").strip() if fichier_texte else source
+            if not texte or not a.voix:
+                sys.exit("ERREUR : donne le texte validé (ou son fichier, par exemple work/voix.txt) et --voix <id>.")
+            if not a.confirme:
+                heygen.parler(texte, a.voix, vitesse=a.vitesse, langue=a.langue)      # annonce le coût, sans appel
+            avant = heygen.solde()
+            rep = heygen.parler(texte, a.voix, vitesse=a.vitesse, langue=a.langue, confirme=True)
+            brut = projet / "assets" / "audio" / ("voix-heygen-brute" + heygen.extension(rep["audio_url"], ".mp3"))
+            heygen.telecharger(rep["audio_url"], brut)
+            ffmpeg = binaire("ffmpeg")
+            dest = projet / (a.sortie or "assets/audio/voix.wav")
+            r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(brut), "-af", "loudnorm=I=-24:TP=-3:LRA=11", "-ar", "48000",
+                        "-ac", "2", "-c:a", "pcm_s16le", str(dest)])
+            if r.returncode != 0:
+                sys.exit(f"ERREUR : conversion impossible : {r.stderr[-300:]}")
+            if rep.get("word_timestamps"):
+                (projet / "work").mkdir(exist_ok=True)
+                (projet / "work" / "voix-mots.json").write_text(json.dumps(rep["word_timestamps"], ensure_ascii=False, indent=0),
+                                                              encoding="utf-8")
+            apres = heygen.solde()
+            cout = f", {avant - apres:.2f} $ prélevés (solde : {apres:.2f} $)" if avant is not None and apres is not None else ""
+            _source_audio(projet, f"- `{dest.name}` : voix de synthèse HeyGen (voix {a.voix}), générée le "
+                                  f"{datetime.date.today().isoformat()} avec le compte du client, à son accord{cout}.")
+            print(f"• {dest.relative_to(projet)} : {rep.get('duration', 0):.1f} s de voix{cout}.")
+            if rep.get("word_timestamps"):
+                print("  le temps de chaque mot est dans work/voix-mots.json : cale les animations dessus (voix.md).")
+            return
+        # état
+        source = heygen.source_cle()
+        if not source:
+            print("• HeyGen : pas relié. Optionnel, pour une voix de synthèse : un compte sur https://app.heygen.com, "
+                  f"la clé copiée sur {heygen.PAGE_CLE}, puis `heygen connecter <clé>`.")
+            return
+        if source == "oauth":
+            print("• HeyGen : relié par le CLI heygen (connexion du navigateur), sans clé lisible par cet outil. Pour les "
+                  f"musiques et les voix ici, copie une clé sur {heygen.PAGE_CLE} puis `heygen connecter <clé> --remplacer`.")
+            return
+        montant = heygen.solde()
+        print(f"✅ HeyGen relié ({source}) : voix de synthèse disponibles"
+              + (f" ; solde pour les voix de synthèse : {montant:.2f} $" if montant is not None else ""))
+    except heygen.ErreurHeygen as e:
+        sys.exit(f"ERREUR : {e}")
+
+
 def cmd_sons(a) -> None:
-    """Pose la musique et les bruitages décrits dans un fichier JSON (chemins relatifs au projet) :
-    {"musique": "assets/audio/musique.wav", "musique_db": -17, "evenements": [{"src": …, "start": s,
-    "vol": dB, "trim": [t0, t1], "fondu_entree": s, "fondu_sortie": s, "af": filtre}]}."""
+    """Pose la voix, la musique et les bruitages décrits dans un fichier JSON (chemins relatifs au
+    projet) : {"voix": "assets/audio/voix.wav", "voix_debut": 0.5, "musique": "assets/audio/musique.wav",
+    "musique_db": -17, "evenements": [{"src": …, "start": s, "vol": dB, "trim": [t0, t1],
+    "fondu_entree": s, "fondu_sortie": s, "af": filtre}]}. Avec une voix, la musique passe par
+    défaut à -26,5 dB (sous la voix) et le mixage entier est amené à -16 LUFS."""
     import sons
     projet = Path(a.projet).resolve()
     liste = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
@@ -875,12 +1206,19 @@ def cmd_sons(a) -> None:
             e["trim"] = tuple(e["trim"])
         evenements.append(e)
     musique = chemin(liste["musique"]) if liste.get("musique") else None
+    voix_off = ({"src": chemin(liste["voix"]), "start": float(liste.get("voix_debut") or 0),
+                 "vol": float(liste.get("voix_db") or 0)} if liste.get("voix") else None)
+    musique_db = float(liste.get("musique_db", -26.5 if voix_off else -17))
     try:
-        rapport = sons.poser(projet, evenements, musique=musique, musique_db=float(liste.get("musique_db", -17)),
-                             ecraser=a.ecraser)
+        rapport = sons.poser(projet, evenements, musique=musique, musique_db=musique_db, ecraser=a.ecraser,
+                             sfx_dir=RACINE / "assets" / "sfx",
+                             voix_off=voix_off)
     except sons.Erreur as e:
         sys.exit(f"ERREUR : {e}")
-    print(f"• {len(evenements)} bruitage(s){' et la musique' if musique else ''} posés dans index.html")
+    poses = ([f"{len(evenements)} bruitage(s)"] if evenements else []) + (["la voix"] if voix_off else []) \
+        + (["la musique"] if musique else [])
+    print("• " + (", ".join(poses[:-1]) + " et " + poses[-1] if len(poses) > 1 else poses[0] if poses else "aucun son")
+          + " posés dans index.html")
     print(f"  {sons.resume_niveau(rapport)}")
 
 
@@ -939,6 +1277,9 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     cles = [cle_video(v) for v in videos]
     if len(set(cles)) != len(cles):
         sys.exit(f"ERREUR : deux vidéos portent le même nom ({', '.join(cles)}) : donne-leur un rôle ou un format.")
+    noms = [nom_projet(sujet, v) for v in videos]
+    if len(set(noms)) != len(noms):
+        sys.exit(f"ERREUR : deux vidéos auraient le même dossier ({', '.join(noms)}) : donne-leur un rôle ou un format.")
     base = r / DOSSIER / " · ".join(p for p in (propre(sujet), date) if p)
     dossier, n = base, 2
     while dossier.exists():
@@ -952,18 +1293,25 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
         fiche["cta"].update(mot_cle=marque["mot_cle"], source="client")
     (dossier / "OFFRE.json").write_text(json.dumps(fiche, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     plan = [f"# {OBJECTIFS[objectif]['nom']} : {sujet}\n\nCréé le {date}. Objectif : {OBJECTIFS[objectif]['quoi']}.\n",
-            "## Brief\n\n(objectif précis, public, supports, voix, ce que la vidéo doit faire faire)\n",
+            "## Brief\n\n(le lien de sa page, l'objectif précis, le public, les supports, ses réponses et préférences, ce que la vidéo doit faire faire)\n",
+            "## Repérage\n\n(l'univers de sa page, les surfaces à montrer, les logos, la matière qui manque : references/reperage.md)\n",
             "## Structure et angle retenus\n\n(à remplir après le choix du client)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
         lo, hi = s["ideal"]
         plan.append(f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {s['son']})\n\n"
-                    "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
-                    "|---|---|---|---|---|---|---|\n")
+                    "| Temps | Bloc | Recette | À l'écran (texte exact) | Clé de OFFRE.json | Mouvement | Raccord | Son |\n"
+                    "|---|---|---|---|---|---|---|---|\n")
     (dossier / "PLAN.md").write_text("\n".join(plan), encoding="utf-8")
     for v in videos:
         creer_projet(r, dossier, sujet, objectif, v, date)
     return dossier
+
+
+def nom_projet(sujet: str, v: dict) -> str:
+    """« <sujet> · <support> » : le sujet seul est raccourci, le support reste entier (deux vidéos
+    d'un sujet long portaient le même nom tronqué, et la création plantait à mi-chemin)."""
+    return f"{propre(sujet, 40)} · {propre(nom_video(v), 40)}"
 
 
 def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, date: str) -> Path:
@@ -973,7 +1321,7 @@ def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
     s = SUPPORTS[v["support"]]
     largeur, hauteur = FORMATS[v["format"]]
     cle, duree = cle_video(v), duree_cible(v)
-    projet = dossier / propre(f"{sujet} · {nom_video(v)}", 60)
+    projet = dossier / nom_projet(sujet, v)
     projet.mkdir(parents=True)
     for sous in ("assets/images", "assets/audio", "exports", "work"):
         (projet / sous).mkdir(parents=True, exist_ok=True)
@@ -1019,17 +1367,23 @@ def ajouter(r: Path, dossier: Path, videos: list[dict]) -> list[Path]:
     doublons = [cle_video(v) for v in videos if cle_video(v) in deja]
     if doublons:
         sys.exit(f"ERREUR : déjà dans ce dossier : {', '.join(doublons)}. Donne un autre format (@4x5) ou un rôle.")
-    frere, meta0 = existants[0]
+    frere, meta0 = projet_principal(existants)
     sujet, objectif, date = meta0.get("sujet", dossier.name), meta0.get("objectif", "vente"), meta0.get("date", "")
+    occupes = {p.name for p, _m in existants}
+    for v in videos:
+        if nom_projet(sujet, v) in occupes:
+            sys.exit(f"ERREUR : le dossier « {nom_projet(sujet, v)} » existe déjà : donne un autre format (@4x5) ou un rôle.")
     plan = dossier / "PLAN.md"
     ajouts = []
     for v in videos:
         projet = creer_projet(r, dossier, sujet, objectif, v, date)
         # La matière déjà préparée pour la première vidéo (polices locales, images, vidéos
         # préparées) sert aussi à la déclinaison : on la reprend au lieu de la refaire.
-        for sous in ("assets/fonts", "assets/images", "assets/video"):
+        for sous in ("assets/fonts", "assets/images", "assets/video", "assets/logos", "assets/audio"):
             if (frere / sous).is_dir():
                 shutil.copytree(frere / sous, projet / sous, dirs_exist_ok=True)
+        if (frere / "kit" / "ajouts.js").is_file():          # les logos posés par `logos`
+            shutil.copy2(frere / "kit" / "ajouts.js", projet / "kit" / "ajouts.js")
         _polices_interfaces(projet)
         ajouts.append(projet)
         sup = SUPPORTS[v["support"]]
@@ -1037,11 +1391,25 @@ def ajouter(r: Path, dossier: Path, videos: list[dict]) -> list[Path]:
         section = (f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {sup['son']})\n\n"
                    "Déclinaison : même structure et même message, remis en page pour ce format, "
                    "raccourci si le support le demande (une story garde un geste par bloc).\n\n"
-                   "| Temps | Bloc | À l'écran (texte exact) | Voix | Clé de OFFRE.json | Mouvement | Son |\n"
-                   "|---|---|---|---|---|---|---|\n")
+                   "| Temps | Bloc | Recette | À l'écran (texte exact) | Clé de OFFRE.json | Mouvement | Raccord | Son |\n"
+                   "|---|---|---|---|---|---|---|---|\n")
         if plan.is_file():
             plan.write_text(inserer_section(plan.read_text(encoding="utf-8"), section), encoding="utf-8")
     return ajouts
+
+
+def projet_principal(existants: list[tuple[Path, dict]]) -> tuple[Path, dict]:
+    """La vidéo de référence d'un dossier : celle qui a déjà un rendu dans exports/, sinon la plus
+    ancienne (createdAt de meta.json), jamais la première par ordre alphabétique."""
+    def cle(entree):
+        p, _m = entree
+        try:
+            cree = json.loads((p / "meta.json").read_text(encoding="utf-8")).get("createdAt", "")
+        except ValueError:
+            cree = ""
+        rendu = any((p / "exports").glob("*.mp4")) if (p / "exports").is_dir() else False
+        return (not rendu, cree or "9999", p.name)
+    return sorted(existants, key=cle)[0]
 
 
 def inserer_section(plan: str, section: str) -> str:
@@ -1077,8 +1445,9 @@ def cmd_ajouter(a) -> None:
         videos = [lire_video(x) for x in a.videos.split(",") if x.strip()]
     except ValueError as e:
         sys.exit(f"ERREUR : {e}")
+    source = projet_principal(projets(dossier))[0].name if projets(dossier) else "?"
     for projet in ajouter(r, dossier, videos):
-        print(f"• ajouté : {projet.name} (polices, images et vidéos du premier projet reprises)")
+        print(f"• ajouté : {projet.name} (polices, images, vidéos, logos, musique et voix repris de « {source} »)")
     print("• même fiche (OFFRE.json) ; complète sa section dans PLAN.md, puis remets la vidéo en page pour ce format")
     for famille in polices_manquantes(r):
         print(f"⚠️ police « {famille} » sans fichier dans brand/fonts.css : {CONSEIL_POLICE}.")
@@ -1135,9 +1504,31 @@ def cmd_offre(a) -> None:
     print("ok : chaque fait de la fiche a sa source")
 
 
+def cmd_capture(a) -> None:
+    """La page du client capturée (texte visible, couleurs, images) dans sources/capture du dossier
+    de la vidéo, sans les fichiers d'instructions que HyperFrames y dépose."""
+    cli = hyperframes_cli()
+    if not cli:
+        sys.exit("ERREUR : HyperFrames introuvable : lance `npm ci` à la racine du dossier.")
+    dossier = _dossier_fiche(Path(a.dossier))
+    lien = a.lien if re.match(r"https?://", a.lien) else "https://" + a.lien
+    dest = dossier / "sources" / "capture"
+    print("• capture de la page (1 à 2 minutes)…", flush=True)
+    try:
+        r = lancer([*cli, "capture", lien, "-o", str(dest), "--skip-vision", "--timeout", "60000"], timeout=420)
+    except subprocess.TimeoutExpired:
+        r = subprocess.CompletedProcess([], 1)
+    mq.sans_consignes(dest)
+    texte = dest / "extracted" / "visible-text.txt"
+    if r.returncode != 0 or not texte.is_file() or not texte.read_text(encoding="utf-8", errors="replace").strip():
+        sys.exit("ERREUR : capture impossible (page protégée, page de paiement, connexion) : demande deux ou trois "
+                 "captures d'écran de sa page, ou le texte de l'offre.")
+    print(f"• capture : {dest.relative_to(dossier)} (texte visible dans extracted/visible-text.txt)")
+
+
 def cmd_lecture(a) -> None:
     n = mots(a.texte)
-    print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({n} mots)")
+    print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({n} mot{'s' if n > 1 else ''})")
     if n > MOTS_MAX:
         print(f"⚠️ {n} mots : trop pour un écran ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus). Coupe, ou montre-le au lieu de l'écrire.")
     elif n > MOTS_CONSEILLES:
@@ -1302,7 +1693,7 @@ def cmd_rythme(a) -> None:
         v = verdict_rythme(ecarts_images(ffmpeg, Path(a.video)), fin_libre=fin)
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
-    print(f"• {v['duree']:.0f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.0f}) · "
+    print(f"• {v['duree']:.1f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.0f}) · "
           f"écart médian {v['ecart_median']:.2f} s (≤ {ECART_MEDIAN_MAX}) · image figée : "
           f"{sum(l for _d, l in v['figees']):.1f} s")
     if v["creux"]:
@@ -1409,43 +1800,195 @@ def cmd_reference(a) -> None:
 # Logos et icônes, posés dans le projet (le rendu est hors ligne). Les logos des outils que
 # l'offre utilise viennent de theSVG, les icônes de Lucide ; chacun est nettoyé avant d'entrer.
 # ---------------------------------------------------------------------------
+THESVG = "ea4119a0c2563298c1041080ff5c55a6c5101b90"     # theSVG figé au 14/10/2026 (7 432 marques) : rien ne bouge sous nos pieds
 SOURCES_SVG = {
-    "logo": "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/{nom}/{variante}.svg",
+    "logo": "https://cdn.jsdelivr.net/gh/glincker/thesvg@" + "{version}" + "/public/icons/{nom}/{variante}.svg",
     "icone": "https://cdn.jsdelivr.net/npm/lucide-static@0.460.0/icons/{nom}.svg",
 }
 INTERDITS_SVG = re.compile(r"<script|<foreignObject|\son\w+\s*=|javascript:|(?:xlink:)?href\s*=\s*[\"']\s*(?:https?:|data:|//)", re.I)
-MONOCHROMES = {"#fff", "#ffffff", "#000", "#000000", "#111", "#111111", "white", "black"}
+FORMES_SVG = re.compile(r"<(?:path|rect|circle|ellipse|polygon|polyline|line|use)\b([^>]*)>", re.I)
 
 
-def nettoyer_svg(svg: str, recolorable: bool = True) -> str:
-    """SVG prêt à poser en ligne : rien d'actif, taille fluide, couleur unique passée en currentColor."""
+def _gris_extreme(couleur: str) -> str | None:
+    """« noir » ou « blanc » pour une couleur presque noire ou presque blanche (#181717, #fff,
+    white…), sinon None : un logo d'une seule de ces teintes est un logo monochrome."""
+    c = couleur.strip().lower()
+    nommees = {"white": "blanc", "black": "noir"}
+    if c in nommees:
+        return nommees[c]
+    m = re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", c)
+    if not m:
+        return None
+    h = m.group(1) if len(m.group(1)) == 6 else "".join(x * 2 for x in m.group(1))
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    if max(r, g, b) - min(r, g, b) > 14:
+        return None
+    return "noir" if max(r, g, b) < 48 else "blanc" if min(r, g, b) > 220 else None
+
+
+def _isoler_svg(svg: str, prefixe: str) -> str:
+    """Plusieurs logos vivent dans la même page : leurs identifiants internes (id="a" chez
+    Instagram comme chez Gemini) se marchaient dessus, et un logo empruntait le dégradé d'un autre
+    (Instagram disparaissait). Chaque id et chaque renvoi (url(#…), href="#…") prend le préfixe du
+    logo, et les règles d'un <style> embarqué ne valent plus que sous ce logo."""
+    ids = re.findall(r'\bid="([^"]+)"', svg)
+    for ancien in sorted(set(ids), key=len, reverse=True):
+        nouveau = f"{prefixe}-{ancien}"
+        svg = re.sub(rf'\bid="{re.escape(ancien)}"', f'id="{nouveau}"', svg)
+        svg = re.sub(rf'url\(\s*[\'"]?#{re.escape(ancien)}[\'"]?\s*\)', f"url(#{nouveau})", svg)
+        svg = re.sub(rf'((?:xlink:)?href)="#{re.escape(ancien)}"', rf'\1="#{nouveau}"', svg)
+
+    def portee(bloc: re.Match) -> str:
+        regles = re.sub(r"([^{}@]+)\{", lambda r: ", ".join(f".{prefixe} {sel.strip()}" for sel in r.group(1).split(",")
+                                                          if sel.strip()) + " {", bloc.group(2))
+        return bloc.group(1) + regles + bloc.group(3)
+    svg = re.sub(r"(<style[^>]*>)(.*?)(</style>)", portee, svg, flags=re.S)
+    return svg.replace("<svg", f'<svg class="{prefixe}"', 1) if "<style" in svg else svg
+
+
+def nettoyer_svg(svg: str, recolorable: bool = True, prefixe: str | None = None) -> str:
+    """SVG prêt à poser en ligne : rien d'actif, taille fluide. Un logo d'une seule teinte noire ou
+    blanche passe en currentColor (il prend la couleur lisible du fond) ; un logo à deux tons
+    (Notion : carré blanc, lettre noire) ou en couleurs garde les siennes. `prefixe` isole ses
+    identifiants et ses styles des autres logos de la page."""
     if INTERDITS_SVG.search(svg):
         raise ValueError("SVG refusé : il contient un script, un lien externe ou un gestionnaire d'évènement")
     svg = re.sub(r"<\?xml.*?\?>|<!--.*?-->|<title>.*?</title>|<desc>.*?</desc>", "", svg, flags=re.S)
     debut = re.search(r"<svg\b[^>]*>", svg)
     if not debut:
         raise ValueError("pas de balise <svg>")
+    racine_fill = re.search(r'\sfill="([^"]+)"', debut.group(0))
     tete = re.sub(r'\s(?:width|height|class)="[^"]*"', "", debut.group(0))
     tete = tete.replace("<svg", '<svg width="100%" height="100%"', 1)
-    svg = svg[:debut.start()] + tete + svg[debut.end():]
-    couleurs = {c.lower() for c in re.findall(r'fill="([^"]+)"', svg)} - {"none", "currentcolor"}
-    if recolorable and couleurs and couleurs <= MONOCHROMES:
-        svg = re.sub(r'fill="([^"]+)"', lambda mm: 'fill="currentColor"' if mm.group(1).lower() in MONOCHROMES else mm.group(0), svg)
+    corps = svg[debut.end():]
+    couleurs = {c.lower() for c in re.findall(r'fill="([^"]+)"', corps)} - {"none", "currentcolor"}
+    sans_fill = any("fill=" not in attrs and "fill:" not in attrs for attrs in FORMES_SVG.findall(corps))
+    teintes = {_gris_extreme(c) for c in couleurs}
+    if recolorable and not racine_fill and "<style" not in corps:      # un logo stylé par classes garde ses couleurs
+        if not couleurs and sans_fill:                      # tout en noir par défaut
+            tete = tete.replace("<svg", '<svg fill="currentColor"', 1)
+        elif couleurs and len(teintes) == 1 and None not in teintes and not sans_fill:
+            corps = re.sub(r'fill="([^"]+)"', lambda mm: 'fill="currentColor"' if _gris_extreme(mm.group(1)) else mm.group(0), corps)
+    svg = svg[:debut.start()] + tete + corps
+    if prefixe:
+        svg = _isoler_svg(svg, prefixe)
     return re.sub(r"\s*\n\s*", " ", svg).strip()
 
 
-def telecharger_svg(genre: str, nom: str) -> str:
+def _lire_url(url: str, delai: float = 15) -> bytes | None:
     import urllib.request
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "publicitaire-ia"}), timeout=delai) as rep:
+            return rep.read() if rep.status == 200 else None
+    except Exception:
+        return None
+
+
+def telecharger_svg(genre: str, nom: str) -> str:
     variantes = ("default", "color", "mono") if genre == "logo" else ("",)
     for variante in variantes:
-        url = SOURCES_SVG[genre].format(nom=nom, variante=variante)
-        try:
-            with urllib.request.urlopen(url, timeout=15) as rep:
-                if rep.status == 200:
-                    return rep.read().decode("utf-8", "replace")
-        except Exception:
-            continue
+        brut = _lire_url(SOURCES_SVG[genre].format(nom=nom, variante=variante, version=THESVG))
+        if brut:
+            return brut.decode("utf-8", "replace")
     raise ValueError(f"{genre} « {nom} » introuvable")
+
+
+# Les registres des logos (theSVG, plus de 7 000 marques ; simple-icons en secours), gardés une
+# semaine dans .cache/ à la racine du dossier : un nom courant (« ChatGPT », « Lemon Squeezy »)
+# retrouve son identifiant sans que l'agent le devine.
+REGISTRE_THESVG = f"https://cdn.jsdelivr.net/gh/glincker/thesvg@{THESVG}/src/data/icons.json"
+SIMPLE_ICONS = "https://cdn.jsdelivr.net/npm/simple-icons@16.35.0"
+ALIAS_LOGOS = {"chatgpt": "openai", "gpt": "openai", "openaicodex": "codex", "claudeai": "claude",
+               "claudecode": "claude-code", "metaads": "meta", "facebookads": "facebook", "googleads": "google-ads",
+               "gsheets": "google-sheets", "sheets": "google-sheets", "gdrive": "google-drive", "insta": "instagram",
+               "reels": "instagram", "shorts": "youtube", "twitterx": "x", "lemonsqueezy": "lemon-squeezy"}
+
+
+def _norm(texte: str) -> str:
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFKD", texte.lower()) if c.isalnum())
+
+
+def _registre(nom: str, url: str) -> list:
+    """Le registre en cache (une semaine), sinon téléchargé, sinon l'ancien cache, sinon vide."""
+    cache = RACINE / ".cache" / nom
+    try:
+        frais = cache.is_file() and (datetime.datetime.now().timestamp() - cache.stat().st_mtime) < 7 * 86400
+    except OSError:
+        frais = False
+    if not frais:
+        brut = _lire_url(url, delai=30)
+        if brut:
+            try:
+                json.loads(brut.decode("utf-8"))
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                cache.write_bytes(brut)
+            except ValueError:
+                pass
+    try:
+        donnees = json.loads(cache.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    return donnees if isinstance(donnees, list) else donnees.get("icons", [])
+
+
+def correspondances(nom: str, registre: list) -> list[dict]:
+    """Les entrées du registre dont l'identifiant, le nom ou un alias correspond (exact d'abord,
+    puis début du nom) ; les variantes « badge » en dernier."""
+    n = _norm(ALIAS_LOGOS.get(_norm(nom), nom))
+    def cles(e):
+        aliases = e.get("aliases") or []
+        aliases = aliases.get("aka", []) if isinstance(aliases, dict) else aliases
+        return [_norm(e.get("slug") or ""), _norm(e.get("title") or ""), *(_norm(a) for a in aliases)]
+    exacts = [e for e in registre if n in cles(e)]
+    debuts = [e for e in registre if e not in exacts and any(k.startswith(n) for k in cles(e) if k)] if len(n) >= 3 else []
+    return sorted(exacts, key=lambda e: "badge" in (e.get("slug") or "")) + debuts[:8]
+
+
+def logo_svg(nom: str) -> tuple[str, str]:
+    """(SVG, provenance) d'un vrai logo : theSVG par son identifiant, puis par son nom ou un alias
+    dans le registre, puis simple-icons (dans la couleur de la marque)."""
+    essais = [nom]
+    for e in correspondances(nom, _registre("thesvg-icons.json", REGISTRE_THESVG)):
+        if e.get("slug") and e["slug"] not in essais:
+            essais.append(e["slug"])
+    for slug in essais[:4]:
+        try:
+            return telecharger_svg("logo", slug), f"theSVG ({slug})"
+        except ValueError:
+            continue
+    for e in correspondances(nom, _registre("simple-icons.json", SIMPLE_ICONS + "/data/simple-icons.json"))[:2]:
+        slug = e.get("slug") or _norm(e.get("title") or "")
+        brut = _lire_url(f"{SIMPLE_ICONS}/icons/{slug}.svg")
+        if brut:
+            svg = brut.decode("utf-8", "replace")
+            if e.get("hex"):
+                svg = svg.replace("<svg ", f'<svg fill="#{e["hex"]}" ', 1)
+            return svg, f"simple-icons ({slug})"
+    raise ValueError(f"logo « {nom} » introuvable dans theSVG et simple-icons : demande au client son logo (un fichier "
+                     "SVG ou PNG, ou une capture), une seule fois, puis `logos <projet> fichier:<chemin>`")
+
+
+def cle_logo(nom: str) -> str:
+    """Le nom d'un logo dans le kit, tel que l'agent l'a demandé : « Lemon Squeezy » -> lemon-squeezy."""
+    import unicodedata
+    plat = unicodedata.normalize("NFKD", nom.lower()).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", plat).strip("-") or "logo"
+
+
+def logo_fichier(projet: Path, chemin: Path, prefixe: str = "logo") -> str:
+    """Un logo donné par le client : SVG nettoyé en ligne, ou image copiée dans assets/logos/."""
+    if not chemin.is_file():
+        raise ValueError(f"fichier « {chemin} » introuvable")
+    if chemin.suffix.lower() == ".svg":
+        return nettoyer_svg(chemin.read_text(encoding="utf-8", errors="replace"), recolorable=False, prefixe=prefixe)
+    if chemin.suffix.lower() not in (".png", ".webp", ".jpg", ".jpeg"):
+        raise ValueError(f"« {chemin.name} » : un logo est un SVG, un PNG, un WebP ou un JPEG")
+    dest = projet / "assets" / "logos" / chemin.name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.resolve() != chemin.resolve():
+        shutil.copyfile(chemin, dest)
+    return f'<img src="assets/logos/{html.escape(chemin.name, quote=True)}" alt="">'
 
 
 def ecrire_ajouts(projet: Path, ajouts: dict[str, str]) -> Path:
@@ -1464,20 +2007,40 @@ def ecrire_ajouts(projet: Path, ajouts: dict[str, str]) -> Path:
 
 
 def cmd_logos(a) -> None:
+    if a.projet == "chercher":
+        registre = _registre("thesvg-icons.json", REGISTRE_THESVG)
+        for mot in a.noms:
+            trouves = correspondances(mot, registre)
+            print(f"• {mot} : " + (", ".join(f"{e['slug']} ({e.get('title')})" for e in trouves[:8]) or "aucun dans theSVG"))
+        return
     projet = Path(a.projet).resolve()
     if not (projet / "index.html").is_file():
         sys.exit("ERREUR : donne le dossier d'un projet de vidéo (celui qui contient index.html).")
-    ajouts, echecs = {}, []
+    ajouts, echecs, sources = {}, [], []
     for brut in a.noms:
         genre, _, nom = brut.partition(":") if ":" in brut else (a.genre, "", brut)
         try:
-            cle = ("logo-" if genre == "logo" else "") + nom
-            ajouts[cle] = nettoyer_svg(telecharger_svg(genre, nom))
+            if genre == "fichier":
+                chemin = Path(nom).expanduser()
+                cle = "logo-" + cle_logo(chemin.stem)
+                ajouts[cle] = logo_fichier(projet, chemin if chemin.is_absolute() else Path.cwd() / chemin, cle)
+            elif genre == "logo":
+                svg, provenance = logo_svg(nom)
+                cle = "logo-" + cle_logo(nom)
+                ajouts[cle] = nettoyer_svg(svg, prefixe=cle)
+                if not provenance.endswith(f"({nom})"):
+                    sources.append(f"{nom} → {provenance}")
+            else:
+                cle = nom
+                ajouts[cle] = nettoyer_svg(telecharger_svg(genre, nom))
         except ValueError as e:
             echecs.append(str(e))
     if ajouts:
         f = ecrire_ajouts(projet, ajouts)
-        print(f"• {len(ajouts)} ajouté(s) dans {f.relative_to(projet)} : {', '.join(ajouts)} (K.ic(\"logo-claude\"), K.ic(\"rocket\"))")
+        print(f"• {len(ajouts)} ajouté(s) dans {f.relative_to(projet)} : {', '.join(ajouts)} "
+              "(K.ic(\"logo-claude\") ; flottants nus : K.logoNu(K.ic(\"logo-claude\")))")
+    for ligne in sources:
+        print(f"  {ligne}")
     for e in echecs:
         print(f"⚠️ {e}")
     if not ajouts:
@@ -1566,6 +2129,44 @@ def calage(entree: float, phase: float, bpm: float, cible_bpm: float, a_t: float
     return {"facteur": round(facteur, 6), "entree": round(entree_etiree, 3), "decalage": round(entree_etiree - a_t, 3)}
 
 
+def filtres_calage(c: dict, duree: float | None = None) -> str:
+    """Chaîne ffmpeg du calage : tempo, puis début coupé (décalage > 0) ou silence ajouté devant
+    (décalage < 0), puis longueur. Le silence d'adelay est renuméroté (asetpts=N/SR/TB) : avec
+    ffmpeg 8, adelay suivi d'atrim ne gardait que l'horodatage et le WAV perdait le silence,
+    l'entrée tombait alors trop tôt."""
+    filtres = []
+    if c["facteur"] != 1.0:
+        filtres.append(f"atempo={c['facteur']:.6f}")
+    if c["decalage"] >= 0:
+        filtres.append(f"atrim=start={c['decalage']:.3f},asetpts=PTS-STARTPTS")
+    else:
+        retard = int(round(-c["decalage"] * 1000))
+        filtres.append(f"adelay={retard}|{retard},asetpts=N/SR/TB")
+    if duree:
+        filtres.append(f"atrim=duration={duree + 0.6:.2f}")
+    return ",".join(filtres)
+
+
+def silence_initial(env: list[float], fps: float, seuil: float = 2.0) -> float:
+    """Durée (s) du silence numérique au début d'un fichier (énergie sous `seuil` sur 16 bits)."""
+    for i, e in enumerate(env):
+        if e > seuil:
+            return i / fps
+    return len(env) / fps
+
+
+def ecart_calage(ffmpeg: str, sortie: Path, c: dict) -> str | None:
+    """Contrôle du fichier écrit : quand le morceau démarre après la vidéo, le silence ajouté
+    devant est bien là (à 50 ms près), sinon l'entrée tomberait trop tôt."""
+    if c["decalage"] >= 0:
+        return None
+    attendu = -c["decalage"]
+    mesure = silence_initial(enveloppe(ffmpeg, sortie), MUSIQUE_SR / MUSIQUE_PAS)
+    if abs(mesure - attendu) > 0.05:
+        return f"{mesure:.2f} s de silence au début au lieu de {attendu:.2f} s"
+    return None
+
+
 def cmd_musique(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -1583,22 +2184,23 @@ def cmd_musique(a) -> None:
     if a.a is None or entree is None:
         sys.exit("ERREUR : donne --a <instant de la vidéo où l'entrée doit tomber> (le morceau doit avoir une entrée franche).")
     c = calage(entree, phase, bpm, a.bpm, a.a)
-    filtres = []
-    if c["facteur"] != 1.0:
-        filtres.append(f"atempo={c['facteur']:.6f}")
-    if c["decalage"] >= 0:
-        filtres.append(f"atrim=start={c['decalage']:.3f},asetpts=PTS-STARTPTS")
-    else:
-        retard = int(round(-c["decalage"] * 1000))
-        filtres.append(f"adelay={retard}|{retard}")
-    if a.duree:
-        filtres.append(f"atrim=duration={a.duree + 0.6:.2f}")
-    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(source), "-af", ",".join(filtres), "-c:a", "pcm_s16le", str(a.sortie)])
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(source), "-af", filtres_calage(c, a.duree), "-c:a", "pcm_s16le",
+                str(a.sortie)])
     if r.returncode != 0:
         sys.exit(f"ERREUR : préparation impossible : {r.stderr[-300:]}")
+    ecart = ecart_calage(ffmpeg, Path(a.sortie), c)
+    if ecart:
+        Path(a.sortie).unlink(missing_ok=True)
+        sys.exit(f"ERREUR : le morceau calé n'est pas conforme ({ecart}) ; il n'a pas été gardé. Signale-le à l'éditeur "
+                 "et, en attendant, cale-le à la main (ffmpeg : silence ajouté devant avec anullsrc + concat).")
+    if a.duree:
+        longueur = len(enveloppe(ffmpeg, Path(a.sortie))) * MUSIQUE_PAS / MUSIQUE_SR
+        if longueur < a.duree:
+            print(f"⚠️ le morceau calé dure {longueur:.1f} s, moins que la vidéo ({a.duree:g} s) : la fin serait muette ; "
+                  "prends un morceau plus long.")
     vitesse = f"tempo ramené à {a.bpm:g} ({(c['facteur'] - 1) * 100:+.1f} %), " if c["facteur"] != 1.0 else ""
     print(f"• {a.sortie} : {vitesse}l'entrée tombe à {a.a:g} s de la vidéo, sur un temps fort. "
-          "Pose-le comme musique (sons.poser, musique_db autour de -10 sans voix).")
+          "Pose-le comme musique avec `sons` (musique_db vers -17 sans voix, voir son.md).")
 
 
 # ---------------------------------------------------------------------------
@@ -1749,6 +2351,8 @@ def cmd_son(a) -> None:
     pb = verdict_sonore(mesure, a.cible)
     print(f"sonie {float(mesure['input_i']):.1f} LUFS, crête {float(mesure['input_tp']):.1f} dBTP")
     print("\n".join(f"❌ {p}" for p in pb) if pb else "ok")
+    if pb:
+        sys.exit(1)
 
 
 def chaine_mastering(gain_db: float, plafond: float = 0.7) -> str:
@@ -1849,12 +2453,24 @@ def cmd_sans_musique(a) -> None:
     if n == 0:
         print("• pas de musique dans cette vidéo : elle est déjà la version sans musique, rien à faire.")
         return
-    # À côté d'index.html : ses chemins (assets/, brand/) restent valides au rendu.
+    cli = hyperframes_cli()
+    if not cli:
+        sys.exit("ERREUR : HyperFrames introuvable : lance `npm ci` à la racine du dossier.")
+    # À côté d'index.html (ses chemins assets/, brand/ restent valides), le temps du rendu seulement :
+    # laissé là, `check` y voyait une deuxième entrée et l'app pouvait jouer le son en double.
     cible = projet / "index-sans-musique.html"
-    cible.write_text(html, encoding="utf-8")
     cle = (meta_de(projet) or {}).get("video", "video")
-    print(f"• {cible.name} prêt ({n} piste(s) de musique retirée(s)). Rendu :")
-    print(f"  npx hyperframes render -c {cible.name} -o exports/{cle}-sans-musique.mp4")
+    sortie = projet / "exports" / f"{cle}-sans-musique.mp4"
+    sortie.parent.mkdir(exist_ok=True)
+    cible.write_text(html, encoding="utf-8")
+    print(f"• rendu de la version sans musique ({n} piste(s) de musique retirée(s))…", flush=True)
+    try:
+        r = lancer([*cli, "render", "-c", cible.name, "-o", str(sortie.relative_to(projet))], cwd=str(projet))
+    finally:
+        cible.unlink(missing_ok=True)
+    if r.returncode != 0 or not sortie.is_file():
+        sys.exit(f"ERREUR : rendu impossible : {(r.stderr or r.stdout)[-400:]}")
+    print(f"• {sortie.relative_to(projet)} : à masteriser comme l'autre (`mastering`), puis à livrer.")
 
 
 def cmd_couverture(a) -> None:
@@ -1931,12 +2547,12 @@ def verdict_export(info: dict, support: str, fmt: str | None = None, poids: int 
 
 def meta_par_nom(video: Path) -> dict | None:
     """Une vidéo de livraison/ n'a pas de meta.json : on la retrouve par son nom (reel.mp4,
-    story-ouverture.mp4, page-1x1.mp4, reel-sans-musique.mp4) parmi les projets du dossier."""
+    story-ouverture.mp4, page-1x1.mp4, reel-sans-musique.mp4, reel-voix.mp4) parmi les projets du dossier."""
     p = Path(video).resolve()
     dossier = next((d for d in (p.parent, *p.parents) if (d / "OFFRE.json").is_file()), None)
     if dossier is None:
         return None
-    nom = re.sub(r"-(sans-musique|master)$", "", p.stem)
+    nom = re.sub(r"-(sans-musique|master|voix)$", "", p.stem)
     return next((meta for _projet, meta in projets(dossier) if meta.get("video") == nom), None)
 
 
@@ -1997,6 +2613,15 @@ def cmd_livrer(a) -> None:
     print(f"ok : tout est dans {dossier / 'livraison'}")
 
 
+# Les fichiers et dossiers que chaque commande lit : absents, on le dit tout de suite, au lieu d'une
+# « vidéo muette » ou d'une erreur Python brute plus loin.
+ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
+           "logos": ("projet",), "rythme": ("video",), "planche": ("video",), "musique": ("entree",),
+           "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
+           "affiche": ("video",), "sans-musique": ("projet",), "couverture": ("video", "image"), "export": ("video",),
+           "livrer": ("dossier",)}
+
+
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(description=f"{produit().get('nom', '')} : vidéos en motion design qui vendent.")
     p.add_argument("--version", action="version", version=VERSION)
@@ -2013,6 +2638,7 @@ def main(argv: list[str] | None = None) -> None:
     ma_.add_argument("--nom", help="regler : nom de la marque.")
     ma_.add_argument("--mot-cle", dest="mot_cle", help="regler : mot-clé d'appel à l'action (un mot).")
     ma_.add_argument("--logo", help="regler : fichier du logo.")
+    ma_.add_argument("--musique", help="regler : sa musique de fond (un fichier audio), pour toutes ses vidéos.")
     ma_.set_defaults(f=cmd_marque)
     po = s.add_parser("police", help="Rend une police libre (Google Fonts) disponible au rendu.")
     po.add_argument("famille")
@@ -2022,6 +2648,34 @@ def main(argv: list[str] | None = None) -> None:
     ps.add_argument("action", nargs="?", choices=("etat", "installer", "reprendre", "chercher"))
     ps.add_argument("valeurs", nargs="*", help="L'archive, le dossier Monteur IA, ou les mots cherchés.")
     ps.set_defaults(f=cmd_pack_sfx)
+    mz = s.add_parser("musiques", help="Les 17 musiques de lancement (bonus) : les installer, en choisir une pour une vidéo, la prendre.")
+    mz.add_argument("action", nargs="?", default="etat", choices=("etat", "installer", "choisir", "prendre"))
+    mz.add_argument("valeurs", nargs="*", help="installer : archives ou dossiers (défaut : Téléchargements) ; prendre : le numéro.")
+    mz.add_argument("--dans", help="Le projet de la vidéo (défaut : le dossier courant).")
+    mz.add_argument("--objectif", choices=sorted(OBJECTIFS), help="choisir : le but (défaut : celui du projet).")
+    mz.add_argument("--ambiance", help="choisir : imposer une ambiance (« tech minimale », « premium »…).")
+    mz.add_argument("--duree", type=float, help="Durée de la vidéo (s) ; défaut : celle du projet.")
+    mz.add_argument("--a", type=float, help="Instant de la vidéo (s) où la batterie doit entrer (le pivot).")
+    mz.add_argument("--autres", action="store_true", help="choisir : d'autres morceaux que ceux déjà proposés.")
+    mz.add_argument("--nombre", type=int, default=3, help="choisir : nombre de propositions (défaut 3).")
+    mz.add_argument("--ouvrir", action="store_true", help="choisir : ouvre la page d'écoute dans le navigateur.")
+    mz.set_defaults(f=cmd_musiques)
+    hg = s.add_parser("heygen", help="HeyGen : relier le compte, chercher et prendre une musique (gratuit), écouter et générer une voix (payant).")
+    hg.add_argument("action", nargs="?", default="etat", choices=("etat", "connecter", "musiques", "bruitages", "prendre", "voix", "parler"))
+    hg.add_argument("valeurs", nargs="*", help="La clé, la description du morceau (en anglais), le numéro choisi, ou le texte de la voix (ou son fichier).")
+    hg.add_argument("--dans", help="Le projet de la vidéo (défaut : le dossier courant).")
+    hg.add_argument("--nombre", type=int, default=8, help="Nombre de propositions (défaut 8).")
+    hg.add_argument("--duree-min", type=float, help="Durée minimale d'un morceau (s) : la durée de la vidéo + 5.")
+    hg.add_argument("--ouvrir", action="store_true", help="Ouvre la page d'écoute dans le navigateur.")
+    hg.add_argument("--remplacer", action="store_true", help="Remplace une autre connexion HeyGen déjà sur l'ordinateur.")
+    hg.add_argument("--genre", choices=("femme", "homme"))
+    hg.add_argument("--langue", default="fr")
+    hg.add_argument("--voix", help="L'id de la voix choisie (parler).")
+    hg.add_argument("--vitesse", type=float, default=1.0)
+    hg.add_argument("--sortie", help="Fichier de la voix, relatif au projet (défaut assets/audio/voix.wav).")
+    hg.add_argument("--confirme", action="store_true", help="Le client a accepté le coût annoncé (parler).")
+    hg.add_argument("--bruitage", action="store_true", help="prendre : dans la dernière recherche de bruitages.")
+    hg.set_defaults(f=cmd_heygen)
     so_ = s.add_parser("sons", help="Pose la musique et les bruitages d'un fichier JSON dans index.html.")
     so_.add_argument("projet")
     so_.add_argument("fichier", help="JSON : musique, musique_db, evenements (chemins relatifs au projet).")
@@ -2042,6 +2696,10 @@ def main(argv: list[str] | None = None) -> None:
     o = s.add_parser("offre", help="Vérifie OFFRE.json : chaque fait a sa source.")
     o.add_argument("dossier")
     o.set_defaults(f=cmd_offre)
+    ca = s.add_parser("capture", help="Capture la page du client dans sources/capture du dossier de la vidéo.")
+    ca.add_argument("dossier", help="Le dossier de la vidéo (celui de OFFRE.json).")
+    ca.add_argument("lien")
+    ca.set_defaults(f=cmd_capture)
     lec = s.add_parser("lecture", help="Temps minimum à l'écran d'un texte.")
     lec.add_argument("texte")
     lec.add_argument("--final", action="store_true", help="Écran final (appel à l'action).")
@@ -2055,9 +2713,11 @@ def main(argv: list[str] | None = None) -> None:
     rf.add_argument("source", help="Lien (Instagram, YouTube, TikTok…) ou fichier vidéo.")
     rf.add_argument("--nom", help="Nom court de la référence (défaut : reference).")
     rf.set_defaults(f=cmd_reference)
-    lo = s.add_parser("logos", help="Ajoute au projet les logos des outils montrés (theSVG) ou des icônes (Lucide).")
-    lo.add_argument("projet")
-    lo.add_argument("noms", nargs="+", help="claude openai notion… ; icone:rocket pour une icône Lucide.")
+    lo = s.add_parser("logos", help="Ajoute au projet les vrais logos des outils montrés (theSVG, simple-icons), un logo "
+                                    "fourni par le client ou des icônes (Lucide). `logos chercher <nom>` trouve l'identifiant.")
+    lo.add_argument("projet", help="Le projet de la vidéo, ou « chercher ».")
+    lo.add_argument("noms", nargs="+", help="claude chatgpt notion… ; fichier:<chemin> pour un logo du client ; "
+                                           "icone:rocket pour une icône Lucide.")
     lo.add_argument("--genre", default="logo", choices=("logo", "icone"))
     lo.set_defaults(f=cmd_logos)
     ry = s.add_parser("rythme", help="Mesure le rythme du MP4 : événements par seconde, images figées.")
@@ -2117,6 +2777,11 @@ def main(argv: list[str] | None = None) -> None:
     li.add_argument("dossier")
     li.set_defaults(f=cmd_livrer)
     args = p.parse_args(argv)
+    for attribut in ENTREES.get(args.commande, ()):
+        valeur = getattr(args, attribut, None)
+        if valeur and not (args.commande == "logos" and valeur == "chercher") and not Path(valeur).expanduser().exists():
+            sys.exit(f"ERREUR : introuvable : {valeur} (commande lancée depuis {Path.cwd()}). Vérifie le chemin : "
+                     "les commandes de fabrication se lancent depuis le projet de la vidéo.")
     args.f(args)
 
 

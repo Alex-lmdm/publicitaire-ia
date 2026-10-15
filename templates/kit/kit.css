@@ -65,11 +65,14 @@
 .k-sur-jaune { color: var(--k-encre); }
 .k-accent { color: var(--brand-accent); }
 
-/* Le mot fantôme géant d'un chapitre, et son étiquette. */
-.k-chapitre { position: absolute; inset: 0; }
+/* Le mot fantôme géant d'un chapitre, et son étiquette. Le chapitre mesure sa largeur (container
+   query) : le fantôme fait 15,625 % de la largeur de la composition, 300 px en 1920 (16:9),
+   169 px en 1080 (Reel, story), et garde donc en vertical la place qu'il a en 16:9. Décor
+   presque invisible voulu : K.chapitre lui pose data-layout-ignore (hors audit de contraste). */
+.k-chapitre { position: absolute; inset: 0; container-type: inline-size; }
 .k-fantome {
   position: absolute; left: 0; right: 0; top: 50%; text-align: center; white-space: nowrap;
-  font-family: var(--brand-font-display); font-weight: 800; font-size: 300px; letter-spacing: -0.04em;
+  font-family: var(--brand-font-display); font-weight: 800; font-size: 300px; font-size: 15.625cqw; letter-spacing: -0.04em;
   transform: translateY(-58%); line-height: 1;
 }
 .k-fantome.k-sur-sombre { color: rgba(255, 255, 255, 0.05); }
@@ -111,6 +114,12 @@
 .k-tuile-blanche { background: #fff; color: var(--k-encre); box-shadow: var(--k-ombre-claire); }
 .k-tuile-marque { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
 .k-tuile-marque svg { width: 58%; height: 58%; }
+/* Un logo monochrome (currentColor) prend la couleur lisible du fond : blanc sur sombre, encre sur
+   clair et sur la couleur d'accent ; K.logoNu(svg, couleur) la force. */
+.k-logo-nu { position: absolute; display: grid; place-items: center; will-change: transform, filter; color: var(--k-blanc); }
+.k-fond-clair .k-logo-nu, .k-fond-jaune .k-logo-nu { color: var(--k-encre); }
+/* L'ombre sur le logo lui-même : le flou de profondeur de K.champ (sur le conteneur) s'y ajoute. */
+.k-logo-nu svg, .k-logo-nu img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35)); }
 .k-pastille {
   position: absolute; display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-radius: 999px;
   font-family: var(--brand-font-body); font-weight: 600; font-size: 24px; white-space: nowrap;

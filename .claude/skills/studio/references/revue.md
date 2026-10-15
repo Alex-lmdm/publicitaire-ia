@@ -28,7 +28,7 @@ donc la planche du fichier rendu, jamais seulement les captures de `check`.
 ```bash
 python3 ../../../tools/studio_motion.py planche exports/reel.mp4 \
   --temps 0.3,1.8,4.3,8.3,12.3,17.8
-python3 <…>/tools/studio_motion.py planche exports/story-ouverture.mp4
+python3 ../../../tools/studio_motion.py planche exports/story-ouverture.mp4
 ```
 
 Prends les repères de ton plan, chacun plus 0,3 s (le moment où l'élément est posé) ; la
@@ -79,13 +79,13 @@ Si cette phrase n'est pas la promesse de la fiche, la vidéo ne dit pas ce qu'el
 
 ## Porte 4 : le son
 
-`python3 …/studio_motion.py son exports/reel.mp4`, puis `mastering` si la mesure n'est pas « ok ».
+`python3 ../../../tools/studio_motion.py son exports/reel.mp4`, puis `mastering` si la mesure n'est pas « ok ».
 Réécoute le début et la révélation : le temps fort tombe-t-il sur l'offre ?
 
 ## Porte 5 : l'export
 
 ```bash
-python3 …/studio_motion.py export livraison/reel.mp4   # le support se déduit du nom du fichier
+python3 ../../../tools/studio_motion.py export ../livraison/reel.mp4   # le support se déduit du nom du fichier
 ```
 
 « ok : prêt pour Instagram » ou on corrige (taille, codec, images par seconde, démarrage rapide,

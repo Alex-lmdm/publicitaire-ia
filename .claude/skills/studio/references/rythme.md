@@ -6,7 +6,7 @@ texte tient en quelques mots, la caméra ne s'arrête jamais vraiment, et un obj
 suivant au lieu de laisser place à un écran vide. Une vidéo qui enchaîne des écrans de texte
 posés, même propres, ressemble à des slides : c'est l'échec à éviter.
 
-Le contrôle `python3 tools/studio_motion.py rythme <video.mp4>` mesure le MP4 rendu : **au moins
+Le contrôle `python3 ../../../tools/studio_motion.py rythme exports/<vidéo>.mp4` (depuis le projet) mesure le MP4 rendu : **au moins
 1 événement par seconde**, **0,8 s au plus entre deux événements en général**, et **aucune image
 figée plus de 1 s** avant l'écran final. Il ne dit pas si c'est beau ; il dit si ça vit.
 
@@ -25,7 +25,7 @@ Pas forcément un nouveau plan : souvent un petit geste dans le même plan.
 - Rafales : une liste d'éléments arrive en cascade de 0,05 à 0,13 s d'écart, jamais un par un à
   une seconde d'intervalle.
 - **Le milieu de la vidéo s'essouffle** (de la démo à la preuve) : vise 1,3 événement par seconde
-  et aucun creux de plus de 2,3 s (`rythme` liste les plus longs). Comble-les par de petits
+  et aucun creux de plus de 2 s (`rythme` liste les plus longs). Comble-les par de petits
   événements réels, chacun avec son bruitage : un flash quand le vrai résultat apparaît, une
   pastille qui confirme (« Description prête »), une carte de plus qui arrive, un trait qui
   s'allonge sous un chiffre tenu. Léger : le spectateur ne doit pas le remarquer, seulement ne

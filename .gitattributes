@@ -1,0 +1,26 @@
+# Fins de ligne LF partout, même extrait par Git pour Windows (core.autocrlf=true) : en CRLF, l'en-tête
+# YAML des skills et les modèles ne seraient plus reconnus à l'identique par les agents.
+* text=auto eol=lf
+
+# Binaires : jamais convertis ni comparés comme du texte.
+*.mp3 binary
+*.wav binary
+*.m4a binary
+*.aac binary
+*.ogg binary
+*.flac binary
+*.mp4 binary
+*.mov binary
+*.webm binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.zip binary

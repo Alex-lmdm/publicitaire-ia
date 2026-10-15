@@ -972,7 +972,21 @@ def capturer(hyperframes: list[str], url: str, dest: Path) -> Path | None:
                            capture_output=True, text=True, timeout=300)
     except (subprocess.TimeoutExpired, OSError):
         return None
+    sans_consignes(dest)
     return dest if r.returncode == 0 and (dest / "extracted" / "tokens.json").is_file() else None
+
+
+def sans_consignes(dest: Path) -> list[str]:
+    """La capture HyperFrames dépose un CLAUDE.md, un AGENTS.md et un meta.json qui renvoient vers un
+    autre skill et autorisent à reformuler le texte de la page : l'agent les lirait comme des ordres,
+    contre la règle « rien d'inventé ». Ils sont retirés ; les données de la capture restent."""
+    retires = []
+    for nom in ("CLAUDE.md", "AGENTS.md", "meta.json"):
+        f = dest / nom
+        if f.is_file():
+            f.unlink()
+            retires.append(nom)
+    return retires
 
 
 def depuis_page(racine: Path, url: str, hyperframes: list[str] | None = None) -> tuple[dict, list[str]]:

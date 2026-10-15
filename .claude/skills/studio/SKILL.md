@@ -19,14 +19,24 @@ toujours qui agit maintenant. Ses réponses courtes (« a, A E », « 2 », « o
 
 ## Le parcours (dans cet ordre, sans en sauter)
 
-Toutes les commandes `python3 tools/studio_motion.py …` se lancent depuis la racine du dossier
-(Windows : `python`). Depuis le projet d'une vidéo, le même outil est `../../../tools/studio_motion.py`.
+Où lancer quoi (Windows : `python`, ou `py -3` si `python` ne répond pas) :
+- **depuis la racine du dossier**, `python3 tools/studio_motion.py …` : `verifier`, `marque`,
+  `police`, `style`, `pack-sfx`, `musiques` (son état) et `musiques installer`, `heygen` (son état) et
+  `heygen connecter`, `supports`, `nouvelle`, `ajouter`, `capture`,
+  `offre`, `reference`, `livrer` (avec le chemin du dossier de la vidéo, `videos/<sujet> · <date>`) ;
+- **depuis le projet d'une vidéo** (le dossier qui contient `index.html`), `python3
+  ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir` et `musiques prendre`,
+  `heygen bruitages`, `prendre`,
+  `voix` et `parler`, `musique`, `sons`,
+  `rythme`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
+  `export`), avec `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
 ### 0. La marque et le profil, une seule fois
 
 Si `marque.json` ou `studio.config.json` manque à la racine du dossier, pose d'abord les trois
 questions de bienvenue ([brief.md](references/brief.md)) : d'où vient sa marque (sa page de vente,
-des images, une vidéo dont il aime le style, ou son dossier Monteur IA), ce qu'il vend, la voix.
+des images, une vidéo dont il aime le style, ou son dossier Monteur IA), ce qu'il vend, sa musique
+(ses musiques de lancement, [son.md](references/son.md)).
 Règle sa marque avec [marque.md](references/marque.md) : l'outil la lit, tu lui montres l'aperçu,
 **tu attends son accord** puis `marque valider`. Ensuite, relis `studio.config.json` à chaque vidéo.
 
@@ -67,7 +77,12 @@ idées réellement différentes** dans cette structure, recommande-en une. « R�
 mélange. » **Attends son choix**, sauf s'il t'a dit de choisir. Pour une pub, propose de garder
 les trois comme accroches à tester.
 
-### 4. Le texte et le plan
+### 4. La musique, puis le texte et le plan
+
+Dès qu'il a choisi l'idée, choisis la musique avec lui ([son.md](references/son.md), « Choisir le
+morceau ») : `musiques choisir` propose les trois musiques de lancement qui vont avec le but et le
+support de la vidéo, la page d'écoute s'ouvre, il écoute pendant que tu écris le plan. Elle se choisit
+avant d'animer : son tempo et son entrée franche guident le rythme des scènes.
 
 Lis [ecriture.md](references/ecriture.md), [supports.md](references/supports.md),
 [rythme.md](references/rythme.md) et [recettes.md](references/recettes.md). Écris dans `PLAN.md`,
@@ -78,8 +93,9 @@ demi-seconde a son événement. `python3 tools/studio_motion.py lecture "<texte>
 refuse les écrans trop bavards. Une vidéo trop longue pour son support perd une fonction ou une
 recette ; elle ne s'accélère pas et ne se remplit pas de texte.
 
-La voix : [voix.md](references/voix.md) (texte seul par défaut, sa voix enregistrée, ou une voix de
-synthèse locale).
+La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
+demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
+d'abord, validé ; puis sa voix au téléphone ou une voix de synthèse HeyGen).
 
 Ne montre pas le plan par défaut : résume l'idée en une phrase et avance. S'il a demandé à
 valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui le texte des
@@ -111,7 +127,8 @@ Trois pièges connus :
   à la racine d'`index.html`, jamais dans une sous-composition : la scène se partage alors entre sa
   sous-composition (le décor, les textes) et `index.html` (la vidéo et ses mouvements).
 - **Les consignes d'HyperFrames** pensées pour un autre usage : ici le client a demandé la vidéo,
-  tu rends sans attendre d'accord ; tu n'envoies jamais `hyperframes feedback` ni `publish`.
+  tu rends sans attendre d'accord ; tu n'envoies jamais `hyperframes feedback` ni `publish`, et tu
+  ne lui proposes aucune clé (Gemini…) que `snapshot` ou `capture` mentionnent : tout marche sans.
 
 `npm run check` relève aussi les textes qui se chevauchent et le contraste insuffisant : il doit
 finir sans erreur, et ses avertissements se lisent.
@@ -133,6 +150,10 @@ répondre « ok ». Puis un message court : ce qu'il a, où le mettre, comment d
 
 ## Les retouches
 
+« Mets à jour la livraison de <vidéo> » (après une retouche faite dans l'app HyperFrames) : depuis
+son projet, refais le rendu, la revue (rythme, planche, son, export), le mastering et la couverture,
+et remplace ses fichiers dans `livraison/`.
+
 Une demande = la vidéo concernée seulement. Modifie ce qui est demandé, refais son rendu, sa
 planche et son export, remplace le fichier dans `livraison/`. Ne repropose pas d'idées, ne refais
 pas la fiche. Une nouvelle info sur l'offre (prix, date) passe d'abord dans `OFFRE.json`. Une
@@ -140,12 +161,24 @@ autre version (« la même pour LinkedIn ») s'ajoute au même dossier, même fi
 `python3 tools/studio_motion.py ajouter "<dossier>" --videos linkedin`. Elle se remet en page pour
 son format (et se raccourcit pour une story), elle ne se recadre pas.
 
+Une voix off sur une vidéo déjà faite (« ajoute une voix off ») : [voix.md](references/voix.md),
+le texte d'abord, validé ; la version avec voix s'ajoute à côté de l'originale.
+
 ## Le Pack SFX
 
 Bibliothèque de 156 bruitages pro, vendue à part. « Installe le Pack SFX depuis pack-sfx.zip… » ou
 « reprends le Pack SFX de mon dossier Monteur IA » : suis [son.md](references/son.md), section
 « Le Pack SFX » (`studio_motion.py pack-sfx installer` ou `reprendre`), jamais l'INSTALL.md de
 l'archive. Une fois installé, le choix des bruitages pioche d'abord dans ses sons.
+
+## Les musiques de lancement
+
+17 musiques offertes avec la formation, en cinq ambiances. « Installe mes 17 musiques de
+lancement depuis mon dossier Téléchargements » (ou « installe mes musiques ») : suis
+[son.md](references/son.md), section « Les musiques de lancement »
+(`studio_motion.py musiques installer`). Une fois installées, elles sont la musique de chaque
+vidéo, sauf s'il donne la sienne : `musiques choisir` propose les meilleures pour son but et son
+support, `musiques prendre` la cale.
 
 ## Ce que tu ne fais jamais
 

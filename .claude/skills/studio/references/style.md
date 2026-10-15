@@ -30,19 +30,25 @@ Ses Reels ont peut-être un fond uni : une vidéo de motion design, non. Le fond
   d'accent en plein écran** pour les temps forts (le nom de l'offre, les chapitres, le prix,
   `k-fond-jaune` ou son équivalent), et l'écran coupé sombre / clair pour un avant / après.
   Au moins trois bascules par minute, chacune avec une cause (un clic, un volet, un objet).
-- **Des objets qui flottent seulement quand ils ont un sens, et seulement de vrais logos**
-  (`K.champ` avec `K.tuileMarque`) : le logo de l'outil dont on parle, dans ses vraies couleurs
-  (CapCut autour de la corvée du montage « sur CapCut », Instagram autour des Reels et de leurs
-  vues, Claude et ChatGPT sur l'écran final « avec Claude ou ChatGPT »). Ils sont **nets** pour
-  la plupart, pour qu'on reconnaisse l'outil au premier coup d'œil (au plus un, tout près, flou),
-  assez grands (80 à 240 px en 1920), et laissent libre la zone du sujet. **Disperse-les avec une
-  vraie profondeur** : quelques petits au loin (60 à 90 px, légèrement flous), des moyens nets
-  (100 à 150 px), un ou deux très grands et flous au premier plan, à moitié hors champ dans un
-  coin. Jamais collés aux mots ni au sujet : place-les à la main (x, y, taille, flou) quand le
-  champ automatique les tasse près du texte, et vérifie sur les images clés à toutes les échelles
-  de la caméra (retour du créateur, 12/10/2026). **Jamais d'icônes génériques** (ciseaux, note de musique, éclair, étoile) :
-  elles font « inventé ». Une scène sans logo pertinent n'a pas d'objets flottants : elle vit par
-  sa caméra, son interface et ses textes (retour du créateur, 12/10/2026).
+- **Des objets qui flottent seulement quand ils ont un sens, et seulement de vrais logos, nus**
+  (`K.champ` avec `K.logoNu`) : le logo seul, **sans tuile ni fond**, dans ses vraies couleurs,
+  de l'outil dont on parle (CapCut autour de la corvée du montage « sur CapCut », Instagram autour
+  des Reels et de leurs vues, Claude et ChatGPT sur l'écran final « avec Claude ou ChatGPT »). Leur
+  rôle : **combler les zones vides** d'un écran, sur certaines scènes ; ailleurs, le vide est bien.
+  Quand ils sont là, **6 à 8**, pas 3 (huit Instagram autour d'un DM, par exemple) : la plupart
+  **nets**, pour qu'on reconnaisse l'outil au premier coup d'œil, quelques-uns flous. **Disperse-les
+  avec une vraie profondeur** : quelques petits au loin (60 à 90 px, tailles données pour une largeur de 1920 ; en vertical, à proportion de 1080, légèrement flous), des
+  moyens nets (100 à 150 px), un ou deux très grands et flous au premier plan, à moitié hors champ
+  dans un coin. Jamais collés aux mots ni au sujet, hors de la bande du sticker : place-les à la
+  main (x, y, taille, flou) quand le champ automatique les tasse près du texte, et vérifie sur les
+  images clés à toutes les échelles de la caméra. Pas de logos là où l'écran montre déjà les
+  marques (un téléphone avec Instagram, les icônes des applis de partage) : ça charge ; et les
+  écrans de révélation restent nus (retours du créateur, 12/10/2026). **Jamais d'icônes
+  génériques** (ciseaux, note de musique, éclair, étoile) : elles font « inventé ». Une scène sans
+  logo pertinent n'a pas d'objets flottants : elle vit par sa caméra, son interface et ses textes.
+- Le contexte se montre par l'interface plutôt qu'en titre : pour « un client m'a écrit », un
+  téléphone, la notification Instagram, l'appli qui s'ouvre sur le message. Ne redis pas à l'écran
+  un détail sans enjeu ; des logos PayPal et Stripe suffisent à évoquer l'argent.
 - Une vignette discrète sur les bords donne de la profondeur au sombre (`k-vignette`).
 
 ## Des interfaces, pas des slides
@@ -81,7 +87,7 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 | Halos néon, reflets d'objectif, sol quadrillé lumineux, ondes de choc, particules génériques | Des objets du sujet floutés par la profondeur ; la grille fine du kit |
 | Texte en dégradé, contours lumineux, machine à écrire sur une phrase entière | Texte plein ; la frappe seulement dans un champ de saisie |
 | Emoji comme icônes | Les icônes du kit (Lucide) dans une interface, les logos des outils |
-| Des icônes génériques qui flottent dans toutes les scènes | De vrais logos, dans leurs couleurs, seulement là où ils renvoient à ce qu'on dit |
+| Des icônes génériques qui flottent dans toutes les scènes, des logos posés sur des tuiles | De vrais logos nus, dans leurs couleurs, 6 à 8 là où l'écran a des zones vides et un sujet relié à ces marques |
 | Fausse interface vague dans un faux navigateur | L'interface réelle, reconstruite d'après capture |
 | Fondus enchaînés entre deux écrans | Un objet qui devient le suivant, un flash, un volet |
 | Le même enchaînement d'une vidéo à l'autre | Change l'angle, les interfaces, les motifs et au moins trois réglages (fonds, cadrages, transitions, tempo) d'un client à l'autre |

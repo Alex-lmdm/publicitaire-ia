@@ -51,12 +51,25 @@ class Erreur(Exception):
     pass
 
 
+def outil(nom: str) -> str:
+    """ffmpeg / ffprobe : celui du PATH, sinon Homebrew (Mac), sinon le lien winget (Windows) ; les
+    mêmes endroits que `studio_motion.py verifier`, pour que « ✅ ffmpeg » veuille dire « ça marche »."""
+    trouve = shutil.which(nom)
+    if trouve:
+        return trouve
+    for dossier in ("/opt/homebrew/bin", "/usr/local/bin"):
+        if (Path(dossier) / nom).exists():
+            return str(Path(dossier) / nom)
+    winget = Path.home() / "AppData" / "Local" / "Microsoft" / "WinGet" / "Links" / f"{nom}.exe"
+    return str(winget) if winget.exists() else nom
+
+
 def empreinte(contenu: str) -> str:
     return hashlib.sha1(contenu.encode("utf-8")).hexdigest()[:10]
 
 
 def duree(path: Path) -> float:
-    out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+    out = subprocess.run([outil("ffprobe"), "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
                           str(path)], capture_output=True, encoding="utf-8", errors="replace").stdout.strip()
     try:
         return float(out)
@@ -103,7 +116,7 @@ def _copie(src: Path, dest: Path) -> None:
 
 
 def _ffmpeg(args) -> None:
-    r = subprocess.run(["ffmpeg", "-y", "-v", "error", *args], capture_output=True, encoding="utf-8", errors="replace")
+    r = subprocess.run([outil("ffmpeg"), "-y", "-v", "error", *args], capture_output=True, encoding="utf-8", errors="replace")
     if r.returncode:
         raise Erreur(f"ffmpeg a échoué : {r.stderr[-600:]}")
 
@@ -122,7 +135,7 @@ def gain_final(niveau: float | None) -> float:
 
 
 def _canaux(src: Path) -> int:
-    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=channels",
+    out = subprocess.run([outil("ffprobe"), "-v", "error", "-select_streams", "a:0", "-show_entries", "stream=channels",
                           "-of", "csv=p=0", str(src)], capture_output=True, encoding="utf-8", errors="replace").stdout
     try:
         return int(out.strip().split(",")[0])
@@ -154,7 +167,7 @@ def mesurer(pistes, total: float) -> float | None:
         filtres.append(f + f",adelay={int(round(p['start'] * 1000))}:all=1[p{i}]")
     filtres.append("".join(f"[p{i}]" for i in range(len(pistes)))
                    + f"amix=inputs={len(pistes)}:normalize=0:dropout_transition=0,atrim=0:{total:.3f},ebur128[m]")
-    r = subprocess.run(["ffmpeg", "-nostats", "-hide_banner", *entrees, "-filter_complex", ";".join(filtres),
+    r = subprocess.run([outil("ffmpeg"), "-nostats", "-hide_banner", *entrees, "-filter_complex", ";".join(filtres),
                         "-map", "[m]", "-f", "null", "-"], capture_output=True, encoding="utf-8", errors="replace")
     return lire_lufs(r.stderr) if r.returncode == 0 else None
 
@@ -206,14 +219,31 @@ def _preparer_musique(musique: Path, dossier: Path, total: float, reel: Path) ->
 
 
 def lignes(reel: Path, evenements, musique: Path | None, musique_db: float, total: float,
-           sfx_dir: Path | None = None, voix=(), rapport: dict | None = None) -> list[str]:
+           sfx_dir: Path | None = None, voix=(), rapport: dict | None = None,
+           voix_off: dict | None = None) -> list[str]:
     """Les éléments du bloc SONS (copie ou prépare chaque son dans assets/sons/ du Reel).
     voix : les pistes du master hors bloc (pistes_du_master), mesurées avec les sons pour régler
-    le niveau final ; sans voix audible, pas de gain. rapport : rempli avec le niveau mesuré et le
-    gain posé."""
+    le niveau final ; sans voix audible, pas de gain. voix_off : {"src": Path, "start": s, "vol": dB},
+    la voix off posée dans le bloc (Publicitaire IA), mesurée elle aussi comme une voix. rapport :
+    rempli avec le niveau mesuré et le gain posé."""
     dossier = reel / "assets" / "sons"
     dossier.mkdir(parents=True, exist_ok=True)
-    out, pistes = [], list(voix)
+    out, voix = [], list(voix)
+    if voix_off:
+        src = Path(voix_off["src"])
+        if not src.exists():
+            raise Erreur(f"voix introuvable : {src}")
+        chemin = _dans_le_reel(reel, src)
+        if not chemin:
+            _copie(src, dossier / src.name)
+            chemin = f"assets/sons/{src.name}"
+        start = round(max(float(voix_off.get("start") or 0), 0.0), 3)
+        garde = round(min(duree(src), max(total - start, 0.0)), 3)
+        v = lin(float(voix_off.get("vol") or 0))
+        out.append(f'<audio id="voix" src="{_src(chemin)}" data-start="{start:.3f}" data-duration="{garde:.3f}" '
+                   f'data-media-start="0" data-volume="{v}" data-track-index="18" data-audio-group="mixage"></audio>')
+        voix.append({"src": reel / chemin, "start": start, "duree": garde, "media_start": 0.0, "volume": v})
+    pistes = list(voix)
     if musique:
         v = lin(musique_db)
         entree, sortie = min(FONDU_MUSIQUE[0], total / 4), min(FONDU_MUSIQUE[1], total / 3)
@@ -281,7 +311,8 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float, tota
 
 
 def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float = -26.5,
-          total: float | None = None, sfx_dir: Path | None = None, ecraser: bool = False) -> dict:
+          total: float | None = None, sfx_dir: Path | None = None, ecraser: bool = False,
+          voix_off: dict | None = None) -> dict:
     """Écrit le bloc SONS dans reel/index.html. Lève Erreur si le bloc a été retouché (sauf ecraser).
     Rend {"niveau": LUFS mesuré avant gain | None, "gain": dB, "cible": LUFS}."""
     index = reel / "index.html"
@@ -306,7 +337,8 @@ def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float
         total = float(m.group(1))
     rapport = {}
     contenu = "\n".join(indent + l for l in lignes(reel, evenements, musique, musique_db, total, sfx_dir,
-                                                    voix=pistes_du_master(reel, page), rapport=rapport))
+                                                    voix=pistes_du_master(reel, page), rapport=rapport,
+                                                    voix_off=voix_off))
     bloc = (f"{indent}<!-- SONS:DEBUT genere par tools/sons.py, empreinte {empreinte(contenu)} -->\n"
             f"{contenu}\n{indent}<!-- SONS:FIN -->")
     page = (page[:existant.start()] + bloc + page[existant.end():]) if existant \

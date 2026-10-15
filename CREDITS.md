@@ -12,6 +12,9 @@ redistribué (13 octobre 2026).
   copié sur l'ordinateur du client par `npm run sync` (assets/vendor/, non versionné).
   https://gsap.com/standard-license
 
+HyperFrames envoie par défaut des statistiques d'usage anonymes et vérifie ses mises à jour en
+ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry disable`.
+
 ## Outils de l'ordinateur, non livrés
 
 - **FFmpeg** (LGPL/GPL) : planches, mesure du rythme et du son, couverture, export.
@@ -38,9 +41,18 @@ ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monte
 - **Polices de la marque du client** : de préférence la version libre de **Google Fonts** (SIL
   OFL ou Apache), téléchargée sur son ordinateur ; à défaut, les fichiers de sa propre page (son
   usage relève de sa licence, l'outil le lui signale) ou de son dossier Monteur IA.
-- **theSVG** : les logos des outils que l'offre du client utilise (`studio_motion.py logos`),
-  posés dans son seul projet. Chaque logo reste la marque de son propriétaire et ne sert qu'à
-  désigner l'outil réellement utilisé. https://thesvg.org
+- **theSVG** (MIT), puis **simple-icons** (CC0) en secours : les logos des outils que l'offre du
+  client utilise (`studio_motion.py logos`), posés dans son seul projet. Chaque logo reste la marque
+  de son propriétaire et ne sert qu'à désigner l'outil réellement utilisé. https://thesvg.org,
+  https://simpleicons.org
+- **Musiques de lancement** : 17 musiques générées par LeMondeDuMarketing avec Suno (abonnement
+  Pro), livrées aux acheteurs avec la formation, jamais dans ce dépôt ; leur licence est dans
+  `assets/musiques/LICENCE.md` une fois installées (usage dans toutes les vidéos, publicités
+  comprises ; pas de redistribution des fichiers seuls).
+- **Bibliothèque de musiques, bruitages et voix de HeyGen** : cherchés et pris avec le compte du
+  client (`studio_motion.py heygen`), par l'API de HeyGen, pour ses seules vidéos, aux conditions de
+  HeyGen ; la source de chaque morceau est notée dans `assets/audio/SOURCE.md` du projet.
+  https://www.heygen.com
 
 ## Projets dont on s'est inspiré
 

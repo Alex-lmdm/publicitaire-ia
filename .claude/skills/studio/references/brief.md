@@ -23,19 +23,27 @@ un seul message (saute la question dont tu connais déjà la réponse) :
 > a) une formation · b) un coaching ou un accompagnement · c) un logiciel ou une app ·
 > d) un template, un guide, un ebook · e) une communauté · f) autre chose (dis-moi)
 >
-> **3. Pour tes vidéos, tu préfères :**
-> A) du texte à l'écran et de la musique (le plus simple) ·
-> B) ta voix, enregistrée sur ton téléphone ·
-> C) une voix de synthèse, gratuite, générée sur ton ordinateur
+> **3. La musique de tes vidéos** (tes vidéos sont en texte à l'écran et en musique ; une voix
+> off s'ajoute quand tu veux, il suffit de la demander) :
+> A) mes 17 musiques de lancement (le bonus de ta formation) : télécharge les cinq ambiances
+> dans le module Bonus, dis « go », et je les installe ·
+> B) j'ai déjà ma musique : glisse le fichier ici ·
+> C) plus tard
 >
 > Réponds par exemple « a monsite.fr/formation, a, A ».
 
+Saute la question 3 si `python3 tools/studio_motion.py musiques` dit qu'elles sont installées.
+
 La réponse 1 se traite avec [marque.md](marque.md) : l'outil lit la source, puis tu lui montres
-sa marque et tu attends son accord. Enregistre le reste dans `studio.config.json` :
-`{"vend": [...], "page": "...", "voix": "texte|ma-voix|voix-ia", "dm": null,
+sa marque et tu attends son accord. La réponse 3 A : `python3 tools/studio_motion.py musiques installer` dès qu'il dit « go »
+([son.md](son.md), « Les musiques de lancement ») ;
+3 B : `python3 tools/studio_motion.py marque regler --musique "<fichier>"`. Enregistre le reste
+dans `studio.config.json` : `{"vend": [...], "page": "...", "voix": "texte", "dm": null,
 "reference_style": null, "supports_habituels": [], "preferences": []}` (`page` vient de la
-réponse 1 a, sinon du premier brief). Les préférences dites plus tard (« toujours sans musique »,
-« mes vidéos en noir ») s'y ajoutent et se relisent à chaque vidéo.
+réponse 1 a, sinon du premier brief ; `voix` reste `texte` tant qu'il ne demande pas de voix off,
+puis `ma-voix` ou `voix-heygen`, avec `voix_heygen` pour l'id de sa voix). Les préférences dites
+plus tard (« toujours sans musique », « choisis toujours la musique pour moi », « mes vidéos en
+noir ») s'y ajoutent et se relisent à chaque vidéo.
 
 ## À chaque vidéo : le brief
 
@@ -69,7 +77,8 @@ Ajoute une question seulement si elle change la vidéo :
 - objectif **c** (fonctionnalité) : laquelle, et ce qu'elle évite au client ;
 - support **D** (pub) : « je te prépare 3 accroches différentes sur le même corps, pour tester ? »
   (oui par défaut) ;
-- la voix, si le profil ne la donne pas ou si le support la change (une boucle de page est muette).
+- aucune question sur la voix : texte et musique par défaut ; une voix off se fait à sa demande
+  ([voix.md](voix.md)).
 
 Recommande toujours une combinaison, avec sa raison en une phrase. Si le client répond « je
 sais pas » ou « choisis », prends ta recommandation et avance.

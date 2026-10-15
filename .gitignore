@@ -29,7 +29,15 @@ __pycache__/
 /assets/sfx/sons-par-situation.md
 /assets/sfx/.pack-sfx-manifest.json
 
-# Caches de HyperFrames.
+# Les musiques de lancement (bonus de la formation) : sous licence, jamais versionnées ; elles se
+# réinstallent depuis les archives du client (`studio_motion.py musiques installer`).
+/assets/musiques/
+
+# La voix de synthèse locale (voix.md, D), installée à part.
+/.venv-voix/
+
+# Caches : HyperFrames, registres des logos (une semaine).
+/.cache/
 .thumbnails/
 .waveform-cache/
 snapshots/

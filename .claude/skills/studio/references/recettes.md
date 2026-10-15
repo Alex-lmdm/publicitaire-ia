@@ -113,8 +113,7 @@ reliées par des raccords d'objet.
     d'appui (« **Paiement unique,** accès à vie. ») ; un trait sous le prix qui s'allonge pendant
     la tenue. Deux entrées possibles : le prix qui compte jusqu'à sa valeur, ou **l'ancrage qui
     dégringole** (« 1 997 € » tient 0,4 s, puis descend jusqu'à « 97 € », qui claque avec un
-    boom). L'ancrage seulement avec un chiffre que le client fournit (`prix.ancrage` ou
-    `prix.barre` dans la fiche) ; s'il ne correspond à aucun prix réellement pratiqué, préviens-le
+    boom). L'ancrage seulement avec un chiffre que le client fournit (`prix.barre` dans la fiche) ; s'il ne correspond à aucun prix réellement pratiqué, préviens-le
     une fois du risque (en Europe, une réduction annoncée doit se référer au prix le plus bas des
     30 derniers jours) et laisse-le décider. Sortie : un disque sombre part du centre.
 20. **L'échéance en rouleau** [vertical-spring-ticker], seulement avec une vraie date.

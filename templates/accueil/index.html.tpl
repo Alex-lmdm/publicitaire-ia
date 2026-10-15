@@ -43,7 +43,7 @@
         <div class="police"><b style="font-family:var(--brand-font-display); font-weight:800;">Aa</b><span>titres · {{TITRES}}</span></div>
         <div class="police"><b style="font-family:var(--brand-font-body); font-weight:400;">Aa</b><span>texte · {{CORPS}}</span></div>
       </div>
-      <p id="consigne" class="bloc clip" data-start="0" data-duration="6" data-track-index="6">Écris <strong>/studio</strong> dans le chat pour faire ta vidéo.</p>
+      <p id="consigne" class="bloc clip" data-start="0" data-duration="6" data-track-index="6">Tes vidéos se fabriquent dans Claude Code ou Codex : <strong>« fais-moi une vidéo »</strong>. Ici, tu les regardes et tu les retouches.</p>
     </div>
     <script>
       window.__timelines = window.__timelines || {};

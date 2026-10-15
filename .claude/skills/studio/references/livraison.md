@@ -16,7 +16,7 @@ publication prêt, et, pour une campagne, le moment de chaque publication.
 | `integration.md` | page, section | Comment poser la vidéo sur sa page (ci-dessous) |
 | `couverture.jpg` | Reel, TikTok | La couverture, lisible à 200 px de large |
 
-Puis `python3 tools/studio_motion.py livrer "<dossier>"` : « ok » ou la liste de ce qui manque.
+Puis, depuis la racine, `python3 tools/studio_motion.py livrer "videos/<dossier de la vidéo>"` : « ok » ou la liste de ce qui manque.
 
 ## La couverture et l'affiche
 
@@ -25,11 +25,11 @@ dans la zone texte, lisible à 200 px de large. Elle ne montre rien que la vidé
 en première image :
 
 ```bash
-python3 tools/studio_motion.py couverture exports/reel-master.mp4 livraison/couverture.jpg livraison/reel.mp4
+python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 ../livraison/couverture.jpg ../livraison/reel.mp4
 ```
 
 Pour une page, l'affiche (`page.jpg`) est la première image de la vidéo, de moins de 100 Ko :
-`python3 tools/studio_motion.py affiche livraison/page.mp4 livraison/page.jpg`.
+`python3 ../../../tools/studio_motion.py affiche ../livraison/page.mp4 ../livraison/page.jpg` (depuis le projet de la page).
 
 ## Les textes de publication
 

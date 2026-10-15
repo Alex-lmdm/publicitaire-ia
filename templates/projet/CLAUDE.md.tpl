@@ -23,8 +23,22 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
   chargé par `index.html` : pars de lui (mode d'emploi : `references/kit.md` du skill), ne le
   réécris pas scène par scène. Logos des outils montrés : `studio_motion.py logos . claude openai`.
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
-  sons, planche, rythme, son, export.
+  musiques (la musique : `musiques choisir --duree <durée> --ouvrir`, puis `musiques prendre <n> --a <pivot>
+  --duree <durée>`), musique,
+  sons, planche, rythme, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
+  à la demande du client (`references/voix.md`).
+- **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
+  plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans plan, étape 3.
 - Retouche demandée : modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
+- **Dans l'app HyperFrames** (tes consignes disent alors que l'app fait le rendu) : fais la retouche
+  dans `index.html`, `compositions/` et `assets/`, sans rendu ; le client la voit tout de suite dans
+  l'app. Puis dis-lui : « C'est fait, tu la vois dans l'app. Pour mettre à jour tes fichiers prêts à
+  publier (le son réglé, la couverture), ouvre ton dossier {{PRODUIT}} dans ton assistant et dis
+  « mets à jour la livraison de {{VIDEO_NOM}} ». » Le bouton Export de l'app donne un brouillon
+  dans Téléchargements, pas le fichier final. Si l'app te propose ses propres skills (`hyperframes`,
+  `launch-film`, `product-launch-video`), garde la méthode du skill `studio` : ils ne connaissent ni
+  la fiche de l'offre ni la marque de cette vidéo.
+- Jamais `hyperframes feedback`, `publish`, `cloud`, `lambda` ni `cloudrun`.
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check`. Puis
   `studio_motion.py rythme exports/{{VIDEO}}.mp4` : il doit répondre « ok ».

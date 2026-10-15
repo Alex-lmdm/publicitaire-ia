@@ -21,6 +21,25 @@
   };
   K.entre = function (a, b, p) { return a + (b - a) * p; };
 
+  // Taille de la composition qui contient `el` : data-width / data-height de la racine
+  // [data-composition-id] la plus proche qui les porte (1080 × 1920 pour un Reel ou une story,
+  // 1920 × 1080 en 16:9). Lue dans le HTML, jamais mesurée à l'écran : le même résultat à chaque
+  // image, dans l'aperçu comme au rendu. Sans racine trouvée : la composition principale, sinon
+  // 1920 × 1080 (l'ancien défaut du kit).
+  K.cadre = function (el) {
+    var lire = function (n) {
+      var l = parseFloat(n.getAttribute("data-width")), h = parseFloat(n.getAttribute("data-height"));
+      return l > 0 && h > 0 ? { largeur: l, hauteur: h } : null;
+    };
+    var n = el && el.closest ? el.closest("[data-composition-id]") : null, c;
+    while (n) {
+      if ((c = lire(n))) return c;
+      n = n.parentElement ? n.parentElement.closest("[data-composition-id]") : null;
+    }
+    var racine = document.querySelector("[data-composition-id][data-width][data-height]");
+    return (racine && lire(racine)) || { largeur: 1920, hauteur: 1080 };
+  };
+
   K.el = function (parent, tag, classe, html, style) {
     var e = document.createElement(tag || "div");
     if (classe) e.className = classe;
@@ -99,9 +118,11 @@
   // --- Les objets flottants ---------------------------------------------------------------
   // Un champ d'objets répartis en profondeur : les plus proches et les plus lointains sont
   // flous (profondeur de champ), ceux du milieu sont nets. Retourne les éléments créés.
+  // Sans `zone`, les objets se répartissent sur tout le cadre de la composition (K.cadre).
   K.champ = function (parent, o) {
     var r = K.rng(o.graine || 1), els = [];
-    var z = o.zone || { x0: 0, y0: 0, x1: 1920, y1: 1080 };
+    var cadre = o.zone ? null : K.cadre(parent);
+    var z = o.zone || { x0: 0, y0: 0, x1: cadre.largeur, y1: cadre.hauteur };
     var evite = o.evite; // { x0, y0, x1, y1 } : zone centrale à laisser libre
     var n = o.nombre || 14, fabriques = o.objets;
     for (var i = 0; i < n; i++) {
@@ -150,6 +171,18 @@
       return e;
     };
   };
+  // Un vrai logo NU, pour K.champ : le logo seul, sans tuile ni fond, dans ses couleurs (un logo
+  // monochrome prend `couleur`, sinon celle du texte). Une ombre douce le détache du fond.
+  K.logoNu = function (svg, couleur) {
+    return function (taille) {
+      var e = document.createElement("div");
+      e.className = "k-logo-nu";
+      e.style.width = e.style.height = taille + "px";
+      if (couleur) e.style.color = couleur;
+      e.innerHTML = svg;
+      return e;
+    };
+  };
   // Dérive lente et continue (parallaxe : le proche bouge plus que le lointain). Finie.
   K.derive = function (tl, els, debut, duree, amplitude) {
     amplitude = amplitude || 60;
@@ -178,16 +211,25 @@
 
   // --- Chapitre : mot fantôme, étiquette, interrupteur cliqué -----------------------------
   // racine contient .k-fantome, .k-etiquette (des .k-mot), .k-interrupteur (.k-plein, .k-bille).
+  // Les positions se calculent sur la taille de la composition (K.cadre) : le même appel marche
+  // en 9:16 et en 16:9. o.depart = [x, y] du curseur au début ; o.cible = [x, y] où il clique,
+  // seulement si l'interrupteur a été déplacé par le CSS de la scène.
   K.chapitre = function (tl, racine, curseur, t, o) {
     o = o || {};
     var fantome = racine.querySelector(".k-fantome"), mots = racine.querySelectorAll(".k-etiquette .k-mot"),
       inter = racine.querySelector(".k-interrupteur"), plein = inter.querySelector(".k-plein"), bille = inter.querySelector(".k-bille");
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, echelle = L / 1920;
+    // Le fantôme est un décor presque invisible voulu : hors des audits de lisibilité de `check`.
+    if (fantome) fantome.setAttribute("data-layout-ignore", "");
     gsap.set(plein, { scaleX: 0 });
-    tl.fromTo(fantome, { x: 260, opacity: 0 }, { x: -60, opacity: 1, duration: 2.4, ease: "power2.out" }, t);
+    tl.fromTo(fantome, { x: 260 * echelle, opacity: 0 }, { x: -60 * echelle, opacity: 1, duration: 2.4, ease: "power2.out" }, t);
     K.entreeMots(tl, mots, t + 0.1, { decalage: 0.06 });
     tl.fromTo(inter, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, t + 0.3);
-    var cx = 960 + 18, cy = 540 + 122;
-    K.trajet(tl, curseur, [[0, o.depart ? o.depart[0] : 1500, o.depart ? o.depart[1] : 1000], [t + 0.35, cx, cy, 0.55, "power3.out"]]);
+    // L'interrupteur est centré en largeur, 96 px sous le milieu (kit.css) : la pointe du curseur
+    // tombe sur sa moitié droite, là où la bille arrive.
+    var cx = o.cible ? o.cible[0] : L / 2 + 18, cy = o.cible ? o.cible[1] : H / 2 + 122;
+    var dx = o.depart ? o.depart[0] : (L * 1500) / 1920, dy = o.depart ? o.depart[1] : (H * 1000) / 1080;
+    K.trajet(tl, curseur, [[0, dx, dy], [t + 0.35, cx, cy, 0.55, "power3.out"]]);
     K.clic(tl, curseur, t + 0.95);
     tl.to(bille, { x: 40, duration: 0.3, ease: "power3.inOut" }, t + 0.98);
     tl.to(plein, { scaleX: 1, duration: 0.3, ease: "power3.inOut" }, t + 0.98);

@@ -1,8 +1,8 @@
 # Installer Publicitaire IA
 
 Publicitaire IA fabrique des vidéos en motion design qui vendent ton offre. Il s'installe **tout
-seul**, sans autre logiciel de la formation : pas de compte à créer, pas de clé, pas d'abonnement
-en plus. Tout tourne sur ton ordinateur, avec ton abonnement Claude ou ChatGPT habituel.
+seul**, sans autre logiciel de la formation, et sans abonnement en plus. Tout tourne sur ton
+ordinateur, avec ton abonnement Claude ou ChatGPT habituel.
 
 Ouvre **Claude Code** ou **Codex** et écris :
 
@@ -50,34 +50,48 @@ chose, dis en une phrase ce que tu vas installer et attends qu'il réponde « go
   accepter l'installation des « outils de développement » que le Mac propose.
 - Windows : `winget install -e --id OpenJS.NodeJS.LTS`, `winget install -e --id Python.Python.3.12`,
   `winget install -e --id Gyan.FFmpeg`, puis lui faire fermer et rouvrir l'assistant (sinon le
-  nouveau chemin n'est pas vu). Sous Windows, les commandes `python3` s'écrivent `python`.
+  nouveau chemin n'est pas vu). Sous Windows, les commandes `python3` s'écrivent `python` (ou `py -3`
+si `python` ne répond pas).
 
 **2. `npm ci`** à la racine du dossier : il installe HyperFrames et GSAP aux versions prévues, puis
 prépare le dossier (instructions de l'assistant, style de départ, vignette d'accueil, copie des
-skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est fait.
+skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est fait. Si la sortie se
+termine par « sync incomplet », lance `npm run sync` : il doit finir par « ok ».
 
 **3. `npx hyperframes browser ensure`** : le navigateur qui fabrique les images de la vidéo (il
 garde celui qui est déjà là). Jamais `npx puppeteer browsers install`.
 
 **4. App HyperFrames** (Mac, seulement si `/Applications/HyperFrames.app` existe) :
-`npm run app -- brancher`. Il permet à l'app de lire les instructions de ce dossier (une ligne
-ajoutée à la configuration de Claude Code, avec une sauvegarde). Explique-le en une phrase avant.
-Sans l'app, saute cette étape.
+`npm run app -- brancher`. Il permet à l'app de lire les instructions de ce dossier : une ligne
+ajoutée à la configuration de Claude Code (`~/.claude/settings.json`), avec une sauvegarde. Rien
+d'autre n'est modifié, ni la configuration de Codex. Explique-le en une phrase avant. Sans l'app,
+saute cette étape.
 
 **5. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
-Les lignes « marque pas encore réglée » et « Pack SFX : pas installé » sont normales.
+Les lignes « marque pas encore réglée », « Pack SFX : pas installé » et « musiques de lancement :
+pas installées » sont normales.
 
 **6. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
 navigateur, app HyperFrames ou « sans l'app », test final). Si tout est ✅, conclus par :
-« C'est installé. Tape /studio : je te demande d'où prendre ta marque et ce que tu vends, une
+« C'est installé. Tape /studio (dans Codex : $studio) : je te demande d'où prendre ta marque et ce que tu vends, une
 seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
 ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
 installé dans ton dossier Vidéos. Ouvre le dossier Publicitaire IA dans ton assistant, dans une
-nouvelle conversation, puis tape /studio : je te demande d'où prendre ta marque et ce que tu
+nouvelle conversation, puis tape /studio (dans Codex : $studio) : je te demande d'où prendre ta marque et ce que tu
 vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas de tableau, une seule ligne,
 « Publicitaire IA est à jour, tout est ✅. » (le tableau ne s'affiche que si une étape a échoué).
 
 ---
+
+## Tes 17 musiques de lancement (offertes avec la formation)
+
+Télécharge les cinq ambiances dans ta formation (module Bonus), sans les ouvrir, puis écris à l'IA :
+
+- « Installe mes 17 musiques de lancement depuis mon dossier Téléchargements »
+
+Elles sont rangées dans Publicitaire IA, et chaque vidéo prend celle qui va avec son but. (Pour
+l'IA : `python3 tools/studio_motion.py musiques installer`, sans argument ; une archive rangée
+ailleurs se donne en argument.)
 
 ## Le Pack SFX (si tu l'as acheté)
 
@@ -95,9 +109,11 @@ modifié. (Pour l'IA : `python3 tools/studio_motion.py pack-sfx installer "<arch
 Écris à l'IA : « Mets à jour Publicitaire IA ». Pour l'IA : dans le dossier, si c'est un clone git
 propre, `git pull --ff-only` ; sinon, télécharge l'archive de l'étape 0 et remplace les fichiers du
 dossier **sauf** ce qui appartient au client, qu'une nouvelle version ne contient jamais :
-`marque.json`, `studio.config.json`, les dossiers `marque/` et `videos/`, et le Pack SFX
-(`assets/sfx/pack/`, `assets/sfx/catalog.json`, `assets/sfx/sons-par-situation.md`). Puis refais les
-étapes 2 et 5.
+`marque.json`, `studio.config.json`, les dossiers `marque/`, `videos/` et « Accueil … » (la vignette
+de l'app HyperFrames et son historique), et le Pack SFX (`assets/sfx/pack/`, `assets/sfx/catalog.json`,
+`assets/sfx/sons-par-situation.md`, `assets/sfx/.pack-sfx-manifest.json`) et les musiques de lancement
+(`assets/musiques/`). Puis refais les étapes 2,
+3 et 5.
 
 ## Problèmes courants
 
@@ -110,3 +126,7 @@ dossier **sauf** ce qui appartient au client, qu'une nouvelle version ne contien
   d'écran de ta page, ça suffit pour ta marque et ton offre.
 - **Une police remplacée dans la vidéo** : dis « ma police est X » ; l'assistant la récupère
   (polices libres) ou te demande ses fichiers.
+- **Les musiques ne s'installent pas** (« aucune archive musiques-….zip ») : vérifie que les cinq
+  fichiers sont bien dans ton dossier Téléchargements, ou glisse-les dans la conversation.
+- **Relier HeyGen pour une voix de synthèse** (ou le refaire) : dis « relie mon compte HeyGen » ;
+  l'assistant te guide (skill `studio`, `references/heygen.md`).

@@ -6,6 +6,12 @@
  *   node scripts/app-hyperframes.mjs brancher           l'app lit désormais les instructions du projet
  *   node scripts/app-hyperframes.mjs ouvrir <dossier>   ouvre un projet (accueil ou vidéo) dans l'app
  *
+ * Le chemin du script se donne depuis là où l'on est : depuis un projet de vidéo
+ * (`videos/<vidéo>/<format>/`, qui a son propre package.json, donc pas de `npm run app`),
+ * `node ../../../scripts/app-hyperframes.mjs ouvrir .` ; depuis l'accueil,
+ * `node ../scripts/app-hyperframes.mjs ouvrir .`. Un chemin relatif se lit depuis le dossier où la
+ * commande est tapée, y compris par `npm run app` (qui, lui, s'exécute toujours à la racine).
+ *
  * Pourquoi « brancher » : l'app lance Claude Code sans charger le CLAUDE.md du projet ouvert
  * (`--setting-sources user`). La variable CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1, posée
  * dans la clé `env` de la config Claude Code de l'utilisateur, lui fait lire le CLAUDE.md du
@@ -13,9 +19,9 @@
  * ajouté à une session Claude Code fait lire son CLAUDE.md, rien d'autre. Rien d'autre n'est
  * modifié dans la config, et une sauvegarde est faite avant toute écriture.
  *
- * Codex lit AGENTS.md et les skills du dossier par lui-même, mais coupe AGENTS.md à 32 Kio par
- * défaut : avec le skill et ses consignes, ce dossier peut dépasser. « brancher »
- * relève donc aussi `project_doc_max_bytes` dans la config de Codex, s'il est installé.
+ * Codex n'a rien à brancher : il lit lui-même AGENTS.md et `.agents/skills/` du dossier ouvert.
+ * Les consignes générées font quelques Kio, loin de sa limite de 32 Kio (sync.mjs prévient si le
+ * modèle la dépassait un jour) : « brancher » ne touche jamais à la config de Codex.
  *
  * Node pur, zéro dépendance, cross-platform.
  */
@@ -26,7 +32,8 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const SCRIPT = fileURLToPath(import.meta.url);
+const RACINE = path.resolve(path.dirname(SCRIPT), "..");
 
 /** Le nom du produit et son code (nom du dépôt), lus dans produit.json. */
 export function produit(racine = RACINE) {
@@ -97,52 +104,22 @@ export function brancher(file, now = new Date()) {
 }
 
 // ---------------------------------------------------------------------------
-// Codex : lire AGENTS.md en entier (project_doc_max_bytes, 32 Kio par défaut). Dans une vidéo d'un
-// dossier suivi par git, Codex lit à la suite l'AGENTS.md du dossier puis celui de la vidéo.
+// D'où la commande est tapée, et comment la retaper de là
 // ---------------------------------------------------------------------------
-export const CODEX_LIMITE = 131072;
-const CODEX_CLE = "project_doc_max_bytes";
-
-/** Le dossier de config de Codex : $CODEX_HOME, sinon ~/.codex. */
-export const codexHome = (env = process.env, home = os.homedir()) => env.CODEX_HOME || path.join(home, ".codex");
-
-/** Relève la limite de lecture d'AGENTS.md dans config.toml. Ne fait rien si Codex n'est pas installé
- *  (pas de dossier de config) ; idempotent ; sauvegarde avant d'écrire. */
-export function brancherCodex(dir, now = new Date()) {
-  if (!fs.existsSync(dir)) return { changed: false, skipped: "Codex n'est pas installé" };
-  const file = path.join(dir, "config.toml");
-  const before = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
-  const lignes = before ? before.replace(/(\r?\n)+$/, "").split(/\r?\n/) : [];
-  // Une clé de premier niveau doit précéder la première table [section] du TOML.
-  const premiereTable = lignes.findIndex((l) => /^\s*\[/.test(l));
-  const fin = premiereTable === -1 ? lignes.length : premiereTable;
-  const i = lignes.slice(0, fin).findIndex((l) => new RegExp(`^\\s*${CODEX_CLE}\\s*=`).test(l));
-  if (i !== -1) {
-    const valeur = Number(lignes[i].split("=")[1].replace(/#.*/, "").trim());
-    if (valeur >= CODEX_LIMITE) return { changed: false, file };
-    lignes[i] = `${CODEX_CLE} = ${CODEX_LIMITE}`;
-  } else {
-    lignes.splice(fin, 0, `${CODEX_CLE} = ${CODEX_LIMITE}  # ${CODE} : lire AGENTS.md en entier`, ...(fin < lignes.length && fin > 0 ? [""] : []));
-  }
-  let backup = null;
-  if (before) {
-    backup = `${file}.avant-${CODE}-${stamp(now)}`;
-    fs.copyFileSync(file, backup);
-  }
-  const tmp = `${file}.tmp-${process.pid}`;
-  fs.writeFileSync(tmp, `${lignes.join("\n").replace(/\n*$/, "")}\n`);
-  fs.renameSync(tmp, file);
-  return { changed: true, file, backup };
+/** Le dossier où la commande a été tapée. `npm run app` s'exécute toujours à la racine (npm remonte
+ *  jusqu'au package.json, l'accueil n'en a pas) et garde le dossier d'appel dans INIT_CWD. */
+export function dossierAppel(env = process.env, cwd = process.cwd()) {
+  return env.npm_lifecycle_event === "app" && env.INIT_CWD ? env.INIT_CWD : cwd;
 }
 
-/** État de Codex, sans rien écrire : pas installé, ou lit-il AGENTS.md en entier ? */
-export function readCodex(dir) {
-  if (!fs.existsSync(dir)) return { installe: false, branche: false };
-  const file = path.join(dir, "config.toml");
-  const lignes = fs.existsSync(file) ? fs.readFileSync(file, "utf8").split(/\r?\n/) : [];
-  const fin = lignes.findIndex((l) => /^\s*\[/.test(l));
-  const ligne = lignes.slice(0, fin === -1 ? lignes.length : fin).find((l) => new RegExp(`^\\s*${CODEX_CLE}\\s*=`).test(l));
-  return { installe: true, branche: Boolean(ligne) && Number(ligne.split("=")[1].replace(/#.*/, "").trim()) >= CODEX_LIMITE };
+const entreGuillemets = (texte) => (/[\s"'`$&|;<>()]/.test(texte) ? `"${texte}"` : texte);
+
+/** La commande à taper depuis `depuis` : chemin relatif du script dans le dossier, absolu ailleurs. */
+export function commande(sous, depuis = dossierAppel()) {
+  const versAppel = path.relative(RACINE, depuis);
+  const dedans = !versAppel.startsWith("..") && !path.isAbsolute(versAppel);
+  const script = dedans ? path.relative(depuis, SCRIPT) : SCRIPT;
+  return `node ${entreGuillemets(script)} ${sous}`;
 }
 
 /** Chemin de l'app installée, ou null. Sur Linux, l'emplacement varie : on n'en cherche pas. */
@@ -163,13 +140,38 @@ export function localCli({ platform = process.platform, exists = fs.existsSync }
   return exists(bin) ? bin : null;
 }
 
-/** Ouvre un projet dans l'app (Mac, Linux). Ailleurs, explique le geste à faire à la main. */
+/** Les projets de l'app rangés directement dans `dir` (les formats d'une vidéo, l'accueil). */
+function sousProjets(dir) {
+  try {
+    return fs.readdirSync(dir, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && isProject(path.join(dir, e.name))).map((e) => e.name).sort();
+  } catch {
+    return [];
+  }
+}
+
+/** Pourquoi `target` ne s'ouvre pas, et quoi taper à la place. */
+export function pasUnProjet(target, depuis = dossierAppel()) {
+  if (!fs.existsSync(target)) return `${target} introuvable. Vérifie le chemin (il se lit depuis ${depuis}).`;
+  const projets = sousProjets(target);
+  const exemple = () => commande(`ouvrir ${entreGuillemets(path.relative(depuis, path.join(target, projets[0])) || ".")}`, depuis);
+  if (fs.existsSync(path.join(target, "produit.json")))
+    return `${target} est le dossier ${PRODUIT} lui-même, pas un projet de l'app. Ouvre l'accueil` +
+      (projets.length ? ` (${exemple()})` : "") + ", ou un projet de vidéo : videos/<vidéo>/<format>/.";
+  if (projets.length)
+    return `${target} est le dossier d'une vidéo : ouvre l'un de ses projets (${projets.join(", ")}), par exemple ${exemple()}.`;
+  return `${target} n'est pas un projet HyperFrames : il lui faut un index.html et un meta.json. ` +
+    "Depuis le dossier d'un projet de vidéo : node ../../../scripts/app-hyperframes.mjs ouvrir .";
+}
+
+/** Ouvre un projet dans l'app (Mac, Linux). Ailleurs, explique le geste à faire à la main.
+ *  Un chemin relatif se lit depuis le dossier où la commande a été tapée. */
 export function ouvrir(dir, {
   platform = process.platform, app = findApp({ platform }), cli = localCli({ platform }), run = execFileSync,
+  depuis = dossierAppel(),
 } = {}) {
-  const target = path.resolve(dir);
-  if (!isProject(target))
-    throw new Error(`${target} n'est pas un projet HyperFrames : il lui faut un index.html et un meta.json.`);
+  const target = path.resolve(depuis, dir);
+  if (!isProject(target)) throw new Error(pasUnProjet(target, depuis));
   if (platform === "darwin" && app) {
     run("open", ["-b", APP_ID, target]);
     return { opened: true, target };
@@ -192,28 +194,23 @@ function describe(env = process.env) {
   const lines = [];
   if (state.invalid) lines.push(`Config Claude Code : ${state.invalid} (${state.file}).`);
   else if (state.branche) lines.push(`Config Claude Code : l'app lit les instructions de ${PRODUIT}.`);
-  else lines.push("Config Claude Code : à brancher (node scripts/app-hyperframes.mjs brancher).");
-  const codex = readCodex(codexHome(env));
-  if (!codex.installe) lines.push("Config Codex : Codex n'est pas installé, rien à brancher.");
-  else lines.push(codex.branche ? `Config Codex : lit les instructions de ${PRODUIT} en entier.`
-    : "Config Codex : à brancher (node scripts/app-hyperframes.mjs brancher).");
+  else lines.push(`Config Claude Code : à brancher (${commande("brancher")}).`);
+  lines.push("Codex : rien à brancher, il lit lui-même AGENTS.md et .agents/skills/ du dossier ouvert.");
   if (process.platform === "win32") lines.push("App HyperFrames : pas encore disponible sous Windows.");
   else if (process.platform !== "darwin") lines.push("App HyperFrames : à ouvrir depuis le menu de ton système (Linux).");
   else lines.push(app ? `App HyperFrames : installée (${app}).` : `App HyperFrames : pas installée (${DOWNLOAD_URL}).`);
-  return { state, codex, app, text: lines.join("\n") };
+  return { state, app, text: lines.join("\n") };
 }
 
 function main(argv) {
   const [command, arg] = argv;
   if (command === "etat") {
-    const { state, codex, app, text } = describe();
-    console.log(argv.includes("--json") ? JSON.stringify({ ...state, codex, app }, null, 2) : text);
+    const { state, app, text } = describe();
+    console.log(argv.includes("--json") ? JSON.stringify({ ...state, app }, null, 2) : text);
     return 0;
   }
   if (command === "brancher") {
-    // Claude Code et Codex se branchent chacun de leur côté : une config illisible de l'un ne
-    // prive pas l'autre de son réglage.
-    let echecs = 0;
+    // Seule la config de Claude Code change : Codex lit déjà AGENTS.md et les skills du dossier.
     try {
       const result = brancher(settingsPath());
       if (!result.changed) console.log(`Déjà branché : l'app lit les instructions de ${PRODUIT}.`);
@@ -222,28 +219,20 @@ function main(argv) {
         if (result.backup) console.log(`Sauvegarde de l'ancienne config : ${result.backup}`);
         console.log("Effet à la prochaine conversation ouverte dans l'app.");
       }
+      return 0;
     } catch (error) {
-      echecs += 1;
       console.error(`❌ Claude Code : ${error.message}`);
+      return 1;
     }
-    try {
-      const codex = brancherCodex(codexHome());
-      if (codex.changed) {
-        console.log(`Codex lira les instructions de ${PRODUIT} en entier.`);
-        if (codex.backup) console.log(`Sauvegarde de l'ancienne config Codex : ${codex.backup}`);
-      }
-    } catch (error) {
-      echecs += 1;
-      console.error(`❌ Codex : ${error.message}`);
-    }
-    return echecs ? 1 : 0;
   }
-  if (command === "ouvrir" && arg) {
-    const result = ouvrir(arg);
+  if (command === "ouvrir") {
+    // Sans dossier : celui où la commande est tapée (le projet de vidéo où l'on se trouve).
+    const result = ouvrir(arg ?? ".");
     console.log(result.opened ? `Ouvert dans l'app : ${result.target}` : result.how);
     return 0;
   }
-  console.error("Usage : node scripts/app-hyperframes.mjs etat [--json] | brancher | ouvrir <dossier>");
+  console.error(`Usage : ${commande("etat [--json] | brancher | ouvrir <dossier>")}\n` +
+    "Depuis un projet de vidéo : node ../../../scripts/app-hyperframes.mjs ouvrir .");
   return 2;
 }
 

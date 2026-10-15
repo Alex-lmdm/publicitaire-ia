@@ -321,6 +321,32 @@ class Musique(unittest.TestCase):
         self.assertLess(sm.calage(2.0, 0.0, 120.0, 120.0, 8.0)["decalage"], 0)      # démarre plus tard
 
 
+    def test_filtres_calage(self):
+        plus_tard = sm.filtres_calage({"facteur": 0.98, "decalage": -1.5}, 20)
+        self.assertEqual(plus_tard, "atempo=0.980000,adelay=1500|1500,asetpts=N/SR/TB,atrim=duration=20.60")
+        coupe = sm.filtres_calage({"facteur": 1.0, "decalage": 2.25})
+        self.assertEqual(coupe, "atrim=start=2.250,asetpts=PTS-STARTPTS")
+
+    @unittest.skipUnless(shutil.which("ffmpeg"), "ffmpeg absent")
+    def test_calage_reel_demarre_plus_tard(self):
+        """Avec ffmpeg 8.1, adelay suivi d'atrim perdait le silence ajouté : l'entrée tombait 2 s trop tôt."""
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            morceau, sortie = Path(d) / "m.wav", Path(d) / "c.wav"
+            kick = "if(gte(t,6)*lt(mod(t-6,60/124),0.08),sin(2*PI*55*t)*exp(-30*mod(t-6,60/124)),0)"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=220:d=30", "-f", "lavfi",
+                            "-i", f"aevalsrc='{kick}':d=30:s=44100", "-filter_complex",
+                            "[0]volume='if(lt(t,6),0.03,0.15)':eval=frame[a];[a][1]amix=inputs=2:normalize=0",
+                            "-ar", "44100", str(morceau)], check=True)
+            sm.main(["musique", str(morceau), "--sortie", str(sortie), "--a", "8", "--duree", "15"])
+            ffmpeg = shutil.which("ffmpeg")
+            fps = sm.MUSIQUE_SR / sm.MUSIQUE_PAS
+            graves = sm.enveloppe(ffmpeg, sortie, graves=True)
+            premiere = next(i for i, v in enumerate(graves) if v > max(graves) * 0.3) / fps
+            self.assertAlmostEqual(premiere, 8.0, delta=0.15)          # la batterie arrive à 8 s
+            self.assertGreater(sm.silence_initial(sm.enveloppe(ffmpeg, sortie), fps), 1.0)
+
+
 class Emergence(unittest.TestCase):
     def test_bruitage_au_dessus_du_fond(self):
         musique = [-25.0] * 400                        # 20 s de musique à -25 dB (50 ms par case)
@@ -363,6 +389,29 @@ class Svg(unittest.TestCase):
         self.assertNotIn("<title>", propre)
         self.assertNotIn('width="256"', propre)
 
+    def test_identifiants_et_styles_isoles(self):
+        insta = ('<svg viewBox="0 0 1 1"><defs><radialGradient id="a"/></defs>'
+                 '<use href="#a"/><path fill="url(#a)" d="M0 0h1z"/></svg>')
+        propre = sm.nettoyer_svg(insta, prefixe="logo-instagram")
+        self.assertIn('id="logo-instagram-a"', propre)
+        self.assertIn('href="#logo-instagram-a"', propre)
+        self.assertIn('fill="url(#logo-instagram-a)"', propre)
+        self.assertNotIn('id="a"', propre)
+        tiktok = '<svg viewBox="0 0 1 1"><style>.cls-2{fill:#fe2c55}.cls-3, path{fill:#25f4ee}</style><path class="cls-2"/></svg>'
+        propre = sm.nettoyer_svg(tiktok, prefixe="logo-tiktok")
+        self.assertIn('<svg class="logo-tiktok"', propre)
+        self.assertIn(".logo-tiktok .cls-2 {", propre)
+        self.assertIn(".logo-tiktok .cls-3, .logo-tiktok path {", propre)
+
+    def test_logo_deux_tons_garde_ses_tons(self):
+        notion = '<svg viewBox="0 0 10 10"><path fill="#FFF" d="M0 0h9v9z"/><path d="M2 2h5v5z"/></svg>'
+        self.assertNotIn("currentColor", sm.nettoyer_svg(notion))
+
+    def test_logo_noir_par_defaut_ou_presque_noir(self):
+        self.assertIn('<svg fill="currentColor"', sm.nettoyer_svg('<svg viewBox="0 0 1 1"><path d="M0 0h1z"/></svg>'))
+        github = '<svg viewBox="0 0 1 1"><path fill="#181717" d="M0 0h1z"/><path fill="none" d="M0 0"/></svg>'
+        self.assertIn('fill="currentColor"', sm.nettoyer_svg(github))
+
     def test_logo_en_couleur_garde_sa_couleur(self):
         propre = sm.nettoyer_svg('<svg viewBox="0 0 24 24"><path fill="#D97757" d="M0 0h1z"/></svg>')
         self.assertIn('fill="#D97757"', propre)
@@ -389,7 +438,7 @@ class Kit(unittest.TestCase):
         for f in ("kit.css", "kit.js", "icones.js", "ajouts.js"):
             self.assertTrue((kit / f).is_file(), f)
         js = (kit / "kit.js").read_text(encoding="utf-8")
-        for fonction in ("K.champ", "K.curseur", "K.trajet", "K.clic", "K.taper", "K.compteur", "K.flash", "K.chapitre", "K.cacher", "K.tuileMarque"):
+        for fonction in ("K.champ", "K.curseur", "K.trajet", "K.clic", "K.taper", "K.compteur", "K.flash", "K.chapitre", "K.cacher", "K.tuileMarque", "K.logoNu"):
             self.assertIn(fonction + " = function", js)
         self.assertNotIn("Math.random", js)
         self.assertNotIn("o.flouPres || 70", js)   # un flou demandé à 0 doit valoir 0
@@ -645,6 +694,37 @@ class Creation(unittest.TestCase):
             self.assertEqual(sm.manques_livraison(dossier), ["integration.md (comment poser la vidéo sur la page)"])
             (dossier / "livraison" / "integration.md").write_text("x", encoding="utf-8")
             self.assertEqual(sm.manques_livraison(dossier), [])
+
+
+class Logos(unittest.TestCase):
+    REGISTRE = [{"slug": "openai", "title": "OpenAI", "aliases": []},
+                {"slug": "lemon-squeezy", "title": "Lemon Squeezy", "aliases": ["LemonSqueezy"]},
+                {"slug": "notion-badge", "title": "Notion", "aliases": []},
+                {"slug": "notion", "title": "Notion", "aliases": []},
+                {"slug": "metabase", "title": "Metabase", "aliases": []}]
+
+    def test_noms_courants_retrouves(self):
+        self.assertEqual(sm.correspondances("ChatGPT", self.REGISTRE)[0]["slug"], "openai")       # alias maison
+        self.assertEqual(sm.correspondances("lemon squeezy", self.REGISTRE)[0]["slug"], "lemon-squeezy")
+        self.assertEqual(sm.correspondances("Notion", self.REGISTRE)[0]["slug"], "notion")         # le badge après
+        self.assertEqual(sm.correspondances("kajabi", self.REGISTRE), [])
+
+    def test_cle_du_kit(self):
+        self.assertEqual(sm.cle_logo("Lemon Squeezy"), "lemon-squeezy")
+        self.assertEqual(sm.cle_logo("Système.io"), "systeme-io")
+
+    def test_logo_du_client(self):
+        with tempfile.TemporaryDirectory() as d:
+            projet = Path(d) / "p"
+            projet.mkdir()
+            png = Path(d) / "mon logo.png"
+            png.write_bytes(b"\x89PNG")
+            self.assertEqual(sm.logo_fichier(projet, png), '<img src="assets/logos/mon logo.png" alt="">')
+            self.assertTrue((projet / "assets" / "logos" / "mon logo.png").is_file())
+            svg = Path(d) / "l.svg"
+            svg.write_text('<svg viewBox="0 0 10 10"><script>x</script></svg>')
+            with self.assertRaises(ValueError):
+                sm.logo_fichier(projet, svg)
 
 
 if __name__ == "__main__":
