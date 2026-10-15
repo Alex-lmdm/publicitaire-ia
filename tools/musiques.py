@@ -166,7 +166,7 @@ def installer(racine: Path, sources: list[Path]) -> dict:
     n'est pas réécrit ; un morceau qui n'est plus dans la fiche de son ambiance est retiré."""
     if not sources:
         raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : télécharge les cinq "
-                             "ambiances dans ta formation (module Bonus), puis redemande")
+                             "ambiances dans ta formation (module Musique), puis redemande")
     copies: dict[str, bytes] = {}
     erreurs = []
     for source in sources:

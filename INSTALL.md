@@ -85,7 +85,7 @@ vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas d
 
 ## Tes 17 musiques de lancement (offertes avec la formation)
 
-Télécharge les cinq ambiances dans ta formation (module Bonus), sans les ouvrir, puis écris à l'IA :
+Télécharge les cinq ambiances dans ta formation (module Musique), sans les ouvrir, puis écris à l'IA :
 
 - « Installe mes 17 musiques de lancement depuis mon dossier Téléchargements »
 

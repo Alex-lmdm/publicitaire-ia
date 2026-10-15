@@ -22,7 +22,7 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   lesquelles sont installées), choisies comme dit plus bas. Dans l'app HyperFrames aussi : la
   commande `musiques`, jamais `find_music`.
 - Musiques pas installées : dis-le une fois, en une phrase : « Tes 17 musiques de lancement ne sont
-  pas encore installées : télécharge les cinq ambiances dans ta formation (module Bonus), puis
+  pas encore installées : télécharge les cinq ambiances dans ta formation (module Musique), puis
   dis-moi « installe mes musiques ». » En attendant, sa musique ou la vidéo sans musique, en le
   disant.
 - La bibliothèque de musiques de HeyGen ne se propose plus : avec un compte gratuit, ses conditions
@@ -65,7 +65,7 @@ Depuis la racine. Sans argument, il prend les `musiques-*.zip` du dossier Télé
 dossiers que Safari a décompressés tout seul ; une archive rangée ailleurs se donne en argument.
 Refaire ne change rien, et une ambiance téléchargée plus tard s'ajoute aux autres. Réponds en une
 ligne : combien sont installées, et les ambiances qui manquent s'il en manque (il les télécharge
-dans sa formation, module Bonus). Elles ne sont jamais versionnées ni livrées : seul le morceau
+dans sa formation, module Musique). Elles ne sont jamais versionnées ni livrées : seul le morceau
 choisi va dans le projet de la vidéo.
 
 ## Poser les sons

@@ -932,7 +932,7 @@ def cmd_musiques(a) -> None:
                   f"{res['ecrits']} copiées, {res['identiques']} déjà là"
                   + (f", {res['retires']} anciennes retirées" if res["retires"] else "") + ".")
             if res["absentes"]:
-                print(f"  il manque : {', '.join(res['absentes'])}. Télécharge-les dans la formation (module Bonus), puis "
+                print(f"  il manque : {', '.join(res['absentes'])}. Télécharge-les dans la formation (module Musique), puis "
                       "redis-moi de les installer.")
             print("  à chaque vidéo, `musiques choisir` propose les meilleures pour son but et son support.")
             return
@@ -942,7 +942,7 @@ def cmd_musiques(a) -> None:
                 sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>).")
             if not banque.etat(r)["installe"]:
                 sys.exit("ERREUR : les musiques de lancement ne sont pas installées : `musiques installer` depuis la "
-                         "racine (le client télécharge les cinq ambiances dans sa formation, module Bonus).")
+                         "racine (le client télécharge les cinq ambiances dans sa formation, module Musique).")
             liste_f = projet / "work" / "musiques.json"
         if a.action == "choisir":
             meta = meta_de(projet) or {}
@@ -1007,7 +1007,7 @@ def cmd_musiques(a) -> None:
         e = banque.etat(r)
         if not e["installe"]:
             print("• musiques de lancement : pas installées. Le client télécharge les cinq ambiances dans sa formation "
-                  "(module Bonus), puis `musiques installer` les range depuis son dossier Téléchargements.")
+                  "(module Musique), puis `musiques installer` les range depuis son dossier Téléchargements.")
             return
         detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in e["ambiances"].items())
         print(f"• musiques de lancement {e['version'] or ''} : {e['total']} installées ({detail})"
