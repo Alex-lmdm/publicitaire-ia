@@ -112,7 +112,8 @@ dossier **sauf** ce qui appartient au client, qu'une nouvelle version ne contien
 `marque.json`, `studio.config.json`, les dossiers `marque/`, `videos/` et « Accueil … » (la vignette
 de l'app HyperFrames et son historique), et le Pack SFX (`assets/sfx/pack/`, `assets/sfx/catalog.json`,
 `assets/sfx/sons-par-situation.md`, `assets/sfx/.pack-sfx-manifest.json`) et les musiques de lancement
-(`assets/musiques/`). Puis refais les étapes 2,
+(`assets/musiques/`). Si le client a déjà son propre `.claude/settings.json`, fusionne-le avec le
+nouveau : ses réglages restent, ceux de la nouvelle version s'ajoutent. Puis refais les étapes 2,
 3 et 5.
 
 ## Problèmes courants
