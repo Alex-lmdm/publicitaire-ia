@@ -103,6 +103,14 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
   (toutes ses images identiques).
 - Un panneau plein écran qui doit couvrir la scène 3D lui donne un `z-index` plus haut que
   `k-scene3d`, ou donne `z-index` à `k-scene3d` pour qu'elle reste devant.
+- Une vraie vidéo à la racine d'`index.html` (le Reel qui joue dans le téléphone, un résultat
+  posé sur l'interface) : son cadre prend `z-index: 2` et passe devant toutes les scènes, qui
+  restent à 1 chacune dans leur propre empilement (règle du gabarit). Les `z-index` d'une scène
+  ne comptent que chez elle : son voile à 55 ne couvre jamais la vidéo. Un texte qui doit passer
+  DEVANT la vidéo vit dans une scène dont l'hôte porte `style="z-index:3"` (et un fond transparent
+  si la vidéo doit rester visible). Un projet créé avant la version 0.6.3 garde l'ancienne règle,
+  qui ne s'appliquait plus une fois la scène montée : recopie celle du gabarit
+  (`templates/projet/index.html.tpl`) dans son `index.html`.
 - Un disque ou un panneau qu'on agrandit d'un facteur 20 prend une couleur unie, jamais la grille
   (elle grossirait avec lui).
 - Raccord avec un plein écran de couleur (le nom de l'offre qui devient une fenêtre) : la fenêtre

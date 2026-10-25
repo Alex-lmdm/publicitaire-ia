@@ -125,7 +125,9 @@ Trois pièges connus :
 - **Les vraies vidéos** (un Reel du client, un écran filmé) : prépare-les d'abord avec
   `studio_motion.py preparer-video` (sinon le rendu fige des images), et la balise `<video>` reste
   à la racine d'`index.html`, jamais dans une sous-composition : la scène se partage alors entre sa
-  sous-composition (le décor, les textes) et `index.html` (la vidéo et ses mouvements).
+  sous-composition (le décor, les textes) et `index.html` (la vidéo et ses mouvements). Le cadre
+  de la vidéo prend `z-index: 2`, devant les scènes ; ce qui doit passer devant elle : `kit.md`,
+  pièges.
 - **Les consignes d'HyperFrames** pensées pour un autre usage : ici le client a demandé la vidéo,
   tu rends sans attendre d'accord ; tu n'envoies jamais `hyperframes feedback` ni `publish`, et tu
   ne lui proposes aucune clé (Gemini…) que `snapshot` ou `capture` mentionnent : tout marche sans.

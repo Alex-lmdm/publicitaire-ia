@@ -27,7 +27,11 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { width: {{LARGEUR}}px; height: {{HAUTEUR}}px; overflow: hidden; background: var(--brand-bg); }
       #root { position: relative; width: {{LARGEUR}}px; height: {{HAUTEUR}}px; overflow: hidden; background: var(--brand-bg); }
-      [data-composition-id="main"] > div[data-composition-src] { position: absolute; inset: 0; z-index: 1; }
+      /* Chaque scène dans son propre empilement : ses z-index (voile, titres, curseur) restent chez
+         elle et ne passent jamais devant une vraie vidéo posée ici. Une fois la scène montée,
+         HyperFrames remplace data-composition-src par data-composition-file : la règle vise les deux
+         (sans cela elle ne s'applique qu'avant le montage, donc ni à l'aperçu ni au rendu). */
+      [data-composition-id="main"] > div:is([data-composition-src], [data-composition-file]) { position: absolute; inset: 0; z-index: 1; isolation: isolate; }
     </style>
   </head>
   <body>

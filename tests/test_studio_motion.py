@@ -445,6 +445,11 @@ class Kit(unittest.TestCase):
         gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")
         for f in ("kit/kit.css", "kit/icones.js", "kit/ajouts.js", "kit/kit.js", "assets/fonts/interfaces.css"):
             self.assertIn(f, gabarit)
+        # Chaque scène isolée, avant ET après montage (HyperFrames remplace data-composition-src par
+        # data-composition-file) : sinon ses z-index passent devant une vraie vidéo de la racine.
+        regle = next(l for l in gabarit.splitlines() if 'div:is([data-composition-src]' in l)
+        self.assertIn("[data-composition-file]", regle)
+        self.assertIn("isolation: isolate", regle)
         for css in kit.glob("*.css"):   # le rendu refuse une feuille qui remonte d'un dossier
             self.assertNotIn("../", css.read_text(encoding="utf-8"), css.name)
 
