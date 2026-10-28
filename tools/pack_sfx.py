@@ -169,7 +169,11 @@ def chercher(racine: Path, mots: list[str], limite: int = 15) -> list[dict]:
 
 def ligne(s: dict) -> str:
     """Une ligne lisible par l'agent : le chemin vu d'un projet de vidéo et les réglages du son."""
-    prises = f", {len(s['segments'])} prises (trim)" if s.get("segments") else ""
+    segments = s.get("segments") or []
+    # Un son à plusieurs prises se pose avec le trim d'une seule (sinon `sons` le refuse) : on les montre.
+    prises = (f", {len(segments)} prises, une seule à poser par son trim : "
+              + ", ".join(f"[{t0}, {t1}]" for t0, t1 in segments[:4]) + ("…" if len(segments) > 4 else "")
+              if len(segments) > 1 else "")
     return (f"{s['id']} : ../../../assets/sfx/{s['file']} · {s.get('role')} · gain {s.get('gain_db')} dB · "
             f"impact {s.get('hit')} s ({s.get('align')}) · {s.get('duration')} s{prises} · {s.get('usage', '')}")
 

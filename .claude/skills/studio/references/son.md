@@ -47,8 +47,10 @@ Ensuite, pour chaque geste, cherche d'abord dans `assets/sfx/sons-par-situation.
 `python3 tools/studio_motion.py pack-sfx chercher <mots>` (« coche », « argent », « whoosh »…) : il
 donne le chemin à mettre dans `sons.json` (vu du projet), le gain calibré, l'instant d'impact et
 les prises. Un identifiant `:N` de la table désigne la N-ième prise : son `trim` est dans les
-`segments` du catalogue. Les identifiants `starter-*` sont les sons de démarrage du dossier,
-calibrés de la même façon. Le pack n'est jamais copié dans le dépôt ni dans une livraison : seuls
+`segments` du catalogue. **Un son à plusieurs prises se pose toujours avec le `trim` d'une seule** :
+sans lui, toutes ses prises jouent à la suite sous les scènes suivantes (16 traits de feutre sur 11 s
+entendus « en fond partout »), et `sons` refuse de le poser. Les identifiants `starter-*` sont les
+sons de démarrage du dossier, calibrés de la même façon. Le pack n'est jamais copié dans le dépôt ni dans une livraison : seuls
 les sons posés vont dans le projet de la vidéo (`assets/sons/`, fait par `sons`).
 
 ## Les musiques de lancement (offertes avec la formation)
@@ -209,7 +211,10 @@ python3 ../../../tools/studio_motion.py mastering exports/reel.mp4 exports/reel-
 ```
 
 Cible : **-16 LUFS ±1, crêtes sous -1 dBTP**, le même niveau que ses Reels habituels. Le fichier
-livré est la version masterisée.
+livré est la version masterisée. Sur des clics très secs, l'encodage fait varier les crêtes d'un
+essai à l'autre : `mastering` fait jusqu'à huit essais et garde le meilleur. S'il répond encore ❌,
+lis la mesure : une crête trop haute se corrige en baissant les bruitages les plus secs, pas en
+relançant.
 
 **Bruitages seuls, sans musique ni voix** : -16 LUFS les fait sonner maigres et trop forts, chaque
 clic monté de 12 dB. Vise **-20 LUFS** : `mastering … --cible -20` puis `son … --cible -20`. Mieux :

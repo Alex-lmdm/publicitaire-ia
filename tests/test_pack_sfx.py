@@ -94,6 +94,14 @@ class Installation(unittest.TestCase):
             self.assertIn("../../../assets/sfx/pack/money/money-cash-register.mp3",
                           pack_sfx.ligne(pack_sfx.chercher(racine, ["caisse"])[0]))
 
+    def test_ligne_montre_les_prises(self):
+        son = {"id": "paper-marker-stroke", "file": "pack/paper/paper-marker-stroke.mp3", "duration": 11.6,
+               "segments": [[0.0, 0.37], [0.61, 0.94], [1.13, 2.34], [2.5, 2.9], [3.1, 3.5]]}
+        ligne = pack_sfx.ligne(son)
+        self.assertIn("5 prises, une seule à poser par son trim : [0.0, 0.37], [0.61, 0.94]", ligne)
+        self.assertIn("…", ligne)
+        self.assertNotIn("prises", pack_sfx.ligne(dict(son, segments=None)))
+
     def test_archive_incomplete(self):
         incomplete = {k: v for k, v in ARCHIVE.items() if "money" not in k}
         with tempfile.TemporaryDirectory() as d:

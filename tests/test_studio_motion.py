@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import shutil
 import sys
 import tempfile
@@ -484,6 +485,52 @@ class Son(unittest.TestCase):
 
     def test_chaine_mastering(self):
         self.assertIn("volume=12.50dB", sm.chaine_mastering(12.5))
+
+    def test_plafond_descend_apres_un_debord(self):
+        # L'AAC a sorti +0,82 dBTP avec un plafond à -3,39 dBFS : le plafond suivant descend de 2,22 dB
+        plafond = sm.plafond_suivant(10 ** (-3.39 / 20), 0.82)
+        self.assertAlmostEqual(20 * math.log10(plafond), -3.39 - 2.22, places=2)
+
+    def test_plafond_remonte_avec_de_la_marge(self):
+        # Le cas du 28/10/2026 : plafond trop bas après des débords passagers, mixage écrasé à -7,1 dBTP
+        # (5,7 dB de marge : il remonte de la moitié, pour ne pas osciller)
+        self.assertAlmostEqual(20 * math.log10(sm.plafond_suivant(0.2, -7.1)), 20 * math.log10(0.2) + 2.85, places=2)
+
+    def test_plafond_borne(self):
+        self.assertEqual(sm.plafond_suivant(0.7, 30.0), 0.1)
+        self.assertEqual(sm.plafond_suivant(0.7, -40.0), 0.8)
+
+    def test_meilleur_essai(self):
+        # Le cas du 28/10/2026 : un essai juste, puis un essai qui déborde, puis un mixage écrasé
+        bon = {"input_i": "-16.4", "input_tp": "-2.3"}
+        deborde = {"input_i": "-16.1", "input_tp": "0.8"}
+        ecrase = {"input_i": "-20.5", "input_tp": "-7.1"}
+        self.assertEqual(min([deborde, ecrase, bon], key=sm.rang_mastering), bon)
+        self.assertLess(sm.rang_mastering(ecrase), sm.rang_mastering(deborde))
+
+
+class PrisesOubliees(unittest.TestCase):
+    SFX = Path(tempfile.gettempdir()) / "studio" / "assets" / "sfx"
+    CATALOGUE = [{"id": "paper-marker-stroke", "file": "pack/paper/paper-marker-stroke.mp3", "duration": 11.625,
+                  "segments": [[0.0, 0.37], [0.61, 0.94], [1.13, 2.34], [2.5, 2.9]]},
+                 {"id": "click-mouse-click", "file": "pack/clicks/click-mouse-click.mp3", "duration": 0.15, "segments": None}]
+
+    def test_son_a_prises_sans_trim(self):
+        fautifs = sm.prises_oubliees([{"src": self.SFX / "pack/paper/paper-marker-stroke.mp3", "start": 1.3}],
+                                     self.CATALOGUE, self.SFX)
+        self.assertEqual(len(fautifs), 1)
+        for attendu in ("paper-marker-stroke", "1.30 s", "4 prises", "[0.0, 0.37]", "catalog.json"):
+            self.assertIn(attendu, fautifs[0])
+
+    def test_prise_choisie_son_simple_ou_hors_pack(self):
+        evenements = [{"src": self.SFX / "pack/paper/paper-marker-stroke.mp3", "start": 1.3, "trim": (0.0, 0.37)},
+                      {"src": self.SFX / "pack/clicks/click-mouse-click.mp3", "start": 2.0},
+                      {"src": Path(tempfile.gettempdir()) / "projet" / "assets" / "sons" / "mon-son.mp3", "start": 3.0}]
+        self.assertEqual(sm.prises_oubliees(evenements, self.CATALOGUE, self.SFX), [])
+
+    def test_sans_pack_installe(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(sm.catalogue_sfx(Path(d)), [])
 
 
 class Export(unittest.TestCase):

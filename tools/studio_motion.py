@@ -1185,12 +1185,38 @@ def cmd_heygen(a) -> None:
         sys.exit(f"ERREUR : {e}")
 
 
+def prises_oubliees(evenements, catalogue: list[dict], sfx_dir: Path) -> list[str]:
+    """Les sons du Pack SFX à plusieurs prises posés sans `trim` : toutes leurs prises joueraient à
+    la suite, sous les scènes suivantes (16 traits de feutre sur 11 s au lieu d'un seul, entendus
+    « en fond partout » dans une pub du 28/10/2026). Un message par son fautif, avec ses prises."""
+    par_fichier = {(sfx_dir / s["file"]).resolve(): s for s in catalogue if s.get("file")}
+    fautifs = []
+    for e in evenements:
+        s = par_fichier.get(Path(e["src"]).resolve())
+        prises = (s or {}).get("segments") or []
+        if len(prises) > 1 and not e.get("trim"):
+            exemples = " ; ".join(f"prise {n} : [{t0}, {t1}]" for n, (t0, t1) in enumerate(prises[:3], 1))
+            fautifs.append(f"{s['id']} (posé à {float(e.get('start') or 0):.2f} s) contient {len(prises)} prises à la "
+                           f"suite ({float(s.get('duration') or 0):.1f} s) : choisis-en une avec \"trim\" ({exemples}"
+                           + (" ; les autres dans assets/sfx/catalog.json" if len(prises) > 3 else "") + ")")
+    return fautifs
+
+
+def catalogue_sfx(sfx_dir: Path) -> list[dict]:
+    """Les fiches du Pack SFX installé (assets/sfx/catalog.json), ou rien s'il n'est pas là."""
+    try:
+        return json.loads((sfx_dir / "catalog.json").read_text(encoding="utf-8")).get("sounds") or []
+    except (OSError, ValueError):
+        return []
+
+
 def cmd_sons(a) -> None:
     """Pose la voix, la musique et les bruitages décrits dans un fichier JSON (chemins relatifs au
     projet) : {"voix": "assets/audio/voix.wav", "voix_debut": 0.5, "musique": "assets/audio/musique.wav",
     "musique_db": -17, "evenements": [{"src": …, "start": s, "vol": dB, "trim": [t0, t1],
     "fondu_entree": s, "fondu_sortie": s, "af": filtre}]}. Avec une voix, la musique passe par
-    défaut à -26,5 dB (sous la voix) et le mixage entier est amené à -16 LUFS."""
+    défaut à -26,5 dB (sous la voix) et le mixage entier est amené à -16 LUFS. Un son du Pack SFX à
+    plusieurs prises doit porter le `trim` de l'une d'elles : sinon la pose est refusée."""
     import sons
     projet = Path(a.projet).resolve()
     liste = json.loads(Path(a.fichier).read_text(encoding="utf-8"))
@@ -1205,6 +1231,11 @@ def cmd_sons(a) -> None:
         if e.get("trim"):
             e["trim"] = tuple(e["trim"])
         evenements.append(e)
+    fautifs = prises_oubliees(evenements, catalogue_sfx(RACINE / "assets" / "sfx"), RACINE / "assets" / "sfx")
+    if fautifs:
+        sys.exit("ERREUR : rien n'est posé. " + ("Un son contient" if len(fautifs) == 1 else f"{len(fautifs)} sons contiennent")
+                 + " plusieurs prises sans \"trim\" : elles joueraient toutes à la suite.\n"
+                 + "\n".join(f"- {f}" for f in fautifs))
     musique = chemin(liste["musique"]) if liste.get("musique") else None
     voix_off = ({"src": chemin(liste["voix"]), "start": float(liste.get("voix_debut") or 0),
                  "vol": float(liste.get("voix_db") or 0)} if liste.get("voix") else None)
@@ -2368,6 +2399,24 @@ def chaine_mastering(gain_db: float, plafond: float = 0.7) -> str:
             f"alimiter=limit={plafond:.4f}:attack=0.1:release=40:level=false")
 
 
+def plafond_suivant(plafond: float, crete: float) -> float:
+    """Le plafond du limiteur pour l'essai suivant : décalé de ce qui sépare la crête vraie mesurée
+    de -1,4 dBTP, dans les deux sens. Sur des clics très secs, l'AAC déborde au hasard d'un essai à
+    l'autre (-1,1 puis +0,8 dBTP pour presque le même réglage, mesuré le 28/10/2026) : un plafond qui
+    ne faisait que descendre après chaque débordement finissait par écraser le mixage (livré à
+    -20,5 LUFS au lieu de -16). Il remonte donc dès qu'un essai montre de la marge, de la moitié
+    seulement : remonter d'un coup ferait osciller les essais d'un débordement à l'autre."""
+    ecart_db = PLAFOND_TP - 0.4 - crete
+    if ecart_db > 0:
+        ecart_db /= 2
+    return min(0.8, max(0.1, plafond * 10 ** (ecart_db / 20)))
+
+
+def rang_mastering(mesure: dict, cible: float = CIBLE_LUFS) -> tuple[float, float]:
+    """Pour garder le meilleur essai : d'abord la crête sous -1 dBTP, puis la sonie la plus proche."""
+    return (max(0.0, float(mesure["input_tp"]) - PLAFOND_TP), abs(float(mesure["input_i"]) - cible))
+
+
 def cmd_mastering(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -2376,24 +2425,32 @@ def cmd_mastering(a) -> None:
     if mesure is None or math.isinf(float(mesure["input_i"])):
         sys.exit("ERREUR : pas de son à masteriser (vidéo muette).")
     gain = a.cible - float(mesure["input_i"])
-    apres, plafond = None, 0.7
-    for _ in range(6):  # chaque passe corrige l'écart de la précédente ; deux suffisent d'habitude
-        r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "copy", "-af", chaine_mastering(gain, plafond),
-                    "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", a.sortie])
-        if r.returncode != 0:
-            sys.exit(f"ERREUR : mastering impossible : {r.stderr[-400:]}")
-        apres = mesure_sonore(ffmpeg, Path(a.sortie))
-        if apres is None:
-            break
-        ecart, crete = a.cible - float(apres["input_i"]), float(apres["input_tp"])
-        if crete > PLAFOND_TP - 0.2:
-            # L'AAC fait déborder les attaques très vives (clics) : on abaisse le plafond d'autant.
-            plafond *= 10 ** ((PLAFOND_TP - 0.4 - crete) / 20)
-            gain += max(0.0, ecart)
-            continue
-        if abs(ecart) <= 0.5:
-            break
-        gain += ecart
+    apres, rang, plafond = None, None, 0.7
+    sortie = Path(a.sortie)
+    essai = sortie.with_name(f".{sortie.stem}-essai{sortie.suffix}")
+    try:
+        # Chaque essai corrige l'écart du précédent ; deux suffisent d'habitude, les clics très secs en
+        # demandent plus. Le fichier livré est le meilleur essai, jamais simplement le dernier.
+        for _ in range(8):
+            r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.entree, "-c:v", "copy", "-af", chaine_mastering(gain, plafond),
+                        "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(essai)])
+            if r.returncode != 0:
+                sys.exit(f"ERREUR : mastering impossible : {r.stderr[-400:]}")
+            mesure_essai = mesure_sonore(ffmpeg, essai)
+            if mesure_essai is None:
+                if apres is None:
+                    shutil.copy2(essai, sortie)
+                break
+            if rang is None or rang_mastering(mesure_essai, a.cible) < rang:
+                apres, rang = mesure_essai, rang_mastering(mesure_essai, a.cible)
+                shutil.copy2(essai, sortie)
+            ecart, crete = a.cible - float(mesure_essai["input_i"]), float(mesure_essai["input_tp"])
+            if crete <= PLAFOND_TP - 0.2 and abs(ecart) <= 0.5:
+                break
+            plafond = plafond_suivant(plafond, crete)
+            gain += ecart
+    finally:
+        essai.unlink(missing_ok=True)
     if apres:
         print(f"• {a.sortie} : {float(apres['input_i']):.1f} LUFS, crête {float(apres['input_tp']):.1f} dBTP")
         pb = verdict_sonore(apres, a.cible)
