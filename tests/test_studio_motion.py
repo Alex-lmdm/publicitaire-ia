@@ -654,6 +654,28 @@ class SansMusique(unittest.TestCase):
         self.assertEqual((n, sortie), (1, ""))
 
 
+class Voix(unittest.TestCase):
+    def test_transcription_toujours_par_parakeet_avec_la_langue(self):
+        """`hyperframes transcribe` seul prend un modèle anglais : sur une voix française il invente un texte
+        anglais, sous Windows il n'a pas de moteur, sur Mac il installe whisper-cpp sans demander."""
+        docs = [p for p in (RACINE / ".claude" / "skills" / "studio").rglob("*.md") if "styles" not in p.parts]
+        docs += [RACINE / "templates" / "AGENT.md.tpl", RACINE / "INSTALL.md"]
+        commandes = []
+        for doc in docs:
+            texte = " ".join(doc.read_text(encoding="utf-8").split())
+            for i in [m.start() for m in re.finditer(r"hyperframes transcribe ", texte)]:
+                commandes.append((doc.name, texte[i:texte.index("`", i)].strip()))
+        self.assertGreaterEqual(len(commandes), 2)
+        for doc, commande in commandes:
+            self.assertIn("--engine parakeet --language ", commande, f"{doc} : {commande}")
+        voix = (RACINE / ".claude" / "skills" / "studio" / "references" / "voix.md").read_text(encoding="utf-8")
+        self.assertIn("npx hyperframes models install parakeet", voix)
+        self.assertIn("675 Mo", voix)
+        self.assertIn("areverse", voix)
+        self.assertIn("loudnorm=I=-24:TP=-3", voix)
+        self.assertIn("-ar 48000", voix)
+
+
 def racine_de_test(base: Path) -> Path:
     """Un dossier du produit, réduit à ce que la création d'une vidéo lit : produit.json, les
     gabarits et le kit du dépôt, un style de marque."""

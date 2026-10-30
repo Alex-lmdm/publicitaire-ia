@@ -48,10 +48,9 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    langue « French » ne montre rien sans compte payant : inutile, les voix parlent la langue du
    texte.
 3. Il dit que le fichier est dans ses Téléchargements (ou il le glisse ici) : cherche le fichier
-   audio le plus récent (wav, mp3, m4a), range-le dans `assets/audio/voix-brute.*`, coupe les blancs
-   de plus de 0,4 s au début et à la fin, mets-le au niveau d'une voix de Reel
-   (`loudnorm=I=-24:TP=-3`), exporte `assets/audio/voix.wav`, puis le temps de chaque mot avec
-   `npx hyperframes transcribe assets/audio/voix.wav`. Fais écouter avant de caler la vidéo.
+   audio le plus récent (wav, mp3, m4a), range-le dans `assets/audio/voix-brute.*`, puis prépare
+   `assets/audio/voix.wav` et le temps de chaque mot (E, plus bas). Fais écouter avant de caler la
+   vidéo.
 4. Une phrase qui sonne mal : corrige-la dans le texte, il ne régénère que ce bloc sur le site.
 
 ### B. Sa voix, enregistrée sur son téléphone
@@ -63,11 +62,12 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    WhatsApp) : il le laisse dans Téléchargements et te le dit, ou il le glisse dans la
    conversation. Cherche le fichier audio le plus récent de Téléchargements (m4a, mp3, wav, aac)
    et range-le dans `assets/audio/voix-brute.*`.
-3. Transcris-la (`npx hyperframes transcribe assets/audio/voix-brute.m4a`) : le texte daté montre
-   les reprises. Garde la dernière prise de chaque phrase, coupe les blancs de plus de 0,4 s avec
-   ffmpeg (`atrim` + `concat`), mets-la au niveau d'une voix de Reel (`loudnorm=I=-24:TP=-3`), puis
-   exporte `assets/audio/voix.wav`. Fais écouter le résultat avant de caler la vidéo dessus.
-4. Le temps de chaque mot : `npx hyperframes transcribe assets/audio/voix.wav`.
+3. Transcris-la telle quelle, comme en E (`npx hyperframes transcribe assets/audio/voix-brute.m4a
+   --engine parakeet --language fr`) : le texte daté montre les reprises. Garde la dernière prise de
+   chaque phrase et raccourcis à 0,4 s les blancs plus longs entre les phrases, avec ffmpeg (`atrim`
+   + `concat`), dans `assets/audio/voix-montee.wav`.
+4. Prépare `assets/audio/voix.wav` depuis `voix-montee.wav` et le temps de chaque mot (E). Fais
+   écouter le résultat avant de caler la vidéo dessus.
 
 ### C. Une voix de synthèse HeyGen (payante, quelques centimes)
 
@@ -88,7 +88,8 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
 Elle demande deux paquets Python (pour Python 3.10 à 3.13) et un modèle d'environ 300 Mo,
 téléchargés une fois. Annonce-le, puis installe-les **à part**, dans le dossier (jamais dans le
 Python de son ordinateur), depuis la racine. Le Python du Mac (3.9) ne convient pas : avec son
-accord, `brew install python@3.12` d'abord.
+accord, `brew install python@3.12` d'abord (sans Homebrew : son installeur `Homebrew.pkg`, comme à
+l'étape 1 d'INSTALL.md, jamais son script `install.sh`).
 
 ```bash
 python3.12 -m venv .venv-voix                              # Windows : py -3.12 -m venv .venv-voix
@@ -98,25 +99,64 @@ python3.12 -m venv .venv-voix                              # Windows : py -3.12 
 Puis, depuis le projet, avec ce Python-là (variable `HYPERFRAMES_PYTHON`) :
 
 ```bash
-HYPERFRAMES_PYTHON=../../../.venv-voix/bin/python npx hyperframes tts "<texte>" --voice ff_siwis --lang fr-fr -o assets/audio/voix.wav
+HYPERFRAMES_PYTHON=../../../.venv-voix/bin/python npx hyperframes tts "<texte>" --voice ff_siwis --lang fr-fr -o assets/audio/voix-brute.wav
 ```
 
 Sous Windows (PowerShell) : `$env:HYPERFRAMES_PYTHON="..\..\..\.venv-voix\Scripts\python.exe"`, puis
-la même commande `npx hyperframes tts`. Si l'installation échoue, n'insiste pas : propose sa voix au
-téléphone.
+la même commande avec `npx.cmd hyperframes tts`. Si l'installation échoue, n'insiste pas : propose sa
+voix au téléphone.
 
 `ff_siwis` est la voix française ; `--speed 1.05` si elle traîne. Fais écouter 10 secondes avant
-de produire toute la vidéo : sa qualité ne plaît pas à tout le monde. Puis `transcribe` comme en B.
+de produire toute la vidéo : sa qualité ne plaît pas à tout le monde. Puis `assets/audio/voix.wav`
+et le temps de chaque mot, comme en E.
 
 Une autre voix payante (ElevenLabs…) seulement s'il l'a déjà et l'accepte, coût annoncé avant.
 Ne clone jamais une voix sans son accord explicite.
 
+### E. Le fichier de la voix et le temps de chaque mot (A, B et D)
+
+Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu de `npx`.
+
+1. **La voix au niveau d'une voix de Reel**, les blancs de plus de 0,4 s du début et de la fin
+   ramenés à 0,4 s, en 48 kHz (sans `-ar 48000`, `loudnorm` sort du 192 kHz). L'entrée est
+   `voix-brute.*` (A, D) ou `voix-montee.wav` (B) :
+
+   ```bash
+   ffmpeg -v error -y -i assets/audio/voix-brute.wav -af "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.4,areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.4,areverse,loudnorm=I=-24:TP=-3:LRA=11" -ar 48000 -c:a pcm_s16le assets/audio/voix.wav
+   ```
+
+2. **Le temps de chaque mot**, par Parakeet, le modèle de reconnaissance vocale de HyperFrames
+   (français compris), sur son ordinateur. La langue de la voix se donne toujours : `fr`, ou `en`,
+   `es`… si la voix n'est pas en français.
+
+   ```bash
+   npx hyperframes transcribe assets/audio/voix.wav --engine parakeet --language fr
+   ```
+
+   Il écrit `assets/audio/transcript.json`, à côté de la voix : chaque mot, son début et sa fin en
+   secondes (quelques secondes de calcul). Le texte juste reste `work/voix.txt` : les noms propres
+   sortent souvent déformés (« réel » pour Reel), seuls les temps comptent.
+
+   À la première voix off, il répond « Parakeet is not installed » : le modèle se télécharge une
+   fois sur l'ordinateur. Annonce-le d'abord (« Pour caler la vidéo sur ta voix, je télécharge une
+   fois le modèle qui reconnaît les mots : 675 Mo, environ une minute. »), puis :
+
+   ```bash
+   npx hyperframes models install parakeet
+   ```
+
+   et relance la transcription. **Jamais `transcribe` sans `--engine parakeet --language …`** : le
+   modèle par défaut est anglais et invente un texte sur une voix française, et sur Mac il installe
+   un autre outil (whisper-cpp) sans demander. Parakeet refuse de s'installer (Windows sur
+   processeur ARM) : cale la vidéo sur les pauses de la voix (`ffmpeg -i assets/audio/voix.wav -af
+   silencedetect=n=-40dB:d=0.3 -f null -`, une phrase entre deux pauses) et sur `work/voix.txt`.
+
 ## 3. Caler la vidéo sur la voix
 
-- Les animations se calent sur les mots : un élément arrive **avec** le mot qui le nomme, pas
-  après. Chaque scène commence avec la phrase qui la porte ; allonge ou raccourcis la scène
-  (`data-duration` dans `index.html`, en gardant la grille de 0,5 s autant que possible) plutôt que
-  de presser la voix.
+- Les animations se calent sur les mots (`assets/audio/transcript.json`, ou `work/voix-mots.json`
+  pour une voix HeyGen) : un élément arrive **avec** le mot qui le nomme, pas après. Chaque scène
+  commence avec la phrase qui la porte ; allonge ou raccourcis la scène (`data-duration` dans
+  `index.html`, en gardant la grille de 0,5 s autant que possible) plutôt que de presser la voix.
 - Pose la voix avec les sons, dans `work/sons.json` : `"voix": "assets/audio/voix.wav"`,
   `"voix_debut": 0.3` (son départ dans la vidéo). La musique passe d'elle-même sous la voix
   (`musique_db` -26,5 par défaut) et le mélange entier est amené au niveau des Reels. Avec une voix,
