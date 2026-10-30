@@ -1,0 +1,22 @@
+{
+ "typography": [
+  {
+   "role": "display",
+   "fontFamily": "OutfitSemiBold33102301"
+  },
+  {
+   "role": "heading",
+   "fontFamily": "OutfitSemiBold33102301"
+  },
+  {
+   "role": "body",
+   "fontFamily": "OutfitRegular33103233"
+  }
+ ],
+ "buttons": [
+  {
+   "label": "Cliquez ici",
+   "background": "#00A0FF"
+  }
+ ]
+}

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import colorsys
 import datetime
+import html
 import json
 import re
 import shutil
@@ -155,12 +156,19 @@ def regrouper(scores: dict[str, float], rayon: float = 48) -> list[tuple[str, fl
     return sorted(((c, round(n, 3)) for c, n in groupes), key=lambda x: -x[1])
 
 
+# Les variantes d'une couleur de marque (survol, nuance, fond, texte posé dessus) : jamais l'accent.
+VARIANTES = (r"(hover|active|focus|pressed|disabled|light|dark|muted|subtle|soft|pale|bg|background|surface|"
+             r"border|ring|shadow|text|fg|foreground|contrast|on-)")
+
+
 def choisir_couleurs(indices: dict) -> dict:
     """Décide fond, texte, accent et secondaire à partir des indices d'une page.
 
     indices : {"sections": [(type, fond)], "couleurs": [hex par fréquence], "titres": [hex],
-               "boutons": [hex], "theme": [hex], "masque": hex | None, "variables": {nom: hex},
-               "frequences_css": {hex: n}}
+               "boutons": [hex], "actions": [hex des boutons d'appel à l'action], "theme": [hex],
+               "stats": [{"hex", "interactiveBg", "textCount"}] (capture), "masque": hex | None,
+               "variables": {nom: hex}, "frequences_css": {hex: n}, "actions_css": {hex: n},
+               "liens_css": {hex: n}, "logo": hex de la couleur vive du logo | None}
     Rend {"fond", "texte", "accent", "secondaire", "raisons": [...]}."""
     raisons = []
     sections = [(t, hex_norme(c)) for t, c in indices.get("sections") or [] if hex_norme(c)]
@@ -196,18 +204,37 @@ def choisir_couleurs(indices: dict) -> dict:
         if c and chromatique(c):
             scores[c] = scores.get(c, 0.0) + points
 
+    def noter_parts(valeurs: dict, points: float):
+        """Des comptes par couleur, ramenés à `points` pour la plus fréquente des couleurs vives."""
+        vives = {c: n for c, n in ((hex_norme(k), v) for k, v in (valeurs or {}).items()) if c and n and chromatique(c)}
+        for c, n in vives.items():
+            noter(c, points * n / max(vives.values()))
+
+    # La couleur de la marque est d'abord celle de ses boutons d'action et de ses liens, puis de son
+    # logo ; les couleurs de décor (fonds de sections, pastilles, onglets) ne viennent qu'après : sur
+    # dupliq.me, deux onglets jaunes l'emportaient sur l'orange des boutons et du logo.
+    stats = indices.get("stats") or []
+    noter_parts({s.get("hex"): s.get("interactiveBg") or 0 for s in stats}, 6)     # fonds des boutons, liens
+    noter_parts({s.get("hex"): s.get("textCount") or 0 for s in stats}, 1.5)       # liens, mots soulignés
+    for c in indices.get("actions") or []:                                        # boutons des appels à l'action
+        noter(c, 4)
+    noter_parts(indices.get("actions_css") or {}, 3)                               # règles .btn, button, .cta
+    noter_parts(indices.get("liens_css") or {}, 1)                                 # règles a { color }
     noter(indices.get("masque"), 5)                     # couleur de l'icône d'onglet (mask-icon)
     for nom, c in (indices.get("variables") or {}).items():
         n = nom.lower()
-        if re.search(r"(primary|brand|accent|main|marque)", n):
-            if not re.search(r"\d", n):
-                noter(c, 4)
-            elif re.search(r"-(400|500|600)$", n):
-                noter(c, 2)
+        if not re.search(r"(primary|brand|accent|main|marque)", n) or re.search(VARIANTES, n):
+            continue
+        if re.search(r"(secondary|secondaire|tertiary)", n):
+            noter(c, 1)
+        elif not re.search(r"\d", n):
+            noter(c, 4)
+        elif re.search(r"-(400|500|600)$", n):
+            noter(c, 2)
     for t, c in sections:
-        noter(c, 3)
+        noter(c, 2)
     for c in indices.get("boutons") or []:
-        noter(c, 3)
+        noter(c, 1.5)
     for c in titres:
         noter(c, 1)
     for rang, c in enumerate(couleurs):
@@ -217,10 +244,17 @@ def choisir_couleurs(indices: dict) -> dict:
         plus = max(frequences.values())
         for c, n in frequences.items():
             noter(c, 0.8 * n / plus)
+    # Le logo vote pour la couleur de la page qui a sa teinte (l'orange #ff6333 du logo de Dupliq pour
+    # l'orange #ff5b00 de ses boutons) ; sans couleur proche, sa propre couleur entre en lice.
+    logo = hex_norme(indices.get("logo"))
+    if logo and chromatique(logo):
+        proches = [c for c in scores if ecart_teinte(c, logo) <= 20 and distance(c, logo) <= 120]
+        cible = max(proches, key=lambda c: scores[c]) if proches else logo
+        scores[cible] = scores.get(cible, 0.0) + 6
     classes = regrouper(scores)
     if classes:
         accent = classes[0][0]
-        raisons.append(f"accent {accent} : la couleur vive la plus utilisée par la marque")
+        raisons.append(f"accent {accent} : la couleur vive des boutons d'action, des liens et du logo")
     else:
         accent = texte
         raisons.append(f"accent {accent} : aucune couleur vive sur la page, marque en noir et blanc")
@@ -341,22 +375,30 @@ def lire_html(html: str, base: str) -> dict:
         nom = (a.get("name") or a.get("property") or "").lower()
         if nom in ("theme-color", "msapplication-tilecolor") and hex_norme(a.get("content")):
             theme.append(hex_norme(a.get("content")))
-    site = None
+    site = application = logo_alt = None
     for balise in re.findall(r"<meta\b[^>]*>", html, re.I):
         a = attributs(balise)
-        if (a.get("property") or "").lower() == "og:site_name" and a.get("content"):
+        if (a.get("property") or "").lower() == "og:site_name" and a.get("content") and not site:
             site = a["content"].strip()
+        if (a.get("name") or "").lower() in ("application-name", "apple-mobile-web-app-title") and a.get("content"):
+            application = application or a["content"].strip()
     for balise in re.findall(r"<img\b[^>]*>", html, re.I):
         a = attributs(balise)
         src = a.get("src") or ""
         trace = " ".join((src, a.get("alt", ""), a.get("class", ""), a.get("id", ""))).lower()
         if "logo" in trace and src and not any(t in trace for t in MARQUES_TIERCES) and not src.startswith("data:"):
             logos.append({"url": urllib.parse.urljoin(base, src), "type": "image", "taille": 0, "rang": 1})
+            # Son texte dit le nom de la marque quand l'image se déclare logo elle-même (alt, classe,
+            # id) : un dossier /logos/ range plutôt les logos des outils montrés par la page.
+            soi = " ".join((a.get("alt", ""), a.get("class", ""), a.get("id", ""))).lower()
+            if "logo" in soi and a.get("alt") and not logo_alt:
+                logo_alt = a["alt"]
     styles = "\n".join(re.findall(r"<style\b[^>]*>(.*?)</style>", html, re.I | re.S))
     titre = re.search(r"<title[^>]*>(.*?)</title>", html, re.I | re.S)
     logos.sort(key=lambda l: (l["rang"], -l["taille"]))
     return {"feuilles": feuilles[:MAX_FEUILLES], "styles": styles, "theme": theme, "masque": masque,
-            "logos": logos, "titre": re.sub(r"\s+", " ", titre.group(1)).strip() if titre else "", "site": site}
+            "logos": logos, "titre": re.sub(r"\s+", " ", titre.group(1)).strip() if titre else "", "site": site,
+            "application": application, "logo_alt": logo_alt}
 
 
 def _taille(sizes: str | None) -> int:
@@ -440,6 +482,34 @@ def frequences_couleurs(css: str) -> dict[str, int]:
     return compte
 
 
+REGLE_CSS = re.compile(r"([^{}@;]+)\{([^{}]*)\}")
+SELECTEUR_BOUTON = re.compile(r"(?:^|[\s,>+~(])(?:button\b|\[type=[\"']?submit|"
+                              r"\.[\w-]*(?:btn|button|bouton|cta)(?![a-z]))", re.I)
+SELECTEUR_LIEN = re.compile(r"(?:^|[\s,>+~(])a(?:$|[\s,:.\[>+~)])", re.I)
+COULEUR_CSS = re.compile(r"#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)")
+
+
+def couleurs_actions_css(css: str) -> tuple[dict[str, int], dict[str, int]]:
+    """({couleur: n} des fonds des boutons, {couleur: n} des liens) d'après les règles CSS : .btn,
+    .button, .cta, button, [type=submit] pour les boutons, a pour les liens."""
+    actions: dict[str, int] = {}
+    liens: dict[str, int] = {}
+    for selecteur, corps in REGLE_CSS.findall(css):
+        if SELECTEUR_BOUTON.search(selecteur):
+            for valeur in re.findall(r"background(?:-color)?\s*:\s*([^;}]+)", corps, re.I):
+                for brut in COULEUR_CSS.findall(valeur):
+                    c = hex_norme(brut)
+                    if c:
+                        actions[c] = actions.get(c, 0) + 1
+        if SELECTEUR_LIEN.search(selecteur):
+            for valeur in re.findall(r"(?<![-\w])color\s*:\s*([^;}]+)", corps, re.I):
+                for brut in COULEUR_CSS.findall(valeur):
+                    c = hex_norme(brut)
+                    if c:
+                        liens[c] = liens.get(c, 0) + 1
+    return actions, liens
+
+
 def familles_utilisees(css: str) -> list[str]:
     """Les familles nommées dans les déclarations font-family, de la plus fréquente à la moins."""
     compte: dict[str, int] = {}
@@ -459,16 +529,25 @@ def indices_capture(capture: Path) -> dict:
     typo = styles.get("typography") or []
     titres_famille = next((t.get("fontFamily") for t in typo if t.get("role") in ("display", "heading")), None)
     corps_famille = next((t.get("fontFamily") for t in typo if t.get("role") == "body"), None)
+    sections = [s for s in tokens.get("sections") or [] if isinstance(s, dict)]
+    appels = {_libelle(t) for s in sections for t in s.get("callsToAction") or [] if _libelle(t)}
+    boutons = [b for b in (styles.get("buttons") or []) + (tokens.get("ctas") or []) if isinstance(b, dict)]
     return {
-        "sections": [(s.get("type"), s.get("backgroundColor")) for s in tokens.get("sections") or []],
+        "sections": [(s.get("type"), s.get("backgroundColor")) for s in sections],
         "couleurs": tokens.get("colors") or [],
         "titres": [h.get("color") for h in tokens.get("headings") or [] if h.get("level") in (1, 2)],
-        "boutons": [b.get("background") for b in (styles.get("buttons") or []) + (tokens.get("ctas") or [])
-                    if isinstance(b, dict)],
+        "boutons": [b.get("background") for b in boutons if _libelle(b.get("label") or b.get("text")) not in appels],
+        "actions": [b.get("background") for b in boutons if _libelle(b.get("label") or b.get("text")) in appels],
+        "stats": [s for s in tokens.get("colorStats") or [] if isinstance(s, dict)],
         "polices": {"titres": titres_famille, "corps": corps_famille},
         "familles": [f.get("family") for f in tokens.get("fonts") or [] if f.get("family")],
         "titre": tokens.get("title") or "",
     }
+
+
+def _libelle(texte) -> str:
+    """Le texte d'un bouton, comparable d'une liste à l'autre (casse, espaces, emoji)."""
+    return re.sub(r"[^\w€%]+", " ", str(texte or "").lower()).strip()
 
 
 def _json(fichier: Path) -> dict:
@@ -641,6 +720,29 @@ def recuperer_logo(racine: Path, candidats: list[dict]) -> tuple[str, str] | Non
         origine = {"image": "image « logo » de la page", "icone": "icône du site", "masque": "icône d'onglet"}[c["type"]]
         return f"marque/logo{ext}", origine
     return None
+
+
+def couleur_logo(fichier: Path, ffmpeg: str | None = None) -> str | None:
+    """La couleur vive du logo : la plus employée d'un SVG (fill, stroke, stop-color), ou la plus présente
+    des pixels d'une image (3 % au moins, ffmpeg) ; None pour un logo en noir et blanc."""
+    if fichier.suffix.lower() == ".svg":
+        try:
+            texte = fichier.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return None
+        compte: dict[str, int] = {}
+        for brut in re.findall(r"(?:fill|stroke|stop-color)\s*[:=]\s*[\"']?\s*(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\))", texte):
+            c = hex_norme(brut)
+            if c and chromatique(c):
+                compte[c] = compte.get(c, 0) + 1
+        return max(compte, key=lambda c: compte[c]) if compte else None
+    if not ffmpeg:
+        return None
+    try:
+        palette = palette_pixels(pixels_image(ffmpeg, fichier))
+    except ErreurMarque:
+        return None
+    return next((c for c, part in palette if chromatique(c) and part >= 0.03), None)
 
 
 # ---------------------------------------------------------------------------
@@ -947,15 +1049,47 @@ def _copier_logo_monteur(racine: Path, dossier: Path, nom: str | None = None, ha
 # ---------------------------------------------------------------------------
 # Les quatre sources, de bout en bout
 # ---------------------------------------------------------------------------
+# Des extensions qui font partie du nom de la marque (Dupliq.me, Systeme.io), et des hébergeurs de pages
+# dont le sous-domaine est la marque du client (lmdm.systeme.io).
+EXTENSIONS_DE_MARQUE = {"io", "me", "ai", "app", "co", "so", "gg", "tv", "fm", "ly", "sh", "dev", "xyz", "studio",
+                        "club", "pro"}
+HEBERGEURS = {"systeme.io", "learnybox.com", "podia.com", "kajabi.com", "mykajabi.com", "teachable.com",
+              "thinkific.com", "webflow.io", "wixsite.com", "carrd.co", "framer.website", "framer.app", "notion.site",
+              "gumroad.com", "stan.store", "vercel.app", "netlify.app", "github.io", "myshopify.com", "beacons.ai"}
+
+
+def nom_de_domaine(url: str) -> str:
+    """« https://dupliq.me » -> « Dupliq.me » ; « www.lemondedumarketing.fr » -> « Lemondedumarketing » ;
+    « lmdm.systeme.io » -> « Lmdm » (la page est hébergée, la marque est le sous-domaine)."""
+    morceaux = [m for m in (urllib.parse.urlparse(url).hostname or "").lower().split(".") if m]
+    if len(morceaux) < 2:
+        return ".".join(morceaux)
+    n = 3 if len(morceaux) >= 3 and morceaux[-2] in ("co", "com", "org", "net", "gouv") and len(morceaux[-1]) == 2 else 2
+    domaine = ".".join(morceaux[-n:])
+    sous = [m for m in morceaux[:-n] if m != "www"]
+    if domaine in HEBERGEURS and sous:
+        return sous[-1][:1].upper() + sous[-1][1:]
+    nom = morceaux[-n][:1].upper() + morceaux[-n][1:]
+    return f"{nom}.{morceaux[-1]}" if n == 2 and morceaux[-1] in EXTENSIONS_DE_MARQUE else nom
+
+
+def _nom_de_marque(texte: str | None) -> str | None:
+    """Un nom de marque plausible tiré d'une balise (« Podia logo » -> « Podia ») ; None pour une phrase."""
+    t = re.sub(r"(?i)\b(logo(type)?|page d'accueil|accueil|homepage|home)\b", " ", html.unescape(texte or ""))
+    t = re.sub(r"\s+", " ", t).strip(" -|·:,.")
+    if not t or len(t) > 40 or len(t.split()) > 4 or _simple(t) in {_simple(m) for m in MARQUES_TIERCES}:
+        return None
+    return t
+
+
 def nom_du_site(infos: dict, url: str) -> str:
-    """og:site_name, sinon la partie du titre après « | » ou « - », sinon le domaine."""
-    if infos.get("site"):
-        return infos["site"]
-    morceaux = [m.strip() for m in re.split(r"\s[|\-–—·]\s", infos.get("titre") or "") if m.strip()]
-    if len(morceaux) > 1 and len(morceaux[-1]) <= 40:
-        return morceaux[-1]
-    hote = urllib.parse.urlparse(url).hostname or ""
-    return re.sub(r"^www\.", "", hote)
+    """og:site_name, sinon le nom d'application, sinon le texte du logo, sinon le domaine. Jamais le
+    <title> : il porte le plus souvent la promesse de la page (« Ton shooting photo avec l'IA »)."""
+    for candidat in (infos.get("site"), infos.get("application"), infos.get("logo_alt")):
+        nom = _nom_de_marque(candidat)
+        if nom:
+            return nom
+    return nom_de_domaine(url)
 
 
 def lire_feuilles(infos: dict, journal: list) -> tuple[str, list[dict]]:
@@ -1010,7 +1144,19 @@ def sans_consignes(dest: Path) -> list[str]:
     return retires
 
 
-def depuis_page(racine: Path, url: str, hyperframes: list[str] | None = None) -> tuple[dict, list[str]]:
+def indices_page(infos: dict, css: str, ic: dict, logo: str | None = None) -> dict:
+    """Les indices de `choisir_couleurs` pour une page : son HTML (`lire_html`), ses feuilles de style,
+    la capture HyperFrames (`indices_capture`, {} sans elle) et la couleur vive de son logo."""
+    actions_css, liens_css = couleurs_actions_css(css)
+    return {"sections": ic.get("sections") or [], "couleurs": ic.get("couleurs") or [],
+            "titres": ic.get("titres") or [], "boutons": ic.get("boutons") or [], "actions": ic.get("actions") or [],
+            "stats": ic.get("stats") or [], "theme": infos.get("theme") or [], "masque": infos.get("masque"),
+            "variables": variables_couleur(css), "frequences_css": frequences_couleurs(css),
+            "actions_css": actions_css, "liens_css": liens_css, "logo": logo}
+
+
+def depuis_page(racine: Path, url: str, hyperframes: list[str] | None = None,
+                ffmpeg: str | None = None) -> tuple[dict, list[str]]:
     """La marque d'après sa page de vente. Rend (marque, journal)."""
     journal: list[str] = []
     if not re.match(r"https?://", url):
@@ -1026,17 +1172,14 @@ def depuis_page(racine: Path, url: str, hyperframes: list[str] | None = None) ->
     infos["base"] = url
     css, faces = lire_feuilles(infos, journal)
     ic = indices_capture(capture) if capture else {}
-    indices = {"sections": ic.get("sections") or [], "couleurs": ic.get("couleurs") or [],
-               "titres": ic.get("titres") or [], "boutons": ic.get("boutons") or [],
-               "theme": infos["theme"], "masque": infos["masque"], "variables": variables_couleur(css),
-               "frequences_css": frequences_couleurs(css)}
-    couleurs = choisir_couleurs(indices)
+    logo = recuperer_logo(racine, infos["logos"])
+    teinte_logo = couleur_logo(racine / logo[0], ffmpeg or shutil.which("ffmpeg")) if logo else None
+    couleurs = choisir_couleurs(indices_page(infos, css, ic, teinte_logo))
     polices = choisir_polices(ic, familles_utilisees(css), faces)
     notes = list(couleurs["raisons"])
     polices = assurer_polices(racine, polices, faces, notes)
-    logo = recuperer_logo(racine, infos["logos"])
     if logo:
-        notes.append(f"logo : {logo[1]}")
+        notes.append(f"logo : {logo[1]}" + (f", couleur {teinte_logo}" if teinte_logo else ""))
     else:
         notes.append("logo : aucun trouvé sur la page")
     marque = nouvelle("page", url, couleurs, polices, nom=nom_du_site(infos, url), logo=logo[0] if logo else None,

@@ -1,0 +1,50 @@
+{
+ "typography": [
+  {
+   "role": "heading",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-2",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-3",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-3",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-4",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "body",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "display",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "link",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "code",
+   "fontFamily": "ui-monospace"
+  }
+ ],
+ "buttons": [
+  {
+   "label": "▶",
+   "background": "transparent"
+  },
+  {
+   "label": "button",
+   "background": "oklab(0 0 0 / 0.45)"
+  }
+ ]
+}

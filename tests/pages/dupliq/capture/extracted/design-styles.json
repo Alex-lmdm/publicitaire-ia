@@ -1,0 +1,70 @@
+{
+ "typography": [
+  {
+   "role": "display",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-2",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-2",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-3",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "body",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "heading-3",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "link",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "body-small",
+   "fontFamily": "Poppins"
+  },
+  {
+   "role": "label",
+   "fontFamily": "Poppins"
+  }
+ ],
+ "buttons": [
+  {
+   "label": "Se connecter",
+   "background": "#FF5B00"
+  },
+  {
+   "label": "📸Shooting",
+   "background": "#121212"
+  },
+  {
+   "label": "📦Produit",
+   "background": "#FFFFFF"
+  },
+  {
+   "label": "📦Shooting produitTon produit mis en scè",
+   "background": "#FFD447"
+  },
+  {
+   "label": "🎬Miniatures YouTubeLa miniature qui car",
+   "background": "transparent"
+  },
+  {
+   "label": "Mensuel",
+   "background": "#FFD447"
+  }
+ ]
+}

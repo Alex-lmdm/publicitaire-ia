@@ -18,7 +18,7 @@ Recommande **a** s'il a une page. Depuis la racine du dossier :
 
 | Réponse | Commande | Ce qu'elle fait |
 |---|---|---|
-| a | `python3 tools/studio_motion.py marque page "<lien>"` | Lit la page et ses feuilles de style, puis la capture (1 à 2 minutes) : fond, couleur de la marque, polices des titres et du texte, logo (icône du site si la page n'a pas de logo) |
+| a | `python3 tools/studio_motion.py marque page "<lien>"` | Lit la page et ses feuilles de style, puis la capture (1 à 2 minutes) : nom (celui que le site se donne, le texte de son logo, sinon son domaine, jamais le titre de la page), fond, couleur de la marque (celle de ses boutons d'action, de ses liens et de son logo, avant les couleurs de décor), polices des titres et du texte, logo (icône du site si la page n'a pas de logo) |
 | b | `python3 tools/studio_motion.py marque images "<image>" "<image>"…` | Mesure la palette des images (fond, couleur de la marque) |
 | c | `python3 tools/studio_motion.py marque video "<lien ou fichier>"` | Mesure la palette de la vidéo et écrit sa planche (`marque/video/planche.jpg`) |
 | d | `python3 tools/studio_motion.py marque monteur "<dossier Monteur IA>"` | Reprend couleurs, polices, nom, mot-clé, musique et logo de ses Reels, sans rien écrire dans son dossier |

@@ -848,7 +848,8 @@ def cmd_marque(a) -> None:
             ffmpeg = binaire("ffmpeg")
             if action == "page":
                 print("• lecture de la page" + ("…" if a.sans_capture else " et capture (1 à 2 minutes)…"), flush=True)
-                nouvelle_marque, journal = mq.depuis_page(r, valeurs[0], None if a.sans_capture else hyperframes_cli())
+                nouvelle_marque, journal = mq.depuis_page(r, valeurs[0], None if a.sans_capture else hyperframes_cli(),
+                                                          ffmpeg)
             elif action == "images":
                 if not ffmpeg:
                     sys.exit("ERREUR : ffmpeg introuvable.")

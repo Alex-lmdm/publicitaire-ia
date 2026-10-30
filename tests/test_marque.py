@@ -42,6 +42,7 @@ def empreinte(dossier: Path) -> str:
 # Une page de vente comme celle de LeMondeDuMarketing : Next.js, Tailwind, Poppins en trois sous-ensembles.
 PAGE = """<!DOCTYPE html><html lang="fr"><head>
 <title>Monteur IA : tes Reels montés par ton IA | LeMondeDuMarketing</title>
+<meta property="og:site_name" content="LeMondeDuMarketing"/>
 <link rel="stylesheet" href="/_next/static/css/a.css"/>
 <link rel="apple-touch-icon" sizes="180x180" href="/static/favicons/apple-touch-icon.png"/>
 <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png"/>
@@ -246,6 +247,88 @@ class PageHtmlEtCss(unittest.TestCase):
             self.assertIn("Google Fonts", origine)
             self.assertEqual(sorted((racine / "marque" / "polices").glob("*.woff2"))[0].name, "Poppins-400.woff2")
             self.assertEqual(mq.acquerir_police(racine, "Inter"), "déjà disponible")
+
+
+# Trois vraies pages de vente, enregistrées le 30/10/2026 et réduites à ce que lit la lecture de la
+# marque (tests/pages/<site>/ : en-tête, feuille de style, capture HyperFrames, logo) : aucun réseau.
+PAGES = RACINE / "tests" / "pages"
+CAS = {
+    "dupliq": ("https://dupliq.me", "Dupliq.me", "#ff5b00", "https://dupliq.me/favicon.svg"),
+    "lmdm": ("https://www.lemondedumarketing.fr/monteur-ia", "LeMondeDuMarketing", "#ffee00",
+             "https://www.lemondedumarketing.fr/static/favicons/apple-touch-icon.png"),
+    "systeme": ("https://systeme.io/fr", "Systeme.io", "#00a0ff",
+                "https://systeme.io/161/60a777c6b6c23_60a777c6b6c22_favicon.png"),
+}
+
+
+class PagesEnregistrees(unittest.TestCase):
+    """Sur dupliq.me, la lecture prenait le titre de la page pour le nom (« Ton shooting photo avec
+    l'IA ») et le jaune de deux onglets (#ffd447) pour la couleur, au lieu de l'orange des boutons, des
+    liens et du logo (#ff5b00)."""
+
+    def lire(self, site: str, avec_capture: bool = True) -> dict:
+        url, _nom, _accent, logo = CAS[site]
+        dossier = PAGES / site
+        reponses = {url: ((dossier / "page.html").read_bytes(), "text/html"),
+                    mq.urllib.parse.urljoin(url, "/feuille.css"): ((dossier / "feuille.css").read_bytes(), "text/css"),
+                    logo: ((dossier / "logo.svg").read_bytes(), "image/svg+xml")}
+
+        def faux_telecharger(adresse, limite=0, accepte="*/*"):
+            if adresse not in reponses:
+                raise mq.ErreurMarque(f"{adresse} : 404")
+            return reponses[adresse]
+
+        def fausse_capture(_hyperframes, _url, dest):
+            shutil.copytree(dossier / "capture", dest)
+            return dest
+
+        def pas_google(famille, *a, **k):
+            raise mq.ErreurMarque(f"« {famille} » : pas de réseau dans les tests")
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(mq, "telecharger", faux_telecharger), \
+                mock.patch.object(mq, "capturer", fausse_capture), mock.patch.object(mq, "css_google", pas_google):
+            marque, _journal = mq.depuis_page(racine_vide(Path(d)), url, ["hyperframes"] if avec_capture else None)
+        return marque
+
+    def test_nom_et_couleur_de_trois_pages(self):
+        for site, (_url, nom, accent, _logo) in CAS.items():
+            for avec_capture in (True, False):
+                marque = self.lire(site, avec_capture)
+                self.assertEqual((marque["nom"], marque["couleurs"]["accent"]), (nom, accent),
+                                 f"{site}, capture : {avec_capture}")
+
+    def test_le_logo_retenu_et_sa_couleur(self):
+        marque = self.lire("dupliq")
+        self.assertEqual(marque["logo"], "marque/logo.svg")
+        self.assertTrue(any(n.endswith("couleur #ff6333") for n in marque["notes"]), marque["notes"])
+        self.assertEqual(mq.couleur_logo(PAGES / "systeme" / "logo.svg"), "#01a2ff")
+        self.assertIsNone(mq.couleur_logo(PAGES / "lmdm" / "page.html"))      # ni SVG ni image : rien
+
+    def test_le_nom_ne_vient_jamais_du_titre(self):
+        def nom(entete: str, url: str = "https://dupliq.me") -> str:
+            return mq.nom_du_site(mq.lire_html(f"<head>{entete}</head>", url), url)
+        titre = "<title>Dupliq.me | Ton shooting photo avec l'IA</title>"
+        self.assertEqual(nom(titre), "Dupliq.me")
+        self.assertEqual(nom(titre + '<meta property="og:site_name" content="Dupliq">'), "Dupliq")
+        self.assertEqual(nom(titre + '<meta name="application-name" content="Dupliq App">'), "Dupliq App")
+        self.assertEqual(nom(titre + '<img src="/a.svg" alt="Dupliq logo" class="h-8">'), "Dupliq")
+        self.assertEqual(nom(titre + '<img src="/images/logos/claude.svg" alt="Claude">'), "Dupliq.me")
+        self.assertEqual(nom('<meta property="og:site_name" content="Ton shooting photo avec l\'IA, en 3 clics">'),
+                         "Dupliq.me")
+        self.assertEqual(mq.nom_de_domaine("https://www.lemondedumarketing.fr/monteur-ia"), "Lemondedumarketing")
+        self.assertEqual(mq.nom_de_domaine("https://lmdm.systeme.io/offre"), "Lmdm")
+        self.assertEqual(mq.nom_de_domaine("https://boutique.exemple.co.uk/"), "Exemple")
+
+    def test_les_boutons_d_action_avant_le_decor(self):
+        css = ".hero{background:#ffd447}.carte{background-color:#ffd447}.btn-primary{background-color:#ff5b00}" \
+              "a{color:#ff5b00}a:hover{color:#e55200}button{background-color:transparent}"
+        actions, liens = mq.couleurs_actions_css(css)
+        self.assertEqual((actions, liens), ({"#ff5b00": 1}, {"#ff5b00": 1, "#e55200": 1}))
+        c = mq.choisir_couleurs({"sections": [("hero", "#f4f2f0"), ("content", "#ffd447"), ("content", "#ffd447")],
+                                 "boutons": ["#ffd447", "#ffd447"], "actions_css": actions, "liens_css": liens,
+                                 "variables": {"--accent-primary": "#ff5b00", "--accent-secondary": "#ffd447",
+                                               "--accent-secondary-hover": "#f5c730"}})
+        self.assertEqual(c["accent"], "#ff5b00")
 
 
 class MonteurIA(unittest.TestCase):
