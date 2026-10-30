@@ -62,6 +62,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 # Windows : une sortie redirigée est en cp1252, et un « ✅ » y ferait planter l'outil.
@@ -730,9 +731,27 @@ def cmd_style(_a) -> None:
         print(f"⚠️ police « {famille} » sans fichier : {CONSEIL_POLICE}.")
 
 
+SITE = re.compile(r"(?:www\.\S+|(?:[a-z0-9-]+\.)+[a-z]{2,}/\S*)", re.I)
+
+
+def lien_video(source: str) -> str | None:
+    """Le lien d'une vidéo à télécharger : tel quel s'il commence par http(s)://, complété par https://
+    s'il commence par un nom de site (« www.youtube.com/shorts/… », « instagram.com/reel/… »), comme
+    `capture` ; None pour un fichier de l'ordinateur."""
+    s = str(source).strip()
+    if re.match(r"https?://", s, re.I):
+        return s
+    try:
+        existe = Path(s).expanduser().exists()
+    except (OSError, ValueError):
+        existe = False
+    return "https://" + s if not existe and SITE.fullmatch(s) else None
+
+
 def _source_video(r: Path, source: str) -> Path:
     """Une vidéo locale, ou téléchargée (yt-dlp) dans marque/video/."""
-    if not re.match(r"https?://", source):
+    lien = lien_video(source)
+    if not lien:
         f = Path(source).expanduser()
         if not f.is_file():
             sys.exit(f"ERREUR : fichier introuvable : {f}")
@@ -745,7 +764,7 @@ def _source_video(r: Path, source: str) -> Path:
     dossier.mkdir(parents=True, exist_ok=True)
     for ancien in dossier.glob("source.*"):
         ancien.unlink()
-    res = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(dossier / "source.%(ext)s"), source])
+    res = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(dossier / "source.%(ext)s"), lien])
     trouves = sorted(dossier.glob("source.*"))
     if res.returncode != 0 or not trouves:
         sys.exit(f"ERREUR : téléchargement impossible ({(res.stderr or '')[-200:].strip()}). Demande la vidéo en fichier.")
@@ -1803,6 +1822,26 @@ def cmd_telechargeur(a) -> None:
           "• téléchargeur : absent. `telechargeur installer` (gratuit, une minute, avec l'accord du client).")
 
 
+def _meme_fichier(a: Path, b: Path) -> bool:
+    try:
+        return a.exists() and b.exists() and os.path.samefile(a, b)
+    except OSError:
+        return False
+
+
+def ranger_video(source: Path, sortie: Path, copie: bool = False) -> Path:
+    """Range la vidéo de référence dans `sortie`, sous le nom video.<ext>, à la place de la précédente
+    (déplacée, ou copiée pour un fichier du client). Le dossier n'est créé qu'ici, une fois la vidéo là."""
+    sortie.mkdir(parents=True, exist_ok=True)
+    dest = sortie / ("video" + source.suffix.lower())
+    for ancien in sortie.glob("video.*"):
+        if not _meme_fichier(ancien, source):
+            ancien.unlink()
+    if not _meme_fichier(source, dest):
+        (shutil.copy2 if copie else shutil.move)(str(source), str(dest))
+    return dest
+
+
 def cmd_reference(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -1812,24 +1851,27 @@ def cmd_reference(a) -> None:
         sys.exit("ERREUR : donne le dossier de la vidéo (celui qui contient OFFRE.json).")
     nom = propre(a.nom or "reference", 30)
     sortie = dossier / "sources" / "reference" / nom
-    sortie.mkdir(parents=True, exist_ok=True)
-    if re.match(r"https?://", a.source):
+    lien = lien_video(a.source)
+    if lien:
         dl = ytdlp()
         if not dl:
             sys.exit("ERREUR : pas de téléchargeur de vidéos dans le dossier. Propose au client de l'installer "
                      "(gratuit, une minute) : `telechargeur installer`, puis relance. S'il refuse ou si ça échoue, "
                      "demande-lui d'enregistrer son écran pendant que la vidéo passe et de glisser le fichier ici.")
-        r = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(sortie / "video.%(ext)s"), a.source])
-        videos = sorted(sortie.glob("video.*"))
-        if r.returncode != 0 or not videos:
-            sys.exit(f"ERREUR : téléchargement impossible : {(r.stderr or '')[-300:]} Télécharge-la toi-même et donne son chemin.")
-        video = videos[0]
+        # Téléchargée à part, puis rangée : yt-dlp ne retélécharge pas un fichier déjà là (un deuxième lien
+        # faisait analyser la première vidéo), et un échec ne laisse ni dossier vide ni référence abîmée.
+        with tempfile.TemporaryDirectory(prefix="reference-") as tmp:
+            r = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(Path(tmp) / "video.%(ext)s"), lien])
+            videos = sorted(p for p in Path(tmp).glob("video.*") if p.suffix.lower() not in (".part", ".ytdl"))
+            if r.returncode != 0 or not videos:
+                sys.exit(f"ERREUR : téléchargement impossible : {(r.stderr or '')[-300:]} Télécharge-la toi-même et "
+                         "donne son chemin.")
+            video = ranger_video(videos[0], sortie)
     else:
         source = Path(a.source).expanduser()
         if not source.is_file():
             sys.exit(f"ERREUR : fichier introuvable : {source}")
-        video = sortie / ("video" + source.suffix.lower())
-        shutil.copy2(source, video)
+        video = ranger_video(source, sortie, copie=True)
     for ancien in sortie.glob("planche-*.jpg"):
         ancien.unlink()
     r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), "-vf", "fps=2,scale=320:-2,tile=6x4:padding=4:color=gray",
@@ -1839,7 +1881,7 @@ def cmd_reference(a) -> None:
     coupes = coupes_video(ffmpeg, video)
     v = verdict_rythme(ecarts_images(ffmpeg, video), fin_libre=0.0)
     planches = sorted(p.name for p in sortie.glob("planche-*.jpg"))
-    texte = (f"# Vidéo de référence : {nom}\n\nSource : {a.source}\n\n## Mesures\n\n"
+    texte = (f"# Vidéo de référence : {nom}\n\nSource : {lien or a.source}\n\n## Mesures\n\n"
              f"- Durée : {v['duree']:.0f} s\n- Événements : {v['evenements_par_s']:.2f} par seconde, écart médian "
              f"{v['ecart_median']:.2f} s\n- Image figée : {sum(l for _d, l in v['figees']):.1f} s\n"
              f"- Coupes franches : {len(coupes)} ({', '.join(f'{t:.1f}' for t in coupes[:30])})\n"

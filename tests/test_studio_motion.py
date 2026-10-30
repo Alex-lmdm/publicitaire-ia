@@ -4,14 +4,19 @@ Lancer : python3 -m unittest discover -s tests
 """
 from __future__ import annotations
 
+import contextlib
 import copy
+import io
 import json
 import math
+import os
+import re
 import shutil
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "tools"))
@@ -777,6 +782,100 @@ class Logos(unittest.TestCase):
             svg.write_text('<svg viewBox="0 0 10 10"><script>x</script></svg>')
             with self.assertRaises(ValueError):
                 sm.logo_fichier(projet, svg)
+
+
+# Un faux yt-dlp qui se comporte comme le vrai sur ce point : il ne retélécharge jamais un fichier déjà là.
+FAUX_YTDLP = """#!{python}
+import json, os, shutil, sys
+args = sys.argv[1:]
+sortie = args[args.index("-o") + 1].replace("%(ext)s", "mp4")
+if os.path.exists(sortie):
+    print("[download] " + sortie + " has already been downloaded")
+    sys.exit(0)
+source = json.loads({liens!r}).get(args[-1])
+if not source:
+    sys.stderr.write("ERROR: [generic] Unable to download webpage: HTTP Error 404")
+    sys.exit(1)
+shutil.copy(source, sortie)
+"""
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and os.name != "nt", "ffmpeg et un faux téléchargeur exécutable")
+class Reference(unittest.TestCase):
+    def setUp(self):
+        import subprocess
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        liens = {}
+        for nom, duree in (("premiere", 2), ("deuxieme", 4)):
+            fichier = self.tmp / f"{nom}.mp4"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"testsrc2=s=320x240:r=10:d={duree}",
+                            "-pix_fmt", "yuv420p", str(fichier)], check=True)
+            for lien in (f"https://exemple.test/{nom}", f"https://www.exemple.test/{nom}"):
+                liens[lien] = str(fichier)
+        self.dl = self.tmp / "yt-dlp"
+        self.dl.write_text(FAUX_YTDLP.format(python=sys.executable, liens=json.dumps(liens)), encoding="utf-8")
+        self.dl.chmod(0o755)
+        self.dossier = self.tmp / "Offre · 2026-10-30"
+        self.dossier.mkdir()
+        (self.dossier / "OFFRE.json").write_text("{}", encoding="utf-8")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def reference(self, *args: str) -> None:
+        with mock.patch.object(sm, "ytdlp", return_value=str(self.dl)), contextlib.redirect_stdout(io.StringIO()):
+            sm.main(["reference", str(self.dossier), *args])
+
+    def analyse(self, nom: str = "reference") -> str:
+        return (self.dossier / "sources" / "reference" / nom / "ANALYSE.md").read_text(encoding="utf-8")
+
+    def test_un_deuxieme_lien_analyse_la_deuxieme_video(self):
+        self.reference("https://exemple.test/premiere")
+        self.assertIn("- Durée : 2 s", self.analyse())
+        self.reference("https://exemple.test/deuxieme")
+        self.assertIn("Source : https://exemple.test/deuxieme", self.analyse())
+        self.assertIn("- Durée : 4 s", self.analyse())
+        self.assertEqual([p.name for p in (self.dossier / "sources" / "reference" / "reference").glob("video.*")],
+                         ["video.mp4"])
+
+    def test_lien_sans_https(self):
+        self.reference("www.exemple.test/premiere", "--nom", "sans-https")
+        self.assertIn("Source : https://www.exemple.test/premiere", self.analyse("sans-https"))
+
+    def test_un_echec_ne_laisse_rien(self):
+        self.reference("https://exemple.test/premiere")
+        avant = sorted(p.name for p in (self.dossier / "sources" / "reference" / "reference").iterdir())
+        for args in (("https://exemple.test/absente", "--nom", "echec"), ("https://exemple.test/absente",),
+                     ("www.exemple.test/absente", "--nom", "echec"), ("pas-une-video.mp4", "--nom", "echec")):
+            with self.assertRaises(SystemExit):
+                self.reference(*args)
+        self.assertEqual(sorted(p.name for p in (self.dossier / "sources" / "reference").iterdir()), ["reference"])
+        self.assertEqual(sorted(p.name for p in (self.dossier / "sources" / "reference" / "reference").iterdir()), avant)
+        self.assertIn("- Durée : 2 s", self.analyse())
+
+    def test_fichier_de_l_ordinateur(self):
+        self.reference(str(self.tmp / "deuxieme.mp4"), "--nom", "fichier")
+        self.assertIn("- Durée : 4 s", self.analyse("fichier"))
+        self.assertTrue((self.tmp / "deuxieme.mp4").is_file())       # le fichier du client reste où il est
+
+
+class Liens(unittest.TestCase):
+    def test_lien_complete_comme_capture(self):
+        self.assertEqual(sm.lien_video("www.youtube.com/shorts/abc123"), "https://www.youtube.com/shorts/abc123")
+        self.assertEqual(sm.lien_video("instagram.com/reel/C9xYz/"), "https://instagram.com/reel/C9xYz/")
+        self.assertEqual(sm.lien_video("vm.tiktok.com/ZMabc/"), "https://vm.tiktok.com/ZMabc/")
+        self.assertEqual(sm.lien_video(" https://x.com/a/status/1 "), "https://x.com/a/status/1")
+        self.assertEqual(sm.lien_video("HTTP://exemple.fr/v"), "HTTP://exemple.fr/v")
+
+    def test_fichier_jamais_pris_pour_un_lien(self):
+        self.assertIsNone(sm.lien_video("clip.mov"))
+        self.assertIsNone(sm.lien_video("Vidéos/clip.mp4"))
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "www.exemple.fr" / "v"
+            f.parent.mkdir()
+            f.write_bytes(b"x")
+            self.assertIsNone(sm.lien_video(str(f)))
 
 
 if __name__ == "__main__":
