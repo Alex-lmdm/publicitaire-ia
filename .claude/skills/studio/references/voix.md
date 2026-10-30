@@ -9,14 +9,15 @@ Une **voix off** s'ajoute à sa demande, à une nouvelle vidéo ou à une vidéo
 encore à l'écran**. Deux façons, à lui proposer en un seul message :
 
 > Pour la voix off, deux possibilités :
-> 1) **ta voix** : je t'écris le texte, tu l'enregistres au dictaphone de ton téléphone (gratuit,
->    le plus convaincant) ;
-> 2) **une voix de synthèse HeyGen** : tu choisis une voix, je la génère (quelques centimes par
->    vidéo, prélevés sur ton compte HeyGen, coût annoncé avant).
+> 1) **une voix IA, gratuite**, sur Google AI Studio : je t'écris le texte et le ton, tu les colles
+>    sur le site, tu choisis une voix et tu télécharges le fichier (2 minutes, avec ton compte Google) ;
+> 2) **ta voix** : je t'écris le texte, tu l'enregistres au dictaphone de ton téléphone (gratuit,
+>    le plus convaincant).
 > Dans les deux cas, je t'écris d'abord le texte et tu le valides.
 
-S'il refuse les deux, une voix de synthèse gratuite existe sur son ordinateur (plus bas, D), moins
-naturelle : propose-la en dernier.
+S'il a un compte HeyGen et le préfère, une voix HeyGen se génère d'ici (plus bas, C, payante).
+S'il refuse tout, une voix de synthèse gratuite existe sur son ordinateur (D), moins naturelle :
+propose-la en dernier.
 
 ## 1. Le texte d'abord, toujours validé
 
@@ -31,6 +32,27 @@ naturelle : propose-la en dernier.
   estimée, et **attends son accord**. Rien ne s'enregistre ni ne se génère avant.
 
 ## 2. La voix
+
+### A. Une voix IA gratuite, sur Google AI Studio
+
+Le site gratuit de Google (Gemini TTS, usage commercial et pub permis) ; il le fait lui-même, avec
+son compte Google, et la formation (module « Voix off ») le lui montre écran par écran.
+
+1. Donne-lui, d'un bloc et prêts à copier : le **texte validé** (tu peux y poser des balises de
+   pause, `<short pause>`, là où une respiration aide), la **consigne de ton** en une ligne
+   (« Voix off de pub, enthousiaste, rythme soutenu », adaptée au but de la vidéo), et **la voix
+   conseillée** dans la catégorie « Commercial Voiceover » (Nika, Koda ou Tavi), avec le lien
+   https://aistudio.google.com/generate-speech.
+2. Le geste, en une phrase : « Create new dialog, colle le texte, clique Speaker 1 et choisis la
+   voix, clique Style et colle le ton, Run, écoute, puis Download en bas à droite. » Le filtre de
+   langue « French » ne montre rien sans compte payant : inutile, les voix parlent la langue du
+   texte.
+3. Il dit que le fichier est dans ses Téléchargements (ou il le glisse ici) : cherche le fichier
+   audio le plus récent (wav, mp3, m4a), range-le dans `assets/audio/voix-brute.*`, coupe les blancs
+   de plus de 0,4 s au début et à la fin, mets-le au niveau d'une voix de Reel
+   (`loudnorm=I=-24:TP=-3`), exporte `assets/audio/voix.wav`, puis le temps de chaque mot avec
+   `npx hyperframes transcribe assets/audio/voix.wav`. Fais écouter avant de caler la vidéo.
+4. Une phrase qui sonne mal : corrige-la dans le texte, il ne régénère que ce bloc sur le site.
 
 ### B. Sa voix, enregistrée sur son téléphone
 

@@ -13,8 +13,8 @@ vidéo : le but et où tu vas la mettre), et fabrique la vidéo.
 de tes 17 musiques de lancement (offertes avec la formation, utilisables dans tes pubs). À chaque
 vidéo, ton assistant prend celles qui vont avec son but, tu écoutes et tu choisis, et il cale
 l'entrée de la batterie au moment où ton offre apparaît. Une voix off s'ajoute quand tu veux, même
-sur une vidéo déjà faite : ta voix enregistrée au téléphone, ou une voix de synthèse HeyGen
-(quelques centimes).
+sur une vidéo déjà faite : une voix IA gratuite de Google AI Studio, ou ta voix enregistrée au
+téléphone.
 
 **Ta marque en une question.** La première fois (« Personnalise Publicitaire IA à ma marque »), il
 te demande d'où la prendre : le lien de

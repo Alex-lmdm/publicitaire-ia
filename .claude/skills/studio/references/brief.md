@@ -41,7 +41,8 @@ sa marque et tu attends son accord. La réponse 3 A : `python3 tools/studio_moti
 dans `studio.config.json` : `{"vend": [...], "page": "...", "voix": "texte", "dm": null,
 "reference_style": null, "supports_habituels": [], "preferences": []}` (`page` vient de la
 réponse 1 a, sinon du premier brief ; `voix` reste `texte` tant qu'il ne demande pas de voix off,
-puis `ma-voix` ou `voix-heygen`, avec `voix_heygen` pour l'id de sa voix). Les préférences dites
+puis `voix-ia` (Google AI Studio, avec `voix_ia` pour le nom de sa voix), `ma-voix` ou
+`voix-heygen` (avec `voix_heygen` pour l'id de sa voix). Les préférences dites
 plus tard (« toujours sans musique », « choisis toujours la musique pour moi », « mes vidéos en
 noir ») s'y ajoutent et se relisent à chaque vidéo.
 
