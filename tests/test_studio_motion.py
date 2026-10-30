@@ -764,6 +764,23 @@ class Consignes(unittest.TestCase):
             self.assertNotIn("550 000", texte, doc.name)
 
 
+def jpeg(largeur: int, hauteur: int) -> bytes:
+    """Les premiers octets d'un vrai JPEG (JFIF puis SOF0) : assez pour sa signature et sa taille."""
+    app0 = b"\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00\x01\x00\x01\x00\x00"
+    sof0 = (b"\xff\xc0\x00\x11\x08" + hauteur.to_bytes(2, "big") + largeur.to_bytes(2, "big")
+            + b"\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01")
+    return b"\xff\xd8" + app0 + sof0 + b"\xff\xd9"
+
+
+def png(largeur: int, hauteur: int) -> bytes:
+    return (b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR" + largeur.to_bytes(4, "big") + hauteur.to_bytes(4, "big")
+            + b"\x08\x02\x00\x00\x00" + b"\x00" * 4)
+
+
+# Ce que deux essais ont livré comme couverture.jpg : de la vidéo H.264 (journaux du 30/10/2026).
+H264 = b"\x00\x00\x00\x01\x67\x64\x00\x32\xac\xd9\x40\x44\x02\x27\xe5\x84" + b"\x00" * 64
+
+
 def racine_de_test(base: Path) -> Path:
     """Un dossier du produit, réduit à ce que la création d'une vidéo lit : produit.json, les
     gabarits et le kit du dépôt, un style de marque."""
@@ -931,18 +948,29 @@ class Creation(unittest.TestCase):
             self.assertTrue(any("Quand publier" in m for m in manques))
             self.assertIn("couverture.jpg (la couverture du Reel)", manques)
             self.assertIn("integration.md (comment poser la vidéo sur la page)", manques)
-            for f in ("reel.mp4", "page.mp4", "story-teaser.mp4", "page.jpg", "legende-reel.txt",
-                      "couverture.jpg", "integration.md", "stories.txt"):
+            for f in ("reel.mp4", "page.mp4", "story-teaser.mp4", "legende-reel.txt", "integration.md", "stories.txt"):
                 (dossier / "livraison" / f).write_bytes(b"x")
+            (dossier / "livraison" / "page.jpg").write_bytes(jpeg(1920, 1080))
+            (dossier / "livraison" / "couverture.jpg").write_bytes(jpeg(1080, 1920))
             (dossier / "PLAN.md").write_text("## Quand publier\n", encoding="utf-8")
             self.assertEqual(sm.manques_livraison(dossier), [])
+            # « livrer » répondait « ok » sur une couverture.jpg qui était de la vidéo H.264.
+            (dossier / "livraison" / "couverture.jpg").write_bytes(H264)
+            self.assertEqual(sm.manques_livraison(dossier), [
+                "couverture.jpg : pas une image JPEG ou PNG (c'est de la vidéo H.264) ; refais-la avec `couverture`"])
+            (dossier / "livraison" / "couverture.jpg").write_bytes(jpeg(1080, 1080))
+            self.assertIn("pas au format de la vidéo (1080×1920)", sm.manques_livraison(dossier)[0])
+            (dossier / "livraison" / "couverture.jpg").write_bytes(png(540, 960))
+            (dossier / "livraison" / "page.jpg").write_bytes(b"x")
+            self.assertEqual(sm.manques_livraison(dossier), [
+                "page.jpg : pas une image JPEG ou PNG (ce n'est pas une image) ; refais-la avec `affiche`"])
 
     def test_vente_sans_calendrier(self):
         with tempfile.TemporaryDirectory() as d:
             maison = racine_de_test(Path(d))
             dossier = sm.creer(maison, "Offre", "fonctionnalite", [sm.lire_video("section")], "2026-10-12")
             (dossier / "livraison" / "section.mp4").write_bytes(b"x")
-            (dossier / "livraison" / "section.jpg").write_bytes(b"x")
+            (dossier / "livraison" / "section.jpg").write_bytes(jpeg(1920, 1080))
             self.assertEqual(sm.manques_livraison(dossier), ["integration.md (comment poser la vidéo sur la page)"])
             (dossier / "livraison" / "integration.md").write_text("x", encoding="utf-8")
             self.assertEqual(sm.manques_livraison(dossier), [])
@@ -977,6 +1005,140 @@ class Logos(unittest.TestCase):
             svg.write_text('<svg viewBox="0 0 10 10"><script>x</script></svg>')
             with self.assertRaises(ValueError):
                 sm.logo_fichier(projet, svg)
+
+
+class ImagesReelles(unittest.TestCase):
+    def test_signature_et_taille(self):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "couverture.jpg"
+            for contenu, attendu in ((jpeg(1080, 1920), ("jpeg", 1080, 1920)), (png(1920, 1080), ("png", 1920, 1080)),
+                                     (H264, None), (b"x", None), (b"\xff\xd8\xff\xda" + b"\x00" * 20, None)):
+                f.write_bytes(contenu)
+                self.assertEqual(sm.image_reelle(f), attendu)
+            f.write_bytes(H264)
+            self.assertEqual(sm.nature_fichier(f), "c'est de la vidéo H.264")
+            f.write_bytes(jpeg(1080, 1920))
+            self.assertIsNone(sm.probleme_image(f, (1080, 1920)))
+            self.assertIn("pas au format", sm.probleme_image(f, (1920, 1080)))
+            f.write_bytes(jpeg(360, 640))
+            self.assertIn("trop petite", sm.probleme_image(f, (1080, 1920)))
+
+
+class ArgumentsDeCouverture(unittest.TestCase):
+    """Les arguments se reconnaissent à leur nature, dans n'importe quel ordre (4 essais sur 9 s'étaient
+    trompés d'ordre le 30/10/2026)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self._tmp.name)
+        self.projet = self.d / "Offre · Reel"
+        (self.projet / "exports").mkdir(parents=True)
+        (self.projet / "work").mkdir()
+        (self.d / "livraison").mkdir()
+        self.video = self.projet / "exports" / "reel-master.mp4"
+        self.video.write_bytes(b"\x00\x00\x00\x18ftypmp42")
+        self.image = self.projet / "work" / "couv.png"
+        self.image.write_bytes(png(800, 800))
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def lire(self, *args) -> dict:
+        return sm.lire_couverture([str(a) for a in args])
+
+    def test_tous_les_ordres(self):
+        jpg, mp4 = self.d / "livraison" / "couverture.jpg", self.d / "livraison" / "reel.mp4"
+        attendu = {"video": self.video, "instant": None, "image": self.image, "sortie": mp4, "sortie_image": jpg}
+        for args in ((self.video, self.image, jpg, mp4), (mp4, jpg, self.image, self.video), (jpg, self.video, mp4, self.image)):
+            self.assertEqual(self.lire(*args), attendu, args)
+        # Le cas des journaux : la vidéo, l'image, puis couverture.jpg pris pour la vidéo de sortie.
+        self.assertEqual(self.lire(self.video, self.image, jpg)["sortie_image"], jpg)
+        self.assertIsNone(self.lire(self.video, self.image, jpg)["sortie"])
+
+    def test_instant_et_sorties_existantes(self):
+        jpg = self.d / "livraison" / "couverture.jpg"
+        jpg.write_bytes(H264)                                  # une ancienne couverture ratée : réécrite
+        c = self.lire("3,5", self.video, jpg)
+        self.assertEqual((c["instant"], c["image"], c["sortie_image"]), (3.5, None, jpg))
+        self.assertEqual(self.lire(self.video, "12s")["instant"], 12.0)
+        mp4 = self.d / "livraison" / "reel.mp4"
+        mp4.write_bytes(b"x")                                  # une livraison déjà faite : la sortie
+        self.assertEqual((self.lire(mp4, self.video, "2")["video"], self.lire(mp4, self.video, "2")["sortie"]), (self.video, mp4))
+
+    def test_messages_exacts(self):
+        fausse = self.projet / "work" / "fausse.jpg"
+        fausse.write_bytes(H264)
+        for args, message in (((self.image, "3"), "il manque la vidéo rendue"),
+                              ((self.video, fausse), "« " + str(fausse) + " » n'est pas une image JPEG ou PNG (c'est de la vidéo H.264)"),
+                              ((self.video, "2", "3"), "deux instants (2, 3)"),
+                              ((self.video, "notes.txt"), "« notes.txt » n'est ni une vidéo"),
+                              ((self.video,), "il manque la couverture"),
+                              ((self.video, self.image, "a.jpg", "b.jpg"), "plusieurs images de sortie")):
+            with self.assertRaises(ValueError) as e:
+                self.lire(*args)
+            self.assertIn(message, str(e.exception), args)
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+class Couverture(unittest.TestCase):
+    def setUp(self):
+        import subprocess
+        self._tmp = tempfile.TemporaryDirectory()
+        maison = racine_de_test(Path(self._tmp.name))
+        self.dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-10-30")
+        self.projet = sm.projets(self.dossier)[0][0]
+        self.video = self.projet / "exports" / "reel-master.mp4"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x202022:s=1080x1920:r=30:d=2",
+                        "-f", "lavfi", "-i", "sine=f=440:d=2", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac",
+                        "-shortest", str(self.video)], check=True)
+        self.image = self.projet / "work" / "couv.png"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0xff5b00:s=800x800:d=1",
+                        "-frames:v", "1", str(self.image)], check=True)
+        self.livraison = self.dossier / "livraison"
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def couverture(self, *args: str) -> str:
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            sm.main(["couverture", *[str(a) for a in args]])
+        return sortie.getvalue()
+
+    def premiere_image(self, video: Path) -> tuple[int, int, int]:
+        import subprocess
+        r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(video), "-frames:v", "1", "-vf", "scale=1:1",
+                            "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True)
+        return tuple(r.stdout[:3])
+
+    def test_l_ordre_des_essais_qui_livrait_de_la_video_dans_le_jpg(self):
+        self.couverture(self.video, self.image, self.livraison / "couverture.jpg")
+        self.assertEqual(sm.image_reelle(self.livraison / "couverture.jpg"), ("jpeg", 1080, 1920))
+        rouge, vert, bleu = self.premiere_image(self.livraison / "reel.mp4")
+        self.assertGreater(rouge, 200)                           # la couverture orange en première image
+        self.assertLess(bleu, 60)
+
+    def test_quatre_arguments_dans_le_desordre_puis_un_instant(self):
+        self.couverture(self.livraison / "reel.mp4", self.image, self.livraison / "couverture.jpg", self.video)
+        self.assertEqual(sm.image_reelle(self.livraison / "couverture.jpg"), ("jpeg", 1080, 1920))
+        texte = self.couverture(self.video, "1.5")
+        self.assertIn("couverture 1080×1920 (image de la vidéo à 1.5 s)", texte)
+        self.assertLess(max(self.premiere_image(self.livraison / "reel.mp4")), 60)   # le fond sombre de la vidéo
+        (self.livraison / "legende-reel.txt").write_text("x", encoding="utf-8")
+        self.assertEqual(sm.manques_livraison(self.dossier), [])
+
+    def test_version_sans_musique(self):
+        sans = self.projet / "exports" / "reel-sans-musique-master.mp4"
+        shutil.copy2(self.video, sans)
+        self.couverture(sans, self.image)
+        self.assertTrue((self.livraison / "reel-sans-musique.mp4").is_file())
+        self.assertFalse((self.livraison / "reel.mp4").exists())
+
+    def test_instant_hors_de_la_video(self):
+        with self.assertRaises(SystemExit) as e:
+            self.couverture(self.video, "40")
+        self.assertIn("l'instant 40 s dépasse la vidéo (2.0 s)", str(e.exception))
+        self.assertFalse((self.livraison / "couverture.jpg").exists())
 
 
 # Un faux yt-dlp qui se comporte comme le vrai sur ce point : il ne retélécharge jamais un fichier déjà là.

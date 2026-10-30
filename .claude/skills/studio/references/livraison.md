@@ -20,13 +20,24 @@ Puis, depuis la racine, `python3 tools/studio_motion.py livrer "videos/<dossier 
 
 ## La couverture et l'affiche
 
-Une image composée exprès (pas une capture au hasard) : la promesse ou le nom de l'offre en grand,
-dans la zone texte, lisible à 200 px de large. Elle ne montre rien que la vidéo ne dit pas. Pose-la
-en première image :
+Une image choisie exprès (pas une capture au hasard) : la promesse ou le nom de l'offre en grand,
+dans la zone texte, lisible à 200 px de large. Elle ne montre rien que la vidéo ne dit pas : un
+instant de la vidéo où c'est le cas, ou une image composée pour l'occasion. Depuis le projet, une
+seule commande fait les deux fichiers de la livraison :
 
 ```bash
-python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 ../livraison/couverture.jpg ../livraison/reel.mp4
+python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 3.5                # l'image de la vidéo à 3,5 s
+python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 work/couverture.png # ou une image composée
 ```
+
+Elle écrit `../livraison/couverture.jpg` (une vraie image JPEG, recadrée au format de la vidéo et
+vérifiée) et `../livraison/reel.mp4` (la vidéo masterisée, cette image en toute première image).
+Pour la version sans musique : `couverture exports/reel-sans-musique-master.mp4
+../livraison/couverture.jpg`, qui écrit `../livraison/reel-sans-musique.mp4`. Les arguments se
+reconnaissent à leur nature, dans n'importe quel ordre (la vidéo rendue, l'image ou l'instant, puis
+d'autres sorties si besoin : `… ../livraison/reel.mp4 ../livraison/couverture.jpg`). Ne fabrique
+jamais `couverture.jpg` à la main avec ffmpeg : `livrer` refuse une couverture qui n'est pas une vraie
+image au format de la vidéo.
 
 Pour une page, l'affiche (`page.jpg`) est la première image de la vidéo, de moins de 100 Ko :
 `python3 ../../../tools/studio_motion.py affiche ../livraison/page.mp4 ../livraison/page.jpg` (depuis le projet de la page).

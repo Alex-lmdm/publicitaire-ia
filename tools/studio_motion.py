@@ -40,7 +40,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py son <video.mp4> [--cible -16]
     python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
     python3 tools/studio_motion.py sans-musique <projet>
-    python3 tools/studio_motion.py couverture <video.mp4> <image.jpg> <sortie.mp4>
+    python3 tools/studio_motion.py couverture <video.mp4> <image.jpg | instant en s> [<sortie.mp4>] [<couverture.jpg>]   # tout ordre
     python3 tools/studio_motion.py affiche <video.mp4> <affiche.jpg> [--temps 0]
     python3 tools/studio_motion.py preparer-video <entree.mp4> <sortie.mp4> [--avec-son]
     python3 tools/studio_motion.py export <video.mp4> [--support reel]
@@ -2710,22 +2710,234 @@ def cmd_sans_musique(a) -> None:
     print(f"• {sortie.relative_to(projet)} : à masteriser comme l'autre (`mastering`), puis à livrer.")
 
 
+# ---------------------------------------------------------------------------
+# La couverture : une vraie image (JPEG ou PNG), et la vidéo qui l'a en première image
+# ---------------------------------------------------------------------------
+EXT_VIDEO = {".mp4", ".mov", ".m4v", ".webm", ".mkv"}
+EXT_IMAGE = {".jpg", ".jpeg", ".png"}
+FORME_COUVERTURE = ("couverture <vidéo.mp4> <image.jpg ou .png, ou instant en secondes> [<sortie.mp4>] "
+                    "[<couverture.jpg>], dans n'importe quel ordre ; par exemple, depuis le projet : "
+                    "couverture exports/reel-master.mp4 3.5")
+SOF_JPEG = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+
+
+def image_reelle(chemin: Path) -> tuple[str, int, int] | None:
+    """(« jpeg » ou « png », largeur, hauteur) si le fichier est vraiment une image JPEG ou PNG, d'après
+    ses octets et non son nom ; None sinon (une vidéo H.264 appelée couverture.jpg, par exemple)."""
+    try:
+        with open(chemin, "rb") as f:
+            o = f.read(512 * 1024)
+    except OSError:
+        return None
+    if o.startswith(b"\x89PNG\r\n\x1a\n") and o[12:16] == b"IHDR":
+        largeur, hauteur = int.from_bytes(o[16:20], "big"), int.from_bytes(o[20:24], "big")
+        return ("png", largeur, hauteur) if largeur and hauteur else None
+    if not o.startswith(b"\xff\xd8"):
+        return None
+    i = 2
+    while i + 4 <= len(o):
+        if o[i] != 0xFF:
+            return None
+        marqueur = o[i + 1]
+        if marqueur == 0xFF:                                   # octet de remplissage
+            i += 1
+            continue
+        if marqueur == 0x01 or 0xD0 <= marqueur <= 0xD7:       # marqueurs sans longueur
+            i += 2
+            continue
+        if marqueur in SOF_JPEG and i + 9 <= len(o):
+            hauteur, largeur = int.from_bytes(o[i + 5:i + 7], "big"), int.from_bytes(o[i + 7:i + 9], "big")
+            return ("jpeg", largeur, hauteur) if largeur and hauteur else None
+        if marqueur in (0xD9, 0xDA):                           # fin, ou image sans en-tête de taille
+            return None
+        i += 2 + int.from_bytes(o[i + 2:i + 4], "big")
+    return None
+
+
+def nature_fichier(chemin: Path) -> str:
+    """Ce qu'est vraiment un fichier qui n'est pas une image JPEG ou PNG, pour le dire au client."""
+    try:
+        with open(chemin, "rb") as f:
+            o = f.read(64)
+    except OSError:
+        return "illisible"
+    if o[4:8] == b"ftyp":
+        return "c'est une vidéo MP4"
+    if o.startswith(b"\x00\x00\x00\x01") or o.startswith(b"\x00\x00\x01"):
+        return "c'est de la vidéo H.264"
+    if o.startswith(b"RIFF") and o[8:12] == b"WEBP":
+        return "c'est une image WebP"
+    return "ce n'est pas une image"
+
+
+def probleme_image(chemin: Path, attendu: tuple[int, int] | None = None) -> str | None:
+    """Pourquoi ce fichier n'est pas une bonne image de livraison (None s'il l'est) : une vraie image
+    JPEG ou PNG, au format de la vidéo (`attendu`, en pixels) et pas plus petite que sa moitié."""
+    info = image_reelle(chemin)
+    if not info:
+        return f"pas une image JPEG ou PNG ({nature_fichier(chemin)})"
+    _type, largeur, hauteur = info
+    if attendu:
+        voulu_l, voulu_h = attendu
+        if abs(largeur / hauteur - voulu_l / voulu_h) > 0.02 * voulu_l / voulu_h:
+            return f"{largeur}×{hauteur}, pas au format de la vidéo ({voulu_l}×{voulu_h})"
+        if largeur < voulu_l // 2:
+            return f"{largeur}×{hauteur}, trop petite (au moins {voulu_l // 2} pixels de large)"
+    return None
+
+
+def projet_de(chemin: Path) -> Path | None:
+    """Le projet de vidéo (dossier de meta.json) qui contient `chemin`, sinon None."""
+    p = Path(chemin).resolve()
+    for d in (p if p.is_dir() else p.parent, *p.parents):
+        if (d / "meta.json").is_file():
+            return d
+        if (d / "produit.json").is_file() or (d / "OFFRE.json").is_file():
+            return None
+    return None
+
+
+def _court(chemin: Path) -> str:
+    """Le chemin vu du dossier courant (../livraison/reel.mp4), sinon tel quel."""
+    try:
+        return os.path.relpath(chemin)
+    except ValueError:                  # Windows : un autre disque
+        return str(chemin)
+
+
+def _meme(a: Path, b: Path) -> bool:
+    return Path(a).expanduser().resolve() == Path(b).expanduser().resolve()
+
+
+def _hors_livraison(chemins: list[Path]) -> list[Path]:
+    return [c for c in chemins if "livraison" not in Path(c).expanduser().resolve().parts]
+
+
+def lire_couverture(entrees: list[str]) -> dict:
+    """Range les arguments de `couverture`, dans n'importe quel ordre : la vidéo source (un .mp4 qui
+    existe), la couverture (une image JPEG ou PNG qui existe, ou un instant de la vidéo en secondes) et
+    les sorties (une vidéo .mp4, une image .jpg ou .png). Lève ValueError avec la raison exacte."""
+    instants, videos, images = [], [], []
+    for brut in entrees:
+        x = brut.strip()
+        if re.fullmatch(r"\d+(?:[.,]\d+)?\s*s?", x):
+            instants.append(float(x.rstrip("s ").replace(",", ".")))
+            continue
+        p = Path(x).expanduser()
+        if p.suffix.lower() in EXT_VIDEO:
+            videos.append(p)
+        elif p.suffix.lower() in EXT_IMAGE:
+            images.append(p)
+        else:
+            raise ValueError(f"« {brut} » n'est ni une vidéo (.mp4, .mov), ni une image (.jpg, .png), ni un instant "
+                             "en secondes")
+    if len(instants) > 1:
+        raise ValueError(f"deux instants ({', '.join(f'{t:g}' for t in instants)}) : la couverture est une seule image")
+    existantes = [v for v in videos if v.is_file()]
+    if not existantes:
+        raise ValueError("il manque la vidéo rendue : un .mp4 qui existe (par exemple exports/reel-master.mp4)"
+                         + (f" ; introuvable : {', '.join(str(v) for v in videos)}" if videos else ""))
+    sources = existantes if len(existantes) == 1 else _hors_livraison(existantes)
+    if len(sources) != 1:
+        raise ValueError(f"plusieurs vidéos existent déjà ({', '.join(str(v) for v in existantes)}) : garde la "
+                         "vidéo rendue et la sortie dans livraison/")
+    video = sources[0]
+    sorties_video = [v for v in videos if not _meme(v, video)]
+    if len(sorties_video) > 1:
+        raise ValueError(f"plusieurs vidéos de sortie ({', '.join(str(v) for v in sorties_video)}) : une seule")
+    image = None
+    if not instants:
+        reelles = [i for i in images if i.is_file() and image_reelle(i)]
+        if not reelles:
+            fausses = [i for i in images if i.is_file()]
+            if fausses:
+                raise ValueError(f"« {fausses[0]} » n'est pas une image JPEG ou PNG ({nature_fichier(fausses[0])}) : "
+                                 "refais-la, ou donne l'instant de la vidéo à prendre en couverture (en secondes)")
+            raise ValueError("il manque la couverture : une image (.jpg, .png) qui existe, ou l'instant de la vidéo à "
+                             "prendre, en secondes")
+        choix = reelles if len(reelles) == 1 else _hors_livraison(reelles)
+        if len(choix) != 1:
+            raise ValueError(f"plusieurs images existent ({', '.join(str(i) for i in reelles)}) : laquelle est la "
+                             "couverture ? Garde-la, et la sortie dans livraison/")
+        image = choix[0]
+    sorties_image = [i for i in images if image is None or not _meme(i, image)]
+    if len(sorties_image) > 1:
+        raise ValueError(f"plusieurs images de sortie ({', '.join(str(i) for i in sorties_image)}) : une seule")
+    return {"video": video, "instant": instants[0] if instants else None, "image": image,
+            "sortie": sorties_video[0] if sorties_video else None,
+            "sortie_image": sorties_image[0] if sorties_image else None}
+
+
 def cmd_couverture(a) -> None:
-    """La couverture devient la toute première image : les aperçus (X, WhatsApp, Instagram avant
-    lecture) montrent alors la bonne image. Une seule image remplacée, son conservé."""
+    """La couverture : une vraie image JPEG (ou PNG) au format de la vidéo, à poster comme couverture du
+    Reel, et la vidéo qui l'a en toute première image (les aperçus de X, WhatsApp, Instagram avant la
+    lecture la montrent alors). Une seule image remplacée, son conservé."""
     ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
     if not ffmpeg or not ffprobe:
         sys.exit("ERREUR : ffmpeg introuvable.")
-    fmt = format_de(_sonder(ffprobe, Path(a.video))) or "9x16"
+    try:
+        c = lire_couverture(a.entrees)
+    except ValueError as e:
+        sys.exit(f"ERREUR : {e}.\n  Forme : {FORME_COUVERTURE}")
+    video = c["video"]
+    info = _sonder(ffprobe, video)
+    fmt = format_de(info)
+    if not fmt:
+        sys.exit(f"ERREUR : {video} n'est pas une vidéo rendue d'un format connu ({', '.join(FORMATS)}).")
     largeur, hauteur = FORMATS[fmt]
-    r = lancer([ffmpeg, "-v", "error", "-y", "-i", a.video, "-i", a.image, "-filter_complex",
-                f"[1:v]scale={largeur}:{hauteur}:force_original_aspect_ratio=increase,crop={largeur}:{hauteur}[c];"
-                "[0:v][c]overlay=0:0:enable='eq(n,0)'[v]",
-                "-map", "[v]", "-map", "0:a?", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "16",
-                "-preset", "slow", "-c:a", "copy", "-movflags", "+faststart", a.sortie])
-    if r.returncode != 0:
-        sys.exit(f"ERREUR : couverture impossible : {r.stderr[-400:]}")
-    print(f"• {a.sortie} : la couverture est la première image")
+    duree = float((info.get("format") or {}).get("duration") or 0)
+    if c["instant"] is not None and duree and c["instant"] >= duree:
+        sys.exit(f"ERREUR : l'instant {c['instant']:g} s dépasse la vidéo ({duree:.1f} s).")
+    projet = projet_de(video)
+    meta = (meta_de(video) if projet else None) or meta_par_nom(video) or {}
+    livraison = (projet.parent / "livraison") if projet else (video.parent if video.parent.name == "livraison" else None)
+    sortie, sortie_image = c["sortie"], c["sortie_image"]
+    if (sortie is None or sortie_image is None) and (livraison is None or not meta.get("video")):
+        sys.exit("ERREUR : donne les sorties (la vidéo de livraison/ et l'image de couverture), ou lance la commande "
+                 f"depuis le projet de la vidéo.\n  Forme : {FORME_COUVERTURE}")
+    reel = meta.get("support") in ("reel", "tiktok")
+    # exports/reel-master.mp4 -> reel.mp4 ; exports/reel-sans-musique-master.mp4 -> reel-sans-musique.mp4
+    nom = re.sub(r"-master$", "", video.stem)
+    nom = nom if meta.get("video") and nom.startswith(meta["video"]) else meta.get("video")
+    sortie = sortie or livraison / f"{nom}.mp4"
+    sortie_image = sortie_image or livraison / ("couverture.jpg" if reel else f"{meta['video']}-couverture.jpg")
+    for f in (sortie, sortie_image):
+        f.parent.mkdir(parents=True, exist_ok=True)
+
+    # 1. L'image, recadrée au format de la vidéo, écrite à côté puis mise à sa place (la source peut être
+    #    la sortie elle-même) ; -update 1 : un seul fichier, jamais une suite d'images.
+    cadre = f"scale={largeur}:{hauteur}:force_original_aspect_ratio=increase,crop={largeur}:{hauteur}"
+    provisoire = sortie_image.with_name(f".{sortie_image.stem}-provisoire{sortie_image.suffix.lower()}")
+    entree = ["-ss", f"{c['instant']:.3f}", "-i", str(video)] if c["instant"] is not None else ["-i", str(c["image"])]
+    qualite = ["-q:v", "2"] if sortie_image.suffix.lower() in (".jpg", ".jpeg") else []
+    r = lancer([ffmpeg, "-v", "error", "-y", *entree, "-frames:v", "1", "-update", "1", "-vf", cadre, *qualite,
+                str(provisoire)])
+    attendu = "jpeg" if sortie_image.suffix.lower() in (".jpg", ".jpeg") else "png"
+    if r.returncode != 0 or image_reelle(provisoire) != (attendu, largeur, hauteur):
+        provisoire.unlink(missing_ok=True)
+        sys.exit(f"ERREUR : image de couverture impossible : {(r.stderr or '').strip()[-300:]}")
+    os.replace(provisoire, sortie_image)
+
+    # 2. La vidéo, avec cette image en toute première image.
+    provisoire = sortie.with_name(f".{sortie.stem}-provisoire.mp4")
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), "-i", str(sortie_image), "-filter_complex",
+                "[0:v][1:v]overlay=0:0:enable='eq(n,0)'[v]", "-map", "[v]", "-map", "0:a?", "-c:v", "libx264",
+                "-pix_fmt", "yuv420p", "-crf", "16", "-preset", "slow", "-c:a", "copy", "-movflags", "+faststart",
+                "-f", "mp4", str(provisoire)])
+    try:
+        nouvelle = json.loads(lancer([ffprobe, "-v", "error", "-show_streams", "-show_format", "-of", "json",
+                                      str(provisoire)]).stdout) if r.returncode == 0 and provisoire.is_file() else {}
+    except ValueError:
+        nouvelle = {}
+    if format_de(nouvelle) != fmt or abs(float((nouvelle.get("format") or {}).get("duration") or 0) - duree) > 0.2:
+        provisoire.unlink(missing_ok=True)
+        sys.exit(f"ERREUR : vidéo avec couverture impossible : {(r.stderr or '').strip()[-300:]}")
+    os.replace(provisoire, sortie)
+    origine = f"image de la vidéo à {c['instant']:g} s" if c["instant"] is not None else f"depuis {_court(c['image'])}"
+    print(f"• {_court(sortie_image)} : couverture {largeur}×{hauteur} ({origine})")
+    print(f"• {_court(sortie)} : la couverture est la première image")
+    if reel and livraison and sortie_image.parent.resolve() == livraison.resolve() and sortie_image.name != "couverture.jpg":
+        print(f"  la livraison attend livraison/couverture.jpg : renomme {sortie_image.name}")
 
 
 def debut_rapide(chemin: Path) -> bool | None:
@@ -2818,21 +3030,31 @@ def manques_livraison(dossier: Path) -> list[str]:
     livraison = dossier / "livraison"
     manques = []
     textes = set()
-    campagne = page = reel = False
+    campagne = page = False
+    reel = None                     # le format du Reel (ou TikTok) : sa couverture doit l'avoir
     for _projet, meta in projets(dossier):
         cle, s = meta["video"], SUPPORTS.get(meta.get("support"), {})
         if not (livraison / f"{cle}.mp4").is_file():
             manques.append(f"{cle}.mp4")
-        if s.get("affiche") and not (livraison / f"{cle}.jpg").is_file():
-            manques.append(f"{cle}.jpg (l'affiche, montrée avant la lecture)")
+        if s.get("affiche"):
+            affiche = livraison / f"{cle}.jpg"
+            pb = probleme_image(affiche, FORMATS.get(meta.get("format"))) if affiche.is_file() else None
+            if not affiche.is_file():
+                manques.append(f"{cle}.jpg (l'affiche, montrée avant la lecture)")
+            elif pb:
+                manques.append(f"{cle}.jpg : {pb} ; refais-la avec `affiche`")
         if s.get("texte"):
             textes.add(s["texte"])
         campagne = campagne or meta.get("objectif") == "lancement" or bool(meta.get("role"))
         page = page or bool(s.get("affiche"))
-        reel = reel or meta.get("support") in ("reel", "tiktok")
+        if meta.get("support") in ("reel", "tiktok") and reel is None:
+            reel = FORMATS.get(meta.get("format")) or FORMATS["9x16"]
     manques += [f"{t} (le texte de publication)" for t in sorted(textes) if not (livraison / t).is_file()]
-    if reel and not (livraison / "couverture.jpg").is_file():
+    couverture = livraison / "couverture.jpg"
+    if reel and not couverture.is_file():
         manques.append("couverture.jpg (la couverture du Reel)")
+    elif reel and probleme_image(couverture, reel):
+        manques.append(f"couverture.jpg : {probleme_image(couverture, reel)} ; refais-la avec `couverture`")
     if page and not (livraison / "integration.md").is_file():
         manques.append("integration.md (comment poser la vidéo sur la page)")
     plan = (dossier / "PLAN.md").read_text(encoding="utf-8") if (dossier / "PLAN.md").is_file() else ""
@@ -2855,7 +3077,7 @@ def cmd_livrer(a) -> None:
 ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
            "logos": ("projet",), "rythme": ("video",), "planche": ("video",), "musique": ("entree",),
            "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
-           "affiche": ("video",), "sans-musique": ("projet",), "couverture": ("video", "image"), "export": ("video",),
+           "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
            "livrer": ("dossier",)}
 
 
@@ -3006,10 +3228,18 @@ def main(argv: list[str] | None = None) -> None:
     sm = s.add_parser("sans-musique", help="Prépare la version sans musique d'un projet.")
     sm.add_argument("projet")
     sm.set_defaults(f=cmd_sans_musique)
-    co = s.add_parser("couverture", help="Pose la couverture en première image.")
-    co.add_argument("video")
-    co.add_argument("image")
-    co.add_argument("sortie")
+    co = s.add_parser(
+        "couverture", help="L'image de couverture (vraie image JPEG) et la vidéo qui l'a en première image.",
+        usage="studio_motion.py couverture <vidéo.mp4> <image.jpg|png ou instant en s> [<sortie.mp4>] [<couverture.jpg>]",
+        description="Écrit l'image de couverture, recadrée au format de la vidéo (vraie image JPEG ou PNG, vérifiée), "
+                    "et la vidéo qui l'a en toute première image. Les arguments se reconnaissent à leur nature, dans "
+                    "n'importe quel ordre : la vidéo rendue (un .mp4 qui existe), la couverture (une image qui existe, "
+                    "ou l'instant de la vidéo à prendre, en secondes), puis, facultatives, la vidéo de sortie (.mp4) "
+                    "et l'image de sortie (.jpg ou .png). Depuis le projet, les sorties par défaut sont "
+                    "../livraison/<vidéo>.mp4 et ../livraison/couverture.jpg (Reel, TikTok). Exemples : "
+                    "`couverture exports/reel-master.mp4 3.5` ; `couverture exports/reel-master.mp4 work/couverture.png`.")
+    co.add_argument("entrees", nargs="+", metavar="argument",
+                    help="vidéo rendue, image ou instant (s), et les sorties facultatives, dans n'importe quel ordre")
     co.set_defaults(f=cmd_couverture)
     ex = s.add_parser("export", help="Vérifie un MP4 pour son support.")
     ex.add_argument("video")
