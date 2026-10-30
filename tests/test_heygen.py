@@ -114,7 +114,7 @@ class Voix(unittest.TestCase):
         self.assertIn("--confirme", str(e.exception))
         secondes, dollars = heygen.cout_voix(" ".join(["mot"] * 150))      # 150 mots ≈ 1 min
         self.assertAlmostEqual(secondes, 60, delta=1)
-        self.assertAlmostEqual(dollars, 0.04, delta=0.005)
+        self.assertAlmostEqual(dollars, 0.12, delta=0.005)
 
     def test_commande_parler_refuse_sans_accord(self):
         with tempfile.TemporaryDirectory() as d:

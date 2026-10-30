@@ -54,7 +54,7 @@ naturelle : propose-la en dernier.
    anglais : la voix parlera la langue du texte. Il répond par un numéro ; note l'id dans
    `studio.config.json` (`voix_heygen`) pour ses prochaines vidéos.
 2. Le coût : `heygen parler work/voix.txt --voix <id>` (sans `--confirme`) l'affiche sans rien
-   générer. Annonce-le (« environ 0,02 $ sur ton solde HeyGen »), **attends son accord**.
+   générer. Annonce-le (« environ 0,10 $ sur ton solde HeyGen »), **attends son accord**.
 3. `heygen parler work/voix.txt --voix <id> --confirme` : `assets/audio/voix.wav` (déjà au niveau
    d'une voix de Reel) et `work/voix-mots.json` (le temps de chaque mot). Fais-lui écouter avant de
    caler la vidéo. Une phrase qui sonne mal se corrige dans le texte (ponctuation, mot plus simple)

@@ -4,7 +4,7 @@
 Ce que ça coûte :
     la recherche de musiques et l'écoute des voix sont gratuites (aucun débit, vérifié le
     14/10/2026 : le solde ne bouge pas) ;
-    une voix de synthèse est payante, prélevée sur son solde HeyGen (environ 0,04 $ la minute,
+    une voix de synthèse est payante, prélevée sur son solde HeyGen (environ 0,12 $ la minute,
     tarif Starfish de l'API ; HeyGen n'offre plus de crédit d'API depuis février 2026, il faut
     recharger quelques dollars). `parler` annonce le coût et refuse sans `confirme=True`.
 
@@ -31,7 +31,7 @@ from pathlib import Path
 API = "https://api.heygen.com"
 FICHIER_CLE = Path.home() / ".heygen" / "credentials"
 PAGE_CLE = "https://app.heygen.com/settings?nav=API"
-PRIX_VOIX_MINUTE = 0.04          # dollars, tarif Starfish de l'API HeyGen (octobre 2026)
+PRIX_VOIX_MINUTE = 0.12          # dollars, tarif « Speech — Starfish » de l'API HeyGen (aide HeyGen, 28/10/2026)
 MOTS_PAR_SECONDE = 2.5           # débit d'une voix off française
 FORME_CLE = re.compile(r"[A-Za-z0-9_\-=+/.]{20,200}")
 

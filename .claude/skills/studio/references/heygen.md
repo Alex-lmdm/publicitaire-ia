@@ -11,7 +11,7 @@ la demande lui-même, dis-le-lui une fois avant de chercher.
 |---|---|
 | Chercher, écouter et prendre une musique | gratuit (le solde ne bouge pas) |
 | Écouter les voix de synthèse | gratuit |
-| Générer une voix off de synthèse | payant, prélevé sur son solde HeyGen : environ 0,04 $ la minute ; le compte gratuit n'a pas de solde, il se recharge de quelques dollars |
+| Générer une voix off de synthèse | payant, prélevé sur son solde HeyGen : environ 0,12 $ la minute ; le compte gratuit n'a pas de solde, il se recharge de quelques dollars |
 
 Tout passe par `python3 tools/studio_motion.py heygen …` (`connecter` et l'état depuis la racine ;
 `musiques`, `bruitages`, `prendre`, `voix` et `parler` depuis le projet d'une vidéo, avec
@@ -52,8 +52,8 @@ messages et ne l'écris dans aucun fichier du dossier : l'outil la range dans
 - **« relié par le CLI heygen (connexion du navigateur) »** : il s'est connecté autrement ;
   fais-lui copier une clé (étape 2) et `heygen connecter <clé> --remplacer`.
 - **« solde HeyGen insuffisant »** (voix seulement) : une voix de synthèse coûte quelques
-  centimes, prélevés sur un solde à recharger soi-même. Propose-lui de recharger 5 $ (plus d'une
-  heure de voix) sur https://app.heygen.com/settings?nav=API, la page de sa clé, rubrique des
+  centimes, prélevés sur un solde à recharger soi-même. Propose-lui de recharger 5 $ (une quarantaine
+  de minutes de voix) sur https://app.heygen.com/settings?nav=API, la page de sa clé, rubrique des
   crédits d'API ; ou d'enregistrer sa voix au téléphone, gratuitement (`voix.md`).
 - **« HeyGen injoignable »** : pas de connexion internet ; réessaie plus tard, sans bloquer le
   reste de la vidéo.
