@@ -78,6 +78,7 @@ import heygen  # noqa: E402
 import marque as mq  # noqa: E402
 import musiques as banque  # noqa: E402
 import pack_sfx  # noqa: E402
+import telechargeur  # noqa: E402
 
 FPS = 30
 
@@ -1741,11 +1742,13 @@ def cmd_rythme(a) -> None:
 # (fonds, mots par écran, motifs, transitions, caméra), jamais le contenu.
 # ---------------------------------------------------------------------------
 def ytdlp() -> str | None:
-    """Le téléchargeur de vidéos : celui du système, sinon celui de Reel Cloneur si le client a
-    relié son dossier Monteur IA (`marque monteur`) et qu'il y est installé (lu, jamais modifié)."""
-    systeme = shutil.which("yt-dlp")
-    if systeme:
-        return systeme
+    """Le téléchargeur de vidéos : celui du dossier (`telechargeur installer`) ou un yt-dlp récent de
+    l'ordinateur, sinon celui de Reel Cloneur si le client a relié son dossier Monteur IA
+    (`marque monteur`) et qu'il y est installé (lu, jamais modifié)."""
+    propre = telechargeur.executable()
+    if propre:
+        telechargeur.mettre_a_jour()
+        return propre
     lie = (mq.lire(RACINE) or {}).get("monteur_ia")
     if lie:
         for sous in ("bin/yt-dlp", "Scripts/yt-dlp.exe"):
@@ -1781,6 +1784,20 @@ contenu, les textes, les images ni la musique de la référence.
 """
 
 
+def cmd_telechargeur(a) -> None:
+    if a.action == "installer":
+        try:
+            v = telechargeur.installer()
+        except telechargeur.ErreurTelechargeur as e:
+            sys.exit(f"ERREUR : {e}")
+        print(f"• téléchargeur installé : yt-dlp {v} (.telechargeur-venv/). Les liens YouTube, TikTok, Instagram et X "
+              "se lisent maintenant avec `reference`.")
+        return
+    exe = ytdlp()
+    print(f"• téléchargeur : {exe} (yt-dlp {telechargeur.version_ytdlp(exe)})" if exe else
+          "• téléchargeur : absent. `telechargeur installer` (gratuit, une minute, avec l'accord du client).")
+
+
 def cmd_reference(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -1794,8 +1811,9 @@ def cmd_reference(a) -> None:
     if re.match(r"https?://", a.source):
         dl = ytdlp()
         if not dl:
-            sys.exit("ERREUR : pas de téléchargeur de vidéos sur cet ordinateur : demande au client d'enregistrer la "
-                     "vidéo et de la glisser dans la conversation, puis donne son chemin.")
+            sys.exit("ERREUR : pas de téléchargeur de vidéos dans le dossier. Propose au client de l'installer "
+                     "(gratuit, une minute) : `telechargeur installer`, puis relance. S'il refuse ou si ça échoue, "
+                     "demande-lui d'enregistrer son écran pendant que la vidéo passe et de glisser le fichier ici.")
         r = lancer([dl, "--no-playlist", "-q", "--no-warnings", "-o", str(sortie / "video.%(ext)s"), a.source])
         videos = sorted(sortie.glob("video.*"))
         if r.returncode != 0 or not videos:
@@ -2770,6 +2788,10 @@ def main(argv: list[str] | None = None) -> None:
     rf.add_argument("source", help="Lien (Instagram, YouTube, TikTok…) ou fichier vidéo.")
     rf.add_argument("--nom", help="Nom court de la référence (défaut : reference).")
     rf.set_defaults(f=cmd_reference)
+    tl = s.add_parser("telechargeur", help="Le téléchargeur de vidéos (yt-dlp) pour `reference` depuis un lien : "
+                                          "`telechargeur` dit s'il est là, `telechargeur installer` l'installe dans le dossier.")
+    tl.add_argument("action", nargs="?", choices=["installer"], help="installer : crée .telechargeur-venv/ (avec son accord).")
+    tl.set_defaults(f=cmd_telechargeur)
     lo = s.add_parser("logos", help="Ajoute au projet les vrais logos des outils montrés (theSVG, simple-icons), un logo "
                                     "fourni par le client ou des icônes (Lucide). `logos chercher <nom>` trouve l'identifiant.")
     lo.add_argument("projet", help="Le projet de la vidéo, ou « chercher ».")

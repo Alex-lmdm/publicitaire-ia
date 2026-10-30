@@ -22,6 +22,9 @@ __pycache__/
 /studio.config.json
 /videos/
 
+# Le téléchargeur de vidéos (yt-dlp), installé à la demande du client : `studio_motion.py telechargeur installer`.
+/.telechargeur-venv/
+
 # Le Pack SFX (produit vendu à part) : sons sous licence, jamais versionnés ; ils se réinstallent
 # depuis l'archive du client (`studio_motion.py pack-sfx installer`).
 /assets/sfx/pack/

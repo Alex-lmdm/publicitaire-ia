@@ -68,7 +68,11 @@ python3 tools/studio_motion.py reference "<dossier>" "<lien ou fichier>" --nom <
 ```
 
 L'outil télécharge la vidéo, en tire une planche toutes les 0,5 s, compte les coupes franches et
-mesure le rythme, puis prépare `sources/reference/<nom>/ANALYSE.md`. Regarde les planches et
+mesure le rythme, puis prépare `sources/reference/<nom>/ANALYSE.md`. Pas encore de téléchargeur ?
+L'outil le dit : propose-le au client (« Pour lire ce lien, j'installe un téléchargeur de vidéos,
+gratuit, une minute. Je le fais ? »), puis `python3 tools/studio_motion.py telechargeur installer` et
+relance. S'il refuse, ou si ça échoue, demande-lui d'enregistrer son écran pendant que la vidéo passe
+et de glisser le fichier dans la conversation. Regarde les planches et
 remplis l'analyse : fonds et bascules, mots par écran, ce qui vit pendant la lecture, le motif qui
 revient, les transitions, la caméra, les interfaces, la fin. Recopie dans `PLAN.md` les procédés
 retenus et les mesures à atteindre (événements par seconde, part d'image figée).
