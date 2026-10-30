@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°4 · DÉGRADÉS VIFS · SCÈNE « ORBE PIVOT » (le basculement de l'avant à l'après),
+    4,0 s, 16:9
+
+    Ce qu'elle montre : plein cadre, le dégradé chaud et vif de l'alerte (le même que la fin de
+    mots-objets.html) qui bouge ; la phrase pivot s'écrit au centre, petite, un mot à la fois
+    (« Ça, c'était avant. ») ; le dégradé se resserre en un disque sur le fond sombre de la marque,
+    des anneaux fins apparaissent autour ; le disque devient un orbe lumineux qui tourne et
+    s'allume de blanc au cœur ; ses couleurs passent du chaud aux teintes de l'accent (l'après) ;
+    l'orbe grandit jusqu'à remplir l'écran : la scène messages-verre.html commence sur ce dégradé.
+
+    À remplacer :
+      1. L'identifiant « t04-orbe » partout (racine, scène, préfixe des ids, clé de la timeline).
+      2. PIVOT : la phrase de bascule, 2 à 4 mots, un mot à la fois, sur la voix ou les temps.
+         Elle dit que le problème appartient au passé, sans promettre un résultat.
+      3. Les instants (MOMENTS) si la musique l'exige ; garde l'ordre (phrase, disque, orbe,
+         couleurs, ouverture).
+    Couleurs : --t04-ecart (défaut 50) tourne la teinte de l'accent vers le rouge pour l'avant ;
+    l'après reste autour de l'accent. Le noir autour du disque est var(--brand-bg).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t04-orbe {
+      --t04-ecart: 50;
+      --t04-chaud-1: oklch(from var(--brand-accent) calc(l * 0.35 + 0.16) calc(c * 0.9 + 0.1) calc(h - var(--t04-ecart) * 1.6));
+      --t04-chaud-2: oklch(from var(--brand-accent) calc(l * 0.45 + 0.22) calc(c * 0.9 + 0.08) calc(h - var(--t04-ecart) * 1.0));
+      --t04-chaud-3: oklch(from var(--brand-accent) calc(l * 0.3 + 0.6) calc(c * 0.85) calc(h - var(--t04-ecart) * 0.4));
+      --t04-apres-1: var(--brand-accent);
+      --t04-apres-2: oklch(from var(--brand-accent) calc(l * 0.55 + 0.33) calc(c * 0.95) calc(h + var(--t04-ecart) * 0.9));
+      --t04-apres-3: oklch(from var(--brand-accent) calc(l * 0.15 + 0.84) calc(c * 0.30) calc(h - var(--t04-ecart) * 0.2));
+      --t04-apres-4: oklch(from var(--brand-accent) calc(l * 0.50 + 0.32) calc(c * 0.95) calc(h - var(--t04-ecart) * 0.8));
+      background: var(--brand-bg);
+    }
+    #t04-orbe .t04-orbe-anneau { position: absolute; left: 960px; top: 540px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.22); }
+    #t04-orbe .t04-orbe-halo { position: absolute; left: 960px; top: 540px; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%;
+      background: radial-gradient(closest-side, color-mix(in srgb, var(--t04-chaud-3) 30%, transparent) 40%, transparent); }
+    #t04-orbe .t04-orbe-disque { position: absolute; inset: 0; overflow: hidden; }
+    #t04-orbe .t04-orbe-couche { position: absolute; inset: 0; }
+    #t04-orbe .t04-orbe-chaud { background: radial-gradient(ellipse 75% 85% at 50% 48%, var(--t04-chaud-1), var(--t04-chaud-2) 55%, var(--t04-chaud-3) 100%); }
+    #t04-orbe .t04-orbe-apres { background: radial-gradient(ellipse 85% 90% at 65% 40%, var(--t04-apres-3), var(--t04-apres-1) 45%, var(--t04-apres-2) 100%); }
+    #t04-orbe .t04-orbe-tourbillon { position: absolute; left: 960px; top: 540px; width: 0; height: 0; }
+    #t04-orbe .t04-orbe-tache { position: absolute; border-radius: 50%; filter: blur(70px); }
+    #t04-orbe .t04-orbe-eclat { position: absolute; inset: 0; background: radial-gradient(circle at 42% 44%, rgba(255, 255, 255, 0.95) 0, rgba(255, 255, 255, 0.55) 9%, rgba(255, 255, 255, 0) 22%); }
+    #t04-orbe .t04-orbe-texte {
+      position: absolute; left: 0; right: 0; top: 494px; text-align: center; white-space: nowrap; z-index: 5;
+      font-family: var(--brand-font-body); font-weight: 400; font-size: 76px; letter-spacing: -0.02em; color: #ffffff;
+    }
+    #t04-orbe .t04-orbe-texte span { display: inline-block; margin: 0 0.12em; }
+  </style>
+
+  <div data-composition-id="t04-orbe" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+    <div id="t04-orbe" class="k-scene">
+      <div id="t04-orbe-anneaux"></div>
+      <div class="t04-orbe-halo" id="t04-orbe-halo"></div>
+      <div class="t04-orbe-disque" id="t04-orbe-disque" data-layout-allow-overflow>
+        <div class="t04-orbe-couche t04-orbe-chaud" id="t04-orbe-chaud"><div class="t04-orbe-tourbillon" id="t04-orbe-tc"></div></div>
+        <div class="t04-orbe-couche t04-orbe-apres" id="t04-orbe-apres"><div class="t04-orbe-tourbillon" id="t04-orbe-ta"></div></div>
+        <div class="t04-orbe-couche t04-orbe-eclat" id="t04-orbe-eclat"></div>
+        <div class="t04-orbe-couche" id="t04-orbe-pouls" style="background:#ffffff;"></div>
+      </div>
+      <div class="t04-orbe-texte" id="t04-orbe-texte"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 4.0, ID = "t04-orbe", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var PIVOT = [["Ça,", 0.15], ["c'était", 0.42], ["avant.", 0.72]];
+      var MOMENTS = { disque: 1.0, orbe: 1.55, couleurs: 2.35, ouverture: 3.0 };
+      var CX = 960, CY = 540;
+
+      // La phrase pivot, un mot à la fois (coupe sèche, sans glissement).
+      var texte = $("texte");
+      var mots = PIVOT.map(function (m) { var s = K.el(texte, "span", null, m[0]); K.cacher(s); tl.set(s, { opacity: 1 }, m[1]); return s; });
+      // À chaque mot, la couleur bat une fois (un éclair blanc très bref sur tout le dégradé).
+      var pouls = $("pouls");
+      K.cacher(pouls);
+      PIVOT.forEach(function (m) { tl.fromTo(pouls, { opacity: 0.16 }, { opacity: 0, duration: 0.35, ease: "power2.out", immediateRender: false }, m[1]); });
+      tl.to(mots, { opacity: 0, filter: "blur(8px)", duration: 0.25, ease: "power2.in" }, MOMENTS.orbe - 0.1);
+
+      // Les taches qui tournent dans chaque dégradé (le chaud, puis l'après).
+      function taches(hote, liste) {
+        return liste.map(function (t) {
+          return K.el(hote, "div", "t04-orbe-tache", null, "left:" + (t[0] - t[2] / 2) + "px; top:" + (t[1] - t[2] / 2) + "px; width:" + t[2] + "px; height:" + t[2] + "px; background:var(" + t[3] + ");");
+        });
+      }
+      var tc = taches($("tc"), [[-420, -160, 700, "--t04-chaud-1"], [380, 220, 640, "--t04-chaud-3"], [120, -320, 520, "--t04-chaud-2"]]);
+      var ta = taches($("ta"), [[-380, 120, 720, "--t04-apres-2"], [360, -200, 680, "--t04-apres-3"], [260, 300, 560, "--t04-apres-4"], [-120, -300, 520, "--t04-apres-1"]]);
+      K.cacher(tc);
+      tl.to(tc, { opacity: 0.9, duration: 0.6, ease: "power1.out" }, 0.05);
+      tl.fromTo([$("tc"), $("ta")], { rotation: 0 }, { rotation: 200, duration: D, ease: "power1.in" }, 0);
+      K.cacher($("apres"));
+
+      // Le dégradé se resserre en disque ; les anneaux apparaissent autour.
+      var disque = $("disque");
+      var cercle = function (r) { return "circle(" + r + "px at " + CX + "px " + CY + "px)"; };
+      gsap.set(disque, { clipPath: cercle(1250) });
+      tl.to(disque, { clipPath: cercle(300), duration: 0.6, ease: "power3.inOut" }, MOMENTS.disque);
+      tl.to(disque, { clipPath: cercle(175), duration: 0.8, ease: "expo.out" }, MOMENTS.orbe);
+      var anneaux = [400, 640, 980].map(function (r) {
+        var a = K.el($("anneaux"), "div", "t04-orbe-anneau", null, "width:" + r * 2 + "px; height:" + r * 2 + "px; margin:" + -r + "px 0 0 " + -r + "px;");
+        return a;
+      });
+      K.cacher(anneaux);
+      tl.fromTo(anneaux, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out", stagger: 0.08 }, MOMENTS.disque + 0.3);
+      tl.to(anneaux, { scale: 1.06, duration: D - MOMENTS.orbe, ease: "none" }, MOMENTS.orbe);
+
+      // L'orbe s'allume : un cœur blanc, un halo autour.
+      K.cacher([$("eclat"), $("halo")]);
+      tl.fromTo($("eclat"), { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, MOMENTS.orbe + 0.1);
+      tl.fromTo($("halo"), { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, MOMENTS.orbe + 0.1);
+      tl.fromTo(disque, { scale: 1 }, { scale: 1.04, duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 1, transformOrigin: CX + "px " + CY + "px" }, MOMENTS.orbe + 0.5);
+
+      // Les couleurs passent du chaud à l'après (l'accent), puis l'orbe s'ouvre sur tout l'écran.
+      tl.to($("apres"), { opacity: 1, duration: 0.5, ease: "power1.inOut" }, MOMENTS.couleurs);
+      tl.to(ta, { opacity: 0.95, duration: 0.01 }, MOMENTS.couleurs);
+      tl.to($("halo"), { opacity: 0, duration: 0.4 }, MOMENTS.couleurs + 0.2);
+      tl.to(disque, { clipPath: cercle(1250), duration: 0.85, ease: "power3.in" }, MOMENTS.ouverture);
+      tl.to($("eclat"), { opacity: 0, duration: 0.6, ease: "power2.in" }, MOMENTS.ouverture);
+      tl.to(anneaux, { scale: 1.8, opacity: 0, duration: 0.85, ease: "power3.in" }, MOMENTS.ouverture);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

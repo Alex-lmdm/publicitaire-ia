@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°8 « FENÊTRES BARRES » · SCÈNE : LA FENÊTRE SUR FOND PEINT (la démonstration) · 7 s
+    Ce que la scène montre : la fenêtre de l'application de l'offre, posée sur un fond de bureau peint
+    au pinceau. La caméra filme l'écran comme un enregistrement : vue entière, puis gros plans rapides
+    (flou de bougé) sur un détail, le curseur clique (onglet, élément de la barre latérale), le contenu
+    change, une demande se tape dans le champ du bas et part, la réponse arrive, la caméra recule.
+    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
+    la fenêtre garde son dessin, réduite au milieu du fond peint ; les gros plans remplissent l'écran.
+
+    À REMPLACER (seulement par la vraie interface de l'offre : une capture ou une reconstruction fidèle,
+    jamais une fonction qu'elle n'a pas) :
+     1. L'id « t08-fenetre » (racine, constante ID, préfixe CSS) par l'id de la scène.
+     2. APP : le nom dans la barre de titre, les deux onglets, les rubriques et éléments de la barre
+        latérale, la leçon ouverte (titre, détail, liste), le texte d'aide du champ, la demande tapée,
+        la réponse. Pour un logiciel : remplace .t08-contenu par sa capture
+        (<img src="assets/images/ecran.png">) et garde le cadre, le curseur et la caméra.
+     3. PLANS : les gros plans [instant, x, y, zoom] en coordonnées de la fenêtre (1760 × 980).
+     4. Le fond peint : PALETTE (couleurs de peinture, neutres) et GRAINE ; ou une image à toi en
+        fond (FOND_IMAGE = "assets/images/fond.jpg").
+    Couleurs : l'interface garde ses propres couleurs (celles de l'offre) ; l'accent de la marque ne
+    sert qu'à quelques touches du fond peint et au bouton d'envoi.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t08-fenetre { --t08-encre: #1d1c19; background: #5d6f73; font-family: "Inter", var(--brand-font-body); }
+  #t08-fenetre .t08-bureau { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
+  #t08-fenetre .t08-toile { position: absolute; left: 0; top: 0; }
+  #t08-fenetre .t08-fenetre { position: absolute; left: 0; top: 0; width: 1760px; height: 980px; border-radius: 14px; overflow: hidden;
+    background: #fbfbfa; box-shadow: 0 0 0 1px rgba(0,0,0,.18), 0 36px 90px rgba(0,0,0,.38); transform-origin: 0 0; color: #262624; }
+  #t08-fenetre .t08-a { position: absolute; white-space: nowrap; }
+  #t08-fenetre .t08-barre-titre { left: 0; top: 0; width: 1760px; height: 52px; background: #f2f2f0; border-bottom: 1px solid #e2e2df; }
+  #t08-fenetre .t08-feu { width: 13px; height: 13px; border-radius: 50%; top: 20px; }
+  #t08-fenetre .t08-segments { left: 104px; top: 11px; width: 236px; height: 31px; border-radius: 8px; background: #e3e3e0; }
+  #t08-fenetre .t08-segment-sel { left: 2px; top: 2px; width: 115px; height: 27px; border-radius: 6px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  #t08-fenetre .t08-seg { top: 0; width: 118px; line-height: 31px; text-align: center; font-size: 15px; font-weight: 500; color: #3d3d3a; }
+  #t08-fenetre .t08-titre-fen { left: 0; right: 0; top: 17px; text-align: center; font-size: 14px; color: #6e6e6a; }
+  #t08-fenetre .t08-laterale { left: 0; top: 53px; width: 300px; height: 927px; background: #f5f5f3; border-right: 1px solid #e5e5e2; }
+  #t08-fenetre .t08-bouton-lat { left: 20px; top: 72px; width: 260px; height: 40px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 1px #dcdcd8;
+    font-size: 15px; line-height: 40px; text-align: center; color: #3a3a37; }
+  #t08-fenetre .t08-rub { left: 24px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: #6e6e6a; }
+  #t08-fenetre .t08-el { left: 12px; width: 276px; height: 34px; padding: 0 12px; border-radius: 7px; font-size: 15px; line-height: 34px; color: #3a3a37; }
+  #t08-fenetre .t08-el i { position: absolute; right: 12px; font-style: normal; font-size: 13px; color: #5c5c58; }
+  #t08-fenetre .t08-el-sel { left: 12px; width: 276px; height: 34px; border-radius: 7px; background: #e7e7e3; }
+  #t08-fenetre .t08-vide { left: 300px; top: 53px; width: 1460px; height: 760px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
+  #t08-fenetre .t08-vide img { width: 92px; height: 92px; object-fit: contain; filter: grayscale(1); opacity: .22; }
+  #t08-fenetre .t08-raccourcis { display: grid; grid-template-columns: 210px 70px; row-gap: 10px; font-size: 14px; color: #6f6f6b; }
+  #t08-fenetre .t08-raccourcis b { font-weight: 400; text-align: right; color: #6f6f6b; letter-spacing: .1em; }
+  #t08-fenetre .t08-lecon-titre { left: 360px; top: 88px; font-size: 26px; font-weight: 600; color: #1f1f1d; letter-spacing: -0.01em; }
+  #t08-fenetre .t08-lecon-detail { left: 360px; top: 126px; font-size: 15px; color: #6d6d69; }
+  #t08-fenetre .t08-video { left: 360px; top: 168px; width: 820px; height: 462px; border-radius: 12px; background: var(--t08-encre); overflow: hidden; }
+  #t08-fenetre .t08-lire { left: 362px; top: 183px; width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,.94); padding: 30px 26px 30px 34px; color: #1d1c19; }
+  #t08-fenetre .t08-progres { left: 30px; right: 30px; bottom: 26px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.2); }
+  #t08-fenetre .t08-progres i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 2px; background: #fff; transform-origin: 0 50%; }
+  #t08-fenetre .t08-liste-titre { left: 1230px; top: 172px; font-size: 16px; font-weight: 600; color: #2a2a28; }
+  #t08-fenetre .t08-item { left: 1230px; font-size: 16px; color: #4a4a47; padding-left: 34px; line-height: 22px; }
+  #t08-fenetre .t08-case { position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 6px; box-shadow: inset 0 0 0 1.5px #c9c9c5; }
+  #t08-fenetre .t08-case-ok { position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 6px; background: #2f2f2c; color: #fff; padding: 4px; }
+  #t08-fenetre .t08-champ { left: 360px; top: 818px; width: 1340px; height: 112px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px #dfdfdb, 0 2px 8px rgba(0,0,0,.04); }
+  #t08-fenetre .t08-aide { left: 24px; top: 20px; font-size: 17px; color: #73736f; }
+  #t08-fenetre .t08-tape { left: 24px; top: 20px; font-size: 17px; color: #262624; }
+  #t08-fenetre .t08-puce { top: 66px; height: 28px; padding: 0 12px; border-radius: 7px; background: #f0f0ed; font-size: 14px; line-height: 28px; color: #5a5a56; }
+  #t08-fenetre .t08-envoi { right: 18px; top: 64px; width: 32px; height: 32px; border-radius: 50%; background: var(--brand-accent); color: var(--brand-contrast); padding: 7px; }
+  #t08-fenetre .t08-reponse { left: 360px; top: 650px; width: 820px; padding: 18px 22px; border-radius: 12px; background: #f3f3f0; font-size: 16px; line-height: 24px; color: #3a3a37; white-space: normal; }
+  #t08-fenetre .t08-reponse b { display: block; font-weight: 600; color: #222220; margin-bottom: 4px; }
+</style>
+
+<div data-composition-id="t08-fenetre" data-width="1920" data-height="1080" data-duration="7" style="position:absolute; inset:0;">
+  <div id="t08-fenetre" class="k-scene">
+    <div class="t08-bureau" id="t08-fenetre-bureau">
+      <canvas class="t08-toile" id="t08-fenetre-toile" data-layout-ignore></canvas>
+      <div class="t08-fenetre" id="t08-fenetre-fen"><div id="t08-fenetre-contenu" class="t08-contenu"></div></div>
+      <div id="t08-fenetre-curseur-hote" style="position:absolute; inset:0; z-index:20;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t08-fenetre", D = 7;
+    // ---- À remplacer -------------------------------------------------------------------------
+    var APP = {
+      titre: "Ton offre", onglets: ["Accueil", "Ressources"], bouton: "+  Nouvelle question",
+      laterale: [["EN COURS", [["Module 2 · Les bases", "12 min"]]], ["À SUIVRE", [["Module 3 · Passer à l'action", "18 min"], ["Module 4 · Aller plus loin", "15 min"]]],
+        ["BONUS", [["Modèles prêts à l'emploi", ""], ["Questions-réponses", ""]]]],
+      raccourcis: [["Nouvelle question", "⇧⌘N"], ["Leçon suivante", "⌘→"], ["Mes notes", "⌘J"], ["Rechercher", "⌘K"]],
+      lecon: "Module 2 · Les bases", detail: "Leçon 3 sur 6 · 12 min",
+      liste: ["Regarder la vidéo", "Télécharger le modèle", "Faire l'exercice", "Poser ta question"],
+      aide: "Pose ta question sur cette leçon…", puces: ["Leçon 2.3  ⌄", "Réponse courte  ⌄"],
+      demande: "Comment je fais l'exercice ?", reponse: ["Réponse prête", "Commence par le modèle de la leçon : il est déjà rempli pour toi."]
+    };
+    // Les gros plans : [instant, x, y, zoom] dans la fenêtre (1760 × 980) ; zoom 1 = vue entière.
+    var PLANS = [[0.55, 230, 170, 2.5], [1.55, 160, 230, 1.9], [2.7, 900, 420, 1.3], [3.55, 760, 860, 1.7], [4.7, 1390, 870, 1.7], [5.3, 880, 490, 1], [6.1, 790, 690, 1.25]];
+    var PALETTE = ["#5a7fa8", "#7fa3c4", "#a9c3d6", "#3f7f7a", "#6f9a58", "#9bb36b", "#c9a24f", "#d8bd7a", "#c98a6c", "#e8dcc0"];
+    var GRAINE = 7, FOND_IMAGE = "";
+    // -------------------------------------------------------------------------------------------
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var q = function (s) { return racine.querySelector(s); };
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
+
+    // ---- Le fond peint : des milliers de touches de pinceau, à graine (le même à chaque image) ----
+    // La toile déborde largement du cadre (30 % de chaque côté) : un gros plan près d'un bord ne montre jamais sa limite.
+    var bureau = q("#t08-fenetre-bureau"), toile = q("#t08-fenetre-toile"), TL = Math.round(L * 1.6), TH = Math.round(H * 1.6);
+    bureau.style.width = L + "px"; bureau.style.height = H + "px";
+    toile.width = TL; toile.height = TH; toile.style.width = TL + "px"; toile.style.height = TH + "px";
+    toile.style.left = -Math.round(L * 0.3) + "px"; toile.style.top = -Math.round(H * 0.3) + "px";
+    if (FOND_IMAGE) { toile.style.background = "url(" + FOND_IMAGE + ") center / cover"; }
+    else {
+      var c = toile.getContext("2d"), r = K.rng(GRAINE), accent = "rgb(" + rgb("var(--brand-accent)").slice(0, 3).join(",") + ")";
+      var ciel = c.createLinearGradient(0, 0, 0, TH);
+      ciel.addColorStop(0, PALETTE[1]); ciel.addColorStop(0.45, PALETTE[2]); ciel.addColorStop(0.55, PALETTE[7]); ciel.addColorStop(1, PALETTE[4]);
+      c.fillStyle = ciel; c.fillRect(0, 0, TL, TH);
+      var n = Math.round(TL * TH / 230);
+      for (var i = 0; i < n; i++) {
+        var x = r() * TL, y = r() * TH, h = y / TH;
+        var base = h < 0.42 ? [0, 1, 2, 9] : h < 0.6 ? [7, 6, 8, 2, 9] : [3, 4, 5, 6, 7];
+        c.strokeStyle = r() < 0.025 ? accent : PALETTE[base[Math.floor(r() * base.length)]];
+        c.globalAlpha = 0.55 + r() * 0.4; c.lineWidth = 3 + r() * 6; c.lineCap = "round";
+        var a = (h < 0.5 ? 0 : 0.5) + (r() - 0.5) * 1.1, l = 10 + r() * 26;
+        c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(a) * l * 0.5, y + Math.sin(a) * l * 0.5 - 3, x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke();
+      }
+      c.globalAlpha = 1;
+    }
+
+    // ---- La fenêtre et son interface --------------------------------------------------------
+    var fen = q("#t08-fenetre-fen"), C = q("#t08-fenetre-contenu");
+    // La fenêtre (dessinée en 1760 × 980) se réduit pour tenir dans tout format, centrée sur le fond peint.
+    var k = Math.min(1, (L - 60) / 1760, (H - 60) / 980), fx = (L - 1760 * k) / 2, fy = (H - 980 * k) / 2;
+    fen.style.left = fx + "px"; fen.style.top = fy + "px"; if (k < 1) fen.style.transform = "scale(" + k + ")";
+    var a = function (parent, classe, x, y, html, style) {
+      var e = K.el(parent, "div", "t08-a " + (classe || ""), html == null ? null : html, style || "");
+      if (x != null) e.style.left = x + "px"; if (y != null) e.style.top = y + "px"; return e;
+    };
+    a(C, "t08-barre-titre");
+    ["#ff5f57", "#febc2e", "#28c840"].forEach(function (col, i) { a(C, "t08-feu", 20 + i * 22, null, null, "background:" + col + ";"); });
+    var seg = a(C, "t08-segments"), segSel = a(seg, "t08-segment-sel", 119);
+    APP.onglets.forEach(function (o, i) { a(seg, "t08-seg", i * 118, null, o); });
+    a(C, "t08-titre-fen", null, null, APP.titre);
+    a(C, "t08-laterale");
+    a(C, "t08-bouton-lat", null, null, APP.bouton);
+    var y = 140, elements = [];
+    APP.laterale.forEach(function (rub) {
+      a(C, "t08-rub", null, y, rub[0]); y += 24;
+      rub[1].forEach(function (it) { elements.push([a(C, "t08-el", null, y, it[0] + "<i>" + it[1] + "</i>"), y]); y += 36; });
+      y += 28;
+    });
+    var elSel = a(C, "t08-el-sel", null, elements[0][1]); C.insertBefore(elSel, elements[0][0]);
+    var vide = a(C, "t08-vide"), logo = K.el(vide, "img"); logo.alt = ""; logo.src = "brand/logo.svg"; logo.onerror = function () { logo.remove(); };
+    var rac = K.el(vide, "div", "t08-raccourcis");
+    APP.raccourcis.forEach(function (rc) { K.el(rac, "span", null, rc[0]); K.el(rac, "b", null, rc[1]); });
+    var lecon = a(C, null, 0, 0, null, "position:absolute; inset:0;");
+    a(lecon, "t08-lecon-titre", null, null, APP.lecon); a(lecon, "t08-lecon-detail", null, null, APP.detail);
+    var video = a(lecon, "t08-video"); a(video, "t08-lire", null, null, K.ic("play")); var prog = a(video, "t08-progres", null, null, "<i></i>");
+    a(lecon, "t08-liste-titre", null, null, "Dans cette leçon");
+    var cases = APP.liste.map(function (txt, i) { var it = a(lecon, "t08-item", null, 214 + i * 42, txt); a(it, "t08-case"); return it; });
+    var ok = K.el(cases[0], "span", "t08-case-ok", K.ic("check"));
+    var champ = a(C, "t08-champ"), aide = a(champ, "t08-aide", null, null, APP.aide), tape = a(champ, "t08-tape");
+    APP.puces.forEach(function (p, i) { a(champ, "t08-puce", 22 + i * 150, null, p); });
+    a(champ, "t08-envoi", null, null, K.ic("arrow-up"));
+    var rep = a(C, "t08-reponse", null, null, "<b>" + APP.reponse[0] + "</b>" + APP.reponse[1]);
+
+    // ---- Le geste : caméra, curseur, clics, frappe ---------------------------------------------
+    var P = function (wx, wy) { return [fx + wx * k, fy + wy * k]; };
+    // Un gros plan : le point (wx, wy) de la fenêtre vient au centre de l'écran, au zoom s (même cadrage en 9:16).
+    var viser = function (t, wx, wy, s, duree) {
+      var plan = s <= 1.01, p = plan ? [L / 2, H / 2] : P(wx, wy), sc = plan ? 1 : s * (L / 1920) / k;
+      tl.to(bureau, { x: -(p[0] - L / 2) * sc, y: -(p[1] - H / 2) * sc, scale: sc, duration: duree, ease: "expo.inOut" }, t);
+      tl.to(bureau, { filter: "blur(7px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);
+    };
+    gsap.set(bureau, { x: 0, y: 0, scale: 1, filter: "blur(0px)" });
+    tl.to(bureau, { scale: 1.03, duration: 0.5, ease: "sine.out" }, 0);
+    PLANS.forEach(function (pl) { viser(pl[0], pl[1], pl[2], pl[3], 0.5); });
+    tl.to(bureau, { scale: "+=0.03", duration: D - 6.65, ease: "none" }, 6.65);
+    var cur = K.curseur(q("#t08-fenetre-curseur-hote"), ID + "-cur", false);
+    var pc = function (wx, wy) { var p = P(wx, wy); return [p[0], p[1]]; };
+    var c0 = pc(1100, 640), c1 = pc(156, 20), c2 = pc(112, 176), c3 = pc(1233, 219), c4 = pc(700, 846), c5 = pc(1657, 888);
+    K.trajet(tl, cur, [[0, c0[0], c0[1]], [0.3, c1[0], c1[1], 0.75, "power3.inOut"], [1.5, c2[0], c2[1], 0.6, "power3.inOut"],
+      [2.45, c3[0], c3[1], 0.75, "power3.inOut"], [3.45, c4[0], c4[1], 0.55, "power3.inOut"], [4.75, c5[0], c5[1], 0.4, "power3.out"]]);
+    // Clic sur l'onglet de gauche : la sélection glisse.
+    K.clic(tl, cur, 1.12); tl.to(segSel, { x: -117, duration: 0.25, ease: "power3.out" }, 1.15);
+    // Clic sur l'élément de la barre latérale : l'écran vide laisse place à la leçon.
+    K.clic(tl, cur, 2.12); gsap.set(elSel, { opacity: 0.4 }); tl.to(elSel, { opacity: 1, duration: 0.1 }, 2.15);
+    K.cacher(lecon); tl.set(vide, { opacity: 0 }, 2.2).set(lecon, { opacity: 1 }, 2.2);
+    tl.fromTo(prog.querySelector("i"), { scaleX: 0.08 }, { scaleX: 0.35, duration: 4.5, ease: "none" }, 2.2);
+    // La première case se coche.
+    K.clic(tl, cur, 3.25); K.cacher(ok, { scale: 0.4 }); tl.to(ok, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 3.27);
+    // La demande se tape dans le champ, puis part.
+    K.clic(tl, cur, 4.05); tl.set(aide, { opacity: 0 }, 4.12);
+    K.taper(tl, tape, APP.demande, 4.15, 4.7, D);
+    K.clic(tl, cur, 5.18); tl.set(tape, { opacity: 0 }, 5.25).set(aide, { opacity: 1 }, 5.25);
+    K.cacher(rep, { y: 30 }); tl.to(rep, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 5.55);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

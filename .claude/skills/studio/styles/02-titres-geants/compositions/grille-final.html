@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°2 · TITRES GÉANTS · SCÈNE « GRILLE ET FINAL » (ce qu'on reçoit, le slogan, l'appel),
+    8,0 s, 16:9
+
+    Ce qu'elle montre, en trois plans coupés franc :
+      plan A (0 à 2,4 s) : sur le fond sombre de la marque, l'étoile de rayons de la scène
+        précédente se resserre au centre et disparaît ; une grille d'icônes au trait fin se dessine
+        depuis le centre (chaque icône dans un cercle de construction pointillé, deux points sur
+        le cercle) ; un cadre de sélection à poignées attrape une icône, qui passe à l'accent, et
+        son étiquette s'écrit ; la caméra s'en approche ;
+      plan B (2,4 à 4,4 s) : le slogan géant, blanc, sur deux lignes, dans un espace profond aux
+        teintes de l'accent ; une planète en bas à gauche, des cubes (le produit) qui dérivent, la
+        sphère de verre qui passe derrière les lettres ;
+      plan C (4,4 à 8,0 s) : sur le fond sombre, le nom de la marque et ses repères de maquette ;
+        la sphère arrive, se pose et devient le bouton ; le curseur le clique, il se remplit de
+        l'accent ; le nom et le bouton tiennent 2,6 s avec les cubes qui dérivent.
+
+    À remplacer :
+      1. L'identifiant « t02-final » partout (racine, scène, préfixe des ids et des dégradés SVG,
+         clé de la timeline).
+      2. ICONES : une icône par élément RÉEL de l'offre (module, bonus, outil, fonction), 12 à 24,
+         noms du kit (K.ic, Lucide) ou logos posés par `studio_motion.py logos`. CHOISIE : l'index
+         de l'icône que le cadre attrape, et ETIQUETTE : ce qu'elle est (2 à 4 mots).
+      3. Le slogan (#t02-final-l1, #t02-final-l2 : 1 à 2 mots par ligne, 4 au plus en tout).
+      4. Le nom (#t02-final-nom : le nom de sa marque ou de l'offre ; un logo se pose en
+         <img src="brand/logo.svg"> à sa gauche, s'il en a un) et le bouton (#t02-final-btn-texte :
+         le vrai libellé du bouton de sa page, 1 à 3 mots).
+    Couleurs : var(--brand-*) et teintes dérivées de l'accent (--t02-d, défaut -40 ; +40 pour un
+    accent vert). Polices : var(--brand-font-display) ; étiquettes en var(--brand-font-body).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t02-final {
+      --t02-d: -40;
+      --s-clair: oklch(from var(--brand-accent) 0.965 calc(c * 0.16) h);
+      --s-moyen: oklch(from var(--brand-accent) calc(l * 0.62 + 0.30) calc(c * 0.62) calc(h + var(--t02-d) * 0.3));
+      --s-sombre: oklch(from var(--brand-accent) calc(l * 0.55) calc(c * 0.80) calc(h + var(--t02-d) * 0.8));
+      --s-vitre-1: oklch(from var(--brand-accent) calc(l * 0.70 + 0.18) calc(c * 0.90) calc(h + var(--t02-d) * 0.5));
+      --s-vitre-2: oklch(from var(--brand-accent) calc(l * 0.52) calc(c * 0.95) calc(h + var(--t02-d) * 1.0));
+      --s-trait: oklch(from var(--brand-accent) calc(l * 0.24) calc(c * 0.45) calc(h + var(--t02-d)));
+      --s-feu: var(--brand-accent);
+      --e-lueur: oklch(from var(--brand-accent) calc(l * 0.58) calc(c * 0.95) calc(h + var(--t02-d) * 0.6));
+      --e-fond: oklch(from var(--brand-accent) calc(l * 0.30) calc(c * 0.70) calc(h + var(--t02-d) * 1.2));
+      --e-planete: oklch(from var(--brand-accent) calc(l * 0.40) calc(c * 0.75) calc(h + var(--t02-d) * 1.0));
+      --e-planete-2: oklch(from var(--brand-accent) calc(l * 0.28) calc(c * 0.60) calc(h + var(--t02-d) * 1.2));
+      --e-bord: oklch(from var(--brand-accent) calc(l * 0.72) calc(c * 0.85) calc(h + var(--t02-d) * 0.4));
+      background: var(--brand-bg);
+    }
+    #t02-final .t02-final-plan { position: absolute; inset: 0; overflow: hidden; }
+    /* Plan A : la grille d'icônes. */
+    #t02-final .t02-final-camA { position: absolute; inset: 0; }
+    #t02-final .t02-final-case { position: absolute; width: 150px; height: 150px; margin: -75px 0 0 -75px; color: var(--brand-text); }
+    #t02-final .t02-final-case svg { position: absolute; overflow: visible; }
+    #t02-final .t02-final-case .rond { left: 0; top: 0; width: 150px; height: 150px; }
+    #t02-final .t02-final-case .ic { left: 37px; top: 37px; width: 76px; height: 76px; }
+    #t02-final .t02-final-case.choisie { color: var(--brand-accent); }
+    #t02-final .t02-final-etoile { position: absolute; left: 960px; top: 680px; width: 0; height: 0; }
+    #t02-final .t02-final-rai { position: absolute; left: 0; top: -1px; width: 1300px; height: 2px; background: rgba(255, 255, 255, 0.8); transform-origin: 0 50%; }
+    #t02-final .t02-final-rai i { position: absolute; right: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+    #t02-final .t02-final-sel { position: absolute; border: 2px solid var(--brand-accent); }
+    #t02-final .t02-final-poignee { position: absolute; width: 14px; height: 14px; margin: -8px 0 0 -8px; background: var(--brand-bg); border: 2px solid var(--brand-accent); }
+    #t02-final .t02-final-etiquette { position: absolute; font-family: var(--brand-font-body); font-size: 24px; line-height: 1.3; color: var(--brand-text); white-space: nowrap; }
+    /* Plan B : l'espace et le slogan géant. */
+    #t02-final .t02-final-espace { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 85% at 78% 30%, var(--e-lueur) 0%, var(--e-fond) 48%, var(--brand-bg) 100%); }
+    #t02-final .t02-final-slogan {
+      position: absolute; left: 230px; white-space: nowrap; z-index: 6;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 236px; line-height: 1;
+      letter-spacing: -0.045em; color: var(--brand-text);
+    }
+    #t02-final .t02-final-objet { position: absolute; left: 0; top: 0; width: 400px; height: 400px; margin: -200px 0 0 -200px; z-index: 4; }
+    #t02-final .t02-final-objet svg { width: 100%; height: 100%; overflow: visible; }
+    #t02-final .t02-final-scube { position: absolute; perspective: 700px; z-index: 3; }
+    #t02-final .t02-final-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
+    #t02-final .t02-final-cube .f { position: absolute; inset: 0; border: 2px solid var(--s-trait); background: color-mix(in srgb, var(--s-clair) 90%, transparent); }
+    #t02-final .t02-final-cube .f.cote { background: color-mix(in srgb, var(--s-moyen) 92%, transparent); }
+    #t02-final .t02-final-cube .f.haut { background: color-mix(in srgb, #ffffff 92%, transparent); }
+    /* Plan C : le nom, ses repères et le bouton. */
+    #t02-final .t02-final-nom {
+      position: absolute; left: 0; right: 0; top: 330px; text-align: center; white-space: nowrap;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 132px; line-height: 1;
+      letter-spacing: -0.04em; color: var(--brand-text);
+    }
+    #t02-final .t02-final-trait { position: absolute; background: color-mix(in srgb, var(--brand-accent) 55%, transparent); }
+    #t02-final .t02-final-note { position: absolute; font-family: var(--brand-font-body); font-size: 21px; line-height: 1.3; color: var(--brand-muted); white-space: nowrap; }
+    #t02-final .t02-final-btn {
+      position: absolute; left: 960px; top: 650px; height: 120px; margin: -60px 0 0 0;
+      border-radius: 999px; border: 3px solid var(--brand-accent); overflow: hidden;
+      display: flex; align-items: center; justify-content: center; z-index: 5;
+    }
+    #t02-final .t02-final-btn .remplir { position: absolute; inset: 0; background: var(--brand-accent); transform-origin: 50% 50%; }
+    #t02-final .t02-final-btn span {
+      position: relative; font-family: var(--brand-font-display); font-weight: 600; font-size: 46px;
+      letter-spacing: -0.02em; color: var(--brand-accent); white-space: nowrap;
+    }
+    #t02-final .t02-final-btn[data-etat="plein"] span { color: var(--brand-contrast); }
+  </style>
+
+  <div data-composition-id="t02-final" data-width="1920" data-height="1080" data-duration="8" style="position:absolute; inset:0;">
+    <div id="t02-final" class="k-scene">
+      <!-- Plan A -->
+      <div class="t02-final-plan" id="t02-final-planA">
+        <div class="t02-final-camA" id="t02-final-camA">
+          <div class="t02-final-etoile" id="t02-final-etoile"></div>
+          <div id="t02-final-grille"></div>
+          <div class="t02-final-sel" id="t02-final-sel">
+            <i class="t02-final-poignee" style="left:0; top:0;"></i><i class="t02-final-poignee" style="left:100%; top:0;"></i>
+            <i class="t02-final-poignee" style="left:0; top:100%;"></i><i class="t02-final-poignee" style="left:100%; top:100%;"></i>
+          </div>
+          <div class="t02-final-etiquette" id="t02-final-etiquette"></div>
+        </div>
+      </div>
+      <!-- Plan B -->
+      <div class="t02-final-plan" id="t02-final-planB">
+        <div class="t02-final-espace"></div>
+        <div id="t02-final-planete"></div>
+        <div id="t02-final-cubes"></div>
+        <div class="t02-final-slogan" id="t02-final-l1" style="top:262px;"><span class="k-mot" data-layout-allow-overlap>Ose</span> <span class="k-mot" data-layout-allow-overlap>aller</span></div>
+        <div class="t02-final-slogan" id="t02-final-l2" style="top:500px;"><span class="k-mot" data-layout-allow-overlap>plus</span> <span class="k-mot" data-layout-allow-overlap>loin.</span></div>
+      </div>
+      <!-- Plan C -->
+      <div class="t02-final-plan" id="t02-final-planC" style="background:var(--brand-bg);">
+        <div id="t02-final-cubesC"></div>
+        <div class="t02-final-nom" id="t02-final-nom">Ta marque</div>
+        <div id="t02-final-reperes"></div>
+        <div class="t02-final-btn" id="t02-final-btn" data-etat="vide"><i class="remplir"></i><span id="t02-final-btn-texte">Je commence</span></div>
+        <div id="t02-final-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+      </div>
+      <!-- La sphère passe d'un plan à l'autre : elle vit au-dessus des plans B et C. -->
+      <div class="t02-final-objet" id="t02-final-objet" style="left:1500px; top:300px;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 8.0, ID = "t02-final", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var B = 2.4, C = 4.4;
+      var ICONES = ["play", "book-open", "video", "list-checks", "message-circle", "calendar",
+        "users", "graduation-cap", "file-text", "rocket", "target", "lightbulb",
+        "trophy", "gift", "clock", "folder", "mic", "image",
+        "layers", "palette", "chart-line", "mail", "lock", "download"];
+      var CHOISIE = 9, ETIQUETTE = "Ton lancement";
+
+      // ---------- Plan A : l'étoile de rayons qui se resserre ----------
+      var etoile = $("etoile"), rais = [];
+      [-168, -150, -128, -110, -70, -52, -30, -12, 8, 22, 40, 62, 90, 118, 140, 158, 172].forEach(function (a) {
+        var r = K.el(etoile, "i", "t02-final-rai", "<i></i>");
+        r.style.transform = "rotate(" + a + "deg)";
+        if (a < 0) r.style.opacity = "0.6";
+        rais.push(r);
+      });
+      tl.fromTo(etoile, { x: 0, y: 0, scale: 1, rotation: 0 }, { x: 0, y: -140, scale: 0.09, rotation: 30, duration: 0.55, ease: "expo.inOut" }, 0);
+      tl.to(etoile, { scale: 0, duration: 0.25, ease: "power2.in" }, 0.6);
+
+      // ---------- La grille : une icône au trait fin par case, dessinée depuis le centre ----------
+      var grille = $("grille"), COL = 6, LIG = 4, PX = 210, PY = 196, X0 = 960 - PX * 2.5, Y0 = 540 - PY * 1.5;
+      var cases = ICONES.map(function (nom, i) {
+        var col = i % COL, lig = Math.floor(i / COL), x = X0 + col * PX, y = Y0 + lig * PY;
+        var c = K.el(grille, "div", "t02-final-case", null, "left:" + x + "px; top:" + y + "px;");
+        var a1 = (i * 47) % 360, a2 = (a1 + 140 + (i * 23) % 80) % 360;
+        var p = function (a) { return [75 + 62 * Math.cos(a * Math.PI / 180), 75 + 62 * Math.sin(a * Math.PI / 180)]; };
+        var q1 = p(a1), q2 = p(a2);
+        c.innerHTML = '<svg class="rond" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="currentColor" stroke-opacity="0.32" stroke-width="1.6" stroke-dasharray="3 6"/>' +
+          '<circle cx="' + q1[0].toFixed(1) + '" cy="' + q1[1].toFixed(1) + '" r="4" fill="currentColor"/>' +
+          '<circle cx="' + q2[0].toFixed(1) + '" cy="' + q2[1].toFixed(1) + '" r="4" fill="currentColor"/></svg>' +
+          K.ic(nom).replace(/stroke-width="2"/, 'stroke-width="0.85"').replace("<svg ", '<svg class="ic" ');
+        c.dataset.d = Math.hypot(x - 960, y - 540).toFixed(0);
+        return c;
+      });
+      var parDistance = cases.slice().sort(function (a, b) { return a.dataset.d - b.dataset.d; });
+      parDistance.forEach(function (c, k) {
+        var t0 = 0.5 + k * 0.03;
+        var traits = c.querySelectorAll(".ic path, .ic circle, .ic line, .ic rect, .ic polyline, .ic polygon, .ic ellipse");
+        traits.forEach(function (t) {
+          var L = Math.ceil(t.getTotalLength ? t.getTotalLength() : 80) + 1;
+          t.style.strokeDasharray = L + " " + L;
+          gsap.set(t, { strokeDashoffset: L });
+        });
+        // L'icône reste cachée jusqu'à son tour (certaines ont des points pleins, sans trait).
+        var ic = c.querySelector(".ic");
+        gsap.set(ic, { opacity: 0 });
+        tl.to(ic, { opacity: 1, duration: 0.08 }, t0);
+        tl.to(traits, { strokeDashoffset: 0, duration: 0.45, ease: "power2.out" }, t0);
+        var rond = c.querySelector(".rond");
+        gsap.set(rond, { scale: 0.6, opacity: 0, rotation: -40, transformOrigin: "50% 50%" });
+        tl.to(rond, { scale: 1, opacity: 1, rotation: 0, duration: 0.5, ease: "expo.out" }, t0);
+      });
+
+      // Le cadre de sélection attrape une icône ; les autres s'effacent un peu ; l'étiquette s'écrit.
+      var choisie = cases[CHOISIE], cx = parseFloat(choisie.style.left), cy = parseFloat(choisie.style.top);
+      var sel = $("sel"), etq = $("etiquette");
+      gsap.set(sel, { left: cx - 88, top: cy - 88, width: 176, height: 176 });
+      K.cacher(sel);
+      tl.fromTo(sel, { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, 1.4);
+      tl.set(choisie, { attr: { class: "t02-final-case choisie" } }, 1.48);
+      tl.to(cases.filter(function (c) { return c !== choisie; }), { opacity: 0.35, duration: 0.3, ease: "power2.out" }, 1.5);
+      // L'étiquette se pose sous le cadre, centrée (entre deux lignes de la grille).
+      etq.style.left = (cx - 150) + "px"; etq.style.width = "300px"; etq.style.textAlign = "center"; etq.style.top = (cy + 100) + "px";
+      K.taper(tl, etq, ETIQUETTE, 1.6, 1.95, D);
+      tl.to($("camA"), { scale: 1.5, x: (960 - cx) * 1.5, y: (540 - cy) * 1.5 - 60, duration: 0.9, ease: "expo.inOut" }, 1.5);
+
+      // ---------- Plan B : le slogan géant dans l'espace ----------
+      var planB = $("planB");
+      K.cacher(planB);
+      tl.set(planB, { opacity: 1 }, B);
+      tl.set($("planA"), { opacity: 0 }, B + 0.02);
+      $("planete").innerHTML = '<svg style="position:absolute; left:-520px; top:640px; width:1400px; height:1400px;" viewBox="0 0 1400 1400">' +
+        '<circle cx="700" cy="700" r="690" style="fill:var(--e-planete)"/>' +
+        '<circle cx="700" cy="700" r="640" style="fill:var(--e-planete-2)"/>' +
+        '<circle cx="700" cy="700" r="690" fill="none" style="stroke:var(--e-bord)" stroke-width="10"/>' +
+        '<circle cx="700" cy="700" r="600" fill="none" style="stroke:var(--e-bord)" stroke-opacity="0.35" stroke-width="3" stroke-dasharray="40 26"/>' +
+        '<circle cx="700" cy="700" r="560" fill="none" style="stroke:var(--e-bord)" stroke-opacity="0.2" stroke-width="2" stroke-dasharray="14 30"/></svg>';
+      var planete = $("planete");
+      tl.fromTo(planete, { y: 60, rotation: 0 }, { y: -20, rotation: 6, duration: 2.1, ease: "none", transformOrigin: "-200px 1100px" }, B);
+
+      // Les cubes (le produit) qui dérivent : CSS 3D, tailles et places fixes.
+      function cubes(hote, liste) {
+        return liste.map(function (c) {
+          var w = K.el(hote, "div", "t02-final-scube", null, "left:" + c[0] + "px; top:" + c[1] + "px; width:" + c[2] + "px; height:" + c[2] + "px;");
+          var cu = K.el(w, "div", "t02-final-cube"), h = c[2] / 2;
+          ["translateZ(" + h + "px)", "rotateY(180deg) translateZ(" + h + "px)", "rotateY(90deg) translateZ(" + h + "px)",
+           "rotateY(-90deg) translateZ(" + h + "px)", "rotateX(90deg) translateZ(" + h + "px)", "rotateX(-90deg) translateZ(" + h + "px)"
+          ].forEach(function (tr, i) { K.el(cu, "div", "f" + (i === 2 || i === 3 ? " cote" : i > 3 ? " haut" : ""), null, "transform:" + tr); });
+          cu.dataset.r = c[3];
+          if (c[4]) w.style.filter = "blur(" + c[4] + "px)";
+          return cu;
+        });
+      }
+      var cubesB = cubes($("cubes"), [[1640, 140, 64, 1, 0], [1180, 120, 36, -1, 1.5], [1760, 620, 48, 1, 0], [1420, 860, 30, -1, 2], [150, 160, 44, 1, 2.5], [980, 820, 26, 1, 0]]);
+      cubesB.forEach(function (cu, i) {
+        var r = parseFloat(cu.dataset.r);
+        tl.fromTo(cu, { rotationX: -20 + i * 7, rotationY: 30 * i }, { rotationX: 10 + i * 5, rotationY: 30 * i + 140 * r, duration: 2.1, ease: "none" }, B);
+        tl.fromTo(cu.parentNode, { y: 10 }, { y: -36 - i * 4, duration: 2.1, ease: "none" }, B);
+      });
+
+      var l1 = $("l1").querySelectorAll(".k-mot"), l2 = $("l2").querySelectorAll(".k-mot");
+      K.entreeMots(tl, l1, B + 0.02, { y: 60, flou: 16, decalage: 0.08, duree: 0.6 });
+      K.entreeMots(tl, l2, B + 0.22, { y: 60, flou: 16, decalage: 0.08, duree: 0.6 });
+      tl.fromTo([$("l1"), $("l2")], { scale: 1 }, { scale: 1.04, duration: 2.0, ease: "none", transformOrigin: "0% 50%" }, B);
+
+      // La sphère : elle passe derrière les lettres, puis file vers le plan C.
+      var g = ID + "-s";
+      var FEN = "M120 112 Q200 90 280 112 Q296 116 296 134 L292 206 Q290 222 274 225 Q200 238 126 225 Q110 222 108 206 L104 134 Q104 116 120 112 Z";
+      var FEN_G = "M40 140 Q58 116 84 114 Q92 114 92 128 L94 206 Q94 218 82 219 Q62 220 48 214 Q32 180 40 140 Z";
+      var FEN_D = "M316 114 Q342 116 360 140 Q368 180 352 214 Q338 220 318 219 Q306 218 306 206 L308 128 Q308 114 316 114 Z";
+      var objet = $("objet");
+      objet.innerHTML = '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><defs>' +
+        '<radialGradient id="' + g + '-corps" cx="0.40" cy="0.30" r="0.78"><stop offset="0" style="stop-color:#ffffff"/>' +
+        '<stop offset="0.32" style="stop-color:var(--s-clair)"/><stop offset="0.78" style="stop-color:var(--s-moyen)"/>' +
+        '<stop offset="1" style="stop-color:var(--s-sombre)"/></radialGradient>' +
+        '<linearGradient id="' + g + '-vitre" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" style="stop-color:var(--s-vitre-1)"/>' +
+        '<stop offset="1" style="stop-color:var(--s-vitre-2)"/></linearGradient>' +
+        '<clipPath id="' + g + '-clip"><circle cx="200" cy="200" r="180"/></clipPath>' +
+        '<clipPath id="' + g + '-vclip"><path d="' + FEN + '"/></clipPath></defs>' +
+        '<circle cx="200" cy="200" r="180" fill="url(#' + g + '-corps)"/>' +
+        '<g clip-path="url(#' + g + '-clip)"><g class="s-tourne"><path d="' + FEN + '" fill="url(#' + g + '-vitre)"/>' +
+        '<path d="' + FEN_G + '" fill="url(#' + g + '-vitre)"/><path d="' + FEN_D + '" fill="url(#' + g + '-vitre)"/>' +
+        '<g clip-path="url(#' + g + '-vclip)" stroke="#ffffff" stroke-opacity="0.38" stroke-linecap="round">' +
+        '<line x1="176" y1="86" x2="128" y2="246" stroke-width="18"/><line x1="214" y1="86" x2="168" y2="246" stroke-width="7"/></g></g></g>' +
+        '<path d="M318 64 A180 180 0 0 1 352 300" fill="none" stroke="#ffffff" stroke-opacity="0.6" stroke-width="9" stroke-linecap="round"/>' +
+        '<ellipse cx="200" cy="366" rx="54" ry="14" style="fill:var(--s-feu)"/>' +
+        '<g fill="none" style="stroke:var(--s-trait)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="200" cy="200" r="180"/><path d="M66 72 Q200 26 334 72"/>' +
+        '<g clip-path="url(#' + g + '-clip)"><g class="s-tourne"><path d="' + FEN + '"/><path d="' + FEN_G + '"/><path d="' + FEN_D + '"/></g></g>' +
+        '<path d="M24 242 Q200 292 376 242"/><path d="M40 290 Q200 336 360 290"/><path d="M86 340 Q200 370 314 340"/>' +
+        '<ellipse cx="200" cy="366" rx="54" ry="14"/></g></svg>';
+      K.cacher(objet);
+      tl.set(objet, { opacity: 1 }, B);
+      // Derrière les lettres : de la droite vers le milieu, en tournant (z-index sous le slogan).
+      // Dans l'espace, elle est à contre-jour (plus sombre) : le slogan blanc reste lisible devant.
+      tl.fromTo(objet, { x: 260, y: 140, scale: 0.78, filter: "brightness(0.58) saturate(1.25)" },
+        { x: -380, y: 60, scale: 0.92, filter: "brightness(0.58) saturate(1.25)", duration: 2.0, ease: "power1.inOut" }, B);
+      tl.fromTo(objet.querySelectorAll(".s-tourne"), { x: -30 }, { x: 34, duration: D - B, ease: "none" }, B);
+      tl.fromTo(objet.querySelector("svg"), { rotation: 8 }, { rotation: -6, duration: D - B, ease: "sine.inOut" }, B);
+
+      // ---------- Plan C : le nom, ses repères, la sphère qui devient le bouton ----------
+      var planC = $("planC");
+      K.cacher(planC);
+      tl.set(planC, { opacity: 1 }, C);
+      tl.set(planB, { opacity: 0 }, C + 0.02);
+      // La sphère se pose sous le nom et devient le bouton (même centre, 960 × 650).
+      tl.set(objet, { x: 560, y: 520, scale: 0.5, filter: "brightness(1) saturate(1)" }, C);
+      tl.to(objet, { x: -540, y: 350, scale: 0.3, duration: 0.55, ease: "expo.inOut" }, C + 0.02);
+      tl.to(objet, { scale: 0, opacity: 0, duration: 0.18, ease: "power2.in" }, C + 0.55);
+
+      var nom = $("nom"), btn = $("btn"), remplir = btn.querySelector(".remplir"), texteBtn = $("btn-texte");
+      var lettres = nom.textContent.split("");
+      nom.innerHTML = lettres.map(function (l) { return '<span class="k-mot">' + (l === " " ? "&nbsp;" : l) + "</span>"; }).join("");
+      K.entreeMots(tl, nom.querySelectorAll(".k-mot"), C + 0.05, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
+
+      // Le bouton naît de la sphère : un rond qui s'étire en pilule, puis le texte.
+      var LARGEUR = 560;
+      gsap.set(btn, { width: 120, x: -60, opacity: 0 });
+      gsap.set(remplir, { scale: 0 });
+      tl.to(btn, { opacity: 1, duration: 0.12 }, C + 0.6);
+      tl.to(btn, { width: LARGEUR, x: -LARGEUR / 2, duration: 0.45, ease: "expo.out" }, C + 0.66);
+      K.cacher(texteBtn);
+      tl.fromTo(texteBtn, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, C + 0.85);
+
+      // Les repères de maquette : un trait sous le nom, une cote du bouton, leurs étiquettes.
+      var reperes = $("reperes");
+      var famille = getComputedStyle(nom).fontFamily.split(",")[0].replace(/["']/g, "").trim();
+      var tNom = K.el(reperes, "div", "t02-final-trait", null, "left:560px; top:476px; width:800px; height:2px;");
+      var tNomG = K.el(reperes, "div", "t02-final-trait", null, "left:560px; top:466px; width:2px; height:20px;");
+      var tNomD = K.el(reperes, "div", "t02-final-trait", null, "left:1358px; top:466px; width:2px; height:20px;");
+      var nNom = K.el(reperes, "div", "t02-final-note", famille + " SemiBold · 132 px", "left:560px; top:492px;");
+      var tBtn = K.el(reperes, "div", "t02-final-trait", null, "left:" + (960 + LARGEUR / 2 + 30) + "px; top:590px; width:2px; height:120px;");
+      var nBtn = K.el(reperes, "div", "t02-final-note", "Bouton · rayon plein", "left:" + (960 + LARGEUR / 2 + 50) + "px; top:636px;");
+      gsap.set([tNom], { scaleX: 0, transformOrigin: "0 50%" });
+      gsap.set([tNomG, tNomD, tBtn], { scaleY: 0 });
+      K.cacher([nNom, nBtn]);
+      tl.to(tNom, { scaleX: 1, duration: 0.45, ease: "expo.out" }, C + 0.4);
+      tl.to([tNomG, tNomD], { scaleY: 1, duration: 0.3, ease: "expo.out" }, C + 0.45);
+      tl.fromTo(nNom, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, C + 0.55);
+      tl.to(tBtn, { scaleY: 1, duration: 0.35, ease: "expo.out" }, C + 1.0);
+      tl.fromTo(nBtn, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, C + 1.05);
+      tl.to([tNom, tNomG, tNomD, nNom, tBtn, nBtn], { opacity: 0, duration: 0.3, ease: "power2.in" }, C + 1.75);
+
+      // Le curseur clique le bouton : il se remplit de l'accent.
+      var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+      K.cacher(curseur);
+      tl.to(curseur, { opacity: 1, duration: 0.2 }, C + 0.95);
+      K.trajet(tl, curseur, [[0, 1560, 960], [C + 0.95, 1050, 660, 0.55, "power3.out"]]);
+      K.clic(tl, curseur, C + 1.55);
+      tl.to(remplir, { scale: 1.02, duration: 0.4, ease: "power3.out" }, C + 1.58);
+      tl.set(btn, { attr: { "data-etat": "plein" } }, C + 1.68);
+      tl.fromTo(btn, { scale: 1 }, { scale: 1.04, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 1 }, C + 1.58);
+      tl.to(curseur, { x: 1180, y: 760, duration: 0.6, ease: "power2.inOut" }, C + 1.9);
+
+      // Quelques cubes qui dérivent pendant la tenue.
+      var cubesC = cubes($("cubesC"), [[300, 220, 54, 1, 0], [1620, 260, 40, -1, 1], [1480, 880, 30, 1, 2], [420, 820, 34, -1, 1.5]]);
+      cubesC.forEach(function (cu, i) {
+        var r = parseFloat(cu.dataset.r);
+        K.cacher(cu.parentNode);
+        tl.fromTo(cu.parentNode, { opacity: 0, scale: 0.4 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "back.out(2)" }, C + 0.3 + i * 0.1);
+        tl.fromTo(cu, { rotationX: -15, rotationY: 40 * i }, { rotationX: 15, rotationY: 40 * i + 120 * r, duration: D - C, ease: "none" }, C);
+        tl.fromTo(cu.parentNode, { y: 0 }, { y: -26 + i * 8, duration: D - C, ease: "sine.inOut" }, C);
+      });
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

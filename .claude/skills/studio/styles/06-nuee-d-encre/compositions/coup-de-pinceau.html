@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°6 « PAPIER PINCEAU » · SCÈNE 1 : LE COUP DE PINCEAU QUI SE DÉFAIT (4,5 s)
+
+    Ce qu'elle montre : une page de papier (fibres, petites légendes dans les coins, chiffres qui
+    défilent en bas). Un pinceau trace un grand cercle d'encre d'un seul geste (appui, poils qui
+    sèchent, queue qui s'effiloche), puis pose un point. Le tracé se « numérise » (des colonnes de
+    petits signes le traversent), puis se défait en une nuée de points qui s'envole et se pose en
+    une bande au centre : la scène 2 (« nuee-de-particules ») part de cette bande.
+    Rôle : l'accroche d'un teaser (ouverture des inscriptions, bientôt disponible). Rien n'est dit,
+    on donne envie de voir la suite.
+
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine (1080 × 1920) :
+    le cercle, les légendes et la bande se recalent seuls.
+
+    À REMPLACER :
+      1. L'id « t06-pinceau » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. LEGENDES (en tête du script) : les petites légendes des coins (le nom du projet, un
+         numéro, le mot du lancement). Ce sont des repères d'imprimerie : jamais un chiffre de
+         vente, une date ou une promesse inventés.
+      3. GESTES : un cercle et un point par défaut. Un autre tracé se décrit par ses points (x, y
+         de 0 à 1 dans le cadre), son épaisseur, son départ et sa durée.
+      4. Couleurs : --t06-papier (le papier gris chaud du look) en tête du style. L'encre est la
+         couleur sombre de la marque si elle en a une (sinon un noir d'encre) ; un geste marqué
+         accent: true prend la couleur de la marque.
+    Ne pas toucher : PARTICULES, GRAINE et la fonction bande() (la scène 2 reprend la même nuée).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t06-pinceau {
+      --t06-papier: #e3e4de;    /* le papier gris chaud du look */
+      --t06-texte: var(--brand-font-body);
+      background: var(--t06-papier);
+    }
+    #t06-pinceau canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-pinceau .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t06-pinceau .t06-legende { position: absolute; font: 400 11px/1.4 var(--t06-texte); letter-spacing: 0.02em; white-space: nowrap; }
+    #t06-pinceau .t06-legende b { font-weight: 700; letter-spacing: 0.08em; }
+    #t06-pinceau .t06-legende .t06-petit { font-size: 9px; opacity: 0.75; }
+    #t06-pinceau .t06-filet { display: block; width: 100px; height: 1px; margin: 6px 0 6px auto; background: currentColor; opacity: 0.5; }
+    #t06-pinceau .t06-gauche .t06-filet { margin-left: 0; }
+    #t06-pinceau .t06-chiffre { position: absolute; font: 600 11px/1 var(--t06-texte); letter-spacing: 0.04em; white-space: nowrap; }
+  </style>
+
+  <div data-composition-id="t06-pinceau" data-width="1920" data-height="1080" data-duration="4.5" style="position:absolute; inset:0;">
+    <div id="t06-pinceau" class="k-scene">
+      <div class="t06-cam" id="t06-pinceau-cam" data-layout-allow-overflow>
+        <canvas id="t06-pinceau-papier"></canvas>
+        <canvas id="t06-pinceau-encre"></canvas>
+        <canvas id="t06-pinceau-nuee"></canvas>
+      </div>
+      <div id="t06-pinceau-cadre"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t06-pinceau", D = 4.5;
+      // Les légendes d'imprimerie des coins (le mot en gras en capitales).
+      var LEGENDES = {
+        hautDroite: ["<b>N° 01</b> ESQUISSE", "encre sur papier", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
+        basGauche: ["<b>PROJET 01.</b> TON OFFRE", "bientôt", '<span class="t06-petit">ce qui arrive, page après page</span>'],
+        basDroite: ["<b>P. 03</b>"]
+      };
+      // Les gestes : points (0 à 1 dans le cadre) ou "cercle", épaisseur (px pour 1080 de haut),
+      // départ et durée (s).
+      var GESTES = [
+        { pts: "cercle", cx: 0.5, cy: 0.48, r: 0.27, largeur: 120, debut: 0.1, duree: 1.15, graine: 3 },
+        { pts: [[0.4995, 0.458], [0.5005, 0.492]], largeur: 64, debut: 1.36, duree: 0.22, graine: 9, accent: false }
+      ];
+      var PARTICULES = 3400, GRAINE = 61;
+
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true });
+      var E = Math.min(L, H) / 1080; // échelle des épaisseurs (1 en 16:9 et en 9:16)
+
+      // --- Outils du look (communs aux scènes du template 6) ---------------------------------
+      function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      function toile(c) { c.width = L; c.height = H; return c.getContext("2d"); }
+      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
+      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
+      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE;
+      var PAPIER = cs.getPropertyValue("--t06-papier").trim();
+      function papier(ctx, graine) {
+        var r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
+        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
+        ctx.lineCap = "round";
+        for (var f = 0; f < 260; f++) {
+          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
+          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
+        }
+      }
+      function cadreImprimerie(hote, t0) {
+        var m = vertical ? 54 : 68, blocs = [];
+        var lignes = function (l, filetAvant) { return l.map(function (x, i) { return (i === filetAvant ? '<i class="t06-filet"></i>' : "") + "<div>" + x + "</div>"; }).join(""); };
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.hautDroite, LEGENDES.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
+        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(LEGENDES.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
+        blocs.forEach(function (b) { b.style.color = ENCRE; });
+        var xs = vertical ? [0.12, 0.3, 0.7, 0.88] : [0.14, 0.205, 0.275, 0.45, 0.86, 0.92], chiffres = [];
+        xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px; color:" + ENCRE + ";")); });
+        var tous = blocs.concat(chiffres);
+        gsap.set(tous, { opacity: 0 });
+        tous.forEach(function (b, i) { tl.to(b, { opacity: 1, duration: 0.12, ease: "none" }, t0 + i * 0.04); });
+        // Les chiffres changent tous les quarts de seconde (valeur fixe pour un instant donné).
+        return function (t) { var pas = Math.floor(t * 4); chiffres.forEach(function (c, i) { c.textContent = (rng(pas * 131 + i * 977 + 7)() * 99.99).toFixed(2); }); };
+      }
+      function hache(i, k) { var s = Math.sin(i * 12.9898 + (k || 0) * 78.233) * 43758.5453; return s - Math.floor(s); }
+      function prog(t, a, b, ease) { return t <= a ? 0 : t >= b ? 1 : gsap.parseEase(ease || "power2.inOut")((t - a) / (b - a)); }
+      // La bande de points où la nuée se pose (la scène 2 en repart : même fonction, même graine).
+      function bande(rB) {
+        var bx0 = L * (vertical ? 0.1 : 0.27), bx1 = L * (vertical ? 0.9 : 0.73), by = H * 0.5, bh = (vertical ? 120 : 135) * E;
+        var u = rB(), v = (rB() + rB() + rB() - 1.5) / 1.5;
+        var epais = bh * (0.3 + 0.7 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.06 + u * 1.04)), 0.55));
+        return [bx0 + (bx1 - bx0) * u, by + v * epais + Math.sin(u * 5 + 1) * 20 * E - (u - 0.5) * 46 * E];
+      }
+
+      // --- Le pinceau : des poils qui portent l'encre et sèchent le long du geste -------------
+      function echantillons(g) {
+        var p = [];
+        if (g.pts === "cercle") {
+          var cx = g.cx * L, cy = g.cy * H, R = g.r * Math.min(L, H) * (vertical ? 1.22 : 1), rr = rng(g.graine);
+          for (var i = 0; i <= 40; i++) { var u = i / 40, a = -Math.PI * 0.58 - u * Math.PI * 1.82, w = 1 + 0.035 * Math.sin(u * 7 + rr() * 0.2) - 0.03 * u; p.push([cx + Math.cos(a) * R * w, cy + Math.sin(a) * R * w * 1.03]); }
+        } else { g.pts.forEach(function (q) { p.push([q[0] * L, q[1] * H]); }); }
+        var d = [];
+        for (var k = 0; k < p.length - 1; k++) { var a0 = p[k - 1] || p[k], a1 = p[k], a2 = p[k + 1], a3 = p[k + 2] || a2; for (var s = 0; s < 12; s++) { var t = s / 12, t2 = t * t, t3 = t2 * t; d.push([0.5 * (2 * a1[0] + (-a0[0] + a2[0]) * t + (2 * a0[0] - 5 * a1[0] + 4 * a2[0] - a3[0]) * t2 + (-a0[0] + 3 * a1[0] - 3 * a2[0] + a3[0]) * t3), 0.5 * (2 * a1[1] + (-a0[1] + a2[1]) * t + (2 * a0[1] - 5 * a1[1] + 4 * a2[1] - a3[1]) * t2 + (-a0[1] + 3 * a1[1] - 3 * a2[1] + a3[1]) * t3)]); } }
+        d.push(p[p.length - 1]);
+        return d;
+      }
+      function bruit(x) { var i = Math.floor(x), f = x - i, h = function (n) { var s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); }; return h(i) + (h(i + 1) - h(i)) * f * f * (3 - 2 * f); }
+      function pinceau(g) {
+        var pts = echantillons(g), r = rng(g.graine * 97 + 1), W = g.largeur * E, n = pts.length, court = n < 30;
+        var nx = [], ny = [];
+        for (var i = 0; i < n; i++) { var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; nx.push(-dy / l); ny.push(dx / l); }
+        // largeur : l'appui (tête ronde), la pression qui varie, le pinceau qui se lève
+        var larg = court ? function (u) { return W * Math.sqrt(Math.max(0.05, Math.sin(Math.PI * Math.min(1, 0.15 + u * 0.85)))); }
+          : function (u) { var appui = 0.32 + 0.68 * Math.sqrt(Math.min(1, u * 16)), leve = 1 - Math.pow(Math.max(0, u - 0.5) / 0.5, 1.4) * 0.8; return W * appui * leve * (0.88 + 0.12 * bruit(u * 6 + g.graine)); };
+        // encre qui s'épuise : 0 au départ (mouillé), jusqu'à 0,75 à la fin (sec : le papier passe)
+        var sec = court ? function () { return 0.04; } : function (u) { return 0.05 + 0.7 * Math.pow(u, 1.8); };
+        var poils = [];
+        for (var p = 0; p < 150; p++) { var k = (p / 149) * 2 - 1; poils.push({ k: k + (r() - 0.5) * 0.02, w: (1.2 + r() * 2.6) * E, a: 0.55 + r() * 0.45, ph: r() * 100, f: 9 + r() * 22, bord: Math.abs(k) }); }
+        var points = [];
+        for (var q = 0; q < 900; q++) { var u = r(), idx = Math.min(n - 1, Math.floor(u * (n - 1))), kk = (r() * 2 - 1) * 0.48 * larg(u); if (r() < sec(u) * 0.8) continue; points.push([pts[idx][0] + nx[idx] * kk, pts[idx][1] + ny[idx] * kk]); }
+        function dessiner(ctx, avance, couleur) {
+          if (avance <= 0) return;
+          var fin = Math.max(1, Math.floor(avance * (n - 1)));
+          ctx.strokeStyle = couleur; ctx.fillStyle = couleur; ctx.lineCap = "round"; ctx.lineJoin = "round";
+          // un voile d'encre sous les poils, plus dense au départ
+          ctx.globalAlpha = 0.5; ctx.beginPath();
+          for (var i = 0; i <= fin; i++) { var w = larg(i / (n - 1)) * 0.36 * (1 - sec(i / (n - 1)) * 0.6); ctx.lineTo(pts[i][0] + nx[i] * w, pts[i][1] + ny[i] * w); }
+          for (var j = fin; j >= 0; j--) { var w2 = larg(j / (n - 1)) * 0.36 * (1 - sec(j / (n - 1)) * 0.6); ctx.lineTo(pts[j][0] - nx[j] * w2, pts[j][1] - ny[j] * w2); }
+          ctx.closePath(); ctx.fill();
+          // la tête du geste : arrondie, là où le pinceau s'est posé
+          ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], larg(0.004) * 0.36, 0, 6.2832); ctx.fill();
+          // les poils : chaque poil laisse une strie ; il saute là où il n'a plus d'encre
+          poils.forEach(function (po) {
+            ctx.globalAlpha = po.a; ctx.lineWidth = po.w; ctx.beginPath(); var trace = false;
+            for (var i = 0; i <= fin; i++) {
+              var u = i / (n - 1), seuil = sec(u) + po.bord * 0.25;
+              if (bruit(u * po.f + po.ph) < seuil) { trace = false; continue; }
+              var off = po.k * 0.5 * larg(u) * (1 + (bruit(u * 13 + po.ph) - 0.5) * 0.08 * po.bord), x = pts[i][0] + nx[i] * off, y = pts[i][1] + ny[i] * off;
+              if (!trace) { ctx.moveTo(x, y); trace = true; } else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          });
+          ctx.globalAlpha = 1;
+        }
+        return { dessiner: dessiner, points: points };
+      }
+
+      // --- Construction ---------------------------------------------------------------------
+      papier(toile($("papier")), 17);
+      var ctxE = toile($("encre")), ctxN = toile($("nuee"));
+      var traits = GESTES.map(pinceau);
+      var chiffres = cadreImprimerie($("cadre"), 0.05);
+
+      // La nuée : chaque point part d'un point d'encre, s'envole avec le vent, puis se pose en bande.
+      var rB = rng(GRAINE), r = rng(GRAINE + 1), part = [], sources = [], CX = GESTES[0].cx * L, CY = GESTES[0].cy * H;
+      traits.forEach(function (tr) { sources = sources.concat(tr.points); });
+      for (var i = 0; i < PARTICULES; i++) {
+        var s = sources[Math.floor(r() * sources.length)], b = bande(rB);
+        var x0 = s[0] + (r() - 0.5) * 8, y0 = s[1] + (r() - 0.5) * 8;
+        part.push({ x0: x0, y0: y0, ra: Math.hypot(x0 - CX, y0 - CY), an: Math.atan2(y0 - CY, x0 - CX), x2: b[0], y2: b[1], tour: 0.9 + r() * 0.7, sou: (r() - 0.5) * 60 * E, d: r() * 0.3, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45 });
+      }
+
+      function rendre(t) {
+        chiffres(t);
+        ctxE.clearRect(0, 0, L, H);
+        var fondu = 1 - prog(t, 2.4, 2.95);
+        if (fondu > 0) {
+          // le premier geste se trace en deux élans (le pinceau accélère, ralentit, repart)
+          traits.forEach(function (tr, k) { var g = GESTES[k], a = k === 0 ? 0.52 * prog(t, g.debut, g.debut + g.duree * 0.42, "power2.out") + 0.48 * prog(t, g.debut + g.duree * 0.45, g.debut + g.duree, "power2.inOut") : prog(t, g.debut, g.debut + g.duree, "power2.out"); tr.dessiner(ctxE, a, g.accent ? ACCENT : ENCRE); });
+          // la numérisation : des colonnes de petits signes, couleur du papier, traversent l'encre
+          var nb = prog(t, 1.8, 2.45, "none");
+          if (nb > 0) {
+            ctxE.save(); ctxE.globalCompositeOperation = "source-atop"; ctxE.fillStyle = PAPIER; ctxE.font = "700 " + Math.round(16 * E) + "px ui-monospace, monospace";
+            var rr = rng(Math.floor(t * 12) * 17 + 3), col = Math.floor(nb * 48), x0 = L / 2 - 0.36 * Math.min(L, H) * (vertical ? 1.22 : 1);
+            for (var c = 0; c < col; c++) { var x = x0 + c * 16 * E; if (rr() < 0.3) continue; for (var y = H * 0.12; y < H * 0.88; y += 17 * E) if (rr() < 0.72) ctxE.fillText("01-^|:#"[Math.floor(rr() * 7)], x, y); }
+            ctxE.restore();
+          }
+          if (fondu < 1) { ctxE.save(); ctxE.globalCompositeOperation = "destination-in"; ctxE.fillStyle = "rgba(0,0,0," + fondu.toFixed(3) + ")"; ctxE.fillRect(0, 0, L, H); ctxE.restore(); }
+        }
+        ctxN.clearRect(0, 0, L, H);
+        var apparait = prog(t, 2.3, 2.75);
+        if (apparait > 0) {
+          ctxN.fillStyle = ENCRE;
+          for (var i = 0; i < part.length; i++) {
+            // la nuée tourne dans le sens du geste en respirant, puis s'aplatit en bande
+            var p = part[i], envol = 0.55 * prog(t, 2.4 + p.d, 2.95 + p.d, "power3.out") + 0.45 * prog(t, 3.05 + p.d * 0.5, 3.5 + p.d * 0.5, "power3.inOut"), pose = prog(t, 3.45 + p.d * 0.5, 4.3, "power3.inOut");
+            var a = p.an - p.tour * envol, rr = p.ra * (1 + 0.22 * Math.sin(Math.PI * envol)) + p.sou * envol;
+            var x = CX + Math.cos(a) * rr, y = CY + Math.sin(a) * rr;
+            x += (p.x2 - x) * pose; y += (p.y2 - y) * pose;
+            ctxN.globalAlpha = apparait * p.al; ctxN.beginPath(); ctxN.arc(x, y, p.ta, 0, 6.2832); ctxN.fill();
+          }
+          ctxN.globalAlpha = 1;
+        }
+      }
+      // La caméra marque les coups : le point posé (petit choc), la numérisation (un sursaut de côté).
+      var cam = $("cam");
+      gsap.set(cam, { scale: 1.02 });
+      tl.to(cam, { scale: 1.055, duration: 0.09, ease: "power2.out" }, 1.4).to(cam, { scale: 1.02, duration: 0.45, ease: "power2.out" }, 1.49);
+      tl.to(cam, { x: 14 * E, duration: 0.05, ease: "none" }, 2.0).to(cam, { x: -9 * E, duration: 0.06, ease: "none" }, 2.05).to(cam, { x: 0, duration: 0.18, ease: "power2.out" }, 2.11);
+      tl.to(cam, { scale: 1, duration: 0.6, ease: "power2.inOut" }, 3.7);
+      var horloge = { t: 0 };
+      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
+      rendre(0);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°1 « CARTES PIXELS » · SCÈNE 1 : LE BRUIT (le problème) · 5,5 s
+    Ce que la scène montre : sur la grille claire, une carte de discussion sombre. La question du
+    prospect se tape dans le champ, part dans une bulle, la réponse arrive... et derrière elle un mur
+    de cartes grises et floues se lève (le bruit : mille conseils qui se contredisent), pendant que
+    la caméra pousse vers la carte. Une étiquette blanche dit le problème en 3 mots.
+    Format : 16:9 (1920 × 1080) par défaut ; en 9:16, mets data-width="1080" data-height="1920"
+    ici et sur l'hôte : la mise en page vertical se règle seule (classe t01-vertical).
+    Sortie : la scène finit pleine de bruit. Pose t01-raccord-pixels par-dessus la coupe.
+
+    À REMPLACER :
+     1. L'id « t01-bruit » (racine : data-composition-id et id de .k-scene, constante ID du script,
+        préfixe des sélecteurs CSS) par l'id de la scène, et data-duration si tu changes D.
+     2. QUESTION : la question que se pose le prospect (celle de la page de vente, sinon du client).
+     3. REPONSE : 3 lignes courtes, une réponse qui noie le prospect (jamais un chiffre inventé).
+     4. BRUIT : 10 à 14 phrases que le prospect entend partout dans le domaine de l'offre, chacune
+        avec 1 ou 2 mots en <b> (ils ressortent plus foncés). Rien de vrai à prouver : c'est le décor.
+     5. Les textes de l'étiquette : ETIQUETTE (« [ 01 · LE PROBLÈME ] ») et TITRE (2 à 4 mots ;
+        le dernier mot porte le surlignage à la couleur de la marque).
+    Couleurs : la grille claire et les gris sont ceux du look ; l'accent est var(--brand-accent) ;
+    l'encre (la carte sombre) est la couleur sombre de la marque (son fond s'il est sombre, sinon son
+    texte). Un accent clair (jaune...) est détecté : les traits passent à l'encre, l'accent reste en aplat.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t01-bruit { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f;
+    --t01-mono: ui-monospace, "SF Mono", Menlo, Consolas, var(--brand-font-mono);
+    background: var(--t01-papier); }
+  #t01-bruit .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
+    background-image:
+      radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
+      linear-gradient(var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
+    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
+  #t01-bruit .t01-case { position: absolute; width: 178px; height: 178px; background: #f0f0f0; }
+  #t01-bruit .t01-sol { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; overflow: hidden;
+    font: 400 15px/18px var(--t01-mono); color: #d9d9d9; white-space: pre; letter-spacing: 3px; }
+  /* Le mur de bruit, derrière la carte. */
+  #t01-bruit .t01-mur { position: absolute; left: 0; top: 0; }
+  #t01-bruit .t01-bruit { position: absolute; width: 430px; height: 168px; border-radius: 20px; padding: 22px 26px; overflow: hidden;
+    background: #fbfbfb; box-shadow: 0 0 0 1px #ededed, 0 10px 30px rgba(0,0,0,.05);
+    font: 400 20px/30px "Inter", var(--brand-font-body); color: #a9a9a9; letter-spacing: -0.01em; }
+  #t01-bruit .t01-bruit b { font-weight: 500; color: #5f5f5f; }
+  /* La carte de discussion sombre. */
+  #t01-bruit .t01-carte { position: absolute; left: 50%; top: 50%; width: 700px; height: 430px; margin: -195px 0 0 -350px;
+    border-radius: 26px; background: var(--t01-encre); box-shadow: 0 40px 80px rgba(0,0,0,.22), 0 10px 24px rgba(0,0,0,.18);
+    font-family: "Inter", var(--brand-font-body); color: #fff; overflow: hidden; }
+  #t01-bruit .t01-bulle { position: absolute; top: 28px; right: 28px; max-width: 470px; padding: 15px 20px; border-radius: 16px;
+    background: color-mix(in srgb, var(--t01-encre) 78%, #ffffff); font: 500 22px/1.3 "Inter", var(--brand-font-body); color: #fff; white-space: nowrap; }
+  #t01-bruit .t01-qui { position: absolute; left: 30px; top: 112px; display: flex; align-items: center; gap: 10px;
+    font: 600 18px/1 "Inter", var(--brand-font-body); color: color-mix(in srgb, #ffffff 62%, var(--t01-encre)); }
+  #t01-bruit .t01-pix { width: 16px; height: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  #t01-bruit .t01-pix i { display: block; background: var(--brand-accent); }
+  #t01-bruit .t01-pix i:nth-child(2), #t01-bruit .t01-pix i:nth-child(3) { opacity: .45; }
+  #t01-bruit .t01-points { position: absolute; left: 32px; top: 152px; display: flex; gap: 7px; }
+  #t01-bruit .t01-points i { width: 9px; height: 9px; border-radius: 50%; background: #8d8d92; display: block; }
+  #t01-bruit .t01-rep { position: absolute; left: 30px; right: 30px; top: 146px; padding: 16px 18px; border-radius: 14px;
+    background: color-mix(in srgb, var(--t01-encre) 90%, #ffffff); font: 400 21px/31px "Inter", var(--brand-font-body); color: #ececec; }
+  #t01-bruit .t01-rep div { height: 31px; white-space: nowrap; }
+  #t01-bruit .t01-champ { position: absolute; left: 20px; right: 20px; bottom: 20px; height: 62px; border-radius: 16px;
+    background: color-mix(in srgb, var(--t01-encre) 86%, #ffffff); display: flex; align-items: center; padding: 0 20px;
+    font: 400 21px/1 "Inter", var(--brand-font-body); color: #fff; }
+  #t01-bruit .t01-place { position: absolute; left: 20px; top: 21px; color: #b0b0b5; }
+  #t01-bruit .t01-tape { position: relative; white-space: nowrap; }
+  #t01-bruit .t01-envoi { position: absolute; right: 12px; top: 12px; width: 38px; height: 38px; border-radius: 50%;
+    background: color-mix(in srgb, var(--t01-encre) 60%, #ffffff); color: var(--t01-encre); padding: 9px; }
+  /* L'étiquette du problème, en haut à gauche, sur la grille. */
+  #t01-bruit .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
+    letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
+  #t01-bruit .t01-titre { position: absolute; left: 96px; top: 112px; z-index: 40; display: flex; align-items: baseline; gap: 18px;
+    padding: 20px 30px 24px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px rgba(0,0,0,.08);
+    font-family: var(--brand-font-display); font-size: 66px; line-height: 1; letter-spacing: -0.03em; white-space: pre; }
+  #t01-bruit .t01-leger { font-weight: 400; color: #8a8a8a; }
+  #t01-bruit .t01-fort { font-weight: 700; color: var(--t01-encre); padding: 4px 12px 8px; margin: -4px 0 -8px; border-radius: 10px;
+    background: var(--brand-accent); color: var(--brand-contrast); }
+  /* Vertical (9:16) : la même scène remise en page. */
+  #t01-bruit.t01-vertical .t01-carte { width: 880px; height: 520px; margin: -230px 0 0 -440px; }
+  #t01-bruit.t01-vertical .t01-bulle { font-size: 26px; max-width: 600px; }
+  #t01-bruit.t01-vertical .t01-rep { font-size: 25px; line-height: 36px; top: 160px; }
+  #t01-bruit.t01-vertical .t01-rep div { height: 36px; }
+  #t01-bruit.t01-vertical .t01-qui { top: 122px; font-size: 21px; }
+  #t01-bruit.t01-vertical .t01-points { top: 168px; }
+  #t01-bruit.t01-vertical .t01-champ { height: 74px; font-size: 25px; }
+  #t01-bruit.t01-vertical .t01-place { top: 25px; }
+  #t01-bruit.t01-vertical .t01-envoi { width: 46px; height: 46px; top: 14px; }
+  #t01-bruit.t01-vertical .t01-label { left: 100px; top: 314px; font-size: 24px; }
+  #t01-bruit.t01-vertical .t01-titre { left: 100px; top: 354px; font-size: 76px; }
+</style>
+
+<div data-composition-id="t01-bruit" data-width="1920" data-height="1080" data-duration="5.5" style="position:absolute; inset:0;">
+  <div id="t01-bruit" class="k-scene">
+    <div class="t01-papier"></div>
+    <div id="t01-bruit-cases"></div>
+    <div class="t01-sol" id="t01-bruit-sol" data-layout-ignore></div>
+    <div class="k-scene3d"><div class="k-camera" id="t01-bruit-cam">
+      <div class="t01-mur" id="t01-bruit-mur" data-layout-ignore></div>
+      <div class="t01-carte" id="t01-bruit-carte">
+        <div class="t01-bulle" id="t01-bruit-bulle"></div>
+        <div class="t01-qui" id="t01-bruit-qui"><span class="t01-pix"><i></i><i></i><i></i><i></i></span><span>Réponse</span></div>
+        <div class="t01-points" id="t01-bruit-points"><i></i><i></i><i></i></div>
+        <div class="t01-rep" id="t01-bruit-rep"><div></div><div></div><div></div></div>
+        <div class="t01-champ" id="t01-bruit-champ">
+          <span class="t01-place" id="t01-bruit-place">Pose ta question…</span>
+          <span class="t01-tape" id="t01-bruit-tape"></span>
+          <span class="t01-envoi" id="t01-bruit-envoi"></span>
+        </div>
+      </div>
+    </div></div>
+    <div class="t01-label" id="t01-bruit-label"></div>
+    <div class="t01-titre" id="t01-bruit-titre"><span class="t01-leger" id="t01-bruit-t1"></span><span class="t01-fort" id="t01-bruit-t2"></span></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t01-bruit", D = 5.5;
+    // ---- Les textes à remplacer ----------------------------------------------------------
+    var QUESTION = "Par où je commence ?";
+    var REPONSE = ["Ça dépend.", "Il existe des dizaines de méthodes,", "et chacune contredit la précédente."];
+    var BRUIT = [
+      "Poste <b>tous les jours</b>, sans exception.", "Une <b>seule vidéo</b> par semaine suffit.",
+      "Fais de la <b>pub</b> dès le premier jour.", "Surtout, <b>pas de pub</b> au début.",
+      "Il te faut une <b>newsletter</b>.", "Les <b>emails</b>, c'est terminé.",
+      "<b>Baisse</b> ton prix pour vendre.", "<b>Monte</b> ton prix, tu vendras plus.",
+      "Copie <b>ce qui marche</b> chez les autres.", "Sois <b>unique</b>, ne copie personne.",
+      "Lance-toi sur <b>TikTok</b> maintenant.", "Reste sur <b>Instagram</b>, c'est mieux."
+    ];
+    var ETIQUETTE = "[ 01 · LE PROBLÈME ]", TITRE = ["Trop de", "bruit."];
+    // ----------------------------------------------------------------------------------------
+
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var q = function (s) { return racine.querySelector(s); };
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    if (vertical) racine.classList.add("t01-vertical");
+
+    // Palette : l'encre suit la couleur sombre de la marque ; un accent clair passe en aplat seul.
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.classList.toggle("t01-accent-clair", lum(rgb("var(--brand-accent)")) > 0.28);
+    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
+
+    // Décodage : les lettres arrivent en glyphes (# % @ X = +) puis se fixent, de gauche à droite.
+    var GLYPHES = "#%@X=+:*/<>";
+    var decoder = function (el, texte, debut, duree) {
+      K.texteSelon(tl, el, D, function (t) {
+        if (t < debut) return "";
+        if (t >= debut + duree) return texte;
+        var p = (t - debut) / duree, pas = Math.floor(t / 0.045), s = "", n = texte.length;
+        for (var i = 0; i < n; i++) {
+          if (p < (i / n) * 0.5) break;
+          var c = texte[i];
+          s += (c === " " || p >= 0.4 + (i / n) * 0.6) ? c : GLYPHES[(i * 7 + pas * 13) % GLYPHES.length];
+        }
+        return s;
+      });
+    };
+
+    // Le sol de glyphes (trame ASCII très pâle) et quelques cases de la grille qui s'allument.
+    var sol = q("#t01-bruit-sol"), r = K.rng(7), colonnes = Math.ceil(L / 18), lignes = 16;
+    var bruitSol = [];
+    for (var y = 0; y < lignes; y++) { bruitSol.push([]); for (var x = 0; x < colonnes; x++) bruitSol[y].push(r()); }
+    var tramer = function (pas) {
+      var g = ".:+=X", out = [];
+      for (var y = 0; y < lignes; y++) {
+        var ligne = "";
+        for (var x = 0; x < colonnes; x++) {
+          var v = bruitSol[y][x], seuil = 0.25 + 0.6 * (y / lignes) + 0.18 * Math.sin(x * 0.21 + y * 0.4);
+          var on = ((v * 977 + pas * 0.37) % 1) < seuil * 0.55;
+          ligne += on ? g[Math.floor(((v * 31 + pas) % 1) * g.length)] : " ";
+        }
+        out.push(ligne);
+      }
+      return out.join("\n");
+    };
+    K.texteSelon(tl, sol, D, function (t) { return tramer(Math.floor(t / 0.16)); });
+    tl.to(sol, { opacity: 0, duration: 0.5, ease: "power1.in" }, 2.0);
+    var cases = q("#t01-bruit-cases"), places = vertical ? [[2, 1], [4, 2], [1, 7], [5, 8], [3, 9]] : [[1, 1], [8, 0], [9, 4], [2, 4], [6, 5]];
+    places.forEach(function (p, i) {
+      var c = K.el(cases, "div", "t01-case", null, "left:" + (60 + p[0] * 180 + 2) + "px; top:" + (30 + p[1] * 180 + 2) + "px;");
+      K.cacher(c);
+      tl.set(c, { opacity: 1 }, 0.2 + i * 0.35).set(c, { opacity: 0 }, 0.9 + i * 0.35);
+    });
+
+    // Le mur de bruit : une grille de cartes pâles, floues vers les bords.
+    var mur = q("#t01-bruit-mur"), lc = 430, hc = 168, ec = 24;
+    var nc = vertical ? 3 : 5, nl = vertical ? 12 : 7;
+    var largeurMur = nc * lc + (nc - 1) * ec, hauteurMur = nl * hc + (nl - 1) * ec;
+    var x0 = (L - largeurMur) / 2, y0 = (H - hauteurMur) / 2 + 60;
+    var cartes = [];
+    for (var l = 0; l < nl; l++) for (var c = 0; c < nc; c++) {
+      var k = (l * nc + c) % BRUIT.length;
+      var e = K.el(mur, "div", "t01-bruit", BRUIT[k] + " " + BRUIT[(k + 5) % BRUIT.length] + " " + BRUIT[(k + 9) % BRUIT.length]);
+      var cx = x0 + c * (lc + ec) + lc / 2, cy = y0 + l * (hc + ec) + hc / 2;
+      e.style.left = (cx - lc / 2) + "px"; e.style.top = (cy - hc / 2) + "px";
+      var dist = Math.min(1, Math.hypot((cx - L / 2) / (L / 2), (cy - H / 2) / (H / 2)) / 1.2);
+      e.style.filter = "blur(" + (1.2 + 7 * Math.pow(dist, 1.4)).toFixed(1) + "px)";
+      e.dataset.dist = dist.toFixed(3);
+      cartes.push(e);
+    }
+    cartes.sort(function (a, b) { return a.dataset.dist - b.dataset.dist; });
+    K.cacher(cartes);
+    cartes.forEach(function (e, i) {
+      tl.fromTo(e, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 1.95 + i * 0.022);
+    });
+    tl.fromTo(mur, { y: 0 }, { y: -(hc + ec), duration: 3.6, ease: "power1.inOut" }, 1.9);
+
+    // La carte sombre : elle est déjà là à la première image, puis la question se tape et part.
+    q("#t01-bruit-envoi").innerHTML = K.ic("arrow-up");
+    tl.fromTo("#t01-bruit-carte", { scale: 0.9 }, { scale: 1, duration: 0.7, ease: "expo.out" }, 0);
+    tl.fromTo("#t01-bruit-cam", { scale: 0.82, y: 30 }, { scale: 1, y: 0, duration: 0.8, ease: "expo.out" }, 0);
+    tl.to("#t01-bruit-cam", { scale: 1.06, y: 24, duration: 0.45, ease: "expo.out" }, 1.06);
+    K.taper(tl, q("#t01-bruit-tape"), QUESTION, 0.25, 0.95, D);
+    tl.set("#t01-bruit-place", { opacity: 0 }, 0.25).set("#t01-bruit-place", { opacity: 1 }, 1.08);
+    tl.set("#t01-bruit-tape", { opacity: 0 }, 1.08);
+    tl.fromTo("#t01-bruit-envoi", { backgroundColor: "rgba(255,255,255,.45)" }, { backgroundColor: "#ffffff", duration: 0.15 }, 0.95);
+    tl.to("#t01-bruit-envoi", { scale: 0.86, duration: 0.07, yoyo: true, repeat: 1 }, 1.02);
+    var bulle = q("#t01-bruit-bulle"); bulle.textContent = QUESTION;
+    K.cacher(bulle);
+    tl.fromTo(bulle, { opacity: 0, y: 70, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 1.08);
+    K.cacher(["#t01-bruit-qui", "#t01-bruit-points", "#t01-bruit-rep"]);
+    tl.fromTo("#t01-bruit-qui", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 1.35);
+    tl.set("#t01-bruit-points", { opacity: 1 }, 1.4).set("#t01-bruit-points", { opacity: 0 }, 1.78);
+    racine.querySelectorAll("#t01-bruit-points i").forEach(function (p, i) {
+      tl.fromTo(p, { opacity: 0.25 }, { opacity: 1, duration: 0.12, yoyo: true, repeat: 2, ease: "none" }, 1.4 + i * 0.07);
+    });
+    tl.fromTo("#t01-bruit-rep", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 1.78);
+    var lignesRep = racine.querySelectorAll("#t01-bruit-rep div");
+    REPONSE.forEach(function (txt, i) { K.taper(tl, lignesRep[i], txt, 1.8 + i * 0.3, 2.05 + i * 0.3, D); });
+
+    // La caméra pousse vers la carte pendant que le bruit monte.
+    tl.to("#t01-bruit-cam", { scale: vertical ? 1.14 : 1.22, y: vertical ? -20 : -14, duration: 3.4, ease: "power2.inOut" }, 1.9);
+
+    // L'étiquette : le label se décode, le titre arrive dans sa carte blanche.
+    decoder(q("#t01-bruit-label"), ETIQUETTE, 0.1, 0.55);
+    K.cacher("#t01-bruit-titre");
+    tl.fromTo("#t01-bruit-titre", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 2.35);
+    decoder(q("#t01-bruit-t1"), TITRE[0], 2.4, 0.4);
+    decoder(q("#t01-bruit-t2"), TITRE[1], 2.6, 0.45);
+    tl.fromTo("#t01-bruit-t2", { scaleX: 0.6, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: "expo.out" }, 2.6);
+    tl.to("#t01-bruit-titre", { y: -6, duration: 2.4, ease: "sine.inOut" }, 3.0);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

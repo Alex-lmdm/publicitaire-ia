@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°1 « CARTES PIXELS » · SCÈNE 2 : LA CARTE ANNOTÉE (la solution, le produit) · 6,5 s
+    Ce que la scène montre : au centre de la grille claire, un amas de pixels à la couleur de la
+    marque clignote (trois teintes) comme un chargement ; les pixels s'envolent et deviennent les
+    blocs d'une carte blanche (l'aperçu, le titre, le prix, les lignes) ; le texte s'y décode en
+    glyphes puis se fixe ; enfin des cadres de repérage se posent un par un sur chaque partie de la
+    carte, chacun avec sa petite étiquette (TITRE, PRIX…). C'est le passage du bruit au résultat net.
+    Format : 16:9 (1920 × 1080) par défaut ; en 9:16, data-width="1080" data-height="1920" ici et
+    sur l'hôte : la carte passe en colonne (classe t01-vertical, réglée seule).
+    Entrée : idéale juste après t01-raccord-pixels (la mosaïque tombe sur la grille vide).
+
+    À REMPLACER :
+     1. L'id « t01-carte-annotee » (racine, constante ID, préfixe CSS) par l'id de la scène.
+     2. CARTE : le nom de l'offre (titre), sa ligne de genre (format · lieu · durée d'accès), son
+        prix EXACT tiré de OFFRE.json (sinon laisse « Ton prix » hors champ : retire la ligne), la
+        promesse en 3 lignes courtes, 3 pastilles de contenu (ce qu'on reçoit).
+     3. APERÇU : remplace le contenu de .t01-visuel par une vraie capture de l'offre
+        (<img src="assets/images/....png"> en object-fit: cover) ; sans capture, garde le lecteur.
+     4. REPERES : l'étiquette de chaque cadre, en capitales, un ou deux mots, et la cible (data-cible).
+     5. ETIQUETTE : le label du haut (« [ 02 · LA SOLUTION ] »).
+    Couleurs : l'aplat des pixels, des étiquettes et du bouton suit var(--brand-accent) ; les cadres
+    sont à l'accent, ou à l'encre si l'accent est clair (jaune…) pour rester lisibles sur le blanc.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t01-carte-annotee { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f;
+    --t01-mono: ui-monospace, "SF Mono", Menlo, Consolas, var(--brand-font-mono);
+    --t01-a1: var(--brand-accent);
+    --t01-a2: color-mix(in srgb, var(--brand-accent) 42%, var(--t01-papier));
+    --t01-a3: color-mix(in srgb, var(--brand-accent) 18%, var(--t01-papier));
+    --t01-repere: var(--brand-accent);
+    background: var(--t01-papier); }
+  #t01-carte-annotee.t01-accent-clair { --t01-a2: #cfcfcf; --t01-a3: #e3e3e3; --t01-repere: var(--t01-encre); }
+  #t01-carte-annotee .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
+    background-image:
+      radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
+      linear-gradient(var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
+    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
+  #t01-carte-annotee .t01-case { position: absolute; width: 178px; height: 178px; background: #f0f0f0; }
+  #t01-carte-annotee .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
+    letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
+  /* Les pixels de chargement, puis les blocs de la carte. */
+  #t01-carte-annotee .t01-px { position: absolute; background: var(--t01-a1); }
+  #t01-carte-annotee .t01-px[data-n="2"] { background: var(--t01-a2); }
+  #t01-carte-annotee .t01-px[data-n="3"] { background: var(--t01-a3); }
+  #t01-carte-annotee .t01-px[data-n="g"] { background: #ececec; }
+  /* La carte blanche. */
+  #t01-carte-annotee .t01-carte { position: absolute; border-radius: 28px; background: #fff;
+    box-shadow: 0 0 0 1px #ececec, 0 30px 70px rgba(0,0,0,.08); }
+  #t01-carte-annotee .t01-visuel { position: absolute; border-radius: 18px; overflow: hidden; background: var(--t01-encre); }
+  #t01-carte-annotee .t01-visuel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #t01-carte-annotee .t01-lecteur { position: absolute; left: 50%; top: 50%; width: 116px; height: 116px; margin: -58px 0 0 -58px;
+    border-radius: 50%; background: var(--brand-accent); color: var(--brand-contrast); padding: 36px 32px 36px 40px; }
+  #t01-carte-annotee .t01-visuel-label { position: absolute; left: 26px; bottom: 24px; font: 500 17px/1 var(--t01-mono);
+    letter-spacing: .14em; color: rgba(255,255,255,.72); white-space: pre; }
+  #t01-carte-annotee .t01-barre-lecture { position: absolute; left: 26px; right: 26px; bottom: 62px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.18); }
+  #t01-carte-annotee .t01-barre-lecture i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 3px; background: var(--brand-accent); transform-origin: 0 50%; }
+  #t01-carte-annotee .t01-dissous { position: absolute; background: var(--t01-a1); }
+  #t01-carte-annotee .t01-t { position: absolute; white-space: pre; color: var(--t01-encre); }
+  #t01-carte-annotee .t01-titre { font: 700 58px/1 "Inter", var(--brand-font-body); letter-spacing: -0.03em; }
+  #t01-carte-annotee .t01-genre { font: 500 20px/1 var(--t01-mono); color: #6f6f6f; letter-spacing: .02em; }
+  #t01-carte-annotee .t01-prix { font: 700 52px/1 "Inter", var(--brand-font-body); letter-spacing: -0.03em; }
+  #t01-carte-annotee .t01-desc { position: absolute; border-radius: 14px; background: #f5f5f5; }
+  #t01-carte-annotee .t01-ligne { font: 400 21px/1 "Inter", var(--brand-font-body); color: #5d5d5d; }
+  #t01-carte-annotee .t01-pastille { position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px #e2e2e2; font: 500 17px/1 var(--t01-mono); color: #4d4d4d; white-space: pre; }
+  /* Les cadres de repérage et leurs étiquettes. */
+  #t01-carte-annotee .t01-repere { position: absolute; border: 2px solid var(--t01-repere); border-radius: 9px; }
+  #t01-carte-annotee .t01-eclair { position: absolute; inset: -2px; border-radius: 9px; background: color-mix(in srgb, var(--brand-accent) 26%, transparent); }
+  #t01-carte-annotee.t01-accent-clair .t01-eclair { background: color-mix(in srgb, var(--t01-encre) 8%, transparent); }
+  #t01-carte-annotee .t01-tag.t01-droite { right: auto; left: calc(100% + 10px); top: 50%; margin-top: -11px; }
+  #t01-carte-annotee .t01-tag { position: absolute; right: -2px; top: -27px; padding: 5px 8px 4px; border-radius: 5px;
+    background: var(--brand-accent); color: var(--brand-contrast); font: 600 13px/1 var(--t01-mono); letter-spacing: .1em; white-space: pre; }
+  #t01-carte-annotee .t01-etoile { position: absolute; width: 74px; height: 74px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px #e4e4e4; }
+  #t01-carte-annotee .t01-etoile svg { position: absolute; left: 19px; top: 19px; width: 36px; height: 36px; }
+  #t01-carte-annotee .t01-etoile path { fill: var(--brand-accent); }
+  #t01-carte-annotee.t01-accent-clair .t01-etoile path { stroke: var(--t01-encre); stroke-width: 1.2; }
+  #t01-carte-annotee.t01-vertical .t01-label { left: 100px; top: 314px; font-size: 24px; }
+</style>
+
+<div data-composition-id="t01-carte-annotee" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+  <div id="t01-carte-annotee" class="k-scene">
+    <div class="t01-papier"></div>
+    <div id="t01-carte-annotee-cases"></div>
+    <div class="k-scene3d"><div class="k-camera" id="t01-carte-annotee-cam">
+      <div class="t01-carte" id="t01-carte-annotee-carte"></div>
+      <div class="t01-visuel" id="t01-carte-annotee-visuel">
+        <div class="t01-lecteur" id="t01-carte-annotee-lecteur"></div>
+        <div class="t01-barre-lecture"><i id="t01-carte-annotee-lecture"></i></div>
+        <div class="t01-visuel-label" id="t01-carte-annotee-vlabel"></div>
+      </div>
+      <div id="t01-carte-annotee-dissous"></div>
+      <div class="t01-desc" id="t01-carte-annotee-desc"></div>
+      <div id="t01-carte-annotee-textes"></div>
+      <div id="t01-carte-annotee-pixels"></div>
+      <div id="t01-carte-annotee-reperes"></div>
+      <div class="t01-etoile" id="t01-carte-annotee-etoile"><svg viewBox="0 0 24 24"><path d="M12 0 C12.9 7.6 16.4 11.1 24 12 C16.4 12.9 12.9 16.4 12 24 C11.1 16.4 7.6 12.9 0 12 C7.6 11.1 11.1 7.6 12 0 Z"/></svg></div>
+    </div></div>
+    <div class="t01-label" id="t01-carte-annotee-label"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t01-carte-annotee", D = 6.5;
+    // ---- Les textes à remplacer ----------------------------------------------------------
+    var CARTE = {
+      titre: "Ton offre",
+      genre: "Formation · En ligne · Accès à vie",
+      prix: "Ton prix",
+      lignes: ["Tout ce qu'il faut pour passer à l'action,", "rangé dans l'ordre, étape par étape,", "prêt à suivre dès aujourd'hui."],
+      pastilles: ["Vidéos", "Modèles", "Bonus"]
+    };
+    var APERCU = "APERÇU · 01";
+    // Les cadres, dans l'ordre d'apparition : [étiquette, cible, place de l'étiquette (« haut » ou « droite »)].
+    // Cibles : titre, prix, ligne1, pastilles, visuel.
+    var REPERES = [["TITRE", "titre", "haut"], ["PRIX", "prix", "droite"], ["MÉTHODE", "ligne1", "haut"], ["CONTENU", "pastilles", "haut"], ["APERÇU", "visuel", "haut"]];
+    var ETIQUETTE = "[ 02 · LA SOLUTION ]";
+    // ----------------------------------------------------------------------------------------
+
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var q = function (s) { return racine.querySelector(s); };
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    if (vertical) racine.classList.add("t01-vertical");
+
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.classList.toggle("t01-accent-clair", lum(rgb("var(--brand-accent)")) > 0.28);
+    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
+
+    var GLYPHES = "#%@X=+:*/<>";
+    var decoder = function (el, texte, debut, duree) {
+      K.texteSelon(tl, el, D, function (t) {
+        if (t < debut) return "";
+        if (t >= debut + duree) return texte;
+        var p = (t - debut) / duree, pas = Math.floor(t / 0.045), s = "", n = texte.length;
+        for (var i = 0; i < n; i++) {
+          if (p < (i / n) * 0.5) break;
+          var c = texte[i];
+          s += (c === " " || p >= 0.4 + (i / n) * 0.6) ? c : GLYPHES[(i * 7 + pas * 13) % GLYPHES.length];
+        }
+        return s;
+      });
+    };
+
+    // ---- La mise en page de la carte (coordonnées de la scène) ------------------------------
+    var C, M = {};
+    if (!vertical) {
+      C = { x: (L - 1180) / 2, y: (H - 600) / 2 + 30, l: 1180, h: 600 };
+      var gx = C.x + 550, gy = C.y;
+      M.visuel = [C.x + 36, C.y + 36, 470, 528];
+      M.titre = [gx, gy + 54, 360, 58]; M.genre = [gx, gy + 136, 430, 20]; M.prix = [gx, gy + 188, 230, 52];
+      M.desc = [gx, gy + 278, 594, 146]; M.lignes = [[gx + 22, gy + 302], [gx + 22, gy + 338], [gx + 22, gy + 374]];
+      M.pastilles = [gx, gy + 470, 116, 44, 130];
+    } else {
+      C = { x: (L - 900) / 2, y: (H - 1180) / 2 + 60, l: 900, h: 1180 };
+      var vx = C.x + 44, vy = C.y + 560;
+      M.visuel = [C.x + 36, C.y + 36, 828, 480];
+      M.titre = [vx, vy + 34, 360, 64]; M.genre = [vx, vy + 124, 430, 22]; M.prix = [vx, vy + 178, 260, 56];
+      M.desc = [vx, vy + 270, 812, 160]; M.lignes = [[vx + 24, vy + 296], [vx + 24, vy + 336], [vx + 24, vy + 376]];
+      M.pastilles = [vx, vy + 470, 150, 52, 170];
+    }
+    var poser = function (el, r) { el.style.left = r[0] + "px"; el.style.top = r[1] + "px"; if (r[2] != null) { el.style.width = r[2] + "px"; el.style.height = r[3] + "px"; } };
+    var carte = q("#t01-carte-annotee-carte"); poser(carte, [C.x, C.y, C.l, C.h]);
+    var visuel = q("#t01-carte-annotee-visuel"); poser(visuel, M.visuel);
+    var desc = q("#t01-carte-annotee-desc"); poser(desc, M.desc);
+
+    // Les textes de la carte (décodés plus tard).
+    var textes = q("#t01-carte-annotee-textes"), T = {};
+    T.titre = K.el(textes, "div", "t01-t t01-titre"); poser(T.titre, M.titre.slice(0, 2));
+    T.genre = K.el(textes, "div", "t01-t t01-genre"); poser(T.genre, M.genre.slice(0, 2));
+    T.prix = K.el(textes, "div", "t01-t t01-prix"); poser(T.prix, M.prix.slice(0, 2));
+    T.lignes = M.lignes.map(function (p) { var e = K.el(textes, "div", "t01-t t01-ligne"); poser(e, p); return e; });
+    if (vertical) {
+      T.titre.style.fontSize = "66px"; T.prix.style.fontSize = "60px"; T.genre.style.fontSize = "22px";
+      T.lignes.forEach(function (e) { e.style.fontSize = "25px"; });
+    }
+    T.pastilles = CARTE.pastilles.map(function (txt, i) {
+      var p = M.pastilles, e = K.el(textes, "div", "t01-pastille");
+      poser(e, [p[0] + i * p[4], p[1], p[2], p[3]]); if (vertical) e.style.fontSize = "20px"; return e;
+    });
+
+    // ---- 1. Les pixels de chargement (amas en croix, trois teintes qui tournent) -------------
+    var px = q("#t01-carte-annotee-pixels"), FORME = [[1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2], [1, 2], [2, 2], [3, 2], [1, 3], [2, 3]];
+    var cote = vertical ? 84 : 72, pas = vertical ? 124 : 104;
+    var ax = L / 2 - 2 * pas + (pas - cote) / 2, ay = H / 2 - 2 * pas + (pas - cote) / 2 + (vertical ? 0 : 20);
+    var pixels = FORME.map(function (f, i) {
+      var e = K.el(px, "div", "t01-px"); poser(e, [ax + f[0] * pas, ay + f[1] * pas, cote, cote]);
+      e.setAttribute("data-n", "1"); return e;
+    });
+    K.cacher(pixels, { scale: 0.3 });
+    pixels.forEach(function (e, i) {
+      var f = FORME[i];
+      tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 0.05 + (f[0] + f[1]) * 0.05);
+      // Les teintes tournent par vagues (diagonale), toutes les 0,12 s.
+      for (var k = 0; k < 9; k++) {
+        var n = ["1", "2", "3"][(k + f[0] + f[1] * 2) % 3];
+        tl.set(e, { attr: { "data-n": n } }, 0.35 + k * 0.12);
+      }
+      tl.set(e, { attr: { "data-n": "1" } }, 1.45);
+    });
+
+    // ---- 2. Les pixels deviennent les blocs de la carte -------------------------------------
+    var cibles = [M.visuel, [M.titre[0], M.titre[1] + 4, M.titre[2], M.titre[3] - 8], [M.genre[0], M.genre[1], M.genre[2], M.genre[3]],
+      [M.prix[0], M.prix[1], M.prix[2], M.prix[3]]];
+    M.lignes.forEach(function (p, i) { cibles.push([p[0], p[1] + 2, [520, 470, 330][i] * (vertical ? 1.3 : 1), vertical ? 22 : 19]); });
+    for (var j = 0; j < 3; j++) cibles.push([M.pastilles[0] + j * M.pastilles[4], M.pastilles[1], M.pastilles[2], M.pastilles[3]]);
+    K.cacher(carte, { scale: 0.2 });
+    tl.to(carte, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.inOut" }, 1.4);
+    // Le pixel garde sa taille de départ ; il glisse (x, y) et s'étire (scaleX, scaleY) depuis son coin.
+    pixels.forEach(function (e, i) {
+      var c = cibles[i], f = FORME[i], x0 = ax + f[0] * pas, y0 = ay + f[1] * pas;
+      if (!c) { tl.to(e, { scale: 0, duration: 0.3, ease: "power2.in" }, 1.45 + i * 0.02); return; }
+      tl.set(e, { transformOrigin: "0 0" }, 1.44);
+      tl.to(e, { x: c[0] - x0, y: c[1] - y0, scaleX: c[2] / cote, scaleY: c[3] / cote, duration: 0.65, ease: "expo.inOut" }, 1.45 + i * 0.03);
+      if (i > 0) tl.set(e, { attr: { "data-n": "g" } }, 1.95 + i * 0.03);
+    });
+
+    // ---- 3. Le contenu se décode sur les blocs ------------------------------------------------
+    K.cacher(desc);
+    tl.to(desc, { opacity: 1, duration: 0.3 }, 2.1);
+    decoder(T.titre, CARTE.titre, 2.25, 0.5);
+    decoder(T.genre, CARTE.genre, 2.4, 0.6);
+    decoder(T.prix, CARTE.prix, 2.5, 0.45);
+    CARTE.lignes.forEach(function (txt, i) { decoder(T.lignes[i], txt, 2.6 + i * 0.12, 0.55); });
+    T.pastilles.forEach(function (e, i) {
+      K.cacher(e);
+      tl.set(e, { opacity: 1 }, 2.7 + i * 0.1);
+      decoder(e, CARTE.pastilles[i], 2.75 + i * 0.1, 0.35);
+    });
+    pixels.forEach(function (e, i) { if (i > 0 && cibles[i]) tl.to(e, { opacity: 0, duration: 0.25 }, 2.3 + i * 0.06); });
+    // L'aplat de l'aperçu se dissout en pixels et découvre le lecteur.
+    var diss = q("#t01-carte-annotee-dissous"), v = M.visuel, nx = 8, ny = Math.round(8 * v[3] / v[2]), rr = K.rng(5);
+    var lx = v[2] / nx, ly = v[3] / ny, morceaux = [];
+    for (var yy = 0; yy < ny; yy++) for (var xx = 0; xx < nx; xx++) {
+      var m = K.el(diss, "div", "t01-dissous"); poser(m, [v[0] + xx * lx, v[1] + yy * ly, Math.ceil(lx) + 1, Math.ceil(ly) + 1]);
+      if (xx === 0 && yy === 0) m.style.borderTopLeftRadius = "18px";
+      if (xx === nx - 1 && yy === 0) m.style.borderTopRightRadius = "18px";
+      if (xx === 0 && yy === ny - 1) m.style.borderBottomLeftRadius = "18px";
+      if (xx === nx - 1 && yy === ny - 1) m.style.borderBottomRightRadius = "18px";
+      K.cacher(m); tl.set(m, { opacity: 1 }, 2.05);
+      tl.set(m, { opacity: 0 }, 2.2 + rr() * 0.5);
+      morceaux.push(m);
+    }
+    K.cacher(visuel);
+    tl.set(visuel, { opacity: 1 }, 2.05);
+    tl.set(pixels[0], { opacity: 0 }, 2.05);
+    q("#t01-carte-annotee-lecteur").innerHTML = K.ic("play");
+    decoder(q("#t01-carte-annotee-vlabel"), APERCU, 2.6, 0.5);
+    tl.fromTo("#t01-carte-annotee-lecture", { scaleX: 0 }, { scaleX: 0.62, duration: 3.6, ease: "none" }, 2.8);
+
+    // ---- 4. Les cadres de repérage se posent, un par un -----------------------------------------
+    var zone = function (cible) {
+      var marge = 10;
+      if (cible === "titre") return [M.titre[0] - marge, M.titre[1] - marge, (vertical ? 330 : 290) + 2 * marge, M.titre[3] + 2 * marge];
+      if (cible === "prix") return [M.prix[0] - marge, M.prix[1] - marge, (vertical ? 280 : 236) + 2 * marge, M.prix[3] + 2 * marge];
+      if (cible === "ligne1") return [M.lignes[0][0] - 8, M.lignes[0][1] - 9, vertical ? 560 : 470, vertical ? 42 : 38];
+      if (cible === "pastilles") return [M.pastilles[0] - marge, M.pastilles[1] - marge, 2 * M.pastilles[4] + M.pastilles[2] + 2 * marge, M.pastilles[3] + 2 * marge];
+      return [M.visuel[0] - marge, M.visuel[1] - marge, M.visuel[2] + 2 * marge, M.visuel[3] + 2 * marge];
+    };
+    var reperes = q("#t01-carte-annotee-reperes");
+    REPERES.forEach(function (rp, i) {
+      var z = zone(rp[1]), e = K.el(reperes, "div", "t01-repere");
+      poser(e, z);
+      var eclair = K.el(e, "div", "t01-eclair");
+      var tag = K.el(e, "div", "t01-tag" + (rp[2] === "droite" ? " t01-droite" : ""), rp[0]);
+      K.cacher(e, { scale: 1.12 });
+      var t = 3.2 + i * 0.32;
+      tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, t);
+      tl.fromTo(eclair, { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.05);
+      tl.fromTo(tag, { y: 8 }, { y: 0, duration: 0.3, ease: "back.out(2)" }, t + 0.05);
+    });
+
+    // ---- La vie autour : l'étoile au coin, les cases, la caméra -----------------------------
+    var etoile = q("#t01-carte-annotee-etoile");
+    poser(etoile, [C.x + C.l - 37, C.y - 37]);
+    K.cacher(etoile, { scale: 0, rotation: -90 });
+    tl.to(etoile, { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2)" }, 2.95);
+    tl.to(etoile, { rotation: 45, duration: 3, ease: "sine.inOut" }, 3.4);
+    var cases = q("#t01-carte-annotee-cases"), places = vertical ? [[0, 2], [4, 3], [1, 9], [4, 8]] : [[0, 1], [9, 1], [1, 4], [8, 5]];
+    places.forEach(function (p, i) {
+      var c = K.el(cases, "div", "t01-case", null, "left:" + (60 + p[0] * 180 + 2) + "px; top:" + (30 + p[1] * 180 + 2) + "px;");
+      K.cacher(c);
+      tl.set(c, { opacity: 1 }, 0.4 + i * 0.5).set(c, { opacity: 0 }, 1.1 + i * 0.5);
+      tl.set(c, { opacity: 1 }, 3.6 + i * 0.45).set(c, { opacity: 0 }, 4.3 + i * 0.45);
+    });
+    tl.fromTo("#t01-carte-annotee-cam", { scale: 1, x: 0, y: 0 }, { scale: 1.03, y: -6, duration: 1.25, ease: "sine.inOut" }, 1.9);
+    // À chaque cadre, la caméra fait un pas vers la partie repérée (0,3 s, expo.out).
+    REPERES.forEach(function (rp, i) {
+      var z = zone(rp[1]), zx = z[0] + z[2] / 2 - L / 2, zy = z[1] + z[3] / 2 - H / 2, s1 = 1.04 + i * 0.012;
+      tl.to("#t01-carte-annotee-cam", { scale: s1, x: -zx * 0.06, y: -zy * 0.06 - 6, duration: 0.3, ease: "expo.out" }, 3.2 + i * 0.32);
+    });
+    // Recadrage final : la caméra s'approche de l'aperçu et des cadres (vers 42 % de la largeur).
+    var s2 = vertical ? 1.08 : 1.24, Px = vertical ? C.x + C.l / 2 : M.visuel[0] + M.visuel[2] * 0.85, Py = vertical ? C.y + C.h * 0.42 : M.visuel[1] + M.visuel[3] * 0.5;
+    var Qx = vertical ? L / 2 : L * 0.44, Qy = H / 2;
+    tl.to("#t01-carte-annotee-cam", { scale: s2, x: Qx - (L / 2 + (Px - L / 2) * s2), y: Qy - (H / 2 + (Py - H / 2) * s2), duration: 0.85, ease: "expo.inOut" }, 4.95);
+    tl.to("#t01-carte-annotee-cam", { scale: s2 * 1.025, x: "-=14", duration: 0.75, ease: "none" }, 5.8);
+    decoder(q("#t01-carte-annotee-label"), ETIQUETTE, 0.1, 0.55);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°3 · Interface 3D · scène « Les onglets » (l'accroche).
+  Ce qu'elle montre : ta promesse en très gros, floue, qui devient nette ; la caméra recule d'un
+  coup et la phrase finit petite, sa fin à la couleur de ta marque. Puis une barre d'onglets entre,
+  défile très vite (flou de vitesse) sous une pastille lumineuse qui se pose sur ton offre ; on
+  plonge dans ce bouton posé sur une trame de points, et « Découvre Ton offre » se forme en points
+  puis devient net.
+  Durée : 8,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : tout se place
+  d'après la taille de la composition (K.cadre).
+  À remplacer (objet R en tête du script, rien d'autre) : la promesse en deux morceaux, les onglets
+  (les sujets de ton univers, ceux de ta page, 6 à 9 ; « | » pose un séparateur ; le premier
+  porte une icône), le nom de l'offre (il doit figurer dans les onglets), le mot d'appel.
+  Couleurs : uniquement var(--brand-*) ; le bleu nuit du look se dérive du fond et de l'accent.
+  Identifiant : t3o (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t3o {
+    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    --t3-lueur: color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 16%, transparent);
+    --t3-gris: color-mix(in oklab, var(--brand-muted) 78%, var(--brand-accent));
+    --t3-police: var(--brand-font-body);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+  }
+  #t3o .t3o-fond {
+    position: absolute; inset: -2px -160px -2px -160px;
+    background:
+      radial-gradient(ellipse 55% 48% at 20% -10%, var(--t3-lueur), transparent 72%),
+      radial-gradient(ellipse 60% 36% at 80% 112%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 9%, transparent), transparent 70%),
+      var(--t3-nuit);
+  }
+  /* La trame de points (le motif du look), masquée en ovale. */
+  #t3o .t3o-trame {
+    position: absolute; left: 50%; top: 50%; width: 1500px; height: 900px; margin: -450px 0 0 -750px;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.24) 1.6px, transparent 2.2px);
+    background-size: 15px 15px;
+    -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,.55) 45%, transparent 75%);
+    mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,.55) 45%, transparent 75%);
+  }
+  #t3o .t3o-halo { position: absolute; left: 50%; top: 50%; width: 1100px; height: 560px; margin: -280px 0 0 -550px; border-radius: 50%;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in oklab, var(--brand-accent) 16%, transparent), transparent 70%); opacity: 0; }
+  #t3o .t3o-plan { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+  /* L'accroche */
+  #t3o .t3o-ligne {
+    position: absolute; left: 0; right: 0; top: 50%; height: 80px; margin-top: -40px;
+    text-align: center; white-space: nowrap; font-weight: 600; font-size: 60px; line-height: 80px;
+    letter-spacing: -0.015em; text-shadow: 0 0 26px rgba(255, 255, 255, 0.22);
+  }
+  #t3o .t3o-ligne span { display: inline-block; }
+  #t3o .t3o-b { color: var(--brand-accent); }
+  #t3o .t3o-bm { display: inline-block; }
+  #t3o .t3o-a { position: relative; }
+  #t3o .t3o-caret { position: absolute; left: -0.32em; top: 0.12em; width: 0.16em; height: 0.86em;
+    background-image: radial-gradient(circle, rgba(255,255,255,.95) 1.6px, transparent 2.2px); background-size: 6px 6px; }
+  /* La barre d'onglets */
+  #t3o .t3o-barre {
+    position: absolute; left: 50%; top: 50%; height: 100px; margin-top: -50px;
+    display: flex; align-items: center; gap: 60px; white-space: nowrap;
+    font-weight: 600; font-size: 46px; color: var(--t3-gris);
+  }
+  #t3o .t3o-onglet { display: inline-flex; align-items: center; gap: 16px; height: 100px; position: relative; }
+  #t3o .t3o-onglet svg { width: 46px; height: 46px; }
+  #t3o .t3o-premier { color: var(--brand-text); padding: 0 26px; border-radius: 22px;
+    background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.08); }
+  #t3o .t3o-sep { width: 2px; height: 50px; background: rgba(255, 255, 255, 0.16); }
+  #t3o .t3o-cible { color: var(--brand-text); }
+  /* La pastille de sélection, fixe au centre : les onglets défilent dessous. */
+  #t3o .t3o-selection {
+    position: absolute; left: 50%; top: 50%; height: 112px; margin-top: -56px; border-radius: 30px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--brand-accent) 12%, rgba(255,255,255,.07)), rgba(255,255,255,.015));
+    border: 2px solid color-mix(in oklab, var(--brand-accent) 80%, #fff);
+    box-shadow: 0 0 18px color-mix(in oklab, var(--brand-accent) 38%, transparent),
+      0 0 60px color-mix(in oklab, var(--brand-accent) 14%, transparent),
+      inset 0 0 20px color-mix(in oklab, var(--brand-accent) 20%, transparent);
+    overflow: hidden;
+  }
+  #t3o .t3o-reflet { position: absolute; top: -2px; left: 0; width: 46%; height: 5px; border-radius: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent); filter: blur(1px); }
+  /* La fin : « Découvre Ton offre », d'abord en points */
+  #t3o .t3o-final { position: absolute; left: 0; right: 0; top: 50%; height: 200px; margin-top: -100px; }
+  #t3o .t3o-bande { position: absolute; left: 50%; top: 50%; width: 1100px; height: 150px; margin: -75px 0 0 -550px; border-radius: 50%;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in oklab, var(--brand-accent) 30%, transparent), transparent 70%); filter: blur(10px); }
+  #t3o .t3o-texte {
+    position: absolute; left: 0; right: 0; top: 50%; height: 80px; margin-top: -40px; text-align: center; white-space: nowrap;
+    font-weight: 600; font-size: 58px; line-height: 80px; letter-spacing: -0.012em;
+  }
+  #t3o .t3o-texte span { display: inline-block; }
+  #t3o .t3o-net { text-shadow: 0 0 26px rgba(255, 255, 255, 0.25); }
+  #t3o .t3o-net .t3o-f1 { color: var(--brand-text); }
+  #t3o .t3o-net .t3o-f2 { color: var(--brand-accent); }
+  #t3o .t3o-pix {
+    color: #fff; letter-spacing: 0.02em;
+    -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 62%); -webkit-mask-size: 7px 7px;
+    mask-image: radial-gradient(circle, #000 52%, transparent 62%); mask-size: 7px 7px;
+    text-shadow: 0 0 14px color-mix(in oklab, var(--brand-accent) 70%, #fff);
+  }
+  #t3o .t3o-echo { color: color-mix(in oklab, var(--brand-accent) 45%, #fff); filter: blur(7px); }
+</style>
+
+<div data-composition-id="t3o" data-width="1920" data-height="1080" data-duration="8.2" style="position:absolute; inset:0;">
+  <div id="t3o" class="k-scene">
+    <div class="t3o-fond" data-layout-allow-overflow></div>
+    <div class="k-scene3d"><div class="k-camera" id="t3o-cam">
+      <div class="t3o-plan" id="t3o-plan-trame"><div class="t3o-halo" id="t3o-halo"></div><div class="t3o-trame" id="t3o-trame" data-layout-ignore></div></div>
+      <div class="t3o-plan" id="t3o-zoom">
+        <div class="t3o-ligne" id="t3o-ligne"><span class="t3o-a" id="t3o-a"></span><span id="t3o-espace">&nbsp;</span><span class="t3o-b" id="t3o-b"></span></div>
+      </div>
+      <div class="t3o-plan" id="t3o-zoom-barre" data-layout-allow-overflow>
+        <div class="t3o-barre" id="t3o-barre" data-layout-allow-overflow></div>
+        <div class="t3o-selection" id="t3o-selection"><div class="t3o-reflet" id="t3o-reflet"></div></div>
+        <div class="t3o-barre" id="t3o-barre-haut" style="pointer-events:none" data-layout-allow-overflow></div>
+      </div>
+    </div></div>
+    <div class="t3o-final" id="t3o-final">
+      <div class="t3o-bande" id="t3o-bande"></div>
+      <div class="t3o-texte t3o-echo" id="t3o-echo" data-layout-ignore></div>
+      <div class="t3o-texte t3o-pix" id="t3o-pix" data-layout-ignore></div>
+      <div class="t3o-texte t3o-net" id="t3o-net"></div>
+    </div>
+    <div class="k-vignette"></div>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <filter id="t3o-flou-h" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur id="t3o-flou-h-g" stdDeviation="0 0"/></filter>
+    </svg>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer : les textes de la scène -------------------------------------------------
+  var R = {
+    promesse: ["Ta promesse", "en une ligne"],      // le 1er morceau arrive en très gros
+    onglets: ["Tendances", "Nouveau", "|", "Formations", "Coaching", "Outils", "Ton offre", "Communauté", "Bonus"],
+    offre: "Ton offre",                              // l'onglet où se pose la pastille
+    appel: "Découvre",                               // « Découvre Ton offre »
+    iconePremier: "trending-up"                      // icône du kit (K.ic) devant le 1er onglet
+  };
+  // -------------------------------------------------------------------------------------------
+  var D = 8.2;
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t3o")), L = cadre.largeur, H = cadre.hauteur, ech = Math.min(L / 1920, H / 1080) || 1;
+  var vertical = H > L;
+  // Les couleurs de la marque, lues sur la scène (GSAP anime des valeurs, pas des var()).
+  var css = getComputedStyle($("t3o"));
+  var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
+  var accent = C("--brand-accent", "#ffee00"), texte = C("--brand-text", "#ffffff");
+  var rgba = function (c, a) {
+    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c), h;
+    if (!m) return c;
+    h = m[1].length === 3 ? m[1].replace(/(.)/g, "$1$1") : m[1];
+    return "rgba(" + parseInt(h.slice(0, 2), 16) + "," + parseInt(h.slice(2, 4), 16) + "," + parseInt(h.slice(4, 6), 16) + "," + a + ")";
+  };
+
+  // Construction
+  $("t3o-a").innerHTML = R.promesse[0] + '<span class="t3o-caret" id="t3o-caret" data-layout-ignore></span>';
+  $("t3o-b").innerHTML = R.promesse[1].split(" ").map(function (m) { return '<span class="t3o-bm">' + m + "</span>"; }).join("&nbsp;");
+  var cible = null;
+  function remplir(barre, haut) {
+    R.onglets.forEach(function (nom, i) {
+      var e;
+      if (nom === "|") { e = K.el(barre, "div", "t3o-sep"); return; }
+      e = K.el(barre, "div", "t3o-onglet" + (i === 0 ? " t3o-premier" : "") + (nom === R.offre ? " t3o-cible" : ""));
+      if (i === 0 && R.iconePremier) K.el(e, "span", null, K.ic(R.iconePremier) || K.ic("trending-up"));
+      var mot = K.el(e, "span", null, nom);
+      // l'onglet de l'offre existe deux fois, superposé exprès (sous la pastille et net au-dessus)
+      if (nom === R.offre) mot.setAttribute("data-layout-allow-overlap", "");
+      if (haut) { e.style.visibility = nom === R.offre ? "visible" : "hidden"; }
+      else if (nom === R.offre) cible = e;
+    });
+  }
+  remplir($("t3o-barre"), false);
+  remplir($("t3o-barre-haut"), true);   // copie : seul l'onglet de l'offre, net, au-dessus de la pastille
+  ["t3o-net", "t3o-pix", "t3o-echo"].forEach(function (id) {
+    $(id).innerHTML = '<span class="t3o-f1">' + R.appel + '</span>&nbsp;<span class="t3o-f2">' + R.offre + "</span>";
+  });
+
+  // États de départ (première image comprise)
+  gsap.set("#t3o-zoom", { scale: 4.6 * (vertical ? 0.62 : 1) });
+  gsap.set("#t3o-a", { filter: "blur(16px)", color: accent });
+  K.cacher(["#t3o-b", "#t3o-barre", "#t3o-barre-haut", "#t3o-selection", "#t3o-final", "#t3o-trame"]);
+  gsap.set("#t3o-barre", { filter: "url(#t3o-flou-h)" });
+
+  function construire() {
+    var tl = gsap.timeline({ paused: true });
+    // Mesures (polices chargées) : largeurs dans le repère de la barre, avant toute échelle.
+    var wA = $("t3o-a").offsetWidth, wE = $("t3o-espace").offsetWidth, wB = $("t3o-b").offsetWidth;
+    var decalage = (wE + wB) / 2;                       // la 1re moitié centrée, puis la ligne se recentre
+    var onglets = $("t3o-barre").children, premier = onglets[0];
+    var cxPremier = premier.offsetLeft + premier.offsetWidth / 2;
+    var cxCible = cible.offsetLeft + cible.offsetWidth / 2;
+    var wBarre = $("t3o-barre").offsetWidth;
+    var quatre = onglets[Math.min(3, onglets.length - 1)];
+    var cxGroupe = (premier.offsetLeft + quatre.offsetLeft + quatre.offsetWidth) / 2;
+    gsap.set(["#t3o-barre", "#t3o-barre-haut"], { marginLeft: 0, x: -cxPremier });
+    gsap.set("#t3o-selection", { width: cible.offsetWidth + 64, marginLeft: -(cible.offsetWidth + 64) / 2 });
+    gsap.set("#t3o-ligne", { x: decalage });
+    // la promesse en très gros occupe ~80 % de la largeur, quelle que soit sa longueur
+    gsap.set("#t3o-zoom", { scale: Math.min(4.6, (0.8 * L) / Math.max(1, wA)) });
+
+    // 1. La promesse floue devient nette, la caméra recule d'un coup (0 → 3,2 s)
+    tl.to("#t3o-a", { filter: "blur(0px)", color: texte, duration: 0.45, ease: "power2.out" }, 0.02);
+    tl.fromTo("#t3o-trame", { opacity: 0, scale: 1.25 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "power2.out" }, 0.12);
+    tl.to("#t3o-trame", { opacity: 0, duration: 0.5, ease: "power2.in" }, 0.85);
+    tl.to("#t3o-zoom", { scale: 1, duration: 0.75, ease: "expo.inOut" }, 0.42);
+    tl.to("#t3o-ligne", { x: 0, duration: 0.75, ease: "expo.inOut" }, 0.62);
+    tl.set("#t3o-b", { opacity: 1 }, 0.98);
+    tl.fromTo("#t3o .t3o-bm", { opacity: 0, y: 16, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out", stagger: 0.3 }, 0.98);
+    tl.to("#t3o-zoom", { scale: 0.64, duration: 1.05, ease: "power2.inOut" }, 1.18);
+    tl.to("#t3o-zoom", { scale: 0.78, duration: 0.4, ease: "expo.out" }, 2.25);
+    tl.to("#t3o-zoom", { scale: 0.72, duration: 0.35, ease: "sine.inOut" }, 2.65);
+    tl.fromTo("#t3o-ligne", { y: 0 }, { y: -26, duration: 1.8, ease: "sine.inOut", immediateRender: false }, 1.18);
+    [0.5, 1.0, 1.5, 2.0, 2.5].forEach(function (t, i) { tl.set("#t3o-caret", { opacity: i % 2 ? 1 : 0 }, t); });
+    tl.fromTo(".t3o-fond", { x: 0, scale: 1 }, { x: 120, scale: 1.08, duration: 3.2, ease: "sine.inOut" }, 0);
+    tl.to("#t3o-ligne", { opacity: 0, filter: "blur(10px)", y: -40, duration: 0.3, ease: "power2.in" }, 3.0);
+
+    // 2. La barre d'onglets : le premier, puis les suivants, puis le défilement (3,3 → 5,6 s)
+    var zb = vertical ? 0.55 : 1;
+    gsap.set("#t3o-zoom-barre", { scale: 2.1 * zb });
+    tl.set("#t3o-barre", { opacity: 1 }, 3.3);
+    gsap.set(onglets, { opacity: 0 });
+    tl.fromTo(premier, { opacity: 0, scale: 0.88, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 3.3);
+    for (var i = 1; i < onglets.length; i++) {
+      var t = i <= 4 ? 3.62 + (i - 1) * 0.17 : 4.45 + (i - 5) * 0.04;
+      tl.fromTo(onglets[i], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, t);
+    }
+    tl.to("#t3o-zoom-barre", { scale: 1.6 * zb, duration: 1.0, ease: "power2.inOut" }, 3.55);
+    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxGroupe, duration: 1.0, ease: "power2.inOut" }, 3.55);
+    // le défilement très rapide, avec un flou de vitesse horizontal
+    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxCible, duration: 1.0, ease: "power3.inOut" }, 4.55);
+    tl.to("#t3o-zoom-barre", { scale: 2.05 * zb, duration: 1.0, ease: "power3.inOut" }, 4.55);
+    tl.fromTo("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" } }, { attr: { stdDeviation: "18 0" }, duration: 0.5, ease: "power2.in" }, 4.55);
+    tl.to("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" }, duration: 0.45, ease: "power2.out" }, 5.05);
+    tl.fromTo("#t3o-selection", { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, 4.85);
+    tl.set("#t3o-barre-haut", { opacity: 1 }, 5.45);
+
+    // 3. La plongée dans le bouton, sur la trame (5,6 → 7 s)
+    tl.to("#t3o-barre", { filter: "blur(9px)", opacity: 0.32, duration: 0.6, ease: "power2.out" }, 5.55);
+    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1.1, duration: 1.1, ease: "power2.out", immediateRender: false }, 5.5);
+    tl.to("#t3o-zoom-barre", { scale: 2.6 * zb, duration: 0.85, ease: "expo.out" }, 5.6);
+    tl.fromTo("#t3o-reflet", { x: -220 }, { x: cible.offsetWidth + 120, duration: 0.7, ease: "power2.inOut" }, 5.85);
+    tl.fromTo("#t3o-selection", { boxShadow: "0 0 18px " + rgba(accent, 0.38) + ", 0 0 60px " + rgba(accent, 0.14) + ", inset 0 0 20px " + rgba(accent, 0.2) },
+      { boxShadow: "0 0 30px " + rgba(accent, 0.6) + ", 0 0 110px " + rgba(accent, 0.26) + ", inset 0 0 28px " + rgba(accent, 0.32), duration: 0.5, ease: "power2.out", immediateRender: false }, 6.05);
+    tl.fromTo("#t3o-halo", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 5.6);
+    tl.to("#t3o-zoom-barre", { scale: 7 * zb, filter: "blur(18px)", opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
+    tl.to("#t3o-trame", { scale: 2.4, opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
+    tl.to("#t3o-halo", { scale: 2.2, opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
+
+    // 4. « Découvre Ton offre » se forme en points, puis net (7 → 8,2 s)
+    tl.set("#t3o-final", { opacity: 1 }, 6.95);
+    tl.fromTo("#t3o-bande", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "expo.out" }, 6.95);
+    tl.fromTo("#t3o-pix", { opacity: 0, scaleX: 1.25, filter: "blur(6px)" }, { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, 6.95);
+    tl.fromTo("#t3o-echo", { opacity: 0.7, scale: 1.9 }, { opacity: 0, scale: 1.15, duration: 0.7, ease: "power2.out" }, 6.98);
+    tl.fromTo("#t3o-net", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 7.28);
+    tl.to("#t3o-pix", { opacity: 0, duration: 0.3, ease: "power1.in" }, 7.38);
+    tl.fromTo("#t3o-final", { scale: 1 }, { scale: 1.05, duration: 1.25, ease: "sine.inOut" }, 6.95);
+    tl.to("#t3o-bande", { opacity: 0.55, duration: 0.3, ease: "sine.inOut" }, 7.56);
+    tl.to("#t3o-final", { opacity: 0, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, 7.9);
+
+    window.__timelines["t3o"] = tl;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(construire); else construire();
+})();
+</script>
+</template>
+</body>
+</html>

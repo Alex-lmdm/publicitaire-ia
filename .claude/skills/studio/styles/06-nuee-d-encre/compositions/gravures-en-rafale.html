@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°6 « PAPIER PINCEAU » · SCÈNE 3 : LES GRAVURES EN RAFALE (2,8 s)
+
+    Ce qu'elle montre : la sphère au crayon de la scène 2, au centre. Autour d'elle, des planches
+    de gravure surgissent en rafale (un globe filaire, une spirale, une rose des vents, un relief
+    en treillis, un escalier en hélice, un engrenage, des orbites…), du centre vers les bords,
+    jusqu'à remplir la page. Puis coupe franche sur la page blanche de la scène 4 (« bientot »).
+    Rôle : le crescendo du teaser, juste avant la révélation (la musique se retient, puis frappe
+    sur la coupe).
+
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : la grille
+    des planches se recalcule.
+
+    À REMPLACER :
+      1. L'id « t06-gravures » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. Les planches : dessinées par le script (formes générées, aucune image reprise). Pour des
+         illustrations du client (libres de droits, ou les siennes), mets leurs chemins dans
+         IMAGES (fichiers dans assets/images/, PNG détourés ou dessins au trait) : elles prennent
+         la place des premières planches.
+      3. LEGENDES_FIG : les petites légendes sous certaines planches (« fig. 1 »…).
+    Ne pas toucher : PARTICULES, GRAINE et la sphère (raccord avec la scène 2).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t06-gravures {
+      --t06-papier: #e3e4de;
+      --t06-texte: var(--brand-font-body);
+      background: var(--t06-papier);
+    }
+    #t06-gravures canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-gravures .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t06-gravures .t06-planche { position: absolute; overflow: visible; }
+    #t06-gravures .t06-planche path, #t06-gravures .t06-planche circle, #t06-gravures .t06-planche ellipse, #t06-gravures .t06-planche line, #t06-gravures .t06-planche polyline, #t06-gravures .t06-planche polygon { fill: none; vector-effect: non-scaling-stroke; }
+    #t06-gravures .t06-planche img { width: 100%; height: 100%; object-fit: contain; filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
+    #t06-gravures .t06-fig { position: absolute; left: 0; right: 0; bottom: -18px; text-align: center; font: italic 400 11px/1 Georgia, "Times New Roman", serif; letter-spacing: 0.02em; white-space: nowrap; }
+  </style>
+
+  <div data-composition-id="t06-gravures" data-width="1920" data-height="1080" data-duration="2.8" style="position:absolute; inset:0;">
+    <div id="t06-gravures" class="k-scene">
+      <canvas id="t06-gravures-papier"></canvas>
+      <canvas id="t06-gravures-lune"></canvas>
+      <div class="t06-cam" id="t06-gravures-cam" data-layout-allow-overflow>
+        <div id="t06-gravures-planches"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t06-gravures", D = 2.8;
+      var IMAGES = []; // ex. ["assets/images/croquis-1.png", …] : remplacent les premières planches
+      var LEGENDES_FIG = ["fig. 1", "fig. 2", "pl. III", "fig. 4", "fig. 7", "pl. IX"];
+      var PARTICULES = 3400, GRAINE = 61, FIN_SCENE2 = 5; // la sphère continue sa rotation
+
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true });
+      var E = Math.min(L, H) / 1080;
+
+      // --- Outils du look (communs aux scènes du template 6) ---------------------------------
+      function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      function hache(i, k) { var s = Math.sin(i * 12.9898 + (k || 0) * 78.233) * 43758.5453; return s - Math.floor(s); }
+      function toile(c) { c.width = L; c.height = H; return c.getContext("2d"); }
+      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
+      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
+      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", PAPIER = cs.getPropertyValue("--t06-papier").trim();
+      function papier(ctx, graine) {
+        var r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
+        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
+        ctx.lineCap = "round";
+        for (var f = 0; f < 260; f++) {
+          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
+          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
+        }
+      }
+
+      // --- Les planches de gravure : des dessins au trait générés (viewBox 0 0 100 100) --------
+      var f = function (n) { return n.toFixed(1); };
+      function trace(pts) { return "M" + pts.map(function (p) { return f(p[0]) + " " + f(p[1]); }).join(" L"); }
+      var DESSINS = [
+        function globe() { var s = '<circle cx="50" cy="50" r="44"/>'; for (var k = 1; k < 6; k++) s += '<ellipse cx="50" cy="50" rx="' + f(44 * Math.cos(k * Math.PI / 12)) + '" ry="44"/>'; for (var j = -3; j <= 3; j++) { var y = 50 + j * 12, w = Math.sqrt(Math.max(0, 44 * 44 - (y - 50) * (y - 50))); s += '<line x1="' + f(50 - w) + '" y1="' + f(y) + '" x2="' + f(50 + w) + '" y2="' + f(y) + '"/>'; } return s; },
+        function spirale() { var p = [], s = ""; for (var a = 0; a < 15; a += 0.08) { var r = 2.2 * Math.exp(0.21 * a); if (r > 46) break; p.push([50 + Math.cos(a) * r, 50 + Math.sin(a) * r]); } s += '<path d="' + trace(p) + '"/>'; for (var k = 0; k < p.length; k += 9) s += '<line x1="50" y1="50" x2="' + f(p[k][0]) + '" y2="' + f(p[k][1]) + '" stroke-opacity="0.6"/>'; return s; },
+        function rose() { var s = '<circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="8"/>', p = []; for (var k = 0; k < 16; k++) { var a = k * Math.PI / 8 - Math.PI / 2, r = k % 2 ? 14 : (k % 4 ? 30 : 44); p.push([50 + Math.cos(a) * r, 50 + Math.sin(a) * r]); } s += '<polygon points="' + p.map(function (q) { return f(q[0]) + "," + f(q[1]); }).join(" ") + '"/>'; for (var t = 0; t < 72; t++) { var b = t * Math.PI / 36, r1 = t % 6 ? 41 : 38; s += '<line x1="' + f(50 + Math.cos(b) * r1) + '" y1="' + f(50 + Math.sin(b) * r1) + '" x2="' + f(50 + Math.cos(b) * 44) + '" y2="' + f(50 + Math.sin(b) * 44) + '"/>'; } return s; },
+        function relief() { var s = ""; for (var j = 0; j <= 10; j++) { var p = []; for (var i = 0; i <= 12; i++) { var x = i / 12, z = j / 10; p.push([8 + x * 84 - z * 10 + z * 4, 30 + z * 50 - 14 * Math.sin(x * 5 + z * 3) * Math.exp(-((x - 0.5) * (x - 0.5) + (z - 0.5) * (z - 0.5)) * 4)]); } s += '<path d="' + trace(p) + '"/>'; } for (var i2 = 0; i2 <= 12; i2++) { var q = []; for (var j2 = 0; j2 <= 10; j2++) { var x2 = i2 / 12, z2 = j2 / 10; q.push([8 + x2 * 84 - z2 * 10 + z2 * 4, 30 + z2 * 50 - 14 * Math.sin(x2 * 5 + z2 * 3) * Math.exp(-((x2 - 0.5) * (x2 - 0.5) + (z2 - 0.5) * (z2 - 0.5)) * 4)]); } s += '<path d="' + trace(q) + '" stroke-opacity="0.7"/>'; } return s; },
+        function helice() { var s = "", a1 = [], a2 = []; for (var k = 0; k <= 64; k++) { var a = k * 0.35, y = 6 + k * 1.37; a1.push([50 + Math.cos(a) * 30, y]); a2.push([50 + Math.cos(a) * 14, y + 3]); if (k % 2 === 0) s += '<line x1="' + f(50 + Math.cos(a) * 30) + '" y1="' + f(y) + '" x2="' + f(50 + Math.cos(a) * 14) + '" y2="' + f(y + 3) + '"/>'; } return s + '<path d="' + trace(a1) + '"/><path d="' + trace(a2) + '"/><line x1="50" y1="4" x2="50" y2="96"/>'; },
+        function engrenage() { var p = [], s = ""; for (var k = 0; k < 24; k++) { var a = k * Math.PI / 12, d = Math.PI / 24; p.push([50 + Math.cos(a - d * 0.6) * 38, 50 + Math.sin(a - d * 0.6) * 38], [50 + Math.cos(a - d * 0.35) * 45, 50 + Math.sin(a - d * 0.35) * 45], [50 + Math.cos(a + d * 0.35) * 45, 50 + Math.sin(a + d * 0.35) * 45], [50 + Math.cos(a + d * 0.6) * 38, 50 + Math.sin(a + d * 0.6) * 38]); } s += '<path d="' + trace(p) + 'Z"/><circle cx="50" cy="50" r="12"/><circle cx="50" cy="50" r="30"/>'; for (var r = 0; r < 6; r++) { var b = r * Math.PI / 3; s += '<line x1="' + f(50 + Math.cos(b) * 12) + '" y1="' + f(50 + Math.sin(b) * 12) + '" x2="' + f(50 + Math.cos(b) * 30) + '" y2="' + f(50 + Math.sin(b) * 30) + '"/>'; } return s; },
+        function orbites() { var s = '<circle cx="50" cy="50" r="5"/>'; [14, 24, 34, 44].forEach(function (r, k) { s += '<ellipse cx="50" cy="50" rx="' + r + '" ry="' + f(r * 0.42) + '" transform="rotate(-18 50 50)"/>'; var a = k * 1.7 + 0.6; s += '<circle cx="' + f(50 + Math.cos(a) * r * 0.95) + '" cy="' + f(50 + Math.sin(a) * r * 0.4 - Math.cos(a) * r * 0.3) + '" r="' + (2 + k) + '"/>'; }); return s; },
+        function polyedre() { var t = (1 + Math.sqrt(5)) / 2, v = [[-1, t, 0], [1, t, 0], [-1, -t, 0], [1, -t, 0], [0, -1, t], [0, 1, t], [0, -1, -t], [0, 1, -t], [t, 0, -1], [t, 0, 1], [-t, 0, -1], [-t, 0, 1]], s = ""; var pr = v.map(function (q) { var x = q[0] * 0.9 - q[2] * 0.44, z = q[0] * 0.44 + q[2] * 0.9, y = q[1] * 0.95 + z * 0.3; return [50 + x * 22, 50 + y * 22]; }); for (var i = 0; i < 12; i++) for (var j = i + 1; j < 12; j++) { var d = Math.hypot(v[i][0] - v[j][0], v[i][1] - v[j][1], v[i][2] - v[j][2]); if (d < 2.1) s += '<line x1="' + f(pr[i][0]) + '" y1="' + f(pr[i][1]) + '" x2="' + f(pr[j][0]) + '" y2="' + f(pr[j][1]) + '"/>'; } return s; },
+        function tore() { var s = ""; for (var k = 0; k < 14; k++) { var a = k * Math.PI / 7; s += '<ellipse cx="' + f(50 + Math.cos(a) * 28) + '" cy="' + f(50 + Math.sin(a) * 11) + '" rx="' + f(10 + 6 * Math.abs(Math.cos(a))) + '" ry="15"/>'; } return s + '<ellipse cx="50" cy="50" rx="44" ry="22"/><ellipse cx="50" cy="50" rx="14" ry="5"/>'; },
+        function pendule() { return '<line x1="10" y1="12" x2="90" y2="12"/><line x1="50" y1="12" x2="70" y2="78"/><line x1="50" y1="12" x2="50" y2="88" stroke-dasharray="3 3"/><path d="M50 40 A28 28 0 0 0 58 38.8"/><circle cx="70" cy="78" r="8"/><circle cx="30" cy="78" r="8" stroke-opacity="0.45"/><line x1="50" y1="12" x2="30" y2="78" stroke-opacity="0.45"/><path d="M22 90 Q50 100 78 90"/>'; },
+        function eventail() { var s = ""; for (var k = 0; k <= 18; k++) { var a = Math.PI * (1.15 + k * 0.7 / 18); s += '<line x1="50" y1="86" x2="' + f(50 + Math.cos(a) * 78 * 0.55) + '" y2="' + f(86 + Math.sin(a) * 78) + '"/>'; } return s + '<path d="M' + f(50 + Math.cos(Math.PI * 1.15) * 42.9) + ' ' + f(86 + Math.sin(Math.PI * 1.15) * 78) + ' Q50 0 ' + f(50 + Math.cos(Math.PI * 1.85) * 42.9) + ' ' + f(86 + Math.sin(Math.PI * 1.85) * 78) + '"/>'; },
+        function hachures() { var s = '<circle cx="50" cy="50" r="40"/>'; for (var y = 14; y < 90; y += 3.2) { var w = Math.sqrt(Math.max(0, 1600 - (y - 50) * (y - 50))), x0 = 50 - w, x1 = 50 + w * (0.2 + 0.8 * (y - 10) / 80) - 10; if (x1 > x0) s += '<line x1="' + f(x0) + '" y1="' + f(y) + '" x2="' + f(x1) + '" y2="' + f(y) + '" stroke-opacity="0.8"/>'; } return s; },
+        function parabole() { var p = []; for (var x = -40; x <= 40; x += 4) p.push([50 + x, 20 + x * x / 50]); return '<path d="' + trace(p) + '"/><line x1="10" y1="52" x2="90" y2="52"/><line x1="50" y1="52" x2="50" y2="26"/><circle cx="50" cy="26" r="2.5"/><line x1="18" y1="44" x2="50" y2="26"/><line x1="82" y1="44" x2="50" y2="26"/><path d="M50 52 L36 94 L64 94 Z"/><line x1="40" y1="82" x2="60" y2="82"/><line x1="44" y1="70" x2="56" y2="70"/>'; },
+        function cube() { return '<path d="M22 34 L58 22 L84 36 L48 50 Z"/><path d="M22 34 L22 74 L48 90 L48 50"/><path d="M48 90 L84 76 L84 36"/><path d="M22 34 L84 76" stroke-dasharray="2 3"/><path d="M58 22 L48 90" stroke-dasharray="2 3"/><circle cx="53" cy="56" r="20" stroke-opacity="0.5"/>'; },
+        function onde() { var p = []; for (var x = 0; x <= 100; x += 2) p.push([x, 50 - Math.sin(x / 100 * 12.566) * 30 * Math.exp(-x / 110)]); var s = '<line x1="0" y1="50" x2="100" y2="50"/><line x1="4" y1="8" x2="4" y2="92"/><path d="' + trace(p) + '"/>'; for (var k = 0; k <= 10; k++) s += '<line x1="' + (k * 10) + '" y1="48" x2="' + (k * 10) + '" y2="52"/>'; return s; },
+        function treillis() { var s = '<path d="M30 96 L44 6 L56 6 L70 96"/>'; for (var k = 0; k < 9; k++) { var y0 = 96 - k * 10, y1 = y0 - 10, l0 = 30 + (96 - y0) * 14 / 90, l1 = 30 + (96 - y1) * 14 / 90; s += '<line x1="' + f(l0) + '" y1="' + y0 + '" x2="' + f(100 - l1) + '" y2="' + y1 + '"/><line x1="' + f(100 - l0) + '" y1="' + y0 + '" x2="' + f(l1) + '" y2="' + y1 + '"/><line x1="' + f(l1) + '" y1="' + y1 + '" x2="' + f(100 - l1) + '" y2="' + y1 + '"/>'; } return s; }
+      ];
+
+      // --- La sphère au crayon (la même nuée qu'à la fin de la scène 2) -----------------------
+      papier(toile($("papier")), 17);
+      var ctx = toile($("lune")), part = [];
+      for (var i = 0; i < PARTICULES; i++) part.push({ ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45 });
+      function lune(i, t) {
+        var R = (vertical ? 300 : 270) * E, a = hache(i, 41) * 6.2832 + t * 0.5, rr = R * Math.sqrt(hache(i, 42));
+        var x = Math.cos(a) * rr / R, y = Math.sin(a) * rr / R, z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
+        var clair = Math.max(0, x * 0.62 - y * 0.5 + z * 0.6), ombre = Math.pow(1 - Math.min(1, clair), 1.3);
+        return [L / 2 + x * R, H / 2 + y * R, 0.12 + 0.88 * ombre];
+      }
+      function rendreLune(t) {
+        ctx.clearRect(0, 0, L, H); ctx.fillStyle = ENCRE;
+        for (var i = 0; i < part.length; i++) { var q = lune(i, FIN_SCENE2 + t), prof = q[2]; ctx.globalAlpha = part[i].al * (0.3 + 0.7 * prof); ctx.beginPath(); ctx.arc(q[0], q[1], part[i].ta * (0.7 + 0.3 * prof), 0, 6.2832); ctx.fill(); }
+        ctx.globalAlpha = 1;
+      }
+
+      // --- La rafale : une grille de places, remplie du centre vers les bords -------------------
+      var rP = rng(GRAINE + 9), places = [], cols = vertical ? 6 : 11, rangs = vertical ? 11 : 6, pasX = L / cols, pasY = H / rangs, R0 = (vertical ? 300 : 270) * E + 30 * E;
+      for (var c = 0; c < cols; c++) for (var g = 0; g < rangs; g++) {
+        var x = (c + 0.5) * pasX + (rP() - 0.5) * pasX * 0.35, y = (g + 0.5) * pasY + (rP() - 0.5) * pasY * 0.35;
+        var taille = Math.min(pasX, pasY) * (1.0 + rP() * 0.55);
+        if (Math.hypot(x - L / 2, y - H / 2) < R0 + taille * 0.3) continue; // la sphère garde sa place
+        places.push({ x: x, y: y, t: taille, d: Math.hypot((x - L / 2) / L, (y - H / 2) / H), rot: (rP() - 0.5) * 10 });
+      }
+      places.sort(function (a, b) { return a.d - b.d; });
+      var hote = $("planches");
+      places.forEach(function (p, k) {
+        var e = K.el(hote, "div", "t06-planche", "", "left:" + (p.x - p.t / 2).toFixed(0) + "px; top:" + (p.y - p.t / 2).toFixed(0) + "px; width:" + p.t.toFixed(0) + "px; height:" + p.t.toFixed(0) + "px;");
+        e.setAttribute("data-layout-allow-overflow", "");
+        if (IMAGES[k]) e.innerHTML = '<img src="' + IMAGES[k] + '" alt="">';
+        else e.innerHTML = '<svg viewBox="0 0 100 100" width="100%" height="100%" stroke="' + ENCRE + '" stroke-width="' + (1.5 + (k % 3) * 0.4).toFixed(2) + '" stroke-linecap="round" stroke-linejoin="round">' + DESSINS[k % DESSINS.length]() + "</svg>";
+        if (k % 5 === 2 && LEGENDES_FIG.length) { var fg = K.el(e, "div", "t06-fig", LEGENDES_FIG[(k / 5 | 0) % LEGENDES_FIG.length]); fg.style.color = ENCRE; }
+        // chaque planche surgit : petite échelle, rotation, puis se pose ; ses traits se dessinent
+        // par salves, sur le tempo (une salve toutes les 0,42 s, du centre vers les bords)
+        var parSalve = Math.ceil(places.length / 5), t0 = 0.1 + Math.floor(k / parSalve) * 0.42 + (k % parSalve) * 0.012;
+        gsap.set(e, { opacity: 0, scale: 0.6, rotation: p.rot });
+        tl.to(e, { opacity: 1, scale: 1, rotation: 0, duration: 0.16, ease: "back.out(2)" }, t0);
+        e.querySelectorAll("svg > *").forEach(function (el) { el.setAttribute("pathLength", "100"); el.setAttribute("stroke-dasharray", "100"); el.setAttribute("stroke-dashoffset", "100"); tl.to(el, { attr: { "stroke-dashoffset": 0 }, duration: 0.32, ease: "power2.out" }, t0 + 0.02); });
+      });
+
+      // La caméra recule doucement pendant la rafale ; tout se tient, puis coupe franche (scène 4).
+      var cam = $("cam");
+      gsap.set(cam, { scale: 1.14 });
+      tl.to(cam, { scale: 1, duration: 2.2, ease: "power2.out" }, 0);
+      tl.to(cam, { scale: 0.985, duration: 0.6, ease: "none" }, 2.2);
+      var horloge = { t: 0 };
+      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendreLune(horloge.t); } }, 0);
+      rendreLune(0);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°6 « PAPIER PINCEAU » · SCÈNE 2 : LA NUÉE QUI CHERCHE SA FORME (5 s)
+
+    Ce qu'elle montre : la suite directe de la scène 1 (même page, même bande de points). La nuée
+    se range en trois traits de pinceau en pointillé, puis s'étire en trois colonnes filaires qui
+    tournent (des points reliés par des fils), devient trois sphères hérissées, et les trois
+    sphères se fondent en une seule, ombrée comme une lune au crayon. La scène 3
+    (« gravures-en-rafale ») part de cette sphère.
+    Rôle : la tension du teaser : quelque chose se construit, on ne sait pas encore quoi. Le
+    chiffre trois revient (trois traits, trois colonnes, trois sphères) : c'est le fil du look.
+
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : les trois
+    formes s'empilent en hauteur au lieu de s'aligner.
+
+    À REMPLACER :
+      1. L'id « t06-nuee » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. LEGENDES : les mêmes que dans la scène 1 (le cadre d'imprimerie raccorde).
+      3. FORMES (en tête du script) : l'ordre des formes et leurs temps. Le nombre de formes
+         répétées (3 par défaut) peut suivre l'offre : 3 modules, 3 étapes ; jamais un chiffre
+         inventé à l'écran.
+    Ne pas toucher : PARTICULES, GRAINE et bande() (raccord avec la scène 1), la sphère finale
+    (raccord avec la scène 3).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t06-nuee {
+      --t06-papier: #e3e4de;
+      --t06-texte: var(--brand-font-body);
+      background: var(--t06-papier);
+    }
+    #t06-nuee canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-nuee .t06-legende { position: absolute; font: 400 11px/1.4 var(--t06-texte); letter-spacing: 0.02em; white-space: nowrap; }
+    #t06-nuee .t06-legende b { font-weight: 700; letter-spacing: 0.08em; }
+    #t06-nuee .t06-legende .t06-petit { font-size: 9px; opacity: 0.75; }
+    #t06-nuee .t06-filet { display: block; width: 100px; height: 1px; margin: 6px 0 6px auto; background: currentColor; opacity: 0.5; }
+    #t06-nuee .t06-gauche .t06-filet { margin-left: 0; }
+    #t06-nuee .t06-chiffre { position: absolute; font: 600 11px/1 var(--t06-texte); letter-spacing: 0.04em; white-space: nowrap; }
+  </style>
+
+  <div data-composition-id="t06-nuee" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
+    <div id="t06-nuee" class="k-scene">
+      <canvas id="t06-nuee-papier"></canvas>
+      <canvas id="t06-nuee-nuee"></canvas>
+      <div id="t06-nuee-cadre"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t06-nuee", D = 5;
+      var LEGENDES = {
+        hautDroite: ["<b>N° 01</b> ESQUISSE", "encre sur papier", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
+        basGauche: ["<b>PROJET 01.</b> TON OFFRE", "bientôt", '<span class="t06-petit">ce qui arrive, page après page</span>'],
+        basDroite: ["<b>P. 03</b>"]
+      };
+      // Les formes, dans l'ordre, avec l'instant où la nuée part vers elle et la durée du passage.
+      var FORMES = [
+        { nom: "traits", depart: 0.1, duree: 0.5 },
+        { nom: "colonnes", depart: 0.85, duree: 0.5 },
+        { nom: "pixels", depart: 1.6, duree: 0.45 },
+        { nom: "spheres", depart: 2.35, duree: 0.5 },
+        { nom: "lune", depart: 3.1, duree: 0.55 }
+      ];
+      var PARTICULES = 3400, GRAINE = 61, NOEUDS = 120;
+
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true });
+      var E = Math.min(L, H) / 1080;
+
+      // --- Outils du look (communs aux scènes du template 6) ---------------------------------
+      function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      function hache(i, k) { var s = Math.sin(i * 12.9898 + (k || 0) * 78.233) * 43758.5453; return s - Math.floor(s); }
+      function toile(c) { c.width = L; c.height = H; return c.getContext("2d"); }
+      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
+      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
+      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", PAPIER = cs.getPropertyValue("--t06-papier").trim();
+      function papier(ctx, graine) {
+        var r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
+        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
+        ctx.lineCap = "round";
+        for (var f = 0; f < 260; f++) {
+          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
+          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
+        }
+      }
+      function cadreImprimerie(hote) {
+        var m = vertical ? 54 : 68, blocs = [];
+        var lignes = function (l, filetAvant) { return l.map(function (x, i) { return (i === filetAvant ? '<i class="t06-filet"></i>' : "") + "<div>" + x + "</div>"; }).join(""); };
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.hautDroite, LEGENDES.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
+        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(LEGENDES.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
+        blocs.forEach(function (b) { b.style.color = ENCRE; });
+        var xs = vertical ? [0.12, 0.3, 0.7, 0.88] : [0.14, 0.205, 0.275, 0.45, 0.86, 0.92], chiffres = [];
+        xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px; color:" + ENCRE + ";")); });
+        // Le cadre s'efface quand la sphère se forme (la page se vide avant la rafale de gravures).
+        blocs.concat(chiffres).forEach(function (b, i) { tl.to(b, { opacity: 0, duration: 0.15, ease: "none" }, 3.6 + i * 0.04); });
+        return function (t) { var pas = Math.floor(t * 4) + 18; chiffres.forEach(function (c, i) { c.textContent = (rng(pas * 131 + i * 977 + 7)() * 99.99).toFixed(2); }); };
+      }
+      function prog(t, a, b, ease) { return t <= a ? 0 : t >= b ? 1 : gsap.parseEase(ease || "power2.inOut")((t - a) / (b - a)); }
+      function bande(rB) {
+        var bx0 = L * (vertical ? 0.1 : 0.27), bx1 = L * (vertical ? 0.9 : 0.73), by = H * 0.5, bh = (vertical ? 120 : 135) * E;
+        var u = rB(), v = (rB() + rB() + rB() - 1.5) / 1.5;
+        var epais = bh * (0.3 + 0.7 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.06 + u * 1.04)), 0.55));
+        return [bx0 + (bx1 - bx0) * u, by + v * epais + Math.sin(u * 5 + 1) * 20 * E - (u - 0.5) * 46 * E];
+      }
+
+      // --- Les formes : pour chaque point, sa place dans chaque forme --------------------------
+      // Trois places en ligne (16:9) ou en colonne (9:16).
+      var place = function (j, ecart) { return vertical ? [L / 2, H / 2 + (j - 1) * ecart * 1.25] : [L / 2 + (j - 1) * ecart, H / 2]; };
+      function gauss(i, k) { return (hache(i, k) + hache(i, k + 1) + hache(i, k + 2) - 1.5) / 1.5; }
+      var formes = {
+        // trois traits de pinceau en pointillé, de longueurs différentes, l'un sous l'autre
+        traits: function (i) {
+          var j = i % 3, longs = [0.27, 0.19, 0.36], ys = [-0.17, 0, 0.17], u = hache(i, 11), lg = longs[j] * (vertical ? 1.9 : 1) * L;
+          var cx = L / 2 + (j === 1 ? -0.02 * L : 0), y0 = H / 2 + ys[j] * H * (vertical ? 0.55 : 1), ep = 72 * E * (0.35 + 0.65 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.05 + u)), 0.5));
+          return [cx - lg / 2 + lg * u, y0 + gauss(i, 12) * ep - (u - 0.5) * 18 * E];
+        },
+        // trois colonnes filaires : un treillis (12 anneaux de 10 nœuds, vrillés) et de la poussière
+        // sur le cylindre, qui tourne
+        colonnes: function (i, t) {
+          // les colonnes restent côte à côte, même en vertical (plus hautes)
+          var j = i % 3, m = Math.floor(i / 3), p = [L / 2 + (j - 1) * (vertical ? 300 * E : 0.13 * L), H / 2], R = (vertical ? 100 : 92) * E, h = (vertical ? 1000 : 640) * E, a, y;
+          if (m < NOEUDS) { var an = Math.floor(m / 10), pl = m % 10; a = pl / 10 * 6.2832 + an * 0.31; y = p[1] - h / 2 + an / 11 * h; }
+          else { a = hache(i, 21) * 6.2832; y = p[1] - h / 2 + hache(i, 22) * h; }
+          a += t * 0.9 * (j === 1 ? -1 : 1);
+          var z = Math.cos(a);
+          return [p[0] + Math.sin(a) * R, y + z * R * 0.18, z];
+        },
+        // trois disques en gros pixels (les points se calent sur une grille et deviennent des carrés)
+        pixels: function (i) {
+          var j = i % 3, p = place(j, vertical ? 330 * E : 0.17 * L), R = (vertical ? 120 : 132) * E, a = hache(i, 71) * 6.2832, rr = R * Math.sqrt(hache(i, 72));
+          var x = Math.cos(a) * rr, y = Math.sin(a) * rr * 0.9 - (Math.abs(x) < R * 0.3 && y < -R * 0.55 ? R * 0.25 : 0);
+          return [p[0] + x, p[1] + y, 1];
+        },
+        // trois sphères hérissées : points sur la sphère, denses au bord
+        spheres: function (i, t) {
+          var j = i % 3, p = place(j, vertical ? 330 * E : 0.17 * L), R = (vertical ? 130 : 150) * E, a = hache(i, 31) * 6.2832 + t * 0.4, rr = R * Math.pow(hache(i, 32), 0.35);
+          return [p[0] + Math.cos(a) * rr, p[1] + Math.sin(a) * rr, rr / R];
+        },
+        // une seule sphère, ombrée comme une lune au crayon (lumière en haut à droite)
+        lune: function (i, t) {
+          var R = (vertical ? 300 : 270) * E * (1 + 0.07 * Math.sin(Math.PI * prog(t, 4.05, 4.45, "power2.out"))), a = hache(i, 41) * 6.2832 + t * 0.5, rr = R * Math.sqrt(hache(i, 42));
+          var x = Math.cos(a) * rr / R, y = Math.sin(a) * rr / R, z = Math.sqrt(Math.max(0, 1 - x * x - y * y));
+          var clair = Math.max(0, x * 0.62 - y * 0.5 + z * 0.6), ombre = Math.pow(1 - Math.min(1, clair), 1.3);
+          return [L / 2 + x * R, H / 2 + y * R, 0.12 + 0.88 * ombre];
+        }
+      };
+
+      // --- Construction ---------------------------------------------------------------------
+      papier(toile($("papier")), 17);
+      var ctx = toile($("nuee")), chiffres = cadreImprimerie($("cadre"));
+      var rB = rng(GRAINE), part = [];
+      for (var i = 0; i < PARTICULES; i++) { var b = bande(rB); part.push({ b: b, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45, dl: hache(i, 6) * 0.22 }); }
+      // Les fils des colonnes : chaque point relié au suivant de la même colonne (par hauteur).
+      // Le treillis des colonnes : chaque nœud relié au suivant sur son anneau et au nœud de l'anneau du dessous.
+      var liens = [];
+      for (var c = 0; c < 3; c++) for (var an = 0; an < 12; an++) for (var pl = 0; pl < 10; pl++) {
+        var id = (an * 10 + pl) * 3 + c, voisin = (an * 10 + (pl + 1) % 10) * 3 + c;
+        liens.push([id, voisin]); if (an < 11) liens.push([id, ((an + 1) * 10 + pl) * 3 + c]);
+      }
+
+      function position(i, t) {
+        var p = part[i], cur = [p.b[0], p.b[1], 1], f, q, nxt, avance;
+        for (var k = 0; k < FORMES.length; k++) {
+          f = FORMES[k]; avance = prog(t, f.depart + p.dl, f.depart + p.dl + f.duree, "power3.inOut");
+          if (avance <= 0) break;
+          nxt = formes[f.nom](i, t);
+          var bombe = Math.sin(Math.PI * avance) * 40 * E * (hache(i, 50 + k) - 0.5);
+          cur = [cur[0] + (nxt[0] - cur[0]) * avance + bombe, cur[1] + (nxt[1] - cur[1]) * avance - bombe * 0.6, cur[2] + ((nxt[2] == null ? 1 : nxt[2]) - cur[2]) * avance];
+        }
+        return cur;
+      }
+
+      function rendre(t) {
+        chiffres(t);
+        ctx.clearRect(0, 0, L, H);
+        var pos = new Array(part.length);
+        for (var i = 0; i < part.length; i++) pos[i] = position(i, t);
+        // les fils des colonnes (visibles autour de la forme « colonnes »)
+        var fil = prog(t, 1.05, 1.25) * (1 - prog(t, 1.6, 1.75));
+        if (fil > 0) {
+          ctx.strokeStyle = ENCRE; ctx.lineWidth = 1.15 * E;
+          liens.forEach(function (l) { var a = pos[l[0]], b = pos[l[1]]; ctx.globalAlpha = fil * (0.3 + 0.6 * Math.max(0, (a[2] + b[2]) / 2)); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); });
+        }
+        // les rayons des sphères hérissées
+        var rayon = prog(t, 2.75, 2.95) * (1 - prog(t, 3.1, 3.3));
+        if (rayon > 0) {
+          ctx.strokeStyle = ENCRE; ctx.lineWidth = 0.7 * E;
+          for (var r = 0; r < part.length; r++) { if (hache(r, 60) > 0.35) continue; var j = r % 3, c0 = place(j, vertical ? 330 * E : 0.17 * L), pp = pos[r]; ctx.globalAlpha = rayon * 0.2; ctx.beginPath(); ctx.moveTo(c0[0], c0[1]); ctx.lineTo(pp[0], pp[1]); ctx.stroke(); }
+        }
+        // le moment « pixels » : les points se calent sur une grille de gros carrés
+        var pix = prog(t, 1.85, 1.95, "none") * (1 - prog(t, 2.4, 2.5, "none")), G = 15 * E;
+        if (pix > 0) {
+          ctx.fillStyle = ENCRE; var vus = {};
+          for (var n3 = 0; n3 < part.length; n3++) { var q3 = pos[n3], cx3 = Math.round(q3[0] / G), cy3 = Math.round(q3[1] / G), cle3 = cx3 + "," + cy3; vus[cle3] = (vus[cle3] || 0) + 1; }
+          for (var k3 in vus) { var xy = k3.split(","), n4 = vus[k3]; ctx.globalAlpha = pix * Math.min(1, 0.25 + n4 * 0.22); ctx.fillRect(xy[0] * G - G / 2, xy[1] * G - G / 2, G - 1, G - 1); }
+          ctx.globalAlpha = 1;
+          if (pix >= 1) return;
+        }
+        // les points
+        ctx.fillStyle = ENCRE;
+        for (var n2 = 0; n2 < part.length; n2++) {
+          var q = pos[n2], prof = q[2] == null ? 1 : q[2];
+          ctx.globalAlpha = part[n2].al * (0.3 + 0.7 * Math.max(0, Math.min(1, prof)));
+          ctx.beginPath(); ctx.arc(q[0], q[1], part[n2].ta * (0.7 + 0.3 * Math.max(0, prof)), 0, 6.2832); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      }
+      var horloge = { t: 0 };
+      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
+      rendre(0);
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

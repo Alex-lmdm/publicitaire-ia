@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°2 · TITRES GÉANTS · SCÈNE « TITRE GÉANT » (l'accroche), 4,0 s, 16:9 (1920 × 1080)
+
+    Ce qu'elle montre, en deux plans coupés franc :
+      plan A (0 à 1,9 s) : la couleur d'accent en plein écran, trois lignes de titre si grandes
+        qu'elles touchent le haut et le bas du cadre et débordent à droite ; les mots changent de
+        graisse sur les temps (gras ↔ léger), le bloc grossit doucement, la ligne du bas glisse
+        vers la gauche et révèle la fin de son mot coupé ;
+      plan B (1,9 à 4,0 s) : le spécimen sur le fond sombre de la marque, une grille fine calée sur
+        les lignes du texte, la phrase tapée lettre par lettre en deux voix (gras, puis léger et en
+        retrait), des étiquettes de maquette (nom de la police, interlignage, approche) ; un cadre
+        de sélection à poignées attrape la ligne légère, qui passe en gras puis revient, et
+        l'interlignage se resserre.
+
+    À remplacer :
+      1. L'identifiant « t02-titre » partout (racine, scène, préfixe des ids, clé de la timeline)
+         par celui de la scène, et data-duration si la scène change de durée (garde les rapports).
+      2. Plan A : les trois lignes (#t02-titre-a1 à a3), un <span> par mot. Ligne 1 et ligne 3 :
+         l'appui, elles peuvent déborder du cadre ; ligne 2 : les mots qui comptent, entiers.
+         Vise 9 à 11 caractères en ligne 1 et 2, 12 à 14 en ligne 3 (celle qui déborde).
+      3. Plan B : les trois lignes du spécimen (data-texte de #t02-titre-b1 à b3) : deux lignes
+         grasses (2 à 3 mots en tout), une ligne légère en retrait (1 à 2 mots, 9 caractères au
+         plus). Les étiquettes se remplissent seules avec la police de la marque.
+      4. Les instants des bascules de graisse (BASCULES) : sur les temps de la musique.
+    Couleurs et polices : uniquement var(--brand-*) (accent plein, fond de la marque, texte posé
+    sur l'accent). Aucune police en dur : les graisses 400 et 600 de la police des titres doivent
+    exister dans brand/fonts.css (sinon le navigateur les simule, mal).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t02-titre { background: var(--brand-bg); }
+    /* --- Plan A : la couleur d'accent et le titre qui déborde --- */
+    #t02-titre .t02-titre-planA { position: absolute; inset: 0; background: var(--brand-accent); overflow: hidden; }
+    #t02-titre .t02-titre-blocA { position: absolute; inset: 0; transform-origin: 8% 50%; }
+    #t02-titre .t02-titre-ligneA {
+      position: absolute; left: 30px; white-space: nowrap;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 380px; line-height: 1;
+      letter-spacing: -0.045em; color: var(--brand-contrast);
+    }
+    #t02-titre .t02-titre-ligneA span { display: inline-block; }
+    /* La base de chaque ligne : la 1re touche le haut du cadre, la 3e le bas. */
+    #t02-titre #t02-titre-a1 { top: -50px; }
+    #t02-titre #t02-titre-a2 { top: 325px; }
+    #t02-titre #t02-titre-a3 { top: 700px; }
+
+    /* --- Plan B : le spécimen sur la grille --- */
+    #t02-titre .t02-titre-planB { position: absolute; inset: 0; background: var(--brand-bg); overflow: hidden; z-index: 5; }
+    #t02-titre .t02-titre-cameraB { position: absolute; inset: 0; transform-origin: 40% 55%; }
+    #t02-titre .t02-titre-trait { position: absolute; background: color-mix(in srgb, var(--brand-accent) 30%, transparent); }
+    #t02-titre .t02-titre-trait.h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
+    #t02-titre .t02-titre-trait.v { top: 0; bottom: 0; width: 1px; transform-origin: 50% 0; }
+    #t02-titre .t02-titre-ligneB {
+      position: absolute; white-space: nowrap; line-height: 1;
+      font-family: var(--brand-font-display); font-size: 300px; letter-spacing: -0.04em;
+      color: var(--brand-accent);
+    }
+    #t02-titre #t02-titre-b1, #t02-titre #t02-titre-b2 { left: 92px; font-weight: 600; }
+    #t02-titre #t02-titre-b3 { left: 560px; font-weight: 400; letter-spacing: -0.03em; }
+    #t02-titre #t02-titre-b3[data-voix="grasse"] { font-weight: 600; color: var(--brand-text); letter-spacing: -0.04em; }
+    #t02-titre .t02-titre-etiquette {
+      position: absolute; font-family: var(--brand-font-body); font-weight: 400; font-size: 21px;
+      line-height: 1.25; color: var(--brand-text); opacity: 0.82; white-space: nowrap;
+    }
+    /* Le cadre de sélection suit la ligne qu'il attrape (il vit dans elle) : il s'élargit seul
+       quand la ligne passe en gras. */
+    #t02-titre .t02-titre-selection {
+      position: absolute; left: -18px; right: -18px; top: 7%; bottom: -4%;
+      border: 2px solid var(--brand-accent); border-radius: 2px;
+    }
+    #t02-titre .t02-titre-poignee {
+      position: absolute; width: 14px; height: 14px; margin: -8px 0 0 -8px;
+      background: var(--brand-bg); border: 2px solid var(--brand-accent);
+    }
+  </style>
+
+  <div data-composition-id="t02-titre" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+    <div id="t02-titre" class="k-scene">
+      <!-- Plan A -->
+      <div class="t02-titre-planA" id="t02-titre-planA">
+        <div class="t02-titre-blocA" id="t02-titre-blocA">
+          <div class="t02-titre-ligneA" id="t02-titre-a1" data-layout-allow-overflow><span data-layout-allow-overlap>Ton</span> <span data-layout-allow-overlap>offre,</span></div>
+          <div class="t02-titre-ligneA" id="t02-titre-a2" data-layout-allow-overflow><span id="t02-titre-a2m1" data-layout-allow-overlap>en</span> <span id="t02-titre-a2m2" data-layout-allow-overlap>grand.</span></div>
+          <div class="t02-titre-ligneA" id="t02-titre-a3" data-layout-allow-overflow><span data-layout-allow-overlap>Enfin</span> <span data-layout-allow-overlap>lancée.</span></div>
+        </div>
+      </div>
+
+      <!-- Plan B -->
+      <div class="t02-titre-planB" id="t02-titre-planB">
+        <div class="t02-titre-cameraB" id="t02-titre-cameraB">
+          <div id="t02-titre-grille"></div>
+          <div class="t02-titre-ligneB" id="t02-titre-b1" data-texte="Simple" data-layout-allow-overlap></div>
+          <div class="t02-titre-ligneB" id="t02-titre-b2" data-texte="à suivre." data-layout-allow-overlap></div>
+          <div class="t02-titre-ligneB" id="t02-titre-b3" data-texte="Rapide." data-voix="legere" data-layout-allow-overlap><span id="t02-titre-b3t"></span>
+            <div class="t02-titre-selection" id="t02-titre-sel">
+              <i class="t02-titre-poignee" style="left:0; top:0;"></i><i class="t02-titre-poignee" style="left:100%; top:0;"></i>
+              <i class="t02-titre-poignee" style="left:0; top:100%;"></i><i class="t02-titre-poignee" style="left:100%; top:100%;"></i>
+            </div>
+          </div>
+          <div class="t02-titre-etiquette" id="t02-titre-e1"><span id="t02-titre-e1a"></span><br><span id="t02-titre-e1b"></span></div>
+          <div class="t02-titre-etiquette" id="t02-titre-e2"><span id="t02-titre-e2a"></span><br><span id="t02-titre-e2b"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 4.0, COUPE = 1.9, tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById("t02-titre-" + s); };
+
+      // ---------- Plan A : le titre géant ----------
+      // Le bloc grossit doucement (il déborde de plus en plus), la 3e ligne glisse à gauche.
+      tl.fromTo($("blocA"), { scale: 1, y: 14 }, { scale: 1.07, y: -26, duration: COUPE, ease: "power1.inOut" }, 0);
+      tl.fromTo($("a3"), { x: 0 }, { x: -210, duration: COUPE - 0.2, ease: "power2.inOut" }, 0.2);
+      tl.fromTo($("a1"), { x: 0 }, { x: 40, duration: COUPE, ease: "none" }, 0);
+      // Les bascules de graisse, sur les temps (0,4 s) : la voix légère passe d'un mot à l'autre.
+      var BASCULES = [
+        [0.40, "a2m1", 400], [0.80, "a2m1", 600], [0.80, "a2m2", 400],
+        [1.20, "a2m1", 400], [1.55, "a2m2", 600], [1.55, "a2m1", 600]
+      ];
+      BASCULES.forEach(function (b) { tl.set($(b[1]), { fontWeight: b[2] }, b[0]); });
+
+      // ---------- Plan B : le spécimen ----------
+      var planB = $("planB");
+      K.cacher(planB);
+      tl.set(planB, { opacity: 1 }, COUPE);
+      tl.set($("planA"), { opacity: 0 }, COUPE + 0.02);
+
+      var b1 = $("b1"), b2 = $("b2"), b3 = $("b3");
+      // Bases des lignes (px) : la grille se cale sur elles (base et hauteur des minuscules).
+      // Écart d'une base à l'autre : 300 et 290 px. Si une lettre à jambage (p, g, q) tombe sur
+      // un accent ou un point de la ligne du dessous, augmente l'écart ou change la coupe.
+      var TAILLE = 300, BASES = [312, 612, 902];
+      [b1, b2, b3].forEach(function (el, i) { el.style.top = (BASES[i] - TAILLE * 0.85) + "px"; });
+
+      // Les étiquettes de maquette lisent la vraie police de la marque.
+      var famille = getComputedStyle(b1).fontFamily.split(",")[0].replace(/["']/g, "").trim();
+      var NOMS = { 400: "Regular", 600: "SemiBold", 700: "Bold", 900: "Black" };
+      var e1 = $("e1"), e2 = $("e2");
+      e1.style.left = "1250px"; e1.style.top = "196px";
+      e2.style.left = "94px"; e2.style.top = "788px";
+
+      // La grille : une ligne sur chaque base et sur la hauteur des minuscules, et des colonnes.
+      var grille = $("grille"), traitsH = [], traitsV = [];
+      BASES.forEach(function (b) {
+        [b, b - TAILLE * 0.53].forEach(function (y) {
+          traitsH.push(K.el(grille, "div", "t02-titre-trait h", null, "top:" + Math.round(y) + "px"));
+        });
+      });
+      [92, 560, 1230, 1500, 1828].forEach(function (x) {
+        traitsV.push(K.el(grille, "div", "t02-titre-trait v", null, "left:" + x + "px"));
+      });
+      gsap.set(traitsH, { scaleX: 0 });
+      gsap.set(traitsV, { scaleY: 0 });
+      tl.to(traitsH, { scaleX: 1, duration: 0.5, ease: "expo.out", stagger: 0.03 }, COUPE);
+      tl.to(traitsV, { scaleY: 1, duration: 0.5, ease: "expo.out", stagger: 0.04 }, COUPE + 0.05);
+
+      // La phrase tapée en deux voix.
+      // La 1re ligne commence juste avant la coupe : la première image du plan montre déjà des lettres.
+      K.taper(tl, b1, b1.dataset.texte, COUPE - 0.08, COUPE + 0.30, D);
+      K.taper(tl, b2, b2.dataset.texte, COUPE + 0.30, COUPE + 0.62, D);
+      $("b3t").textContent = b3.dataset.texte;
+      K.cacher(b3);
+      tl.fromTo(b3, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, COUPE + 0.66);
+
+      // Les étiquettes : la police, l'interlignage et l'approche, qui suivent les bascules.
+      var interligne = function (t) { return t < COUPE + 1.68 ? "100 %" : "96 %"; };
+      K.texteSelon(tl, $("e1a"), D, function () { return famille + " " + NOMS[600]; });
+      K.texteSelon(tl, $("e1b"), D, function (t) { return interligne(t) + " / −4 %"; });
+      K.texteSelon(tl, $("e2a"), D, function (t) {
+        var gras = t >= COUPE + 1.15 && t < COUPE + 1.45;
+        return famille + " " + NOMS[gras ? 600 : 400];
+      });
+      K.texteSelon(tl, $("e2b"), D, function (t) { return interligne(t) + " / −3 %"; });
+      K.cacher([e1, e2]);
+      tl.fromTo([e1, e2], { opacity: 0, y: 10 }, { opacity: 0.82, y: 0, duration: 0.4, ease: "expo.out", stagger: 0.12 }, COUPE + 0.75);
+
+      // Le cadre de sélection attrape la ligne légère, qui passe en gras puis revient.
+      var sel = $("sel");
+      K.cacher(sel);
+      tl.fromTo(sel, { opacity: 0, scale: 1.04 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, COUPE + 0.95);
+      tl.set(b3, { attr: { "data-voix": "grasse" } }, COUPE + 1.15);
+      tl.set(b3, { attr: { "data-voix": "legere" } }, COUPE + 1.45);
+      tl.to(sel, { opacity: 0, duration: 0.18, ease: "power2.in" }, COUPE + 1.62);
+
+      // L'interlignage se resserre : les lignes 2 et 3 remontent d'un cran.
+      tl.to([b2, $("e2")], { y: -10, duration: 0.35, ease: "expo.inOut" }, COUPE + 1.62);
+      tl.to(b3, { y: -22, duration: 0.35, ease: "expo.inOut" }, COUPE + 1.62);
+      // La caméra dérive pendant tout le plan.
+      tl.fromTo($("cameraB"), { scale: 1.0, x: 0 }, { scale: 1.025, x: -12, duration: D - COUPE, ease: "none" }, COUPE);
+
+      window.__timelines["t02-titre"] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

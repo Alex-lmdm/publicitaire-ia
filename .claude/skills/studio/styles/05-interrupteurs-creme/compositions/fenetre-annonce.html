@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°5 « INTERRUPTEURS » · SCÈNE 4 : LA FENÊTRE QUI TRAVAILLE, PUIS L'ANNONCE (9 s)
+
+    Ce qu'elle montre : la fenêtre plein écran de l'espace du membre (la fin de la scène 3 :
+    salut + champ). La main ouvre le menu « + » : les interrupteurs de l'offre s'allument encore
+    en cascade (le motif revient). On tape une demande, on l'envoie : la bulle monte, les étapes
+    arrivent une à une avec leur icône, révélées de gauche à droite. Puis tout s'efface sur la
+    carte d'annonce (pastille « Nouveau » + titre sur deux lignes), et la signature finale : le
+    nom de l'offre, avec sa pastille de couleur ou le logo.
+    Rôle : la démonstration courte, l'offre (ce qui est nouveau) et la signature.
+
+    Format : 16:9. En 9:16, change data-width / data-height de la racine : la fenêtre et la carte
+    se centrent seules (le contenu est réduit à 86 %).
+
+    À REMPLACER :
+      1. L'id « t05-annonce » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. SALUT et ACCUEIL : les mêmes qu'en scène 3 (raccord).
+      3. MENU : les éléments de l'offre (les mêmes que les rangs de la scène 1, 4 ou 5 suffisent).
+      4. DEMANDE et ETAPES : ce que le membre demande et ce que l'offre fait, en vrai (si l'offre
+         n'a pas de champ de demande, remplace le champ par l'écran réel de l'espace de formation
+         ou du logiciel, d'après capture).
+      5. PASTILLE (« Nouveau », « Bonus », « Bientôt »…), TITRE (deux lignes, 6 mots au plus),
+         NOM (le nom de l'offre) et LOGO (chemin d'un logo du projet, ex. "brand/logo.svg" ;
+         vide = la pastille de couleur de la marque).
+      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
+      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    Ne pas toucher : la fenêtre au début (raccord avec la scène 3).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t05-annonce {
+      --t05-papier: #efefe5;
+      --t05-carte: #f9f9f4;
+      --t05-pli: #e4e4d8;
+      --t05-encre: #1d1d1b;
+      --t05-gris: #8a8a82;
+      --t05-bulle: #ebebe3;
+      --t05-allume: var(--brand-accent);
+      --t05-titres: var(--brand-font-display);
+      --t05-texte: var(--brand-font-body);
+      background: var(--t05-carte);
+    }
+    #t05-annonce .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t05-annonce .t05-mini { position: absolute; left: 50%; top: 50%; width: 1100px; height: 400px; margin: -200px 0 0 -550px; }
+    #t05-annonce .t05-accueil { position: absolute; left: 0; right: 0; top: 60px; text-align: center; white-space: nowrap; font: 400 64px/1.1 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre); }
+    #t05-annonce .t05-accueil i { display: inline-block; width: 22px; height: 22px; margin-right: 26px; border-radius: 50%; background: var(--brand-accent); box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08); vertical-align: 0.12em; }
+    #t05-annonce .t05-champ {
+      position: absolute; left: 60px; right: 60px; top: 190px; height: 150px; border-radius: 26px; background: #fff;
+      box-shadow: 0 0 0 1.5px rgba(40, 40, 20, 0.07), 0 10px 30px rgba(60, 60, 30, 0.07);
+      font: 400 30px/1 var(--t05-texte); color: var(--t05-gris);
+    }
+    #t05-annonce .t05-champ .t05-place { position: absolute; left: 36px; top: 34px; white-space: nowrap; }
+    #t05-annonce .t05-champ .t05-tape { position: absolute; left: 36px; top: 34px; white-space: nowrap; color: var(--t05-encre); }
+    #t05-annonce .t05-champ .t05-tape::after { content: ""; display: inline-block; width: 2.5px; height: 34px; margin-left: 3px; vertical-align: -6px; background: var(--t05-encre); }
+    #t05-annonce .t05-champ b { position: absolute; left: 34px; bottom: 26px; font: 300 40px/1 var(--t05-texte); color: var(--t05-gris); }
+    #t05-annonce .t05-envoi { position: absolute; right: 26px; bottom: 22px; width: 50px; height: 50px; border-radius: 13px; background: var(--brand-accent); color: var(--brand-contrast); display: grid; place-items: center; }
+    #t05-annonce .t05-envoi svg { width: 28px; height: 28px; }
+    #t05-annonce .t05-menu {
+      position: absolute; width: 440px; border-radius: 22px; background: #fff; padding: 14px 0;
+      box-shadow: 0 0 0 1.5px rgba(40, 40, 20, 0.06), 0 24px 60px rgba(60, 60, 30, 0.16);
+    }
+    #t05-annonce .t05-rang { position: relative; height: 58px; display: flex; align-items: center; gap: 16px; padding: 0 28px; white-space: nowrap; font: 400 25px/1 var(--t05-texte); color: var(--t05-encre); }
+    #t05-annonce .t05-ico { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--brand-accent); color: var(--brand-contrast); }
+    #t05-annonce .t05-ico svg { width: 20px; height: 20px; }
+    #t05-annonce .t05-inter { position: absolute; right: 28px; top: 12px; width: 60px; height: 34px; border-radius: 17px; background: var(--t05-pli); }
+    #t05-annonce .t05-plein { position: absolute; inset: 0; border-radius: 17px; background: var(--t05-allume); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07); }
+    #t05-annonce .t05-bille { position: absolute; left: 3px; top: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12); }
+    #t05-annonce .t05-bulle { position: absolute; right: 0; top: 0; max-width: 820px; padding: 30px 40px; border-radius: 40px; background: var(--t05-bulle); font: 400 34px/1.35 var(--t05-texte); color: var(--t05-encre); }
+    #t05-annonce .t05-etape { position: absolute; left: 0; display: flex; align-items: center; gap: 28px; white-space: nowrap; font: 400 40px/1 var(--t05-texte); color: var(--t05-encre); }
+    #t05-annonce .t05-etape .t05-ico { width: 72px; height: 72px; border-radius: 18px; }
+    #t05-annonce .t05-etape .t05-ico svg { width: 38px; height: 38px; }
+    #t05-annonce .t05-carte-fin { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
+    #t05-annonce .t05-pastille-txt {
+      display: inline-block; padding: 14px 30px 12px; border-radius: 18px; border: 2px solid var(--t05-encre);
+      font: 500 30px/1 var(--t05-texte); letter-spacing: 0.14em; text-transform: uppercase; color: var(--t05-encre);
+    }
+    #t05-annonce .t05-titre { font: 400 72px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre); }
+    #t05-annonce .t05-ligne { display: block; }
+    #t05-annonce .t05-mot { display: inline-block; }
+    #t05-annonce .t05-signature { position: absolute; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 30px; }
+    #t05-annonce .t05-marque { width: 70px; height: 70px; flex: none; }
+    #t05-annonce .t05-marque i { display: block; width: 100%; height: 100%; border-radius: 50%; background: var(--brand-accent); box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.08); }
+    #t05-annonce .t05-marque img { width: 100%; height: 100%; object-fit: contain; }
+    #t05-annonce .t05-nom { font: 600 112px/1 var(--brand-font-display); letter-spacing: -0.035em; color: var(--t05-encre); white-space: nowrap; }
+    #t05-annonce .t05-main { position: absolute; left: 0; top: 0; width: 100px; height: 115px; margin: -5px 0 0 -40px; z-index: 80; }
+    #t05-annonce .t05-main svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
+  </style>
+
+  <div data-composition-id="t05-annonce" data-width="1920" data-height="1080" data-duration="9" style="position:absolute; inset:0;">
+    <div id="t05-annonce" class="k-scene">
+      <div class="t05-cam" id="t05-annonce-cam" data-layout-allow-overflow>
+      <div class="t05-mini" id="t05-annonce-mini">
+        <div class="t05-accueil" id="t05-annonce-accueil"><i></i><span id="t05-annonce-salut"></span></div>
+        <div class="t05-champ" id="t05-annonce-champ"><span class="t05-place" id="t05-annonce-place"></span><span class="t05-tape" id="t05-annonce-tape"></span><b data-layout-allow-occlusion>+</b><span class="t05-envoi" id="t05-annonce-envoi"></span></div>
+        <div class="t05-menu" id="t05-annonce-menu"></div>
+      </div>
+      <div id="t05-annonce-travail" style="position:absolute; left:250px; right:250px; top:110px; height:860px;">
+        <div class="t05-bulle" id="t05-annonce-bulle"></div>
+        <div id="t05-annonce-etapes"></div>
+      </div>
+      <div class="t05-carte-fin" id="t05-annonce-fin" data-layout-allow-overflow>
+        <div><span class="t05-pastille-txt" id="t05-annonce-pastille"></span></div>
+        <div class="t05-titre" id="t05-annonce-titre" style="margin-top:34px;"></div>
+      </div>
+      <div class="t05-signature" id="t05-annonce-signature" data-layout-allow-overflow><div class="t05-marque" id="t05-annonce-marque"></div><div class="t05-nom" id="t05-annonce-nom"></div></div>
+      </div>
+      <div id="t05-annonce-main-hote" style="position:absolute; inset:0; z-index:70;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t05-annonce", D = 9;
+      var SALUT = "Bonjour, Léa";
+      var ACCUEIL = "Que veux-tu apprendre aujourd'hui ?";
+      var MENU = [["book-open", "Module 1 · Les bases"], ["play", "Les vidéos"], ["list-checks", "Les exercices"], ["file-text", "Les modèles"], ["gift", "Les bonus"]];
+      var DEMANDE = "Prépare mon plan pour la semaine";
+      var ETAPES = [["book-open", "Lecture du module 1…"], ["list-checks", "Choix de tes exercices…"], ["calendar", "Ton plan de la semaine…"]];
+      var PASTILLE = "Nouveau";
+      var TITRE = ["Ton nouveau module", "est disponible"];
+      var NOM = "Ton offre";
+      var LOGO = ""; // ex. "brand/logo.svg" ; vide : la pastille de couleur de la marque
+
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true }), cam = $("cam");
+      function main(hote) {
+        var e = K.el(hote, "div", "t05-main");
+        e.id = ID + "-main";
+        e.setAttribute("data-layout-allow-overflow", "");
+        e.innerHTML = '<svg viewBox="0 0 40 46"><path d="M13 5C13 3.3 14.3 2 16 2C17.7 2 19 3.3 19 5L19 16.5C19.6 16.2 20.3 16 21 16C22.7 16 24 17.2 24.3 18.6C24.9 18.2 25.6 18 26.4 18C28 18 29.3 19.2 29.6 20.6C30.2 20.2 30.9 20 31.6 20C33.5 20 35 21.5 35 23.4L35 31C35 37.1 30.1 42 24 42L21.6 42C18.6 42 15.8 40.6 14 38.2L6.3 28.3C5.2 26.9 5.5 24.9 6.9 23.9C8.2 22.9 10 23.1 11 24.3L13 26.8Z" fill="#fff" stroke="#151515" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 16.5V24M24.3 18.6V25M29.6 20.6V26" fill="none" stroke="#151515" stroke-width="1.5" stroke-linecap="round"/></svg>';
+        gsap.set(e.querySelector("svg"), { transformOrigin: "40% 4%" });
+        return e;
+      }
+      // Caméra : échelle s autour du point P du monde, qui se pose au point V de l'image.
+      function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
+      function recadre(t, s, P, V, duree, ease) { tl.to(cam, Object.assign(vers(s, P, V), { duration: duree || 0.7, ease: ease || "expo.inOut" }), t); }
+      function clic(e, t) { var s = e.querySelector("svg"); tl.to(s, { scale: 0.86, duration: 0.08, ease: "power2.out" }, t).to(s, { scale: 1, duration: 0.25, ease: "back.out(3)" }, t + 0.08); }
+      function allumer(inter, t) {
+        tl.to(inter.querySelector(".t05-bille"), { x: 26, duration: 0.24, ease: "power3.inOut" }, t);
+        tl.to(inter.querySelector(".t05-plein"), { opacity: 1, duration: 0.2, ease: "power2.out" }, t);
+        tl.fromTo(inter, { scale: 1 }, { scale: 1.07, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, t + 0.04);
+      }
+      // Ce qui dépend du temps sans tween possible (masque, découpe) : fonctions pures du temps.
+      var aJour = [];
+      function selon(fn) { aJour.push(fn); }
+      var horloge = { t: 0 };
+      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { aJour.forEach(function (f) { f(horloge.t); }); } }, 0);
+      function prog(t, t0, duree, ease) { return t <= t0 ? 0 : t >= t0 + duree ? 1 : gsap.parseEase(ease || "power2.inOut")((t - t0) / duree); }
+      function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
+
+      // --- La fenêtre (identique à la fin de la scène 3) --------------------------------------
+      var mini = $("mini");
+      if (vertical) gsap.set(mini, { scale: 0.86 });
+      $("salut").textContent = SALUT;
+      $("place").textContent = ACCUEIL;
+      $("envoi").innerHTML = K.ic("arrow-up");
+      gsap.set($("envoi"), { opacity: 0.45 });
+
+      // 1. Le menu « + » : les interrupteurs de l'offre s'allument encore en cascade
+      var menu = $("menu"), inters = [];
+      MENU.forEach(function (r) { var e = K.el(menu, "div", "t05-rang", '<span class="t05-ico">' + K.ic(r[0]) + "</span><span>" + r[1] + '</span><div class="t05-inter"><div class="t05-plein"></div><div class="t05-bille"></div></div>'); inters.push(e.querySelector(".t05-inter")); });
+      gsap.set(menu, { left: 70, top: 300, transformOrigin: "30px 0px", scale: 0.6, opacity: 0 });
+      gsap.set(racine.querySelectorAll(".t05-plein"), { opacity: 0 });
+      // Position à l'écran d'un point de la fenêtre (le contenu est centré, réduit en 9:16).
+      var k = vertical ? 0.86 : 1, ecran = function (x, y) { return [L / 2 + (x - 550) * k, H / 2 + (y - 200) * k]; };
+      // Après le menu, la caméra s'approche du champ (×1,28 autour de son centre) : le bouton
+      // d'envoi est visé là où il sera une fois le zoom fait.
+      var Z = 1.28, o = ecran(550, 265), plus = ecran(48, 314), envoi = [o[0] + (1015 - 550) * Z * k, o[1] + (293 - 265) * Z * k];
+      var hand = main($("main-hote")), plusV = [plus[0] + 140 * k, plus[1] - 30 * k];
+      gsap.set(hand, { x: L + 140, y: H * 0.85 });
+      tl.to(hand, { x: plusV[0], y: plusV[1], duration: 0.6, ease: "power3.out" }, 0.15);
+      clic(hand, 0.78);
+      // La caméra suit le geste : approche du « + », petit coup au clic, retour avant le zoom du champ.
+      recadre(0.1, 1.1, plus, plusV, 0.6, "expo.inOut");
+      recadre(0.78, 1.15, plus, plusV, 0.13, "power2.out");
+      recadre(0.91, 1.1, plus, plusV, 0.4, "power2.out");
+      recadre(1.25, 1.12, plus, [plusV[0] + 40 * k, plusV[1] - 70 * k], 0.55, "expo.inOut");
+      tl.to(menu, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(1.6)" }, 0.82);
+      inters.forEach(function (it, i) { allumer(it, 1.12 + i * 0.1); });
+      tl.to(hand, { x: plusV[0] + 300 * k, y: plusV[1] + 130 * k, duration: 0.6, ease: "power2.inOut" }, 1.0);
+      tl.to(menu, { scale: 0.96, opacity: 0, duration: 0.22, ease: "power2.in" }, 1.95);
+
+      // 2. La caméra s'approche du champ, la demande est tapée puis envoyée
+      recadre(1.95, Z, o, o, 0.6, "expo.inOut");
+      var tape = $("tape");
+      K.cacher(tape);
+      tl.set(tape, { opacity: 1 }, 2.15);
+      K.taper(tl, tape, DEMANDE, 2.15, 2.95, D);
+      tl.set($("place"), { opacity: 0 }, 2.15);
+      tl.to($("envoi"), { opacity: 1, duration: 0.2 }, 2.3);
+      tl.to(hand, { x: envoi[0], y: envoi[1], duration: 0.55, ease: "power3.inOut" }, 2.45);
+      clic(hand, 3.05);
+      recadre(3.05, Z * 1.035, o, o, 0.12, "power2.out");
+      recadre(3.17, 1, [L / 2, H / 2], [L / 2, H / 2], 0.5, "expo.inOut");
+      tl.to(hand, { x: L + 160, y: H * 0.9, duration: 0.6, ease: "power3.in" }, 3.3);
+      tl.to(mini, { y: -120, opacity: 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in" }, 3.15);
+
+      // 3. La bulle monte, les étapes arrivent (révélées de gauche à droite)
+      var travail = $("travail"), bulle = $("bulle");
+      K.cacher(travail);
+      tl.set(travail, { opacity: 1 }, 3.35);
+      if (vertical) gsap.set(travail, { left: 70, right: 70, top: H / 2 - 420 });
+      bulle.textContent = DEMANDE;
+      gsap.set(bulle, { opacity: 0, y: 60 });
+      tl.to(bulle, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, 3.4);
+      ETAPES.forEach(function (e, i) {
+        var et = K.el($("etapes"), "div", "t05-etape", '<span class="t05-ico">' + K.ic(e[0]) + "</span><span class=\"t05-txt\">" + e[1] + "</span>", "top:" + (230 + i * 130) + "px;");
+        var t0 = 3.75 + i * 0.38, txt = et.querySelector(".t05-txt");
+        gsap.set(et.querySelector(".t05-ico"), { scale: 0.5, opacity: 0 });
+        tl.to(et.querySelector(".t05-ico"), { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, t0);
+        // La ligne se révèle de gauche à droite (un masque qui glisse), comme une IA qui écrit
+        txt.style.webkitMaskImage = txt.style.maskImage = "linear-gradient(90deg, #000 0%, #000 40%, transparent 60%)";
+        txt.style.webkitMaskSize = txt.style.maskSize = "250% 100%";
+        selon(function (t) { var v = (100 * (1 - prog(t, t0 + 0.1, 0.75, "power1.inOut"))).toFixed(1) + "% 0"; txt.style.webkitMaskPosition = v; txt.style.maskPosition = v; });
+      });
+      tl.to(travail, { y: -40, duration: 1.3, ease: "sine.inOut" }, 4.0);
+      var centreEtapes = [L / 2 - 300, H / 2 + 60];
+      recadre(4.4, 1.08, centreEtapes, centreEtapes, 0.6, "expo.inOut");
+      tl.to(travail, { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, 5.1);
+
+      // 4. La carte d'annonce : pastille + titre
+      var fin = $("fin"), titre = $("titre");
+      $("pastille").textContent = PASTILLE;
+      var tMots = mots(titre, TITRE);
+      K.cacher($("pastille")); K.cacher(tMots);
+      tl.fromTo($("pastille"), { opacity: 0, y: 10, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 5.55);
+      var lignes = titre.querySelectorAll(".t05-ligne");
+      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 5.65, { y: 10, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+      if (lignes[1]) K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 5.9, { y: 10, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+      tl.fromTo(fin, { scale: 1 }, { scale: 1.025, duration: 1.6, ease: "sine.inOut", immediateRender: false }, 5.6);
+      // La carte et la signature arrivent avec un léger recul de la caméra.
+      tl.fromTo(cam, { scale: 1.08, x: 0, y: 0 }, { scale: 1, duration: 1.1, ease: "expo.out", immediateRender: false }, 5.5);
+      tl.fromTo(cam, { scale: 1.1 }, { scale: 1, duration: 1.0, ease: "expo.out", immediateRender: false }, 7.42);
+      tl.to([$("pastille")].concat(Array.prototype.slice.call(tMots)), { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in", stagger: 0.02 }, 7.1);
+
+      // 5. La signature : la pastille de la marque (ou le logo) tourne et se pose, le nom s'écrit
+      var marque = $("marque"), nom = $("nom"), sig = $("signature");
+      marque.innerHTML = LOGO ? '<img src="' + LOGO + '" alt="">' : "<i></i>";
+      nom.textContent = NOM;
+      gsap.set(marque, { scale: 0, rotation: -120 });
+
+      tl.to(marque, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.6)" }, 7.45);
+      selon(function (t) { nom.style.clipPath = "inset(-10% " + (100 - 100 * prog(t, 7.75, 0.6)).toFixed(1) + "% -10% 0%)"; });
+      tl.fromTo(sig, { scale: 1 }, { scale: 1.03, duration: 1.4, ease: "sine.inOut", immediateRender: false }, 7.6);
+
+      // Mise en place verticale des deux cartes finales (mesurées après chargement des polices)
+      var cs = getComputedStyle(titre);
+      document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(poser, poser);
+      function poser() {
+        var large = Math.max(titre.offsetWidth ? 0 : 0, 0);
+        lignes.forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
+        var maxL = L - (vertical ? 120 : 400);
+        if (large > maxL) titre.style.fontSize = (72 * Math.max(maxL / large, 0.6)).toFixed(1) + "px";
+        if (nom.offsetWidth > L - 300) nom.style.fontSize = (112 * (L - 300) / nom.offsetWidth).toFixed(1) + "px";
+        gsap.set(fin, { top: H / 2 - fin.offsetHeight / 2 - 10 });
+        gsap.set(sig, { top: H / 2 - sig.offsetHeight / 2 });
+        aJour.forEach(function (f) { f(0); });
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

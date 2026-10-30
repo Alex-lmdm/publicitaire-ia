@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°5 « INTERRUPTEURS » · SCÈNE 3 : LA GRILLE DE COCHES (6,5 s)
+
+    Ce qu'elle montre : une grille de disques blancs cerclés d'un anneau (la fin de la scène 2).
+    Chaque anneau se remplit comme un camembert, en vague de gauche à droite, et devient une
+    pastille cochée. La caméra se rapproche, les deux disques du centre s'effacent et la phrase
+    s'écrit entre eux. Puis les pastilles se réduisent à un point, les disques deviennent des
+    cartes (l'espace de chaque membre, avec son prénom), et la caméra plonge dans une carte qui
+    devient la fenêtre plein écran de la scène 4 (« fenetre-annonce »).
+    Rôle : la preuve que tout le monde est servi (« tout est prêt », « pour chaque élève »).
+
+    Format : 16:9. La grille se recalcule seule en 9:16 (change data-width / data-height de la
+    racine) ; la plongée vise alors la carte la plus proche du centre.
+
+    À REMPLACER :
+      1. L'id « t05-coches » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. TEXTE (deux lignes, 6 mots au plus) : ce que le client gagne, tiré de OFFRE.json.
+      3. SALUTS : ce que montrent les cartes (prénoms génériques des membres, ou le nom des
+         espaces). La carte où l'on plonge porte SALUTS[0] : c'est aussi le titre de la scène 4.
+      4. ACCUEIL : le texte gris du champ (le même qu'en scène 4).
+      5. Les couleurs du look, en tête du style. La pastille cochée prend l'accent de la marque
+         (la coche, la couleur lisible dessus) ; l'anneau prend la couleur du trait (l'accent, ou
+         l'encre si l'accent est trop pâle sur le crème).
+      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
+      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    Ne pas toucher : la place de la grille au début (raccord avec la scène 2) et la fenêtre à la
+    fin (raccord avec la scène 4).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t05-coches {
+      --t05-papier: #efefe5;
+      --t05-carte: #f9f9f4;
+      --t05-pli: #e4e4d8;
+      --t05-encre: #1d1d1b;
+      --t05-gris: #8a8a82;
+      --t05-titres: var(--brand-font-display);
+      --t05-texte: var(--brand-font-body);
+      background: var(--t05-papier);
+    }
+    #t05-coches .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t05-coches .t05-disque {
+      position: absolute; width: 178px; height: 178px; border-radius: 89px; background: var(--t05-carte); overflow: hidden;
+      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+    }
+    #t05-coches .t05-pastille { position: absolute; left: 50%; top: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px; overflow: visible; }
+    #t05-coches .t05-mini { position: absolute; left: 50%; top: 50%; width: 1100px; height: 400px; margin: -200px 0 0 -550px; }
+    #t05-coches .t05-titre {
+      position: absolute; left: 360px; width: 1200px; text-align: center; white-space: nowrap;
+      font: 400 72px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
+    }
+    #t05-coches .t05-ligne { display: block; }
+    #t05-coches .t05-mot { display: inline-block; }
+    /* La fenêtre (dans les cartes en miniature, puis plein écran) : dessinée à sa taille finale. */
+    #t05-coches .t05-accueil { position: absolute; left: 0; right: 0; top: 60px; text-align: center; white-space: nowrap; font: 400 64px/1.1 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre); }
+    #t05-coches .t05-accueil i { display: inline-block; width: 22px; height: 22px; margin-right: 26px; border-radius: 50%; background: var(--brand-accent); box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08); vertical-align: 0.12em; }
+    #t05-coches .t05-champ {
+      position: absolute; left: 60px; right: 60px; top: 190px; height: 150px; border-radius: 26px; background: #fff;
+      box-shadow: 0 0 0 1.5px rgba(40, 40, 20, 0.07), 0 10px 30px rgba(60, 60, 30, 0.07);
+      font: 400 30px/1 var(--t05-texte); color: var(--t05-gris);
+    }
+    #t05-coches .t05-champ span { position: absolute; left: 36px; top: 34px; white-space: nowrap; }
+    #t05-coches .t05-champ b { position: absolute; left: 34px; bottom: 26px; font: 300 40px/1 var(--t05-texte); color: var(--t05-gris); }
+    #t05-coches .t05-champ em { position: absolute; right: 26px; bottom: 22px; width: 50px; height: 50px; border-radius: 13px; background: var(--brand-accent); color: var(--brand-contrast); opacity: 0.45; display: grid; place-items: center; }
+    #t05-coches .t05-champ em svg { width: 28px; height: 28px; }
+    #t05-coches .t05-fenetre { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background: var(--t05-carte); z-index: 20; }
+    #t05-coches .t05-fenetre .t05-mini { box-shadow: none; }
+  </style>
+
+  <div data-composition-id="t05-coches" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+    <div id="t05-coches" class="k-scene">
+      <div class="t05-cam" id="t05-coches-cam" data-layout-allow-overflow>
+        <div id="t05-coches-grille"></div>
+        <div class="t05-titre" id="t05-coches-titre"></div>
+      </div>
+      <div class="t05-fenetre" id="t05-coches-fenetre"></div>
+      <svg width="0" height="0" style="position:absolute;">
+        <filter id="t05-coches-rugueux" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="4" result="bruit"/>
+          <feDisplacementMap in="SourceGraphic" in2="bruit" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t05-coches", D = 6.5;
+      var TEXTE = ["Tout est prêt", "dès le premier jour"];
+      var SALUTS = ["Bonjour, Léa", "Salut, Karim", "Hello, Sofia", "Bon retour, Hugo", "Coucou, Inès", "Bonjour, Malik", "Salut, Chloé", "Hello, Nadia", "Bonjour, Tom", "Salut, Jade"];
+      var ACCUEIL = "Que veux-tu apprendre aujourd'hui ?";
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cam = $("cam"), grille = $("grille"), titre = $("titre"), fen = $("fenetre");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true });
+      function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
+
+      // --- Outils du look (communs aux scènes du template 5) ---------------------------------
+      function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
+      function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
+      function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+      var cs0 = getComputedStyle(racine), ACCENT = cs0.getPropertyValue("--brand-accent").trim();
+      var TRAIT = contraste(ACCENT, cs0.getPropertyValue("--t05-papier")) >= 2 ? ACCENT : cs0.getPropertyValue("--t05-encre").trim();
+      var COCHE = cs0.getPropertyValue("--brand-contrast").trim() || "#ffffff";
+      function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
+      // La fenêtre de l'espace membre, dessinée à sa taille finale (1100 × 400) : salut + champ.
+      function fenetre(salut) { return '<div class="t05-mini"><div class="t05-accueil"><i></i>' + salut + '</div><div class="t05-champ"><span>' + ACCUEIL + "</span><b>+</b><em>" + K.ic("arrow-up") + "</em></div></div>"; }
+
+      // --- La grille, à la place exacte de la fin de la scène 2 ------------------------------
+      var PAS = 235, X0 = 136, Y0 = 70, COLS = 8, LIGNES = 5;
+      if (vertical) { X0 = 70; Y0 = 76; COLS = 5; LIGNES = 9; PAS = 235; }
+      var cx = L / 2, cy = H / 2, disques = [], centre = [];
+      var pastille = '<svg class="t05-pastille" viewBox="0 0 100 100"><g filter="url(#t05-coches-rugueux)">' +
+        '<circle class="t05-tarte" cx="50" cy="50" r="21" fill="none" stroke="' + ACCENT + '" stroke-width="42" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 50 50)"/>' +
+        '<circle class="t05-anneau" cx="50" cy="50" r="44" fill="none" stroke="' + TRAIT + '" stroke-width="6.5" transform="rotate(-90 50 50)"/></g>' +
+        '<path class="t05-coche" d="M31 51 L44 63.5 L69 38" fill="none" stroke="' + COCHE + '" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>';
+      for (var c = 0; c < COLS; c++) for (var r = 0; r < LIGNES; r++) {
+        var x = X0 + c * PAS, y = Y0 + r * PAS, i = c * LIGNES + r;
+        var e = K.el(grille, "div", "t05-disque", pastille + fenetre(SALUTS[(i + 1) % SALUTS.length]), "left:" + x + "px; top:" + y + "px;");
+        gsap.set(e, { xPercent: -50, yPercent: -50 });
+        e.setAttribute("data-layout-allow-overflow", "");
+        e.dataset.x = x; e.dataset.y = y; e.dataset.c = c; e.dataset.r = r;
+        disques.push(e);
+      }
+      // Les deux disques au plus près du centre s'effacent pour la phrase ; la plongée vise le plus proche.
+      var tries = disques.slice().sort(function (a, b) { return Math.hypot(a.dataset.x - cx, a.dataset.y - cy) - Math.hypot(b.dataset.x - cx, b.dataset.y - cy); });
+      // En 9:16, toute la rangée du milieu (sauf les bords) se libère : la phrase y tient en largeur.
+      centre = vertical ? disques.filter(function (d) { return Math.abs(d.dataset.y - tries[0].dataset.y) < 1 && Math.abs(d.dataset.x - cx) < 400; }) : [tries[0], tries[1]];
+      var cible = tries[0];
+      cible.querySelector(".t05-accueil").lastChild.textContent = SALUTS[0];
+      racine.querySelectorAll(".t05-mini").forEach(function (m) { gsap.set(m, { scale: 0.176, opacity: 0 }); });
+
+      // 1. La vague : chaque anneau se remplit, puis la coche se trace
+      disques.forEach(function (d) {
+        var t0 = 0.1 + (+d.dataset.c) * 0.13 + (+d.dataset.r) * 0.045 + (vertical ? (+d.dataset.r) * 0.06 : 0);
+        tl.to(d.querySelector(".t05-tarte"), { attr: { "stroke-dashoffset": 0 }, duration: 0.42, ease: "power1.inOut" }, t0);
+        tl.to(d.querySelector(".t05-coche"), { attr: { "stroke-dashoffset": 0 }, duration: 0.22, ease: "power2.out" }, t0 + 0.38);
+        if (TRAIT !== ACCENT) tl.to(d.querySelector(".t05-anneau"), { opacity: 0, duration: 0.2, ease: "power1.out" }, t0 + 0.36);
+      });
+
+      // 2. La caméra se rapproche, le centre se libère, la phrase s'écrit
+      var Z = vertical ? 1.55 : 1.7;
+      tl.to(cam, { scale: 1.06, duration: 0.6, ease: "expo.inOut" }, 0.25);
+      tl.to(cam, { scale: Z, duration: 0.9, ease: "expo.inOut" }, 1.35);
+      tl.to(cam, { scale: Z * 1.03, duration: 0.45, ease: "expo.inOut" }, 2.3);
+      tl.to(cam, { scale: Z * 1.09, duration: 0.55, ease: "expo.inOut" }, 2.95);
+      tl.to(cam, { scale: Z * 1.05, duration: 0.5, ease: "expo.inOut" }, 3.7);
+      centre.forEach(function (d) { tl.to(d, { scale: 0, duration: 0.45, ease: "power3.in" }, 1.45); });
+      var tMots = mots(titre, TEXTE);
+      K.cacher(tMots);
+      var csT = getComputedStyle(titre);
+      document.fonts.load(csT.fontWeight + " " + csT.fontSize + " " + csT.fontFamily).then(suite, suite);
+
+      function suite() {
+        // La phrase tient dans le trou du centre (réduite si sa police est large)
+        var large = 0; titre.querySelectorAll(".t05-ligne").forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
+        var maxL = vertical ? 600 : 500;
+        if (large > maxL) titre.style.fontSize = (72 * Math.max(maxL / large, 0.66)).toFixed(1) + "px";
+        gsap.set(titre, { left: cx - 600, top: cy - titre.offsetHeight / 2 });
+        var lignes = titre.querySelectorAll(".t05-ligne");
+        K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.1, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
+        K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 2.4, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
+        K.sortieMots(tl, tMots, 4.3, { y: -6, flou: 12, duree: 0.35, decalage: 0.03 });
+
+        // 3. Les pastilles se réduisent à un point, les disques deviennent des cartes
+        disques.forEach(function (d) {
+          var dx = (d.dataset.x - cx) * 0.25, dy = (d.dataset.y - cy) * 0.25, t0 = 4.65 + Math.hypot(dx, dy) / 4000;
+          tl.to(d.querySelector(".t05-pastille"), { scale: 0.16, duration: 0.3, ease: "power2.in" }, t0);
+          tl.to(d.querySelector(".t05-pastille"), { scale: 0, duration: 0.18, ease: "power2.in" }, t0 + 0.32);
+          tl.to(d, { x: dx, y: dy, width: 200, height: 200, borderRadius: 48, duration: 0.55, ease: "power3.inOut" }, t0 + 0.2);
+          tl.to(d.querySelector(".t05-mini"), { opacity: 1, duration: 0.3, ease: "power1.out" }, t0 + 0.45);
+        });
+        centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 4.85); });
+
+        // 4. La plongée : la carte visée devient la fenêtre plein écran (raccord scène 4)
+        var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
+        var ex = cx + S * (wx - cx), ey = cy + S * (wy - cy), cote = 200 * S;
+        fen.innerHTML = fenetre(SALUTS[0]);
+        var miniF = fen.querySelector(".t05-mini");
+        // La fenêtre est plein écran dès le départ, découpée (clip-path) à la taille de la carte :
+        // la découpe s'ouvre jusqu'aux bords, son contenu grandit depuis le centre de la carte.
+        var g = ex - cote / 2, h = ey - cote / 2, rad = 48 * S;
+        var decoupe = function (t, r, b, l, ra) { return "inset(" + t.toFixed(1) + "px " + r.toFixed(1) + "px " + b.toFixed(1) + "px " + l.toFixed(1) + "px round " + ra.toFixed(1) + "px)"; };
+        gsap.set(fen, { opacity: 0 });
+        gsap.set(miniF, { x: ex - cx, y: ey - cy, scale: 0.176 * S, opacity: 1 });
+        tl.set(fen, { opacity: 1 }, 5.45);
+        tl.set(cible, { opacity: 0 }, 5.45);
+        // La découpe suit une fonction pure du temps (un tween sur la chaîne clip-path ne s'interpole pas).
+        var ouvrir = gsap.parseEase("expo.inOut"), o = { t: 0 }, poser = function () { var p = o.t <= 5.45 ? 0 : o.t >= 6.3 ? 1 : ouvrir((o.t - 5.45) / 0.85), q = 1 - p; fen.style.clipPath = decoupe(h * q, (L - g - cote) * q, (H - h - cote) * q, g * q, rad * q); };
+        tl.to(o, { t: D, duration: D, ease: "none", onUpdate: poser }, 0); poser();
+        tl.to(miniF, { x: 0, y: 0, scale: vertical ? 0.86 : 1, duration: 0.85, ease: "expo.inOut" }, 5.45);
+        tl.to(cam, { scale: S * 1.9, x: -(wx - cx) * S * 0.9, y: -(wy - cy) * S * 0.9, duration: 0.85, ease: "expo.inOut" }, 5.45);
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

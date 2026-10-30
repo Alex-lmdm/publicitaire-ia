@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°8 « FENÊTRES BARRES » · SCÈNE : LES BARRES COMPARATIVES (la preuve chiffrée) · 4 s
+    Ce que la scène montre : sur le fond blanc chaud, deux graphiques en barres horizontales côte à
+    côte qui partagent leurs lignes (une option par ligne). Les axes et leurs titres arrivent, puis
+    les lignes une à une, de haut en bas, chaque barre grandit depuis la gauche ; toutes sont grises.
+    Puis la ligne de l'offre passe à l'encre (ou à la couleur de la marque si elle est assez foncée),
+    son nom en gras, et sa valeur s'affiche au bout de ses barres. Tenue courte, caméra qui avance à peine.
+    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
+    les deux graphiques s'empilent (classe t08-vertical, réglée seule).
+
+    À REMPLACER (obligatoire : uniquement des chiffres vrais, sourcés dans OFFRE.json ; sans
+    chiffres réels pour chaque ligne, n'utilise pas cette scène) :
+     1. L'id « t08-barres » (racine, constante ID, préfixe CSS) par l'id de la scène.
+     2. LIGNES : les options comparées (3 à 5), [nom, valeur A, valeur B, fort] ; fort = true pour
+        l'offre du client (une seule). Les noms sont courts (« À la main », « Ton offre »).
+     3. AXES : pour chaque graphique, le titre en deux lignes (mesure, puis unité entre parenthèses),
+        la valeur maximale de l'échelle, les graduations, et le format de la valeur affichée.
+    Couleurs : barres grises du look ; la ligne forte prend var(--brand-accent) si l'accent est assez
+    foncé pour se lire sur le blanc chaud, sinon l'encre de la marque, avec un repère carré à l'accent.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t08-barres { --t08-papier: #f7f7f4; --t08-encre: #1d1c19; --t08-gris: #cdcdca; --t08-trait: #e8e8e4; --t08-fort: var(--t08-encre);
+    background: var(--t08-papier); }
+  #t08-barres .t08-fond { position: absolute; inset: -2px; background: var(--t08-papier); }
+  #t08-barres .t08-graphe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+  #t08-barres .t08-nom { position: absolute; font: 400 30px/40px var(--brand-font-body); color: #6f6e69; white-space: nowrap; letter-spacing: -0.01em; }
+  #t08-barres .t08-nom.t08-fort { color: var(--t08-encre); font-weight: 700; }
+  #t08-barres .t08-repere { position: absolute; left: -28px; top: 14px; width: 12px; height: 12px; background: var(--brand-accent); box-shadow: 0 0 0 1.5px var(--t08-encre); }
+  #t08-barres .t08-barre { position: absolute; height: 40px; background: var(--t08-gris); transform-origin: 0 50%; }
+  #t08-barres .t08-sep { position: absolute; height: 2px; background: var(--t08-trait); transform-origin: 0 50%; }
+  #t08-barres .t08-axe { position: absolute; height: 2px; background: #3d3c38; transform-origin: 0 50%; }
+  #t08-barres .t08-grad { position: absolute; font: 400 25px/1 var(--brand-font-body); color: #3d3c38; white-space: nowrap; }
+  #t08-barres .t08-titre-axe { position: absolute; font: 400 31px/38px var(--brand-font-body); color: var(--t08-encre); white-space: pre; letter-spacing: -0.01em; }
+  #t08-barres .t08-valeur { position: absolute; font: 600 26px/40px var(--brand-font-body); color: #ffffff; white-space: nowrap; text-align: right; }
+  #t08-barres .t08-valeur.t08-dehors { color: var(--t08-encre); text-align: left; }
+</style>
+
+<div data-composition-id="t08-barres" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+  <div id="t08-barres" class="k-scene">
+    <div class="t08-fond"></div>
+    <div class="t08-graphe" id="t08-barres-graphe"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t08-barres", D = 4;
+    // ---- À remplacer (chiffres vrais seulement) ----------------------------------------------
+    var LIGNES = [
+      ["À la main", 22, 40, false],
+      ["Un logiciel gratuit", 30, 85, false],
+      ["Une agence", 36, 55, false],
+      ["Ton offre", 52, 190, true],
+      ["Un coach privé", 58, 60, false]
+    ];
+    var AXES = [
+      { titre: "Résultat\n(note sur 60)", max: 60, graduations: [0, 20, 40, 60], format: function (v) { return Math.round(v) + "/60"; } },
+      { titre: "Vitesse\n(tâches par heure)", max: 200, graduations: [0, 100, 200], format: function (v) { return Math.round(v) + " / h"; } }
+    ];
+    // -------------------------------------------------------------------------------------------
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    if (vertical) racine.classList.add("t08-vertical");
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
+    // La ligne forte : l'accent s'il se lit sur le blanc chaud (contraste de 3 au moins), sinon l'encre.
+    var accentFonce = lum(rgb("var(--brand-accent)")) <= 0.28;
+    racine.style.setProperty("--t08-fort", accentFonce ? "var(--brand-accent)" : "var(--t08-encre)");
+
+    var G = document.getElementById(ID + "-graphe");
+    var el = function (classe, x, y, l, h, html) {
+      var e = K.el(G, "div", classe, html == null ? null : html);
+      e.style.left = x + "px"; e.style.top = y + "px"; if (l != null) e.style.width = l + "px"; if (h != null) e.style.height = h + "px";
+      return e;
+    };
+    var PAS = 80, HB = 40, n = LIGNES.length;
+    // Géométrie : en 16:9 les deux graphiques côte à côte partagent la colonne des noms ;
+    // en 9:16 ils s'empilent, chacun avec sa colonne de noms.
+    var blocs = vertical
+      ? [{ xNoms: 90, x: 420, l: 570, y: H / 2 - 40 - (n * PAS + 150) }, { xNoms: 90, x: 420, l: 570, y: H / 2 + 120 }]
+      : [{ xNoms: 256, x: 626, l: 514, y: (H - (n * PAS + 150)) / 2 }, { xNoms: null, x: 1182, l: 514, y: (H - (n * PAS + 150)) / 2 }];
+    var tLigne = function (i) { return 0.3 + i * 0.07; }, T_FORT = 0.3 + n * 0.07 + 0.4;
+
+    blocs.forEach(function (b, k) {
+      var ax = AXES[k], yAxe = b.y + n * PAS;
+      // L'axe, ses graduations, son titre.
+      var axe = el("t08-axe", b.x, yAxe, b.l, 2);
+      tl.fromTo(axe, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 0.05 + k * 0.08);
+      ax.graduations.forEach(function (g, j) {
+        var gr = el("t08-grad", b.x + (g / ax.max) * b.l - (j === 0 ? 0 : (j === ax.graduations.length - 1 ? 30 : 14)), yAxe + 16, null, null, String(g));
+        K.cacher(gr); tl.to(gr, { opacity: 1, duration: 0.25 }, 0.12 + k * 0.08 + j * 0.04);
+      });
+      var titre = el("t08-titre-axe", b.x, yAxe + 58, null, null, ax.titre);
+      K.cacher(titre, { y: 10 }); tl.to(titre, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.18 + k * 0.08);
+      // Les lignes : séparateur, nom (une fois par colonne de noms), barre.
+      LIGNES.forEach(function (ln, i) {
+        var y = b.y + i * PAS, t0 = tLigne(i);
+        if (i > 0) { var sep = el("t08-sep", b.x, y - 1, b.l, 2); tl.fromTo(sep, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out" }, t0 - 0.05); }
+        if (b.xNoms != null) {
+          var nom = el("t08-nom" + (ln[3] ? " t08-ligne-forte" : ""), b.xNoms, y + (PAS - 40) / 2, null, null, ln[0]);
+          K.cacher(nom, { x: -8 }); tl.to(nom, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, t0);
+          if (ln[3]) {
+            tl.set(nom, { attr: { "class": "t08-nom t08-fort" } }, T_FORT);
+            if (!accentFonce) {
+              var rep = K.el(nom, "span", "t08-repere"); K.cacher(rep, { scale: 0 });
+              tl.to(rep, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)" }, T_FORT + 0.05);
+            }
+          }
+        }
+        var v = Math.max(0, Math.min(1, ln[k + 1] / ax.max));
+        var barre = el("t08-barre", b.x, y + (PAS - HB) / 2, b.l * v, HB);
+        tl.fromTo(barre, { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "expo.out" }, t0 + 0.04);
+        if (ln[3]) {
+          tl.to(barre, { backgroundColor: "rgb(" + rgb("var(--t08-fort)").slice(0, 3).join(",") + ")", duration: 0.25, ease: "power2.out" }, T_FORT);
+          // La valeur s'écrit au bout de la barre, dedans en blanc (dehors si la barre est trop courte).
+          var dedans = b.l * v > 150, val = el("t08-valeur" + (dedans ? "" : " t08-dehors"), dedans ? b.x : b.x + b.l * v + 14, y + (PAS - 40) / 2, dedans ? b.l * v - 16 : null, null, "");
+          K.compteur(tl, val, 0, ln[k + 1], T_FORT + 0.05, 0.6, D, ax.format, "expo.out");
+          K.cacher(val, { x: -10 }); tl.to(val, { opacity: 1, x: 0, duration: 0.3, ease: "expo.out" }, T_FORT + 0.05);
+        }
+      });
+    });
+    // La caméra avance à peine ; une fois la ligne forte colorée, elle va la lire de près :
+    // gros plan sur sa barre du premier graphique, glissé jusqu'à celle du second, puis recul.
+    var iFort = Math.max(0, LIGNES.map(function (l) { return l[3]; }).indexOf(true));
+    var viser = function (t, b, s, duree) {
+      var px = vertical ? L / 2 : b.x + b.l / 2, py = b.y + iFort * PAS + PAS / 2;
+      tl.to(G, { scale: s, x: -(px - L / 2) * s, y: -(py - H / 2) * s, duration: duree, ease: "expo.inOut" }, t);
+    };
+    tl.fromTo(G, { scale: 1.08 }, { scale: 1, duration: T_FORT + 0.25, ease: "expo.out" }, 0);
+    viser(T_FORT + 0.3, blocs[0], vertical ? 1.12 : 1.3, 0.7);
+    viser(T_FORT + 1.15, blocs[1], vertical ? 1.12 : 1.3, 0.7);
+    tl.to(G, { scale: 1, x: 0, y: 0, duration: 0.6, ease: "expo.inOut" }, T_FORT + 2.0);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°4 · DÉGRADÉS VIFS · SCÈNE « MESSAGES DE VERRE », VERSION VERTICALE 9:16 (1080 × 1920),
+    6,0 s (la même scène que messages-verre.html, remise en page pour un Reel, une story, un TikTok)
+
+    Ce qu'elle montre : plein cadre, le dégradé vif de l'après (les teintes de l'accent, le même
+    qu'à la fin de orbe-pivot.html) qui tourne ; une conversation arrive en bulles de verre dépoli :
+    trois points qui sautent annoncent chaque réponse de l'offre, puis la bulle se pose et ses mots
+    s'allument un à un (les mots à venir sont déjà là, pâles) ; les bulles de l'offre ont un petit
+    orbe pour avatar et une étiquette ; le fil remonte et la caméra recadre à chaque bulle ; une
+    carte de résultat arrive en dernier, sa barre se remplit et se coche ; à la fin, l'image
+    s'assombrit vers le fond de la marque (raccord avec fin-cadre.html).
+
+    À remplacer :
+      1. L'identifiant « t04-msg » partout (racine, scène, préfixe des ids, clé de la timeline).
+      2. MESSAGES : [qui, texte, instant]. qui = "offre" (à gauche, avec l'orbe et l'ÉTIQUETTE) ou
+         "client" (à droite). UNIQUEMENT un vrai échange : une vraie conversation avec son produit
+         (son assistant, son outil), de vrais messages de clients (captures de témoignages), ou
+         une vraie question de sa FAQ et sa vraie réponse. 2 à 4 bulles, 12 mots au plus chacune.
+      3. ETIQUETTE : le nom de son produit ou de lui-même (« Ton coach », le nom de l'outil).
+      4. CADENCE : l'écart entre deux mots qui s'allument (0,07 à 0,12 s), sur la voix s'il y en a.
+      5. RESULTAT : ce que son produit rend vraiment [icône du kit, titre, ligne] (une page, un
+         plan, une vidéo, un rendez-vous) ; null pour ne pas montrer de carte.
+    Couleurs : le dégradé se dérive de l'accent ; le verre et le texte se règlent sur
+    var(--brand-contrast) (texte foncé sur verre clair pour un accent clair, et l'inverse).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t04-msg {
+      --t04-ecart: 50;
+      --t04-apres-1: var(--brand-accent);
+      --t04-apres-2: oklch(from var(--brand-accent) calc(l * 0.55 + 0.33) calc(c * 0.95) calc(h + var(--t04-ecart) * 0.9));
+      --t04-apres-3: oklch(from var(--brand-accent) calc(l * 0.15 + 0.84) calc(c * 0.30) calc(h - var(--t04-ecart) * 0.2));
+      --t04-apres-4: oklch(from var(--brand-accent) calc(l * 0.50 + 0.32) calc(c * 0.95) calc(h - var(--t04-ecart) * 0.8));
+      --t04-verre: oklch(from var(--brand-contrast) calc(1 - l) 0 0 / 0.55);
+      --t04-verre-bord: oklch(from var(--brand-contrast) calc(1 - l) 0 0 / 0.75);
+      --t04-encre: var(--brand-contrast);
+      background: var(--brand-accent);
+    }
+    #t04-msg .t04-msg-fond { position: absolute; inset: 0; background: radial-gradient(ellipse 85% 90% at 65% 40%, var(--t04-apres-3), var(--t04-apres-1) 45%, var(--t04-apres-2) 100%); }
+    #t04-msg .t04-msg-tourbillon { position: absolute; left: 540px; top: 960px; width: 0; height: 0; }
+    #t04-msg .t04-msg-tache { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.95; }
+    #t04-msg .t04-msg-fil { position: absolute; left: 56px; top: 0; width: 968px; height: 1920px; }
+    #t04-msg .t04-msg-ligne { position: absolute; left: 0; width: 968px; }
+    #t04-msg .t04-msg-etiquette {
+      position: absolute; left: 84px; top: -38px; font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 26px;
+      color: color-mix(in srgb, var(--t04-encre) 72%, transparent); white-space: nowrap;
+    }
+    #t04-msg .t04-msg-bulle {
+      position: absolute; padding: 26px 32px; border-radius: 26px; max-width: 800px; white-space: normal;
+      background: var(--t04-verre); border: 1.5px solid var(--t04-verre-bord);
+      -webkit-backdrop-filter: blur(22px) saturate(1.2); backdrop-filter: blur(22px) saturate(1.2);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+      font-family: "Inter", var(--brand-font-body); font-weight: 500; font-size: 44px; line-height: 1.26; color: var(--t04-encre);
+    }
+    #t04-msg .t04-msg-points { position: absolute; left: 84px; top: 0; padding: 26px 30px; border-radius: 22px; display: flex; gap: 12px;
+      background: var(--t04-verre); border: 1.5px solid var(--t04-verre-bord); }
+    #t04-msg .t04-msg-points i { width: 16px; height: 16px; border-radius: 50%; background: var(--t04-encre); opacity: 0.55; }
+    #t04-msg .t04-msg-resultat { position: absolute; left: 84px; width: 760px; padding: 26px 30px; border-radius: 22px; display: grid;
+      grid-template-columns: 72px 1fr; column-gap: 22px; align-items: center;
+      background: var(--t04-verre); border: 1.5px solid var(--t04-verre-bord); font-family: "Inter", var(--brand-font-body); color: var(--t04-encre); }
+    #t04-msg .t04-msg-resultat .ic { width: 72px; height: 72px; border-radius: 18px; display: grid; place-items: center; background: var(--t04-encre); color: var(--brand-accent); grid-row: span 3; }
+    #t04-msg .t04-msg-resultat .ic svg { width: 40px; height: 40px; }
+    #t04-msg .t04-msg-resultat b { font-size: 32px; font-weight: 700; }
+    #t04-msg .t04-msg-resultat small { font-size: 22px; opacity: 0.75; }
+    #t04-msg .t04-msg-resultat .barre { height: 10px; border-radius: 5px; margin-top: 10px; background: color-mix(in srgb, var(--t04-encre) 18%, transparent); overflow: hidden; }
+    #t04-msg .t04-msg-resultat .barre i { display: block; height: 100%; width: 100%; background: var(--t04-encre); transform-origin: 0 50%; }
+    #t04-msg .t04-msg-coche { position: absolute; right: 26px; top: 26px; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--t04-encre); color: var(--brand-accent); }
+    #t04-msg .t04-msg-coche svg { width: 26px; height: 26px; }
+    #t04-msg .t04-msg-bulle span { opacity: 0.22; }
+    #t04-msg .t04-msg-offre .t04-msg-bulle { left: 84px; top: 0; }
+    #t04-msg .t04-msg-client .t04-msg-bulle { right: 0; top: 0; }
+    #t04-msg .t04-msg-orbe {
+      position: absolute; left: 4px; top: 14px; width: 62px; height: 62px; border-radius: 50%;
+      background: radial-gradient(circle at 38% 36%, #ffffff 0, var(--t04-apres-3) 22%, var(--t04-apres-4) 62%, var(--t04-apres-1) 100%);
+      box-shadow: 0 0 22px color-mix(in srgb, var(--t04-apres-4) 70%, transparent);
+    }
+    #t04-msg .t04-msg-voile { position: absolute; inset: 0; background: var(--brand-bg); z-index: 10; }
+  </style>
+
+  <div data-composition-id="t04-msg" data-width="1080" data-height="1920" data-duration="6" style="position:absolute; inset:0;">
+    <div id="t04-msg" class="k-scene">
+      <div class="t04-msg-fond" id="t04-msg-fond"><div class="t04-msg-tourbillon" id="t04-msg-tourbillon"></div></div>
+      <div class="t04-msg-fil" id="t04-msg-fil"></div>
+      <div class="t04-msg-voile" id="t04-msg-voile"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 6.0, ID = "t04-msg", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var ETIQUETTE = "Ton assistant", CADENCE = 0.07;
+      // [qui, texte, instant où la bulle se pose] ; une bulle de l'offre est annoncée 0,35 s avant
+      // par trois points qui sautent.
+      var MESSAGES = [
+        ["offre", "Bonjour ! On prépare quoi aujourd'hui ?", 0.55],
+        ["client", "Ma page de vente, pour lundi.", 1.75],
+        ["offre", "C'est parti. Voici ton plan.", 2.95]
+      ];
+      var RESULTAT = ["file-text", "Ta page de vente", "Plan en 3 étapes", 3.85];
+
+      // Le dégradé de l'après : mêmes taches qu'à la fin de orbe-pivot.html (rotation 200 degrés).
+      [[-300, 420, 900, "--t04-apres-2"], [320, -420, 860, "--t04-apres-3"], [260, 520, 700, "--t04-apres-4"], [-160, -560, 700, "--t04-apres-1"]]
+        .forEach(function (t) {
+          K.el($("tourbillon"), "div", "t04-msg-tache", null, "left:" + (t[0] - t[2] / 2) + "px; top:" + (t[1] - t[2] / 2) + "px; width:" + t[2] + "px; height:" + t[2] + "px; background:var(" + t[3] + ");");
+        });
+      tl.fromTo($("tourbillon"), { rotation: 200 }, { rotation: 300, duration: D, ease: "none" }, 0);
+
+      // Les bulles : chacune se pose, puis ses mots s'allument un à un ; le fil remonte.
+      var fil = $("fil"), ESPACE = 250, BAS = 1020, hauts = [];
+      MESSAGES.forEach(function (m, i) {
+        var ligne = K.el(fil, "div", "t04-msg-ligne t04-msg-" + m[0], null, "top:" + (BAS + i * ESPACE) + "px;");
+        if (m[0] === "offre") {
+          var orbe = K.el(ligne, "div", "t04-msg-orbe");
+          K.el(ligne, "div", "t04-msg-etiquette", ETIQUETTE);
+          // Les trois points qui sautent, juste avant la réponse ; l'orbe pulse quand il « parle ».
+          var pts = K.el(ligne, "div", "t04-msg-points", "<i></i><i></i><i></i>");
+          K.cacher(pts);
+          tl.fromTo(pts, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", transformOrigin: "0% 50%" }, m[2] - 0.38);
+          tl.fromTo(pts.children, { y: 0 }, { y: -9, duration: 0.12, ease: "power1.out", yoyo: true, repeat: 1, stagger: 0.08 }, m[2] - 0.3);
+          tl.to(pts, { opacity: 0, duration: 0.06 }, m[2]);
+          tl.fromTo(orbe, { scale: 1 }, { scale: 1.25, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 1 }, m[2]);
+        }
+        var bulle = K.el(ligne, "div", "t04-msg-bulle");
+        var mots = m[1].split(" ").map(function (w, k) {
+          var s = K.el(bulle, "span", null, w);
+          if (k < m[1].split(" ").length - 1) bulle.appendChild(document.createTextNode(" "));
+          return s;
+        });
+        K.cacher(ligne);
+        tl.fromTo(ligne, { opacity: 0, y: 26, scale: 0.97, filter: "blur(8px)" },
+          { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out", transformOrigin: m[0] === "offre" ? "0% 50%" : "100% 50%" }, m[2]);
+        tl.to(mots, { opacity: 1, duration: 0.08, ease: "none", stagger: CADENCE }, m[2] + 0.25);
+        hauts.push(m[2]);
+      });
+      // La carte du résultat : ce que le produit rend ; sa barre se remplit, elle se coche.
+      if (RESULTAT) {
+        var rl = K.el(fil, "div", "t04-msg-ligne", null, "top:" + (BAS + MESSAGES.length * ESPACE - 10) + "px;");
+        var carte = K.el(rl, "div", "t04-msg-resultat", '<span class="ic">' + K.ic(RESULTAT[0]) + "</span><b>" + RESULTAT[1] +
+          "</b><small>" + RESULTAT[2] + '</small><div class="barre"><i></i></div><span class="t04-msg-coche">' + K.ic("check") + "</span>");
+        K.cacher(rl);
+        tl.fromTo(rl, { opacity: 0, y: 40, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out", transformOrigin: "0% 50%" }, RESULTAT[3]);
+        tl.fromTo(carte.querySelector(".barre i"), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, RESULTAT[3] + 0.3);
+        var coche = carte.querySelector(".t04-msg-coche");
+        K.cacher(coche);
+        tl.fromTo(coche, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)" }, RESULTAT[3] + 1.0);
+        hauts.push(RESULTAT[3]);
+      }
+      // Le fil remonte d'un cran à chaque nouvelle bulle ; la caméra recadre (poussée puis recul).
+      gsap.set(fil, { y: 0 });
+      // Le pas de remontée garde toute la conversation dans le cadre (de 600 px à la fin du fil).
+      var PAS = Math.round(560 / Math.max(1, hauts.length - 1));
+      hauts.forEach(function (t, i) { if (i > 0) tl.to(fil, { y: -PAS * i, duration: 0.5, ease: "expo.out" }, t - 0.05); });
+      tl.fromTo(fil, { scale: 1.08 }, { scale: 1, duration: 1.0, ease: "expo.out", transformOrigin: "50% 60%" }, 0.45);
+      // Le dégradé respire à chaque bulle (il se resserre puis revient) : le fond vit avec la conversation.
+      hauts.forEach(function (t) { tl.fromTo($("fond"), { scale: 1.07 }, { scale: 1, duration: 0.6, ease: "expo.out", immediateRender: false }, t); });
+      tl.to(fil, { scale: 1.03, duration: 0.7, ease: "expo.inOut" }, 2.4);
+      tl.to(fil, { scale: 0.97, duration: 0.8, ease: "expo.inOut" }, 4.4);
+
+      // Le voile : l'image s'assombrit vers le fond de la marque (raccord avec la scène suivante).
+      gsap.set($("voile"), { opacity: 0 });
+      tl.to($("voile"), { opacity: 1, duration: 0.6, ease: "power2.in" }, D - 0.62);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

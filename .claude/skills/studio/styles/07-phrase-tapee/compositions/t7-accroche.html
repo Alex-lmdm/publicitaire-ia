@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°7 · Orbite · scène « L'ouverture » (accroche et nom).
+  Ce qu'elle montre : sur un fond très sombre semé de poussière de pixels, une phrase se pose mot
+  à mot avec deux petits objets glissés DANS la ligne (une vignette qui change toutes les
+  0,45 s, une pastille avec son petit curseur) ; coupe sur la suite de la phrase, dont les mots
+  s'allument tour à tour à la couleur de ta marque ; un temps de silence ; un mot géant tapé sur
+  un nuage de ta couleur ; coupe sur fond clair : ton logo devient net et ton nom sort de lui.
+  Durée : 7,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
+  sur deux lignes, tout est centré).
+  À remplacer (objet R en tête du script) : les morceaux de la phrase (ce que contient ton offre),
+  les icônes des vignettes, le mot de la pastille, la suite de la phrase, le mot géant, ton logo
+  (brand/logo.svg ; "" sans logo) et le nom de l'offre.
+  Couleurs : uniquement var(--brand-*) ; le très sombre, le taupe et le clair se dérivent du
+  fond de la marque. Sur fond clair, l'accent ne sert qu'en aplat (jamais en texte fin).
+  Identifiant : t7a (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t7a {
+    --t7-nuit: color-mix(in oklab, var(--brand-bg) 86%, #000);
+    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
+    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
+    --t7-gris: color-mix(in oklab, var(--brand-text) 58%, var(--brand-bg));
+    --t7-police: var(--brand-font-display);
+    background: var(--t7-nuit); font-family: var(--t7-police); color: var(--brand-text);
+  }
+  #t7a .t7a-plan { position: absolute; inset: 0; }
+  #t7a .t7a-nuit { background: var(--t7-nuit); }
+  #t7a .t7a-poussiere { position: absolute; inset: 0; }
+  #t7a .t7a-ligne { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    column-gap: 30px; row-gap: 10px; padding: 0 80px; font-size: 104px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.1; white-space: nowrap; }
+  #t7a .t7a-m { display: inline-block; }
+  #t7a .t7a-g { color: var(--t7-gris); }
+  #t7a .t7a-carte { position: relative; width: 84px; height: 118px; border-radius: 12px; background: #fff; padding: 7px; box-shadow: 0 10px 26px rgba(0,0,0,.35); flex: none; }
+  #t7a .t7a-vignette { position: absolute; left: 7px; right: 7px; top: 7px; height: 70px; border-radius: 7px; display: grid; place-items: center; color: var(--brand-contrast); }
+  #t7a .t7a-vignette svg { width: 34px; height: 34px; }
+  #t7a .t7a-trait { position: absolute; left: 9px; height: 6px; border-radius: 3px; background: #d8d6d0; }
+  #t7a .t7a-pastille { position: relative; height: 46px; padding: 0 18px; border-radius: 12px; display: grid; place-items: center; flex: none;
+    font-size: 22px; font-weight: 600; letter-spacing: 0; color: var(--brand-contrast); background: var(--brand-accent); }
+  #t7a .t7a-pastille svg { position: absolute; right: -16px; bottom: -18px; width: 22px; height: 22px; }
+  #t7a .t7a-suite { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; white-space: nowrap;
+    font-size: 116px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.1; }
+  #t7a .t7a-suite span { display: inline-block; }
+  #t7a .t7a-nuage { background: color-mix(in oklab, var(--brand-accent) 40%, #fff); overflow: hidden; }
+  #t7a .t7a-tache { position: absolute; border-radius: 50%; filter: blur(70px); background: var(--brand-accent); }
+  #t7a .t7a-geant { position: absolute; left: 0; right: 0; top: 50%; height: 300px; margin-top: -150px; text-align: center; white-space: nowrap;
+    font-size: 270px; font-weight: 700; letter-spacing: -0.05em; line-height: 300px; color: var(--brand-contrast); opacity: .78; }
+  #t7a .t7a-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.06em; background: currentColor; }
+  #t7a .t7a-clair { background: var(--t7-clair); }
+  #t7a .t7a-signe { position: absolute; left: 0; right: 0; top: 50%; height: 200px; margin-top: -100px; display: flex; align-items: center; justify-content: center; gap: 34px; color: var(--t7-encre); }
+  #t7a .t7a-logo { width: 150px; height: 150px; display: grid; place-items: center; flex: none; }
+  #t7a .t7a-logo img { width: 100%; height: 100%; object-fit: contain; }
+  #t7a .t7a-nom-boite { overflow: hidden; }
+  #t7a .t7a-nom { font-size: 150px; font-weight: 600; letter-spacing: -0.05em; white-space: nowrap; line-height: 1.2; }
+</style>
+
+<div data-composition-id="t7a" data-width="1920" data-height="1080" data-duration="7.2" style="position:absolute; inset:0;">
+  <div id="t7a" class="k-scene">
+    <div class="t7a-plan t7a-nuit" id="t7a-p1">
+      <svg class="t7a-poussiere" id="t7a-poussiere" aria-hidden="true" data-layout-allow-overflow></svg>
+      <div class="t7a-ligne" id="t7a-ligne"></div>
+      <div class="t7a-suite" id="t7a-suite"></div>
+    </div>
+    <div class="t7a-plan t7a-nuage" id="t7a-p2">
+      <div class="t7a-tache" style="left:-8%; top:-30%; width:62%; height:90%"></div>
+      <div class="t7a-tache" style="left:58%; top:40%; width:60%; height:95%"></div>
+      <div class="t7a-tache" style="left:30%; top:20%; width:40%; height:60%; opacity:.7"></div>
+      <div class="t7a-geant" id="t7a-geant"><span id="t7a-geant-texte"></span><span class="t7a-caret" id="t7a-caret-geant"></span></div>
+    </div>
+    <div class="t7a-plan t7a-clair" id="t7a-p3">
+      <div class="t7a-signe"><div class="t7a-logo" id="t7a-logo"></div><div class="t7a-nom-boite"><div class="t7a-nom" id="t7a-nom"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer --------------------------------------------------------------------------
+  var R = {
+    phrase: ["Des vidéos", "[carte]", "et des", "[pastille]", "modèles"],  // « et des » en gris
+    gris: ["et des"],
+    vignettes: ["play", "image", "file-text"],      // icônes du kit qui défilent dans la vignette
+    pastille: ["Prêt", "Publié", "Envoyé"],         // le mot de la pastille, qui change
+    suite: ["en", "une", "seule", "offre."],         // les mots s'allument tour à tour
+    geant: "Voici",
+    logo: "brand/logo.svg",                          // son fichier dans brand/ (logo.svg ou .png) ; "" : le nom seul
+    nom: "Ton offre"
+  };
+  // -------------------------------------------------------------------------------------------
+  var D = 7.2;
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t7a")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var css = getComputedStyle($("t7a"));
+  var C = function (n, d) { return (css.getPropertyValue(n) || "").trim() || d; };
+  var accent = C("--brand-accent", "#ffee00"), texte = C("--brand-text", "#ffffff");
+
+  // La poussière de pixels : des grappes de petits carrés, toujours les mêmes (graine).
+  var svg = $("t7a-poussiere"), NS = "http://www.w3.org/2000/svg", r = K.rng(7), grappes = [];
+  svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
+  for (var g = 0; g < 16; g++) {
+    var gx = r() * L, gy = r() * H, grp = document.createElementNS(NS, "g");
+    for (var k = 0; k < 22; k++) {
+      var q = document.createElementNS(NS, "rect"), c = 7 + Math.round(r() * 3);
+      q.setAttribute("x", Math.round((gx + (r() - 0.5) * 220) / 14) * 14); q.setAttribute("y", Math.round((gy + (r() - 0.5) * 160) / 14) * 14);
+      q.setAttribute("width", c); q.setAttribute("height", c); q.setAttribute("fill", "rgba(255,255,255," + (0.05 + r() * 0.11).toFixed(3) + ")");
+      grp.appendChild(q);
+    }
+    svg.appendChild(grp); grappes.push(grp);
+  }
+  // La phrase, avec ses objets dans la ligne
+  var ligne = $("t7a-ligne"), mots = [], carte, pastille;
+  R.phrase.forEach(function (m) {
+    if (m === "[carte]") {
+      carte = K.el(ligne, "div", "t7a-carte");
+      R.vignettes.forEach(function (ic, i) {
+        var v = K.el(carte, "div", "t7a-vignette", K.ic(ic) || K.ic("play"));
+        v.style.background = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 55%, #fff)", "color-mix(in oklab, var(--brand-accent) 70%, var(--brand-bg))"][i % 3];
+        v.classList.add("t7a-v" + i);
+      });
+      K.el(carte, "div", "t7a-trait", null, "top:86px; width:46px");
+      K.el(carte, "div", "t7a-trait", null, "top:98px; width:30px");
+      mots.push(carte);
+    } else if (m === "[pastille]") {
+      pastille = K.el(ligne, "div", "t7a-pastille", '<span id="t7a-pastille-mot"></span><svg viewBox="0 0 8 8"><path d="M0 0h2v1h1v1h1v1h1v1h1v1h-3v1h-1v1h-1v-1h-1z" fill="var(--brand-accent)" shape-rendering="crispEdges"/></svg>');
+      mots.push(pastille);
+    } else {
+      mots.push(K.el(ligne, "span", "t7a-m" + (R.gris.indexOf(m) >= 0 ? " t7a-g" : ""), m));
+    }
+  });
+  R.suite.forEach(function (m, i) { K.el($("t7a-suite"), "span", "t7a-s", m + (i < R.suite.length - 1 ? "&nbsp;" : "")); });
+  if (vertical) { ligne.style.fontSize = "92px"; $("t7a-suite").style.fontSize = "100px"; $("t7a-geant").style.fontSize = "200px"; }
+  if (R.logo) $("t7a-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t7a-logo").style.display = "none";
+  $("t7a-nom").textContent = R.nom;
+  // un nom long tient dans l'image (environ 0,58 em par lettre en graisse 600)
+  $("t7a-nom").style.fontSize = Math.min(150, Math.round((0.84 * L - (R.logo ? 190 : 0)) / (R.nom.length * 0.58))) + "px";
+
+  // États de départ
+  K.cacher(mots); K.cacher(["#t7a-suite", "#t7a-p2", "#t7a-p3"]);
+  gsap.set(".t7a-vignette", { opacity: 0 }); gsap.set(".t7a-v0", { opacity: 1 });
+  var tl = gsap.timeline({ paused: true });
+
+  // 1. La phrase et ses objets (0 → 2,45 s)
+  mots.forEach(function (m, i) {
+    var objet = m === carte || m === pastille, t = 0.05 + i * 0.3;
+    if (objet) tl.fromTo(m, { opacity: 0, scale: 0.3, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2.2)" }, t);
+    else tl.fromTo(m, { opacity: 0, y: 26, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t);
+  });
+  for (var s = 1; s < 4; s++) {                       // la vignette et la pastille changent
+    var tv = 0.75 + s * 0.45, iv = s % R.vignettes.length, ip = (s - 1) % R.vignettes.length;
+    tl.set(".t7a-v" + ip, { opacity: 0 }, tv); tl.set(".t7a-v" + iv, { opacity: 1 }, tv);
+    tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, tv);
+  }
+  K.texteSelon(tl, $("t7a-pastille-mot"), D, function (t) { return R.pastille[Math.max(0, Math.min(R.pastille.length - 1, Math.floor((t - 1.0) / 0.5)))]; });
+  tl.fromTo(pastille, { x: 0 }, { x: 8, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 3, immediateRender: false }, 1.0);
+  tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 0.2);
+  tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 2.5);
+  tl.fromTo("#t7a-poussiere", { x: 0, y: 0 }, { x: -40, y: -18, duration: 4.6, ease: "sine.inOut" }, 0);
+  tl.to("#t7a-ligne", { opacity: 0, duration: 0.05 }, 2.45);
+
+  // 2. La suite, mot à mot à la couleur de la marque (2,45 → 4,55 s)
+  var sm = document.querySelectorAll("#t7a .t7a-s");
+  tl.set("#t7a-suite", { opacity: 1 }, 2.45);
+  tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, 2.45);
+  gsap.set(sm, { color: texte });
+  sm.forEach(function (m, i) {
+    var t = 2.95 + i * 0.32;
+    tl.to(m, { color: accent, duration: 0.12, ease: "none" }, t);
+    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+    tl.to(m, { color: texte, duration: 0.3, ease: "power1.out" }, t + 0.38);
+  });
+  tl.fromTo("#t7a-suite", { scale: 0.97 }, { scale: 1.04, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.45);
+  tl.to(sm, { color: accent, duration: 0.15, ease: "none", stagger: 0.05 }, 4.15);
+  tl.to("#t7a-suite", { opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power2.in" }, 4.45);
+
+  // 3. Un temps, puis le mot géant tapé sur le nuage de couleur (4,85 → 6,0 s)
+  tl.set("#t7a-p2", { opacity: 1 }, 4.85);
+  tl.set("#t7a-p1", { opacity: 0 }, 4.85);
+  tl.fromTo(".t7a-tache", { xPercent: 0, yPercent: 0, scale: 1 }, { xPercent: 8, yPercent: -6, scale: 1.12, duration: 1.2, ease: "sine.inOut", stagger: 0.1 }, 4.85);
+  K.taper(tl, $("t7a-geant-texte"), R.geant, 4.95, 5.45, D);
+  tl.to("#t7a-caret-geant", { opacity: 0, duration: 0.01 }, 5.6); tl.to("#t7a-caret-geant", { opacity: 1, duration: 0.01 }, 5.8);
+
+  // 4. Le logo devient net, le nom sort de lui (6,0 → 7,2 s)
+  tl.set("#t7a-p3", { opacity: 1 }, 6.0);
+  tl.set("#t7a-p2", { opacity: 0 }, 6.0);
+  var aLogo = !!R.logo;
+  if (aLogo) tl.fromTo("#t7a-logo", { scale: 1.5, filter: "blur(16px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 6.0);
+  // avec un logo, le nom sort de derrière lui ; sans logo, il monte du flou
+  tl.fromTo("#t7a-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
+    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, aLogo ? 6.35 : 6.05);
+  tl.fromTo(".t7a-signe", { scale: 1 }, { scale: 1.035, duration: 1.2, ease: "sine.out" }, 6.0);
+  window.__timelines["t7a"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

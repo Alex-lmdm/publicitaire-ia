@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°3 · Interface 3D · scène « L'adresse et le logo » (l'appel et la fin).
+  Ce qu'elle montre : coupe franche sur un mot à la couleur de ta marque (« Rejoins »), la ligne
+  se complète, puis se change, dans un flou, en l'adresse de ta page qui brille doucement ; enfin
+  ton logo apparaît et ton nom se dévoile à côté, tenu jusqu'à la fin. Presque rien ne bouge : la
+  fin respire, comme l'original (musique coupée, puis un seul impact sur l'adresse).
+  Durée : 4,8 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (tout est centré).
+  À remplacer (objet R en tête du script) : le verbe d'appel, la ligne, l'adresse réelle de ta
+  page (courte, sans https://), ton logo (brand/logo.svg, posé par la marque ; "" s'il n'y en a
+  pas) et ton nom.
+  Couleurs : uniquement var(--brand-*).
+  Identifiant : t3f (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t3f {
+    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    --t3-police: var(--brand-font-body);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+  }
+  #t3f .t3f-fond { position: absolute; inset: -2px;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 55%, #fff) 7%, transparent), transparent 70%), var(--t3-nuit); }
+  #t3f .t3f-ligne { position: absolute; left: 0; right: 0; top: 50%; height: 100px; margin-top: -50px; text-align: center; white-space: nowrap;
+    font-size: 64px; font-weight: 600; line-height: 100px; letter-spacing: -0.015em; text-shadow: 0 0 28px rgba(255,255,255,.22); }
+  #t3f .t3f-ligne span { display: inline-block; }
+  #t3f .t3f-accent { color: var(--brand-accent); }
+  #t3f .t3f-adresse { font-weight: 500; text-shadow: 0 0 22px rgba(255,255,255,.45), 0 0 60px color-mix(in oklab, var(--brand-accent) 35%, transparent); }
+  #t3f .t3f-adresse b { font-weight: 500; color: color-mix(in oklab, var(--brand-accent) 55%, #fff); }
+  #t3f .t3f-eclat { position: absolute; left: 50%; top: 50%; width: 900px; height: 6px; margin: -3px 0 0 -450px; border-radius: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent); filter: blur(3px); opacity: 0; }
+  #t3f .t3f-signe { position: absolute; left: 0; right: 0; top: 50%; height: 140px; margin-top: -70px; display: flex; align-items: center; justify-content: center; gap: 30px; }
+  #t3f .t3f-logo { width: 120px; height: 120px; display: grid; place-items: center; filter: drop-shadow(0 0 24px rgba(255,255,255,.35)); }
+  #t3f .t3f-logo img { width: 100%; height: 100%; object-fit: contain; }
+  #t3f .t3f-nom { font-size: 76px; font-weight: 700; letter-spacing: -0.025em; white-space: nowrap; text-shadow: 0 0 30px rgba(255,255,255,.3); }
+</style>
+
+<div data-composition-id="t3f" data-width="1920" data-height="1080" data-duration="4.8" style="position:absolute; inset:0;">
+  <div id="t3f" class="k-scene">
+    <div class="t3f-fond"></div>
+    <div class="t3f-ligne" id="t3f-appel"></div>
+    <div class="t3f-ligne t3f-adresse" id="t3f-adresse"></div>
+    <div class="t3f-eclat" id="t3f-eclat"></div>
+    <div class="t3f-signe" id="t3f-signe"><div class="t3f-logo" id="t3f-logo"></div><div class="t3f-nom" id="t3f-nom"></div></div>
+    <div class="k-vignette"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer --------------------------------------------------------------------------
+  var R = {
+    verbe: "Rejoins",                 // le 1er mot, seul, à la couleur de la marque
+    suite: ["Ton offre", "sur"],      // la ligne se complète : « Rejoins Ton offre sur »
+    adresse: ["tonsite.fr", "/offre"],// la 2e partie prend une teinte de l'accent
+    logo: "brand/logo.svg",           // son fichier dans brand/ (logo.svg ou logo.png) ; "" : le nom seul
+    nom: "Ta marque"
+  };
+  // -------------------------------------------------------------------------------------------
+  var D = 4.8;
+  var $ = function (id) { return document.getElementById(id); };
+  $("t3f-appel").innerHTML = '<span id="t3f-verbe">' + R.verbe + "</span>&nbsp;" +
+    R.suite.map(function (m, i) { return '<span class="t3f-suite' + (i === R.suite.length - 1 ? " t3f-accent" : "") + '">' + m + "</span>"; }).join("&nbsp;");
+  $("t3f-adresse").innerHTML = R.adresse[0] + "<b>" + R.adresse[1] + "</b>";
+  $("t3f-nom").textContent = R.nom;
+  if (R.logo) $("t3f-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t3f-logo").style.display = "none";
+  var css = getComputedStyle($("t3f"));
+  var accent = (css.getPropertyValue("--brand-accent") || "").trim() || "#ffee00";
+  var texte = (css.getPropertyValue("--brand-text") || "").trim() || "#ffffff";
+  K.cacher([".t3f-suite", "#t3f-adresse", "#t3f-signe"]);
+  gsap.set("#t3f-verbe", { color: accent });
+
+  var tl = gsap.timeline({ paused: true });
+  // 1. Le verbe seul, puis la ligne complète (0 → 1,65 s)
+  tl.fromTo("#t3f-appel", { scale: 1.06 }, { scale: 1, duration: 0.5, ease: "expo.out" }, 0);
+  tl.to("#t3f-verbe", { color: texte, duration: 0.3, ease: "power1.inOut" }, 0.42);
+  K.entreeMots(tl, ".t3f-suite", 0.5, { decalage: 0.1, y: 14, flou: 10, duree: 0.45 });
+  tl.fromTo("#t3f-appel", { x: 0 }, { x: -10, duration: 1.0, ease: "sine.inOut", immediateRender: false }, 0.6);
+  // 2. La ligne devient l'adresse, dans un flou ; un seul impact (1,65 → 3,05 s)
+  tl.to("#t3f-appel", { opacity: 0, filter: "blur(14px)", scale: 1.08, duration: 0.35, ease: "power2.in" }, 1.65);
+  tl.fromTo("#t3f-adresse", { opacity: 0, filter: "blur(16px)", scale: 1.35 }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.5, ease: "expo.out" }, 1.82);
+  tl.fromTo("#t3f-eclat", { opacity: 0, scaleX: 0.2 }, { opacity: 0.85, scaleX: 1, duration: 0.4, ease: "expo.out" }, 1.85);
+  tl.to("#t3f-eclat", { opacity: 0, duration: 0.6, ease: "power1.in" }, 2.3);
+  tl.fromTo("#t3f-adresse", { y: 0 }, { y: -6, duration: 1.0, ease: "sine.inOut", immediateRender: false }, 2.0);
+  tl.to("#t3f-adresse", { opacity: 0, filter: "blur(12px)", duration: 0.3, ease: "power2.in" }, 3.0);
+  // 3. Le logo, puis le nom qui se dévoile (3,3 → 4,8 s)
+  tl.set("#t3f-signe", { opacity: 1 }, 3.3);
+  if (R.logo) tl.fromTo("#t3f-logo", { opacity: 0, scale: 0.6, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 3.3);
+  tl.fromTo("#t3f-nom", { clipPath: "inset(0 100% 0 0)", x: R.logo ? -40 : 0, opacity: R.logo ? 1 : 0 },
+    { clipPath: "inset(0 0% 0 0)", x: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, R.logo ? 3.55 : 3.3);
+  tl.fromTo("#t3f-signe", { scale: 1 }, { scale: 1.04, duration: 1.5, ease: "sine.inOut", immediateRender: false }, 3.3);
+  window.__timelines["t3f"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

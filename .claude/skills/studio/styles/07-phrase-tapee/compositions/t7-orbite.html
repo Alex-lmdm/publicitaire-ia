@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°7 · Orbite · scène « L'orbite » (la promesse finale, puis le logo et l'appel).
+  Ce qu'elle montre : la carte de ton offre posée DANS une phrase ; les mots s'écartent, trois
+  orbites en pointillés se dessinent autour d'elle et les icônes de tes outils, tes fichiers et
+  deux étiquettes s'y mettent à tourner ; la caméra recule : d'autres systèmes (tes autres
+  modules, bonus ou offres) apparaissent comme une galaxie, tout passe au flou et la conclusion se
+  tape au centre. Coupe sur fond clair : un point d'encre se contracte, devient ton logo, ton nom
+  sort, et la pastille d'appel en capitales se pose dessous.
+  Durée : 9,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
+  au-dessus et au-dessous de la carte, la galaxie s'étire en hauteur).
+  À remplacer (objet R en tête du script) : les deux morceaux de la phrase, la carte (nom, une
+  ligne de description, la ligne du bas, une capture "assets/images/…" ou "" pour un aperçu
+  dessiné), les logos des outils (posés par `studio_motion.py logos`), les deux étiquettes, les
+  cartes des autres systèmes, la conclusion, ton logo (brand/logo.svg ; "" sans logo), ton nom,
+  l'appel de la pastille (avec ta vraie adresse).
+  Couleurs : uniquement var(--brand-*) ; le taupe, le très sombre et le clair se dérivent du fond.
+  Identifiant : t7o (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t7o {
+    --t7-nuit: color-mix(in oklab, var(--brand-bg) 86%, #000);
+    --t7-taupe: color-mix(in oklab, var(--brand-bg) 80%, var(--brand-muted));
+    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
+    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
+    --t7-police: var(--brand-font-display);
+    /* la pastille d'appel : en capitales espacées ; une police à chasse fixe si la marque en a une */
+    --t7-police-pastille: var(--brand-font-body);
+    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--brand-text);
+  }
+  #t7o .t7o-plan { position: absolute; inset: 0; z-index: 1; }
+  #t7o #t7o-p2 { z-index: 2; }
+  #t7o .t7o-fond { position: absolute; inset: 0; background: var(--t7-taupe); }
+  #t7o .t7o-monde { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+  #t7o .t7o-systeme { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+  #t7o .t7o-anneau { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+  #t7o .t7o-cercle { position: absolute; border-radius: 50%; border: 2px dashed rgba(255,255,255,.2); }
+  #t7o .t7o-item { position: absolute; display: grid; place-items: center; }
+  #t7o .t7o-tuile { width: 100%; height: 100%; border-radius: 26%; background: rgba(255,255,255,.1); display: grid; place-items: center;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12); }
+  #t7o .t7o-tuile svg { width: 60%; height: 60%; }
+  #t7o .t7o-fichier { width: 100%; height: 100%; border-radius: 26%; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.16); }
+  #t7o .t7o-fichier svg { width: 58%; height: 58%; }
+  #t7o .t7o-etiquette { white-space: nowrap; padding: 8px 14px; border-radius: 10px; font-family: var(--brand-font-body); font-size: 17px; font-weight: 600;
+    background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14); color: rgba(255,255,255,.75); display: flex; align-items: center; gap: 8px; }
+  #t7o .t7o-etiquette i { width: 14px; height: 14px; border-radius: 4px; background: var(--brand-accent); }
+  #t7o .t7o-carte { position: absolute; width: 300px; height: 380px; margin: -190px 0 0 -150px; border-radius: 22px; background: #fff; padding: 14px;
+    box-shadow: 0 0 0 10px rgba(255,255,255,.08), 0 30px 70px rgba(0,0,0,.35); color: var(--t7-encre); font-family: var(--brand-font-body); }
+  #t7o .t7o-apercu { height: 168px; border-radius: 12px; overflow: hidden; position: relative; background: #f4f3f0; background-size: cover; background-position: top left; }
+  #t7o .t7o-apercu b { position: absolute; border-radius: 4px; background: rgba(0,0,0,.1); }
+  #t7o .t7o-carte h5 { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; margin: 18px 8px 8px; }
+  #t7o .t7o-carte p { font-size: 18px; line-height: 1.35; color: rgba(0,0,0,.55); margin: 0 8px; }
+  #t7o .t7o-carte small { position: absolute; left: 22px; bottom: 18px; font-size: 16px; color: rgba(0,0,0,.62); }
+  #t7o .t7o-ligne { position: absolute; left: 0; right: 0; top: 50%; height: 160px; margin-top: -80px; z-index: 5;
+    font-size: 96px; font-weight: 500; letter-spacing: -0.045em; white-space: nowrap; line-height: 160px; }
+  #t7o .t7o-gauche { position: absolute; right: calc(50% + 122px); top: 0; }
+  #t7o .t7o-droite { position: absolute; left: calc(50% + 122px); top: 0; }
+  #t7o .t7o-gauche span, #t7o .t7o-droite span { display: inline-block; }
+  #t7o .t7o-conclusion { position: absolute; left: 0; right: 0; top: 50%; height: 140px; margin-top: -70px; text-align: center; z-index: 6;
+    font-size: 104px; font-weight: 500; letter-spacing: -0.045em; line-height: 140px; white-space: nowrap; text-shadow: 0 6px 40px rgba(0,0,0,.35); }
+  #t7o .t7o-caret { display: inline-block; width: 0.07em; height: 0.8em; margin-left: 0.04em; vertical-align: -0.06em; background: var(--brand-accent); }
+  #t7o .t7o-clair { background: var(--t7-clair); color: var(--t7-encre); }
+  #t7o .t7o-point { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: var(--t7-encre); }
+  #t7o .t7o-signe { position: absolute; left: 0; right: 0; top: 50%; height: 180px; margin-top: -150px; display: flex; align-items: center; justify-content: center; gap: 34px; }
+  #t7o .t7o-logo { width: 150px; height: 150px; display: grid; place-items: center; flex: none; }
+  #t7o .t7o-logo img { width: 100%; height: 100%; object-fit: contain; }
+  #t7o .t7o-nom-boite { overflow: hidden; padding: 0 6px; }
+  #t7o .t7o-nom { font-size: 150px; font-weight: 600; letter-spacing: -0.05em; white-space: nowrap; line-height: 1.2; }
+  #t7o .t7o-pastille { position: absolute; left: 50%; top: 50%; margin-top: 110px; transform: translateX(-50%); white-space: nowrap; padding: 12px 24px;
+    background: var(--brand-accent); color: var(--brand-contrast); font-family: var(--t7-police-pastille); font-size: 30px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+  #t7o .t7o-pixels { position: absolute; inset: 0; }
+</style>
+
+<div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="9.6" style="position:absolute; inset:0;">
+  <div id="t7o" class="k-scene">
+    <div class="t7o-plan" id="t7o-p1">
+      <div class="t7o-fond" id="t7o-fond"></div>
+      <div class="t7o-monde" id="t7o-monde"></div>
+      <div class="t7o-ligne" id="t7o-ligne"><div class="t7o-gauche" id="t7o-gauche" data-layout-allow-overflow></div><div class="t7o-droite" id="t7o-droite" data-layout-allow-overflow></div></div>
+      <div class="t7o-conclusion" id="t7o-conclusion"><span id="t7o-conclusion-texte"></span><span class="t7o-caret" id="t7o-caret"></span></div>
+    </div>
+    <div class="t7o-plan t7o-clair" id="t7o-p2">
+      <svg class="t7o-pixels" id="t7o-pixels" aria-hidden="true" data-layout-allow-overflow></svg>
+      <div class="t7o-point" id="t7o-point"></div>
+      <div class="t7o-signe" id="t7o-signe"><div class="t7o-logo" id="t7o-logo"></div><div class="t7o-nom-boite"><div class="t7o-nom" id="t7o-nom"></div></div></div>
+      <div class="t7o-pastille" id="t7o-pastille"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer --------------------------------------------------------------------------
+  var R = {
+    avant: "Au centre,", apres: "ton offre.",
+    carte: { nom: "Ton offre", texte: "Ce qu'elle fait pour toi, en une ligne.", bas: "12 modules · 3 bonus", capture: "" },
+    logos: ["logo-claude", "logo-openai", "logo-instagram", "logo-tiktok", "logo-youtube", "logo-linkedin"],
+    etiquettes: ["Module 2", "Bonus"],
+    autres: ["Module 1", "Module 3", "Bonus", "Groupe", "Modèles", "Lives", "Outils", "Coaching"],   // les autres systèmes
+    conclusion: "Tout s'organise autour.",
+    logo: "brand/logo.svg",            // son fichier dans brand/ (logo.svg ou .png) ; "" : le nom seul
+    nom: "Ton offre",
+    appel: "Rejoins-la sur tonsite.fr"
+  };
+  // -------------------------------------------------------------------------------------------
+  var D = 9.6;
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t7o")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var css = getComputedStyle($("t7o"));
+  var C = function (n, d) { return (css.getPropertyValue(n) || "").trim() || d; };
+  var r = K.rng(11), monde = $("t7o-monde");
+  var teintes = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 45%, #fff)", "rgba(255,255,255,.55)"];
+  var ics = ["file-text", "image", "play", "folder", "calendar", "mail"];
+
+  function carte(parent, c, echelle) {
+    var e = K.el(parent, "div", "t7o-carte");
+    var ap = K.el(e, "div", "t7o-apercu");
+    if (c.capture) ap.style.backgroundImage = "url('" + c.capture + "')";
+    else {
+      ap.style.background = "color-mix(in oklab, var(--brand-accent) 22%, #fff)";
+      [[10, 10, 60, 148, "rgba(0,0,0,.75)"], [82, 14, 120, 14, ""], [82, 40, 180, 50, "rgba(255,255,255,.85)"], [82, 100, 84, 54, "rgba(255,255,255,.85)"], [176, 100, 86, 54, "var(--brand-accent)"]].forEach(function (b) {
+        K.el(ap, "b", null, null, "left:" + b[0] + "px; top:" + b[1] + "px; width:" + b[2] + "px; height:" + b[3] + "px;" + (b[4] ? "background:" + b[4] : ""));
+      });
+    }
+    // textes serrés de la carte : la galaxie tourne, leurs boîtes se touchent sans que le texte se chevauche
+    [K.el(e, "h5", null, c.nom), K.el(e, "p", null, c.texte), K.el(e, "small", null, c.bas)].forEach(function (t) { t.setAttribute("data-layout-allow-overlap", ""); });
+    if (echelle) e.style.transform = "scale(" + echelle + ")";
+    return e;
+  }
+  // Un anneau : un cercle en pointillés et des objets posés dessus, qui tourneront ensemble.
+  function anneau(sys, rayon, objets, depart) {
+    var a = K.el(sys, "div", "t7o-anneau");
+    K.el(a, "div", "t7o-cercle", null, "left:" + -rayon + "px; top:" + -rayon + "px; width:" + 2 * rayon + "px; height:" + 2 * rayon + "px;");
+    var items = objets.map(function (o, i) {
+      var ang = (depart || 0) + (i / objets.length) * Math.PI * 2;
+      var it = K.el(a, "div", "t7o-item", o.html, "width:" + o.t + "px; height:" + o.t + "px; left:" + (Math.cos(ang) * rayon - o.t / 2) + "px; top:" + (Math.sin(ang) * rayon - o.t / 2) + "px;");
+      if (o.w) { it.style.width = "auto"; it.style.left = (Math.cos(ang) * rayon) + "px"; it.style.transform = "translate(-50%, 0)"; }
+      return it;
+    });
+    return { el: a, items: items };
+  }
+  function systeme(x, y, principal, nom) {
+    var sys = K.el(monde, "div", "t7o-systeme", null, "left:" + x + "px; top:" + y + "px;");
+    var anneaux = [];
+    if (principal) {
+      anneaux.push(anneau(sys, 290, R.logos.slice(0, 4).map(function (n) { return { t: 66, html: '<div class="t7o-tuile">' + (K.ic(n) || K.ic("sparkles")) + "</div>" }; }), 0.4));
+      anneaux.push(anneau(sys, 420, R.logos.slice(4).concat(["", "", "", ""]).map(function (n, i) {
+        return n ? { t: 58, html: '<div class="t7o-tuile">' + (K.ic(n) || K.ic("sparkles")) + "</div>" } : { t: 40, html: '<div class="t7o-fichier" style="color:' + teintes[i % 3] + '">' + K.ic(ics[i % ics.length]) + "</div>" };
+      }), 1.1));
+      var ext = [];
+      for (var i = 0; i < 18; i++) ext.push(i === 4 || i === 13 ? { t: 30, w: true, html: '<div class="t7o-etiquette"><i></i>' + R.etiquettes[i === 4 ? 0 : 1] + "</div>" } : { t: 26, html: '<div class="t7o-fichier" style="color:' + teintes[i % 3] + '">' + K.ic(ics[i % ics.length]) + "</div>" });
+      anneaux.push(anneau(sys, 560, ext, 0.2));
+      sys.appendChild(carte(null, R.carte));
+      sys.lastChild.id = "t7o-carte";
+    } else {
+      anneaux.push(anneau(sys, 230, [0, 1, 2, 3, 4].map(function (i) { return { t: 34, html: '<div class="t7o-fichier" style="color:' + teintes[i % 3] + '">' + K.ic(ics[(i + 2) % ics.length]) + "</div>" }; }), r() * 6));
+      anneaux.push(anneau(sys, 360, [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (i) { return { t: 22, html: '<div class="t7o-fichier" style="color:' + teintes[i % 3] + '">' + K.ic(ics[i % ics.length]) + "</div>" }; }), r() * 6));
+      sys.appendChild(carte(null, { nom: nom, texte: "", bas: "", capture: "" }, 0.8));
+    }
+    return { el: sys, anneaux: anneaux };
+  }
+  var centre = systeme(0, 0, true);
+  var places = vertical ? [[-600, -2000], [620, -2100], [-640, 2000], [600, 2150], [0, -3100], [0, 3100], [-1350, 250], [1350, -250]]
+    : [[-1650, -900], [1620, -880], [-1700, 920], [1680, 900], [-2450, 20], [2420, -30], [-60, -1320], [40, 1320]];
+  var autres = R.autres.map(function (n, i) { return systeme(places[i % places.length][0], places[i % places.length][1], false, n); });
+  // La phrase autour de la carte
+  R.avant.split(" ").forEach(function (m) { K.el($("t7o-gauche"), "span", null, m + "&nbsp;"); });
+  R.apres.split(" ").forEach(function (m) { K.el($("t7o-droite"), "span", null, "&nbsp;" + m); });
+  if (vertical) {
+    $("t7o-gauche").style.cssText = "position:absolute; left:0; right:0; top:-330px; text-align:center;";
+    $("t7o-droite").style.cssText = "position:absolute; left:0; right:0; top:330px; text-align:center;";
+    $("t7o-conclusion").style.fontSize = "76px";
+  }
+  // fin : logo, nom, pastille, poussière claire
+  if (R.logo) $("t7o-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t7o-logo").style.display = "none";
+  $("t7o-nom").textContent = R.nom; $("t7o-pastille").textContent = R.appel;
+  $("t7o-nom").style.fontSize = Math.min(150, Math.round((0.84 * L - (R.logo ? 190 : 0)) / (R.nom.length * 0.58))) + "px";
+  var svg = $("t7o-pixels"), NS = "http://www.w3.org/2000/svg";
+  svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
+  for (var g = 0; g < 10; g++) {
+    var gx = (g % 2 ? 0.75 + r() * 0.25 : r() * 0.25) * L, gy = (0.62 + r() * 0.38) * H;
+    for (var k = 0; k < 26; k++) {
+      var q = document.createElementNS(NS, "rect"), c = 8 + Math.round(r() * 3);
+      q.setAttribute("x", Math.round((gx + (r() - 0.5) * 200) / 14) * 14); q.setAttribute("y", Math.round((gy + (r() - 0.5) * 140) / 14) * 14);
+      q.setAttribute("width", c); q.setAttribute("height", c); q.setAttribute("fill", "rgba(0,0,0," + (0.03 + r() * 0.06).toFixed(3) + ")");
+      svg.appendChild(q);
+    }
+  }
+
+  // États de départ
+  var gauche = $("t7o-gauche").children, droite = $("t7o-droite").children;
+  K.cacher([gauche, droite, "#t7o-carte", "#t7o-conclusion", "#t7o-p2", "#t7o-pastille"]);
+  centre.anneaux.forEach(function (a) { K.cacher(a.el.querySelector(".t7o-cercle")); K.cacher(a.items); });
+  gsap.set(monde, { scale: vertical ? 0.74 : 1 });
+  var tl = gsap.timeline({ paused: true });
+  var s0 = vertical ? 0.74 : 1;
+
+  // 1. La carte dans la phrase (0 → 1,45 s)
+  tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
+  tl.fromTo("#t7o-carte", { opacity: 0, scale: 0.55, rotation: -4 }, { opacity: 1, scale: 0.62, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.3);
+  tl.fromTo(droite, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.6);
+
+  // 2. Les mots s'écartent, les orbites se dessinent et tournent (1,45 → 4,3 s)
+  tl.to(gauche, { opacity: 0, x: vertical ? 0 : -160, y: vertical ? -120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, 1.45);
+  tl.to(droite, { opacity: 0, x: vertical ? 0 : 160, y: vertical ? 120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, 1.45);
+  tl.to("#t7o-carte", { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, 1.5);
+  centre.anneaux.forEach(function (a, i) {
+    tl.fromTo(a.el.querySelector(".t7o-cercle"), { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 1.75 + i * 0.14);
+    a.items.forEach(function (it, j) {
+      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, 1.95 + i * 0.18 + j * 0.035);
+    });
+  });
+  // la rotation : chaque anneau à sa vitesse, les objets restent droits
+  var tours = [100, -64, 38];
+  function rotation(a, deg, t0) {
+    tl.fromTo(a.el, { rotation: 0 }, { rotation: deg, duration: D - t0, ease: "sine.inOut" }, t0);
+    tl.fromTo(a.items, { rotation: 0 }, { rotation: -deg, duration: D - t0, ease: "sine.inOut" }, t0);
+  }
+  centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], 1.75); });
+  autres.forEach(function (s, i) { s.anneaux.forEach(function (a, j) { rotation(a, (j ? -1 : 1) * (40 + i * 6), 0); }); });
+
+  // les outils se connectent à l'offre, un par un (un éclat de la couleur de la marque)
+  centre.anneaux[0].items.concat(centre.anneaux[1].items.slice(0, 2)).forEach(function (it, i) {
+    var t = 2.6 + i * 0.3, tuile = it.firstChild;
+    tl.fromTo(it, { scale: 1 }, { scale: 1.28, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+    tl.fromTo(tuile, { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 0px " + C("--brand-accent", "#ffee00") },
+      { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 5px " + C("--brand-accent", "#ffee00"), duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+  });
+  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.08, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.3);
+  // 3. La caméra recule sur la galaxie, tout passe au flou, la conclusion se tape (4,3 → 6,5 s)
+  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, 4.3);
+  tl.to("#t7o-fond", { backgroundColor: C("--brand-bg", "#202022"), duration: 1.4, ease: "power1.inOut" }, 4.5);
+  tl.to(monde, { filter: "blur(5px) brightness(0.7)", duration: 0.7, ease: "power2.inOut" }, 5.35);
+  tl.set("#t7o-conclusion", { opacity: 1 }, 5.45);
+  K.taper(tl, $("t7o-conclusion-texte"), R.conclusion, 5.5, 6.1, D);
+  tl.to(monde, { scale: s0 * 0.33, duration: 0.9, ease: "sine.out" }, 5.9);
+
+  // 4. Le point d'encre sur fond clair, puis le logo, le nom et l'appel (6,55 → 9,6 s)
+  tl.set("#t7o-p2", { opacity: 1 }, 6.55);
+  tl.set("#t7o-p1", { opacity: 0 }, 6.55);
+  tl.fromTo("#t7o-point", { scale: 1, borderRadius: "50%" }, { scale: 0.42, duration: 0.55, ease: "power3.inOut" }, 6.55);
+  tl.to("#t7o-point", { borderRadius: "46% 54% 40% 60%", duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.65);
+  var aLogo = !!R.logo;
+  tl.to("#t7o-point", { scale: aLogo ? 2.4 : 0, opacity: 0, duration: 0.35, ease: "power2.in" }, 7.1);
+  if (aLogo) tl.fromTo("#t7o-logo", { opacity: 0, scale: 0.3, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 7.15);
+  tl.fromTo("#t7o-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
+    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, aLogo ? 7.45 : 7.2);
+  tl.fromTo("#t7o-pastille", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 7.95);
+  tl.fromTo("#t7o-pixels rect", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none", stagger: 0.004 }, 7.3);
+  tl.fromTo("#t7o-signe", { scale: 1 }, { scale: 1.03, duration: 2.4, ease: "sine.out" }, 7.2);
+  window.__timelines["t7o"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

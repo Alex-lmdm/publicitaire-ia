@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°2 · TITRES GÉANTS · SCÈNE « CARTE PAYSAGE » (le produit à l'écran), 5,0 s, 16:9
+
+    Ce qu'elle montre : sur le fond sombre de la marque, la caméra part tout près d'un coin arrondi
+    (une cote « Rayon 64 px », un point d'accent), recule et découvre une grande carte vide ; la
+    carte se remplit d'un paysage illustré qui se construit par couches (ciel, lueur, mer, reflets,
+    îles, rivage), des repères de maquette se posent (deux traits pleins, deux traits pointillés,
+    quatre points), le nom de l'offre s'écrit en graisse légère dans la bande sélectionnée. Puis la
+    caméra recule encore : six autres cartes arrivent de la droite, en mosaïque autour de la
+    première, chacune avec un paysage et un morceau du produit (une liste de modules qui se coche,
+    un bouton qu'un curseur clique, un lecteur qui avance, une tuile d'icône). Juste avant le recul,
+    la grande carte change trois fois de palette sur les temps (jour, nuit, crépuscule).
+
+    Les couleurs des paysages se DÉRIVENT de l'accent de la marque (oklch relatif) : crépuscule
+    (ombres décalées de teinte), jour (l'accent pur), nuit (le fond de la marque). Rien en dur.
+    --t02-d (défaut -40) : décalage de teinte des ombres, en degrés ; mets +40 pour un accent vert
+    (sinon le ciel tire sur le kaki).
+
+    À remplacer :
+      1. L'identifiant « t02-carte » partout (racine, scène, préfixe des ids et des dégradés SVG,
+         clé de la timeline).
+      2. Le nom de l'offre (#t02-carte-titre, 1 à 3 mots, un .k-mot par mot) et la petite ligne
+         dessous (#t02-carte-signe : le nom de sa marque, ou son logo en <img src="brand/logo.svg">).
+      3. Le contenu des six cartes de la mosaïque (CARTES, plus bas) : ses VRAIES surfaces. Une
+         carte « capture » prend une image du dossier assets/images (sa page, son espace de
+         formation, son logiciel) ; « liste » les vrais titres de ses modules ; « bouton » le vrai
+         libellé de son bouton ; « lecteur » une vraie vignette si elle existe. Une carte sans
+         matière réelle reste un paysage seul : jamais une interface inventée.
+      4. La palette de chaque carte (crepuscule, jour, nuit) et son relief (mer, plateaux).
+    Polices : var(--brand-font-display) pour le nom ; Inter (assets/fonts/interfaces.css) pour
+    les interfaces reconstruites.
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t02-carte { background: var(--brand-bg); --t02-d: -40; }
+    #t02-carte .t02-carte-c {
+      position: absolute; width: 1480px; height: 830px; margin: -415px 0 0 -740px;
+      border-radius: 64px; overflow: hidden; background: color-mix(in oklab, var(--brand-bg) 92%, var(--brand-accent));
+    }
+    #t02-carte .t02-carte-c > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    #t02-carte .t02-carte-contour {
+      position: absolute; inset: 0; border-radius: 64px; pointer-events: none;
+      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--brand-accent) 55%, transparent);
+    }
+    /* Les palettes des paysages, toutes dérivées de l'accent. */
+    #t02-carte .pal-crepuscule {
+      --p-ciel-1: oklch(from var(--brand-accent) calc(l * 0.40) calc(c * 0.80) calc(h + var(--t02-d) * 1.2));
+      --p-ciel-2: oklch(from var(--brand-accent) calc(l * 0.64) calc(c * 0.95) calc(h + var(--t02-d) * 0.6));
+      --p-ciel-3: oklch(from var(--brand-accent) calc(l * 0.90 + 0.06) calc(c * 0.70) calc(h + var(--t02-d) * 0.2));
+      --p-lueur: oklch(from var(--brand-accent) 0.97 calc(c * 0.22) h);
+      --p-mer-1: oklch(from var(--brand-accent) calc(l * 0.74) calc(c * 0.80) calc(h + var(--t02-d) * 0.4));
+      --p-mer-2: oklch(from var(--brand-accent) calc(l * 0.34) calc(c * 0.70) calc(h + var(--t02-d) * 1.1));
+      --p-sol-1: oklch(from var(--brand-accent) calc(l * 0.30) calc(c * 0.55) calc(h + var(--t02-d) * 1.3));
+      --p-sol-2: oklch(from var(--brand-accent) calc(l * 0.21) calc(c * 0.45) calc(h + var(--t02-d) * 1.4));
+      --p-trait: oklch(from var(--brand-accent) calc(l * 0.16) calc(c * 0.40) calc(h + var(--t02-d)));
+    }
+    #t02-carte .pal-jour {
+      --p-ciel-1: oklch(from var(--brand-accent) calc(l * 0.82) c calc(h + var(--t02-d) * 0.3));
+      --p-ciel-2: var(--brand-accent);
+      --p-ciel-3: oklch(from var(--brand-accent) calc(l * 0.5 + 0.5) calc(c * 0.45) h);
+      --p-lueur: oklch(from var(--brand-accent) 0.98 calc(c * 0.12) h);
+      --p-mer-1: oklch(from var(--brand-accent) calc(l * 0.62) calc(c * 0.85) calc(h + var(--t02-d) * 0.7));
+      --p-mer-2: oklch(from var(--brand-accent) calc(l * 0.38) calc(c * 0.70) calc(h + var(--t02-d) * 1.1));
+      --p-sol-1: oklch(from var(--brand-accent) calc(l * 0.42) calc(c * 0.60) calc(h + var(--t02-d) * 1.0));
+      --p-sol-2: oklch(from var(--brand-accent) calc(l * 0.28) calc(c * 0.50) calc(h + var(--t02-d) * 1.2));
+      --p-trait: oklch(from var(--brand-accent) calc(l * 0.18) calc(c * 0.40) calc(h + var(--t02-d)));
+    }
+    #t02-carte .pal-nuit {
+      --p-ciel-1: var(--brand-bg);
+      --p-ciel-2: color-mix(in oklab, var(--brand-bg) 90%, var(--brand-accent));
+      --p-ciel-3: oklch(from var(--brand-accent) calc(l * 0.52) calc(c * 0.80) calc(h + var(--t02-d) * 0.7));
+      --p-lueur: var(--brand-accent);
+      --p-mer-1: color-mix(in oklab, var(--brand-bg) 78%, var(--brand-accent));
+      --p-mer-2: var(--brand-bg);
+      --p-sol-1: color-mix(in oklab, var(--brand-bg) 93%, var(--brand-accent));
+      --p-sol-2: oklch(from var(--brand-bg) calc(l * 0.75) c h);
+      --p-trait: color-mix(in oklab, var(--brand-bg) 78%, var(--brand-accent));
+    }
+    #t02-carte .pal-aube {
+      --p-ciel-1: oklch(from var(--brand-accent) calc(l * 0.22 + 0.72) calc(c * 0.40) calc(h + var(--t02-d) * 0.4));
+      --p-ciel-2: oklch(from var(--brand-accent) calc(l * 0.10 + 0.88) calc(c * 0.22) h);
+      --p-ciel-3: oklch(from var(--brand-accent) 0.985 calc(c * 0.08) h);
+      --p-lueur: #ffffff;
+      --p-mer-1: oklch(from var(--brand-accent) calc(l * 0.82) calc(c * 0.70) calc(h + var(--t02-d) * 0.3));
+      --p-mer-2: oklch(from var(--brand-accent) calc(l * 0.55) calc(c * 0.80) calc(h + var(--t02-d) * 0.8));
+      --p-sol-1: oklch(from var(--brand-accent) calc(l * 0.62) calc(c * 0.85) calc(h + var(--t02-d) * 0.7));
+      --p-sol-2: oklch(from var(--brand-accent) calc(l * 0.45) calc(c * 0.75) calc(h + var(--t02-d) * 1.0));
+      --p-trait: oklch(from var(--brand-accent) calc(l * 0.30) calc(c * 0.50) calc(h + var(--t02-d)));
+    }
+
+    /* Les repères de maquette de la grande carte. */
+    #t02-carte .t02-carte-guides { position: absolute; inset: 0; }
+    #t02-carte .t02-carte-gv { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, 0.8); transform-origin: 50% 0; }
+    #t02-carte .t02-carte-gh { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed rgba(255, 255, 255, 0.85); transform-origin: 0 50%; }
+    #t02-carte .t02-carte-bande { position: absolute; left: 12%; right: 12%; background: color-mix(in srgb, var(--brand-bg) 50%, transparent); transform-origin: 50% 50%; }
+    #t02-carte .t02-carte-pt { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-bg) 70%, transparent); }
+    #t02-carte .t02-carte-zone-titre { position: absolute; left: 12%; right: 12%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #t02-carte .t02-carte-titre {
+      font-family: var(--brand-font-display); font-weight: 400; font-size: 156px; line-height: 1;
+      letter-spacing: -0.035em; color: var(--brand-text); white-space: nowrap;
+    }
+    #t02-carte .t02-carte-signe {
+      position: absolute; left: 0; right: 0; bottom: 64px; text-align: center;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 40px; letter-spacing: -0.02em; color: var(--brand-text);
+    }
+    /* La cote et le point du début (au-dessus de la caméra, en pixels d'écran). */
+    #t02-carte .t02-carte-cote { position: absolute; z-index: 20; font-family: var(--brand-font-body); font-size: 22px; line-height: 1.3; color: var(--brand-text); opacity: 0.85; white-space: nowrap; }
+    #t02-carte .t02-carte-repere { position: absolute; z-index: 20; background: color-mix(in srgb, var(--brand-accent) 45%, transparent); }
+    #t02-carte .t02-carte-point { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--brand-accent); z-index: 5; }
+
+    /* Les morceaux de produit posés sur les cartes (interfaces reconstruites, en Inter). */
+    #t02-carte .t02-carte-ui { position: absolute; font-family: "Inter", var(--brand-font-body); }
+    #t02-carte .t02-carte-panneau { background: rgba(255, 255, 255, 0.94); border-radius: 26px; padding: 22px; width: 640px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25); }
+    #t02-carte .t02-carte-ligne { display: flex; align-items: center; gap: 18px; height: 62px; padding: 0 14px; border-radius: 14px; color: #17171a; font-size: 25px; font-weight: 600; }
+    #t02-carte .t02-carte-ligne + .t02-carte-ligne { border-top: 1px solid rgba(0, 0, 0, 0.07); }
+    #t02-carte .t02-carte-coche { width: 34px; height: 34px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.18); display: grid; place-items: center; color: var(--brand-contrast); }
+    #t02-carte .t02-carte-coche svg { width: 20px; height: 20px; opacity: 0; }
+    #t02-carte .t02-carte-coche.fait { background: var(--brand-accent); box-shadow: none; }
+    #t02-carte .t02-carte-coche.fait svg { opacity: 1; }
+    #t02-carte .t02-carte-bouton { display: flex; align-items: center; gap: 16px; padding: 30px 54px; border-radius: 999px; background: #fff; color: #17171a; font-size: 40px; font-weight: 600; box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25); white-space: nowrap; }
+    #t02-carte .t02-carte-bouton svg { width: 40px; height: 40px; }
+    #t02-carte .t02-carte-bouton > svg, #t02-carte .t02-carte-bouton > span { position: relative; }
+    #t02-carte .t02-carte-bouton .remplir { position: absolute; inset: 0; border-radius: 999px; background: var(--brand-accent); transform-origin: 0 50%; }
+    #t02-carte .t02-carte-tuile { width: 250px; height: 250px; border-radius: 60px; background: rgba(255, 255, 255, 0.9); display: grid; place-items: center; color: var(--brand-bg); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.6); }
+    #t02-carte .t02-carte-tuile svg { width: 120px; height: 120px; }
+    #t02-carte .t02-carte-lecteur { width: 760px; height: 428px; border-radius: 30px; background: rgba(12, 12, 14, 0.72); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3); overflow: hidden; }
+    #t02-carte .t02-carte-lecteur .jouer { position: absolute; left: 50%; top: 46%; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: grid; place-items: center; color: #17171a; }
+    #t02-carte .t02-carte-lecteur .jouer svg { width: 56px; height: 56px; margin-left: 8px; }
+    #t02-carte .t02-carte-lecteur .barre { position: absolute; left: 36px; right: 36px; bottom: 36px; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.25); }
+    #t02-carte .t02-carte-lecteur .barre i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 4px; background: var(--brand-accent); transform-origin: 0 50%; }
+  </style>
+
+  <div data-composition-id="t02-carte" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
+    <div id="t02-carte" class="k-scene">
+      <div class="k-scene3d"><div class="k-camera" id="t02-carte-cam"></div></div>
+      <div class="t02-carte-repere" id="t02-carte-rh" style="left:0; top:858px; width:1920px; height:2px;"></div>
+      <div class="t02-carte-repere" id="t02-carte-rv" style="left:1308px; top:0; width:2px; height:1080px;"></div>
+      <div class="t02-carte-cote" id="t02-carte-cote" style="left:1336px; top:880px;">Rayon<br>64 px</div>
+      <div id="t02-carte-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 5.0, ID = "t02-carte", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var cam = $("cam");
+
+      // ---------- Les paysages (SVG, 1480 × 830), couleurs par variables de palette ----------
+      function paysage(nom, relief) {
+        var g = ID + "-" + nom, hz = relief === "mer" ? 500 : 470;
+        var s = '<svg viewBox="0 0 1480 830" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs>' +
+          '<linearGradient id="' + g + '-ciel" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" style="stop-color:var(--p-ciel-1)"/><stop offset="0.55" style="stop-color:var(--p-ciel-2)"/>' +
+          '<stop offset="0.9" style="stop-color:var(--p-ciel-3)"/><stop offset="1" style="stop-color:var(--p-lueur)"/></linearGradient>' +
+          '<linearGradient id="' + g + '-mer" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0" style="stop-color:var(--p-mer-1)"/><stop offset="1" style="stop-color:var(--p-mer-2)"/></linearGradient>' +
+          '<radialGradient id="' + g + '-lueur"><stop offset="0" style="stop-color:var(--p-lueur);stop-opacity:0.95"/>' +
+          '<stop offset="1" style="stop-color:var(--p-lueur);stop-opacity:0"/></radialGradient></defs>' +
+          '<g class="p-ciel"><rect width="1480" height="' + (hz + 4) + '" fill="url(#' + g + '-ciel)"/></g>' +
+          '<g class="p-lueur"><ellipse cx="740" cy="' + hz + '" rx="760" ry="120" fill="url(#' + g + '-lueur)"/></g>';
+        if (relief === "mer") {
+          s += '<g class="p-loin" style="fill:var(--p-sol-1)">' +
+            '<path d="M60 ' + hz + ' C150 ' + (hz - 30) + ' 250 ' + (hz - 46) + ' 340 ' + (hz - 40) + ' C410 ' + (hz - 34) + ' 470 ' + (hz - 16) + ' 540 ' + hz + ' Z"/>' +
+            '<path d="M610 ' + hz + ' C650 ' + (hz - 12) + ' 700 ' + (hz - 16) + ' 760 ' + (hz - 10) + ' C790 ' + (hz - 6) + ' 810 ' + (hz - 2) + ' 830 ' + hz + ' Z"/>' +
+            '<path d="M930 ' + hz + ' C1010 ' + (hz - 26) + ' 1120 ' + (hz - 38) + ' 1230 ' + (hz - 33) + ' C1320 ' + (hz - 28) + ' 1380 ' + (hz - 14) + ' 1440 ' + hz + ' Z"/></g>' +
+            '<g class="p-mer"><rect y="' + hz + '" width="1480" height="' + (830 - hz) + '" fill="url(#' + g + '-mer)"/></g>' +
+            '<g class="p-reflets" style="stroke:var(--p-lueur)" stroke-linecap="round" fill="none">';
+          [[hz + 14, 220, 1300, 0.7, 3], [hz + 30, 120, 760, 0.5, 2], [hz + 30, 900, 1420, 0.45, 2], [hz + 52, 380, 1180, 0.4, 2],
+           [hz + 80, 60, 640, 0.32, 2], [hz + 80, 860, 1350, 0.3, 2], [hz + 118, 300, 1020, 0.25, 2], [hz + 166, 120, 700, 0.2, 2]
+          ].forEach(function (r) { s += '<line class="p-reflet" x1="' + r[1] + '" y1="' + r[0] + '" x2="' + r[2] + '" y2="' + r[0] + '" stroke-opacity="' + r[3] + '" stroke-width="' + r[4] + '"/>'; });
+          s += '</g><g class="p-pres" style="fill:var(--p-sol-2); stroke:var(--p-trait)" stroke-width="2">' +
+            '<path d="M-10 ' + (hz + 150) + ' C120 ' + (hz + 112) + ' 300 ' + (hz + 104) + ' 430 ' + (hz + 128) + ' C500 ' + (hz + 140) + ' 540 ' + (hz + 150) + ' 580 ' + (hz + 162) + ' L-10 ' + (hz + 162) + ' Z"/>' +
+            '<path d="M1010 ' + (hz + 196) + ' C1130 ' + (hz + 160) + ' 1300 ' + (hz + 150) + ' 1490 ' + (hz + 166) + ' L1490 ' + (hz + 210) + ' L1010 ' + (hz + 210) + ' Z"/></g>' +
+            '<g class="p-rivage" style="fill:var(--p-sol-2); stroke:var(--p-trait)" stroke-width="2">' +
+            '<path d="M-10 840 L-10 770 C260 742 620 750 900 790 C1080 815 1260 826 1490 822 L1490 840 Z"/></g>';
+        } else {
+          s += '<g class="p-loin" style="fill:var(--p-sol-1); stroke:var(--p-trait)" stroke-width="1.5">' +
+            '<path d="M-10 ' + hz + ' L-10 ' + (hz - 40) + ' L180 ' + (hz - 40) + ' L205 ' + (hz - 22) + ' L420 ' + (hz - 22) + ' L440 ' + hz + ' Z"/>' +
+            '<path d="M980 ' + hz + ' L1010 ' + (hz - 58) + ' L1250 ' + (hz - 58) + ' L1270 ' + (hz - 30) + ' L1490 ' + (hz - 30) + ' L1490 ' + hz + ' Z"/></g>' +
+            '<g class="p-mer"><rect y="' + hz + '" width="1480" height="' + (830 - hz) + '" style="fill:var(--p-sol-1)"/></g>' +
+            '<g class="p-reflets" style="stroke:var(--p-trait)" fill="none" stroke-width="2">';
+          [[hz + 40, 0, 1480], [hz + 96, 0, 1480], [hz + 170, 0, 1480]].forEach(function (r) {
+            s += '<line class="p-reflet" x1="' + r[1] + '" y1="' + r[0] + '" x2="' + r[2] + '" y2="' + r[0] + '" stroke-opacity="0.35"/>';
+          });
+          s += '</g><g class="p-pres" style="fill:var(--p-sol-2); stroke:var(--p-trait)" stroke-width="2">' +
+            '<path d="M-10 ' + (hz + 70) + ' L380 ' + (hz + 70) + ' L420 ' + (hz + 120) + ' L700 ' + (hz + 120) + ' L740 ' + (hz + 190) + ' L-10 ' + (hz + 190) + ' Z"/>' +
+            '<path d="M1490 ' + (hz + 40) + ' L1120 ' + (hz + 40) + ' L1080 ' + (hz + 110) + ' L860 ' + (hz + 110) + ' L820 ' + (hz + 210) + ' L1490 ' + (hz + 210) + ' Z"/></g>' +
+            '<g class="p-rivage" style="fill:var(--p-sol-2); stroke:var(--p-trait)" stroke-width="2">' +
+            '<path d="M-10 840 L-10 720 L520 720 L560 790 L1490 790 L1490 840 Z"/></g>';
+        }
+        return s + "</svg>";
+      }
+
+      // ---------- Les cartes : la grande, puis la mosaïque autour ----------
+      // Positions dans l'espace de la caméra (centre de chaque carte). La grande est au centre.
+      var CARTES = [
+        { nom: "hero", x: 960, y: 540, pal: "crepuscule", relief: "mer" },
+        { nom: "c1", x: 180, y: -370, pal: "jour", relief: "plateaux", ui: "bouton", texte: "Commencer" },
+        { nom: "c2", x: 1740, y: -370, pal: "nuit", relief: "mer", ui: "tuile", icone: "graduation-cap" },
+        { nom: "c3", x: -600, y: 540, pal: "aube", relief: "mer", ui: "liste",
+          lignes: ["Module 1 · Les bases", "Module 2 · La méthode", "Module 3 · Les outils", "Module 4 · Le lancement"] },
+        { nom: "c4", x: 2520, y: 540, pal: "crepuscule", relief: "plateaux", ui: "lecteur" },
+        { nom: "c5", x: 180, y: 1450, pal: "nuit", relief: "plateaux", ui: "tuile", icone: "play" },
+        { nom: "c6", x: 1740, y: 1450, pal: "jour", relief: "mer" }
+      ];
+      var el = {};
+      CARTES.forEach(function (c) {
+        var d = K.el(cam, "div", "t02-carte-c pal-" + c.pal);
+        d.id = ID + "-" + c.nom;
+        d.style.left = c.x + "px"; d.style.top = c.y + "px";
+        d.innerHTML = paysage(c.nom, c.relief);
+        el[c.nom] = d;
+        if (c.ui === "liste") {
+          var p = K.el(d, "div", "t02-carte-ui t02-carte-panneau", null, "left:720px; top:170px;");
+          c.coches = c.lignes.map(function (t) {
+            var l = K.el(p, "div", "t02-carte-ligne");
+            var ch = K.el(l, "span", "t02-carte-coche", K.ic("check"));
+            K.el(l, "span", null, t);
+            return ch;
+          });
+        } else if (c.ui === "bouton") {
+          var b = K.el(d, "div", "t02-carte-ui t02-carte-bouton", '<i class="remplir"></i>' + K.ic("play") + "<span>" + c.texte + "</span>", "left:50%; top:46%; transform:translate(-50%,-50%);");
+          c.remplir = b.querySelector(".remplir");
+          c.bouton = b;
+        } else if (c.ui === "tuile") {
+          c.tuile = K.el(d, "div", "t02-carte-ui t02-carte-tuile", K.ic(c.icone), "left:615px; top:250px;");
+        } else if (c.ui === "lecteur") {
+          var lec = K.el(d, "div", "t02-carte-ui t02-carte-lecteur", null, "left:360px; top:150px;");
+          K.el(lec, "div", "jouer", K.ic("play"));
+          c.barre = K.el(K.el(lec, "div", "barre"), "i");
+        }
+      });
+
+      // La grande carte : contour, repères, nom de l'offre.
+      var hero = el.hero;
+      var contour = K.el(hero, "div", "t02-carte-contour");
+      var guides = K.el(hero, "div", "t02-carte-guides");
+      var bande = K.el(guides, "div", "t02-carte-bande", null, "top:20%; height:31%;");
+      var gv = [K.el(guides, "i", "t02-carte-gv", null, "left:12%"), K.el(guides, "i", "t02-carte-gv", null, "left:88%")];
+      var gh = [K.el(guides, "i", "t02-carte-gh", null, "top:20%"), K.el(guides, "i", "t02-carte-gh", null, "top:51%")];
+      var pts = [[12, 20], [88, 20], [12, 51], [88, 51]].map(function (p) {
+        return K.el(guides, "u", "t02-carte-pt", null, "left:" + p[0] + "%; top:" + p[1] + "%");
+      });
+      var zone = K.el(hero, "div", "t02-carte-zone-titre", null, "top:20%; height:31%;");
+      var titre = K.el(zone, "div", "t02-carte-titre", '<span class="k-mot">Ton</span> <span class="k-mot">offre</span>');
+      titre.id = ID + "-titre";
+      var signe = K.el(hero, "div", "t02-carte-signe", "Ta marque");
+      signe.id = ID + "-signe";
+      var point = K.el(cam, "div", "t02-carte-point", null, "left:1560px; top:880px;");
+
+      // ---------- La caméra ----------
+      // Départ : tout près du coin bas-droit de la grande carte (1700, 955 dans l'espace caméra),
+      // posé en (1310, 860) à l'écran, à l'échelle 2,6.
+      var S0 = 2.6, CX = 960, CY = 540;
+      gsap.set(cam, { scale: S0, x: (1310 - CX) - S0 * (1700 - CX), y: (860 - CY) - S0 * (955 - CY) });
+      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.62, ease: "expo.inOut" }, 0.42);
+      tl.to(cam, { scale: 1.035, duration: 0.95, ease: "none" }, 2.05);
+      tl.to(cam, { scale: 0.44, x: 0, y: 0, duration: 0.85, ease: "expo.inOut" }, 3.0);
+      tl.to(cam, { x: -70, y: -10, duration: D - 3.85, ease: "none" }, 3.85);
+
+      // La cote, les repères et le point du début.
+      tl.fromTo([$("rh"), $("rv")], { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 0.0);
+      tl.fromTo($("cote"), { opacity: 0, y: 8 }, { opacity: 0.85, y: 0, duration: 0.3, ease: "expo.out" }, 0.08);
+      tl.to([$("rh"), $("rv"), $("cote")], { opacity: 0, duration: 0.2, ease: "power2.in" }, 0.45);
+      tl.fromTo(point, { scale: 0 }, { scale: 1, duration: 0.3, ease: "back.out(2.5)" }, 0.12);
+      tl.to(point, { x: -600, y: -255, duration: 0.7, ease: "power3.inOut" }, 0.45);
+      tl.to(point, { scale: 0, duration: 0.3, ease: "power2.in" }, 1.08);
+
+      // Les quatre points de la carte vide, à la fin du recul.
+      var coins = [[230, 135], [1690, 135], [230, 945], [1690, 945]].map(function (p) {
+        return K.el(cam, "u", "t02-carte-pt", null, "left:" + p[0] + "px; top:" + p[1] + "px; z-index:4;");
+      });
+      K.cacher(coins);
+      tl.fromTo(coins, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.04 }, 0.82);
+      tl.to(coins, { opacity: 0, duration: 0.2 }, 1.5);
+
+      // ---------- Le paysage se construit par couches ----------
+      var q = function (sel) { return hero.querySelectorAll(sel); };
+      K.cacher(q(".p-ciel, .p-lueur, .p-loin, .p-mer, .p-reflets, .p-pres, .p-rivage"));
+      tl.to(q(".p-ciel"), { opacity: 1, duration: 0.25, ease: "power2.out" }, 1.0);
+      tl.fromTo(q(".p-lueur"), { opacity: 0, scale: 0.2, transformOrigin: "50% 50%" }, { opacity: 1, scale: 1, duration: 0.5, ease: "expo.out" }, 1.06);
+      tl.fromTo(q(".p-mer"), { opacity: 1, scaleY: 0, transformOrigin: "50% 0%" }, { opacity: 1, scaleY: 1, duration: 0.42, ease: "expo.out" }, 1.18);
+      tl.set(q(".p-reflets"), { opacity: 1 }, 1.3);
+      tl.fromTo(q(".p-reflet"), { scaleX: 0, transformOrigin: "50% 50%" }, { scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.035 }, 1.3);
+      tl.fromTo(q(".p-loin"), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 1.4);
+      tl.fromTo(q(".p-pres"), { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 1.55);
+      tl.fromTo(q(".p-rivage"), { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 0.55, ease: "expo.out" }, 1.68);
+      tl.to(contour, { opacity: 0, duration: 0.3 }, 1.2);
+
+      // ---------- Les repères de maquette et le nom ----------
+      gsap.set(gv, { scaleY: 0 }); gsap.set(gh, { scaleX: 0 }); K.cacher(pts); K.cacher(bande);
+      tl.to(gv, { scaleY: 1, duration: 0.42, ease: "expo.out", stagger: 0.05 }, 1.92);
+      tl.to(gh, { scaleX: 1, duration: 0.42, ease: "expo.out", stagger: 0.05 }, 1.98);
+      tl.fromTo(pts, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.5)", stagger: 0.04 }, 2.12);
+      tl.fromTo(bande, { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.35, ease: "expo.out" }, 2.12);
+      K.entreeMots(tl, titre.querySelectorAll(".k-mot"), 2.25, { y: 34, flou: 12, decalage: 0.09 });
+      K.cacher(signe);
+      tl.fromTo(signe, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 2.5);
+      // La même carte change de palette sur les temps (coupes franches) : jour, nuit, crépuscule.
+      [[2.64, "jour"], [2.80, "nuit"], [2.96, "crepuscule"]].forEach(function (p) {
+        tl.set(hero, { attr: { class: "t02-carte-c pal-" + p[1] } }, p[0]);
+      });
+      tl.to(guides, { opacity: 0, duration: 0.3, ease: "power2.in" }, 3.0);
+
+      // ---------- La mosaïque : les autres cartes arrivent de la droite ----------
+      var autres = CARTES.slice(1).map(function (c) { return el[c.nom]; });
+      gsap.set(autres, { x: 1400, opacity: 0 });
+      tl.to(autres, { x: 0, opacity: 1, duration: 0.85, ease: "expo.out", stagger: 0.06 }, 3.05);
+
+      // La vie de la mosaïque : la liste se coche, le bouton est cliqué, le lecteur avance.
+      var c3 = CARTES[3], c1 = CARTES[1], c4 = CARTES[4], c2 = CARTES[2], c5 = CARTES[5];
+      c3.coches.forEach(function (ch, i) { tl.set(ch, { attr: { class: "t02-carte-coche fait" } }, 3.7 + i * 0.18); });
+      gsap.set(c1.remplir, { scaleX: 0 });
+      var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+      K.cacher(curseur);
+      tl.to(curseur, { opacity: 1, duration: 0.2 }, 3.85);
+      K.trajet(tl, curseur, [[0, 1100, 520], [3.85, 604, 124, 0.55, "power3.out"]]);
+      K.clic(tl, curseur, 4.45);
+      tl.to(c1.remplir, { scaleX: 1, duration: 0.35, ease: "power3.inOut" }, 4.5);
+      tl.fromTo(c4.barre, { scaleX: 0.05 }, { scaleX: 0.62, duration: D - 3.6, ease: "none" }, 3.6);
+      tl.fromTo([c2.tuile, c5.tuile], { scale: 0.8 }, { scale: 1, duration: 0.6, ease: "back.out(2.2)", stagger: 0.25 }, 3.75);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

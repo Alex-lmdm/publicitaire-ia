@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°8 « FENÊTRES BARRES » · SCÈNE : LE LOGO EN CUBE (ouverture ou fin) · 2 s ou 3,8 s
+    Ce que la scène montre : le logo de la marque, posé sur la face avant d'un cube, arrive en
+    roulant dans l'espace (trois rotations qui se calment), se pose et glisse vers la gauche ; le nom
+    de l'offre sort de derrière lui. Deux versions :
+     - FOND = "clair" (ouverture, 2 s) : fond blanc chaud, cube à l'encre de la marque ;
+     - FOND = "sombre" (fin, 3,8 s) : fond sombre de la marque, cube clair, nom en blanc, puis la
+       phrase d'appel s'écrit dessous et se tient (c'est l'écran final).
+    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte
+    (le nom passe sous le cube).
+
+    À REMPLACER :
+     1. L'id « t08-logo » (racine, constante ID, préfixe CSS) par l'id de la scène (t08-ouverture,
+        t08-fin) ; data-duration = 2 en clair, 3.8 en sombre (et D dans le script).
+     2. FOND : "clair" ou "sombre". LOGO : brand/logo.svg ou brand/logo.png ("" : l'initiale du nom).
+     3. NOM : le nom de l'offre (ou « Ton offre 2.0 » pour une nouvelle version).
+     4. APPEL (fin seulement) : une phrase calme qui dit où agir, vraie pour le support (page :
+        « Le lien est juste en dessous. » ; pub : « Découvre-le maintenant. »).
+    Couleurs : l'encre et le fond sombre viennent de la marque ; le cube n'a pas d'accent, sauf le
+    logo lui-même dans ses vraies couleurs.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t08-logo { --t08-papier: #f7f7f4; --t08-encre: #1d1c19; --t08-fond: var(--t08-papier); --t08-texte: var(--t08-encre);
+    --t08-face: var(--t08-encre); --t08-face-2: color-mix(in srgb, var(--t08-encre) 78%, #ffffff); --t08-face-3: color-mix(in srgb, var(--t08-encre) 62%, #ffffff);
+    background: var(--t08-fond); }
+  #t08-logo.t08-sombre { --t08-fond: var(--t08-encre); --t08-texte: #f1f0ec; --t08-face: #ecebe8; --t08-face-2: #cfcecb; --t08-face-3: #b4b3af; }
+  #t08-logo .t08-fond { position: absolute; inset: -2px; background: var(--t08-fond); }
+  #t08-logo .t08-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 36px; }
+  #t08-logo .t08-scene3d { position: relative; width: 150px; height: 150px; perspective: 900px; flex: none; }
+  #t08-logo .t08-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
+  #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; display: grid; place-items: center; }
+  #t08-logo .t08-face img, #t08-logo .t08-face .t08-initiale { width: 58%; height: 58%; object-fit: contain; }
+  #t08-logo .t08-initiale { display: grid; place-items: center; font: 700 76px/1 var(--brand-font-display); color: var(--t08-fond); }
+  #t08-logo .t08-masque { overflow: hidden; padding: 10px 6px 18px 0; }
+  #t08-logo .t08-nom { font-family: var(--brand-font-display); font-weight: 400; font-size: 120px; line-height: 1; letter-spacing: -0.035em;
+    color: var(--t08-texte); white-space: pre; }
+  #t08-logo .t08-appel { position: absolute; left: 0; right: 0; text-align: center; font: 400 38px/1.2 var(--brand-font-body);
+    letter-spacing: -0.01em; color: color-mix(in srgb, var(--t08-texte) 66%, var(--t08-fond)); white-space: pre; }
+  #t08-logo .t08-appel span { opacity: 0; }
+  #t08-logo.t08-vertical .t08-lockup { flex-direction: column; gap: 44px; }
+  #t08-logo.t08-vertical .t08-nom { font-size: 104px; }
+</style>
+
+<div data-composition-id="t08-logo" data-width="1920" data-height="1080" data-duration="2" style="position:absolute; inset:0;">
+  <div id="t08-logo" class="k-scene">
+    <div class="t08-fond"></div>
+    <div class="t08-lockup" id="t08-logo-lockup">
+      <div class="t08-scene3d"><div class="t08-cube" id="t08-logo-cube"></div></div>
+      <div class="t08-masque"><div class="t08-nom" id="t08-logo-nom"></div></div>
+    </div>
+    <div class="t08-appel" id="t08-logo-appel"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t08-logo", D = 2;
+    // ---- À remplacer -------------------------------------------------------------------------
+    var FOND = "clair", LOGO = "brand/logo.svg", NOM = "Ton offre", APPEL = "Le lien est juste en dessous.";
+    // -------------------------------------------------------------------------------------------
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var q = function (s) { return racine.querySelector(s); };
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    if (vertical) racine.classList.add("t08-vertical");
+    if (FOND === "sombre") racine.classList.add("t08-sombre");
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
+
+    // Le cube : six faces, le logo sur la face avant (ses vraies couleurs).
+    var S = 150, cube = q("#t08-logo-cube");
+    var FACES = [["rotateY(0deg)", "--t08-face", true], ["rotateY(180deg)", "--t08-face-3"], ["rotateY(90deg)", "--t08-face-3"],
+      ["rotateY(-90deg)", "--t08-face-2"], ["rotateX(90deg)", "--t08-face-2"], ["rotateX(-90deg)", "--t08-face-3"]];
+    FACES.forEach(function (f) {
+      var face = K.el(cube, "div", "t08-face", null, "transform:" + f[0] + " translateZ(" + S / 2 + "px); background:var(" + f[1] + ");");
+      if (!f[2]) return;
+      var initiale = function () { face.innerHTML = '<span class="t08-initiale">' + NOM.charAt(0) + "</span>"; };
+      if (!LOGO) return initiale();
+      var img = K.el(face, "img"); img.alt = ""; img.onerror = initiale; img.src = LOGO;
+    });
+    var lockup = q("#t08-logo-lockup"), nom = q("#t08-logo-nom");
+    nom.textContent = NOM;
+    lockup.style.top = (H / 2 - (vertical ? 190 : 85) - (FOND === "sombre" ? 40 : 0)) + "px";
+
+    // Le cube roule et se calme au centre de l'écran, puis glisse à sa place ; le nom sort de derrière lui.
+    var largeurNom = NOM.length * 120 * 0.5, decale = vertical ? 0 : (36 + largeurNom) / 2, monte = vertical ? 120 : 0;
+    tl.fromTo(cube, { rotationX: -62, rotationY: 128, rotationZ: 28, scale: 0.55 },
+      { rotationX: 0, rotationY: 0, rotationZ: 0, scale: 1, duration: 1.0, ease: "expo.out" }, 0);
+    tl.fromTo(cube.parentNode, { x: decale, y: monte }, { x: 0, y: 0, duration: 0.7, ease: "expo.inOut" }, 0.42);
+    gsap.set(nom, { xPercent: vertical ? 0 : -104, yPercent: vertical ? -110 : 0 });
+    tl.to(nom, { xPercent: 0, yPercent: 0, duration: 0.7, ease: "expo.inOut" }, 0.5);
+    tl.fromTo(lockup, { scale: 1 }, { scale: 1.06, duration: D, ease: "sine.inOut" }, 0);
+    // Posé, le cube continue de flotter : un léger quart de tour qui se calme.
+    tl.to(cube, { rotationY: 16, rotationX: -7, duration: D - 1.1, ease: "sine.inOut" }, 1.1);
+
+    // Fin : la phrase d'appel s'écrit sous le nom, lettre à lettre, à sa place.
+    var appel = q("#t08-logo-appel");
+    if (FOND === "sombre" && APPEL) {
+      appel.style.top = (H / 2 + (vertical ? 220 : 110)) + "px";
+      var r = K.rng(APPEL.length * 13 + 5), t = 1.45;
+      APPEL.split("").forEach(function (c) {
+        var s = K.el(appel, "span", null, c);
+        tl.set(s, { opacity: 1 }, t);
+        if (r() < 0.55) t += 0.024 + r() * 0.02;
+      });
+    } else { appel.style.display = "none"; }
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

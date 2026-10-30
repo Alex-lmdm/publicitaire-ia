@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°1 « CARTES PIXELS » · SCÈNE 4 : LES LOGOS RELIÉS ET LA FIN · 6,8 s
+    Ce que la scène montre :
+     0 → 3,2 s : dans la case blanche du centre, le logo de la marque dans un bouton rond ; la caméra
+       recule et les logos des outils sortent de la case sur des tuiles blanches, deux ondes partent du
+       bouton ; puis tout se range : l'outil principal à gauche, la marque à droite, un fil, un point
+       qui voyage de l'un à l'autre, le maillon du milieu qui s'allume, et une étiquette de 3 mots.
+     3,2 → 6,8 s : un chevron en escalier part du bord droit, en couches (grille, couleur, gris,
+       blanc) et blanchit l'écran ; le logo se forme en pixels, le nom de l'offre se décode ; le
+       bouton d'appel s'écrit lettre à lettre et le curseur clique. La fin se tient 1 s.
+    Entrée : raccord d'objet avec t01-chiffre (la case blanche est déjà là) ; seule, mets
+    APRES_CHIFFRE = false (la case surgit de la grille).
+    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte.
+
+    À REMPLACER :
+     1. L'id « t01-logos-fin » (racine, constante ID, préfixe CSS) par l'id de la scène.
+     2. LOGOS : les vrais logos des outils liés à l'offre (6 à 8), posés par
+        `studio_motion.py logos <projet> claude chatgpt …` ; OUTIL : l'index de celui qu'on relie.
+     3. LOGO : brand/logo.svg ou brand/logo.png (sans logo : "" et l'initiale du nom s'affiche).
+     4. NOM : le nom de l'offre ; TITRE_LIEN : 2 à 4 mots, le dernier surligné ; BOUTON : l'appel
+        du support en 2 ou 3 mots (page : « Je découvre », pub : « J'en profite »).
+    Couleurs : maillon, fil, point, chevron, bouton et surlignage suivent var(--brand-accent).
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t01-logos-fin { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f; background: var(--t01-papier); }
+  #t01-logos-fin .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
+    background-image: radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
+      linear-gradient(var(--t01-trait) 0 2px, transparent 2px), linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
+    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
+  #t01-logos-fin .t01-case { position: absolute; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 24px 60px rgba(0,0,0,.06); }
+  #t01-logos-fin .t01-rond { position: absolute; border-radius: 50%; background: #fff; display: grid; place-items: center;
+    box-shadow: 0 0 0 20px rgba(0,0,0,.022), 0 0 0 21px rgba(0,0,0,.035), 0 22px 44px rgba(0,0,0,.10); }
+  #t01-logos-fin .t01-rond img, #t01-logos-fin .t01-rond svg { width: 48%; height: 48%; object-fit: contain; }
+  #t01-logos-fin .t01-initiale { font: 700 72px/1 var(--brand-font-display); color: var(--t01-encre); letter-spacing: -0.04em; }
+  #t01-logos-fin .t01-onde { position: absolute; border-radius: 50%; box-shadow: inset 0 0 0 4px var(--brand-accent); }
+  #t01-logos-fin.t01-accent-clair .t01-onde { box-shadow: inset 0 0 0 4px var(--brand-accent), 0 0 0 1.5px color-mix(in srgb, var(--t01-encre) 25%, transparent); }
+  #t01-logos-fin .t01-tuile { position: absolute; border-radius: 26%; background: #fff; display: grid; place-items: center;
+    box-shadow: 0 0 0 1px #ededed, 0 14px 30px rgba(0,0,0,.09); color: var(--t01-encre); }
+  #t01-logos-fin .t01-tuile svg { width: 56%; height: 56%; }
+  #t01-logos-fin .t01-fil { position: absolute; height: 3px; background: #dedede; }
+  #t01-logos-fin .t01-fil i { position: absolute; inset: 0; background: var(--brand-accent); transform-origin: 0 50%; }
+  #t01-logos-fin .t01-voyageur { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--brand-accent); }
+  #t01-logos-fin.t01-accent-clair .t01-voyageur { box-shadow: 0 0 0 2px var(--t01-encre); }
+  #t01-logos-fin .t01-maillon { position: absolute; width: 84px; height: 52px; margin: -26px 0 0 -42px; border-radius: 26px; background: #fff;
+    box-shadow: 0 0 0 1.5px #e0e0e0, 0 8px 18px rgba(0,0,0,.06); color: #9a9a9a; padding: 12px 28px; }
+  #t01-logos-fin .t01-maillon-on { position: absolute; inset: 0; border-radius: 26px; background: var(--brand-accent); color: var(--brand-contrast); padding: 12px 28px; }
+  #t01-logos-fin .t01-titre { position: absolute; left: 96px; top: 112px; z-index: 40; display: flex; align-items: baseline; gap: 18px;
+    padding: 20px 30px 24px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px rgba(0,0,0,.08);
+    font-family: var(--brand-font-display); font-size: 66px; line-height: 1; letter-spacing: -0.03em; white-space: pre; }
+  #t01-logos-fin .t01-leger { font-weight: 400; color: #8a8a8a; }
+  #t01-logos-fin .t01-fort { font-weight: 700; padding: 4px 12px 8px; margin: -4px 0 -8px; border-radius: 10px; background: var(--brand-accent); color: var(--brand-contrast); }
+  #t01-logos-fin .t01-chevron { position: absolute; inset: 0; z-index: 50; overflow: visible; }
+  #t01-logos-fin .t01-final { position: absolute; inset: 0; z-index: 60; }
+  #t01-logos-fin .t01-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 34px; }
+  #t01-logos-fin .t01-lockup-logo { position: relative; width: 132px; height: 132px; flex: none; display: grid; place-items: center; }
+  #t01-logos-fin .t01-lockup-logo img { width: 100%; height: 100%; object-fit: contain; }
+  #t01-logos-fin .t01-lockup-logo i { position: absolute; display: block; }
+  #t01-logos-fin .t01-nom { font: 700 124px/1 var(--brand-font-display); letter-spacing: -0.04em; color: var(--t01-encre); white-space: pre; min-width: 10px; }
+  #t01-logos-fin .t01-rangee { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
+  #t01-logos-fin .t01-bouton { position: relative; height: 104px; min-width: 120px; padding: 0 56px; border-radius: 52px;
+    background: var(--brand-accent); color: var(--brand-contrast); display: flex; align-items: center; justify-content: center;
+    font: 600 42px/1 "Inter", var(--brand-font-body); letter-spacing: -0.02em; white-space: pre; }
+  #t01-logos-fin.t01-vertical .t01-titre { left: 100px; top: 330px; font-size: 72px; }
+  #t01-logos-fin.t01-vertical .t01-nom { font-size: 112px; }
+</style>
+
+<div data-composition-id="t01-logos-fin" data-width="1920" data-height="1080" data-duration="6.8" style="position:absolute; inset:0;">
+  <div id="t01-logos-fin" class="k-scene">
+    <div class="t01-papier"></div>
+    <div class="k-scene3d"><div class="k-camera" id="t01-logos-fin-cam"></div></div>
+    <div class="t01-titre" id="t01-logos-fin-titre"><span class="t01-leger" id="t01-logos-fin-t1"></span><span class="t01-fort" id="t01-logos-fin-t2"></span></div>
+    <svg class="t01-chevron" id="t01-logos-fin-chevron" data-layout-ignore xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="t01-final">
+      <div class="t01-lockup" id="t01-logos-fin-lockup">
+        <div class="t01-lockup-logo" id="t01-logos-fin-llogo"></div>
+        <div class="t01-nom" id="t01-logos-fin-nom"></div>
+      </div>
+      <div class="t01-rangee" id="t01-logos-fin-rbouton"><div class="t01-bouton" id="t01-logos-fin-bouton"><span id="t01-logos-fin-btxt"></span></div></div>
+      <div id="t01-logos-fin-curseur-hote" style="position:absolute; inset:0; z-index:70;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t01-logos-fin", D = 6.8;
+    // ---- À remplacer -------------------------------------------------------------------------
+    var LOGOS = ["logo-claude", "logo-chatgpt", "logo-notion", "logo-canva", "logo-youtube", "logo-instagram", "logo-stripe", "logo-google"];
+    var OUTIL = 0, LOGO = "brand/logo.svg", NOM = "Ton offre";
+    var TITRE_LIEN = ["Relié à", "tes outils."], BOUTON = "Je découvre", APRES_CHIFFRE = true;
+    // -------------------------------------------------------------------------------------------
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var q = function (s) { return racine.querySelector(s); };
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+    if (vertical) racine.classList.add("t01-vertical");
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.classList.toggle("t01-accent-clair", lum(rgb("var(--brand-accent)")) > 0.28);
+    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
+    var GLYPHES = "#%@X=+:*/<>";
+    var decoder = function (el, texte, debut, duree) {
+      K.texteSelon(tl, el, D, function (t) {
+        if (t < debut) return "";
+        if (t >= debut + duree) return texte;
+        var p = (t - debut) / duree, pas = Math.floor(t / 0.045), s = "", n = texte.length;
+        for (var i = 0; i < n; i++) {
+          if (p < (i / n) * 0.5) break;
+          s += (texte[i] === " " || p >= 0.4 + (i / n) * 0.6) ? texte[i] : GLYPHES[(i * 7 + pas * 13) % GLYPHES.length];
+        }
+        return s;
+      });
+    };
+    var poser = function (el, x, y, l, h) { el.style.left = x + "px"; el.style.top = y + "px"; if (l != null) { el.style.width = l + "px"; el.style.height = h + "px"; } };
+    var logoMarque = function (parent) {
+      var initiale = function () { parent.innerHTML = '<span class="t01-initiale">' + NOM.charAt(0) + "</span>"; };
+      if (!LOGO) return initiale();
+      var img = K.el(parent, "img"); img.alt = ""; img.onerror = initiale; img.src = LOGO;
+    };
+
+    // ================= Les logos reliés ======================================================
+    var cam = q("#t01-logos-fin-cam"), cx = L / 2, cy = H / 2 + (vertical ? 0 : 20), HUB = 300, R = 210;
+    var caseHub = K.el(cam, "div", "t01-case"); poser(caseHub, cx - HUB / 2, cy - HUB / 2, HUB, HUB);
+    var rond = K.el(cam, "div", "t01-rond"); poser(rond, cx - R / 2, cy - R / 2, R, R);
+    logoMarque(rond);
+    var PLACES = vertical
+      ? [[-300, -430, 130], [60, -540, 104], [330, -360, 120], [-370, -40, 108], [370, 60, 140], [-280, 380, 116], [70, 500, 100], [320, 400, 126]]
+      : [[-470, -250, 124], [-250, -330, 100], [250, -320, 112], [480, -170, 104], [-540, 70, 108], [520, 130, 130], [-320, 300, 104], [330, 300, 116]];
+    var tuiles = [];
+    LOGOS.forEach(function (nom, i) {
+      var svg = K.ic(nom), pl = PLACES[i % PLACES.length]; if (!svg || !pl) return;
+      var t = K.el(cam, "div", "t01-tuile", svg); poser(t, cx + pl[0] - pl[2] / 2, cy + pl[1] - pl[2] / 2, pl[2], pl[2]);
+      t.dataset.i = String(i); t.dataset.dx = String(-pl[0]); t.dataset.dy = String(-pl[1]); tuiles.push(t);
+    });
+    if (!APRES_CHIFFRE) tl.fromTo(caseHub, { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.55, ease: "expo.out" }, 0);
+    // Des pixels sombres couvrent la case puis tombent un à un : le logo est dessous.
+    var rpx = K.rng(41), cotePx = HUB / 5;
+    for (var py = 0; py < 5; py++) for (var pxx = 0; pxx < 5; pxx++) {
+      var bloc = K.el(cam, "div", null, null, "position:absolute; left:" + (cx - HUB / 2 + pxx * cotePx) + "px; top:" + (cy - HUB / 2 + py * cotePx) +
+        "px; width:" + (cotePx + 0.5) + "px; height:" + (cotePx + 0.5) + "px; z-index:5; background:" +
+        (rpx() < 0.2 ? "var(--brand-accent)" : "color-mix(in srgb, var(--t01-encre) " + (88 + Math.floor(rpx() * 12)) + "%, #ffffff)") + ";");
+      K.cacher(bloc);
+      tl.set(bloc, { opacity: 1 }, 0.02 + rpx() * 0.12).set(bloc, { opacity: 0 }, 0.22 + rpx() * 0.3);
+    }
+    K.cacher(rond);
+    tl.fromTo(rond, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 0.12);
+    // La caméra part de près et recule pendant que les tuiles sortent de la case.
+    tl.fromTo(cam, { scale: 1.35 }, { scale: 1.04, duration: 0.75, ease: "expo.inOut" }, 0.2);
+    tl.to(cam, { scale: 0.98, duration: 0.35, ease: "expo.out" }, 0.97);
+    K.cacher(tuiles);
+    tuiles.forEach(function (t, i) {
+      var dx = +t.dataset.dx, dy = +t.dataset.dy, t0 = (i % 2 ? 0.95 : 0.45) + Math.floor(i / 2) * 0.05;
+      tl.fromTo(t, { opacity: 0, scale: 0.2, x: dx, y: dy }, { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.7, ease: "expo.out" }, t0);
+      tl.fromTo(t.querySelector("svg"), { scale: 0.4, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.55, ease: "back.out(2)" }, t0 + 0.08);
+      var ph = (i * 0.37) % 1, amp = 14 + (i % 3) * 6;
+      tl.to(t, { x: amp * Math.cos(ph * 6.28), y: amp * 0.6 * Math.sin(ph * 6.28), duration: 2.12 - (t0 + 0.7), ease: "sine.inOut" }, t0 + 0.7);
+    });
+    [1.2, 1.7].forEach(function (t0) {
+      var o = K.el(cam, "div", "t01-onde"); poser(o, cx - R / 2, cy - R / 2, R, R);
+      K.cacher(o);
+      tl.set(o, { opacity: 1, scale: 1 }, t0).to(o, { opacity: 0, scale: 2.6, duration: 0.8, ease: "power2.out" }, t0);
+    });
+    tl.to(cam, { scale: 1.06, duration: 0.7, ease: "expo.inOut" }, 1.35);
+    // Tout se range : l'outil à gauche, la marque à droite, reliés par un fil.
+    var ecart = 300, principal = tuiles.filter(function (t) { return +t.dataset.i === OUTIL; })[0];
+    tuiles.forEach(function (t, i) {
+      if (t === principal) return;
+      tl.to(t, { x: +t.dataset.dx * 0.85, y: +t.dataset.dy * 0.85, scale: 0, opacity: 0, duration: 0.42, ease: "power3.in" }, 2.15 + i * 0.03);
+    });
+    tl.to(cam, { scale: 1, duration: 0.6, ease: "expo.inOut" }, 2.2);
+    tl.to(caseHub, { opacity: 0, scale: 0.8, duration: 0.35, ease: "power2.in" }, 2.2);
+    tl.to(rond, { x: ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+    var rondOutil = K.el(cam, "div", "t01-rond"); poser(rondOutil, cx - R / 2, cy - R / 2, R, R);
+    if (principal) { rondOutil.innerHTML = principal.innerHTML; tl.to(principal, { opacity: 0, scale: 0.5, duration: 0.3, ease: "power2.in" }, 2.25); }
+    K.cacher(rondOutil, { scale: 0.5 });
+    tl.to(rondOutil, { opacity: 1, scale: 1, x: -ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+    var long = 2 * ecart - R - 44, x0 = cx - ecart + R / 2 + 22;
+    var fil = K.el(cam, "div", "t01-fil", "<i></i>"); poser(fil, x0, cy - 1.5, long, 3);
+    var maillon = K.el(cam, "div", "t01-maillon", K.ic("link")); poser(maillon, cx, cy);
+    var on = K.el(maillon, "div", "t01-maillon-on", K.ic("link"));
+    var voyageur = K.el(cam, "div", "t01-voyageur"); poser(voyageur, x0, cy);
+    K.cacher([fil, maillon, voyageur, on]);
+    tl.fromTo(fil, { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 2.75);
+    tl.fromTo(maillon, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 2.8);
+    tl.set(voyageur, { opacity: 1 }, 2.85).set(voyageur, { opacity: 0 }, 3.4);
+    tl.to(voyageur, { x: long, duration: 0.55, ease: "power2.inOut" }, 2.85);
+    tl.fromTo(fil.querySelector("i"), { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power2.inOut" }, 2.85);
+    tl.to(on, { opacity: 1, duration: 0.12 }, 3.12);
+    tl.to(maillon, { scale: 1.22, duration: 0.06, ease: "power2.out" }, 3.12).to(maillon, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.18);
+    tl.to(rond, { scale: 1.07, duration: 0.06, ease: "power2.out" }, 3.4).to(rond, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.46);
+    K.cacher("#t01-logos-fin-titre");
+    tl.fromTo("#t01-logos-fin-titre", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 2.5);
+    decoder(q("#t01-logos-fin-t1"), TITRE_LIEN[0], 2.55, 0.4);
+    decoder(q("#t01-logos-fin-t2"), TITRE_LIEN[1], 2.75, 0.45);
+
+    // ================= Le chevron en escalier ================================================
+    var NS = "http://www.w3.org/2000/svg", svg = q("#t01-logos-fin-chevron");
+    svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
+    var defs = document.createElementNS(NS, "defs");
+    defs.innerHTML = '<pattern id="' + ID + '-cellules" width="54" height="54" patternUnits="userSpaceOnUse">' +
+      '<rect width="54" height="54" fill="#ffffff"/><rect x="0.75" y="0.75" width="52.5" height="52.5" fill="none" stroke="#dedede" stroke-width="1.5"/></pattern>';
+    svg.appendChild(defs);
+    var marche = 54, pasX = vertical ? 50 : 62, n = Math.ceil(H / 2 / marche) + 1, LOIN = L * 3, pts = [[LOIN, H / 2 - (n + 0.5) * marche]];
+    for (var j = -n; j <= n; j++) pts.push([Math.abs(j) * pasX, H / 2 + (j - 0.5) * marche], [Math.abs(j) * pasX, H / 2 + (j + 0.5) * marche]);
+    pts.push([LOIN, H / 2 + (n + 0.5) * marche]);
+    var escalier = pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ");
+    ["url(#" + ID + "-cellules)", "var(--brand-accent)", "#d4d4d4", "#ffffff"].forEach(function (fond, i) {
+      var g = document.createElementNS(NS, "g"), poly = document.createElementNS(NS, "polygon");
+      poly.setAttribute("points", escalier); poly.setAttribute("style", "fill:" + fond);
+      g.appendChild(poly); svg.appendChild(g);
+      gsap.set(g, { x: L + 10 });
+      tl.to(g, { x: -n * pasX - 40, duration: 1.05, ease: "power2.in" }, 3.35 + i * 0.16);
+    });
+
+    // ================= Le logo en pixels, le nom, le bouton ==================================
+    var lockup = q("#t01-logos-fin-lockup"), llogo = q("#t01-logos-fin-llogo");
+    lockup.style.top = (H / 2 - 130) + "px";
+    if (vertical) { lockup.style.flexDirection = "column"; lockup.style.gap = "40px"; lockup.style.top = (H / 2 - 330) + "px"; }
+    logoMarque(llogo);
+    var rp = K.rng(31);
+    for (var yy = 0; yy < 6; yy++) for (var xx = 0; xx < 6; xx++) {
+      var cel = K.el(llogo, "i", null, null, "left:" + (xx * 22) + "px; top:" + (yy * 22) + "px; width:23px; height:23px; background:" +
+        (rp() < 0.22 ? "var(--brand-accent)" : "#ffffff") + ";");
+      tl.set(cel, { opacity: 0 }, 4.75 + rp() * 0.45);
+    }
+    K.cacher(llogo);
+    tl.set(llogo, { opacity: 1 }, 4.7);
+    decoder(q("#t01-logos-fin-nom"), NOM, 4.8, 0.6);
+    var bouton = q("#t01-logos-fin-bouton");
+    q("#t01-logos-fin-rbouton").style.top = (H / 2 + (vertical ? 120 : 80)) + "px";
+    K.cacher(bouton, { scale: 0.6 });
+    tl.to(bouton, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 5.3);
+    K.taper(tl, q("#t01-logos-fin-btxt"), BOUTON, 5.4, 5.8, D);
+    var cur = K.curseur(q("#t01-logos-fin-curseur-hote"), ID + "-cur", true);
+    K.cacher(cur);
+    tl.set(cur, { opacity: 1 }, 5.6);
+    K.trajet(tl, cur, [[0, L * 0.82, H * 0.95], [5.6, L / 2 + 70, H / 2 + (vertical ? 120 : 80) + 70, 0.5, "power3.out"]]);
+    K.clic(tl, cur, 6.15);
+    tl.to(bouton, { scale: 0.95, duration: 0.07, yoyo: true, repeat: 1 }, 6.15);
+    tl.to(lockup, { y: -6, duration: 1.4, ease: "sine.inOut" }, 5.4);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

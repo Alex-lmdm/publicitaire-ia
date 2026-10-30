@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°3 · Interface 3D · scène « Le carrousel de cartes » (ce qu'on reçoit).
+  Ce qu'elle montre : un mot seul (« Inclus »), puis une carte en verre sombre par élément de ton
+  offre (module, bonus, fonction), une toutes les 0,5 s, en gros plan incliné, sur la trame de
+  points : sa tuile d'icône, son nom, son chiffre, la liste qui défile comme un compteur, le
+  bouton « Inclus ». La première se forme en points, les suivantes arrivent en glissant.
+  Durée : 3,6 s pour 5 cartes (0,5 s par carte + 1,1 s) : avec un autre nombre de cartes, mets
+  cette durée dans data-duration (ici et sur l'hôte dans index.html).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920.
+  À remplacer (objet R en tête du script) : le mot, et pour chaque carte : l'icône du kit
+  (K.ic : "play", "gift", "users"…) ou le logo d'un outil de l'offre posé par
+  `studio_motion.py logos` ("logo-notion"), son nom, son sous-titre, son vrai chiffre (nombre de
+  vidéos, durée) et trois lignes réelles (titres de leçons, ce qu'on y trouve). 3 à 6 cartes.
+  Couleurs : uniquement var(--brand-*).
+  Identifiant : t3k (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t3k {
+    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    --t3-verre: color-mix(in oklab, var(--brand-bg) 60%, #000);
+    --t3-police: var(--brand-font-body);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+  }
+  #t3k .t3k-fond { position: absolute; inset: -2px;
+    background: radial-gradient(ellipse 75% 60% at 25% 0%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 55%, #fff) 20%, transparent), transparent 70%),
+      radial-gradient(ellipse 50% 50% at 90% 100%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 55%, #fff) 9%, transparent), transparent 70%), var(--t3-nuit); }
+  #t3k .t3k-trame { position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,.2) 1.6px, transparent 2.2px); background-size: 15px 15px;
+    -webkit-mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); }
+  #t3k .t3k-mot { position: absolute; left: 0; right: 0; top: 50%; height: 90px; margin-top: -45px; text-align: center; white-space: nowrap;
+    font-size: 64px; font-weight: 600; line-height: 90px; letter-spacing: -0.015em; text-shadow: 0 0 28px rgba(255,255,255,.25); }
+  #t3k .t3k-carte {
+    position: absolute; left: 50%; top: 50%; width: 1240px; height: 700px; margin: -350px 0 0 -620px; border-radius: 46px; padding: 56px 64px;
+    background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.02) 45%, rgba(255,255,255,.04)), var(--t3-verre);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,.34), inset 0 0 0 1.5px rgba(255,255,255,.12), 0 70px 140px rgba(0,0,0,.6);
+  }
+  #t3k .t3k-arete { position: absolute; left: 60px; right: 60px; top: -2px; height: 4px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.95) 50%, transparent); filter: blur(1.2px); }
+  #t3k .t3k-tete { display: flex; align-items: center; gap: 36px; }
+  #t3k .t3k-tuile { width: 150px; height: 150px; border-radius: 36px; display: grid; place-items: center; flex: none;
+    background: var(--brand-accent); color: var(--brand-contrast); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+  #t3k .t3k-tuile svg { width: 74px; height: 74px; }
+  #t3k .t3k-tuile.t3k-logo { background: #fff; }
+  #t3k .t3k-tuile.t3k-logo svg { width: 92px; height: 92px; }
+  #t3k .t3k-nom { font-size: 62px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+  #t3k .t3k-sous { font-size: 34px; font-weight: 500; color: var(--brand-muted); margin-top: 8px; }
+  #t3k .t3k-chiffre { margin-left: auto; text-align: right; font-size: 58px; font-weight: 700; line-height: 1; }
+  #t3k .t3k-chiffre small { display: block; font-size: 30px; font-weight: 600; color: var(--brand-accent); margin-top: 10px; }
+  #t3k .t3k-pile { position: relative; height: 150px; margin: 36px 0 0 186px; overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
+  #t3k .t3k-pile-in { position: absolute; left: 0; top: 0; }
+  #t3k .t3k-pile-in div { height: 50px; line-height: 50px; font-size: 34px; font-weight: 600; color: var(--brand-accent); white-space: nowrap; }
+  #t3k .t3k-bas { display: flex; gap: 22px; margin-top: 26px; }
+  #t3k .t3k-bouton { flex: 1.6; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 44px; font-weight: 700;
+    background: var(--brand-accent); color: var(--brand-contrast); }
+  #t3k .t3k-bouton svg { width: 42px; height: 42px; }
+  #t3k .t3k-duree { flex: 1; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 600;
+    background: rgba(255,255,255,.07); color: var(--brand-muted); }
+  #t3k .t3k-duree svg { width: 38px; height: 38px; }
+  #t3k .t3k-points { position: absolute; inset: 0; border-radius: 46px; opacity: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255,255,255,.75) 1.8px, transparent 2.5px); background-size: 10px 10px; }
+</style>
+
+<div data-composition-id="t3k" data-width="1920" data-height="1080" data-duration="3.6" style="position:absolute; inset:0;">
+  <div id="t3k" class="k-scene">
+    <div class="t3k-fond"></div>
+    <div class="t3k-trame" data-layout-ignore></div>
+    <div class="t3k-mot" id="t3k-mot"></div>
+    <div class="k-scene3d" style="perspective:1500px"><div class="k-camera" id="t3k-cam"></div></div>
+    <div class="k-vignette"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer : ce que contient ton offre ----------------------------------------------
+  var R = {
+    mot: "Au programme",
+    cartes: [
+      { icone: "play", nom: "Module 1", sous: "Les bases", chiffre: "12", unite: "vidéos", lignes: ["Leçon 1", "Leçon 2", "Leçon 3"], duree: "45 min" },
+      { icone: "layers", nom: "Module 2", sous: "La méthode", chiffre: "9", unite: "vidéos", lignes: ["Leçon 1", "Leçon 2", "Leçon 3"], duree: "38 min" },
+      { icone: "file-text", nom: "Modèles", sous: "Prêts à copier", chiffre: "20", unite: "fichiers", lignes: ["Modèle 1", "Modèle 2", "Modèle 3"], duree: "" },
+      { icone: "users", nom: "Communauté", sous: "Entraide", chiffre: "24/7", unite: "", lignes: ["Questions", "Retours", "Lives"], duree: "" },
+      { icone: "gift", nom: "Bonus", sous: "Offert avec", chiffre: "3", unite: "bonus", lignes: ["Bonus 1", "Bonus 2", "Bonus 3"], duree: "" }
+    ],
+    bouton: "Inclus"
+  };
+  // -------------------------------------------------------------------------------------------
+  var PAS = 0.5, T0 = 0.5, D = T0 + R.cartes.length * PAS + 0.6;   // 3,6 s pour 5 cartes : reporte-la en data-duration
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t3k")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  $("t3k-mot").textContent = R.mot;
+  var cam = $("t3k-cam"), cartes = [];
+  R.cartes.forEach(function (c, i) {
+    var logo = c.icone.indexOf("logo-") === 0;
+    var e = K.el(cam, "div", "t3k-carte");
+    e.id = "t3k-c" + i;
+    e.setAttribute("data-layout-allow-overflow", "");
+    var lignes = c.lignes.map(function (l) { return "<div>" + l + "</div>"; }).join("");
+    e.innerHTML = '<div class="t3k-arete"></div>' +
+      '<div class="t3k-tete"><div class="t3k-tuile' + (logo ? " t3k-logo" : "") + '">' + (K.ic(c.icone) || K.ic("star")) + "</div>" +
+      '<div><div class="t3k-nom">' + c.nom + '</div><div class="t3k-sous">' + c.sous + "</div></div>" +
+      '<div class="t3k-chiffre">' + c.chiffre + (c.unite ? "<small>" + c.unite + "</small>" : "") + "</div></div>" +
+      '<div class="t3k-pile"><div class="t3k-pile-in">' + lignes + "</div></div>" +
+      '<div class="t3k-bas"><div class="t3k-bouton">' + K.ic("check") + "<span>" + R.bouton + "</span></div>" +
+      (c.duree ? '<div class="t3k-duree">' + K.ic("clock") + "<span>" + c.duree + "</span></div>" : "") + "</div>" +
+      (i === 0 ? '<div class="t3k-points" data-layout-ignore></div>' : "");
+    cartes.push(e);
+  });
+  K.cacher(cartes);
+  K.cacher(document.querySelectorAll("#t3k .t3k-pile-in div"));
+
+  var tl = gsap.timeline({ paused: true });
+  // 1. Le mot seul (0 → 0,5 s)
+  tl.fromTo("#t3k-mot", { opacity: 0, scale: 0.92, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.0);
+  tl.to("#t3k-mot", { opacity: 0, scale: 1.12, filter: "blur(10px)", duration: 0.2, ease: "power2.in" }, T0 - 0.12);
+  // 2. Les cartes : chacune en gros plan, un cadrage différent, toutes les 0,5 s
+  var poses = [
+    { rx: 18, ry: -26, rz: -4, x: 250, y: 140, s: 1.42 },
+    { rx: 22, ry: 24, rz: 3, x: 300, y: 200, s: 1.55 },
+    { rx: 16, ry: -22, rz: -6, x: 330, y: 230, s: 1.6 },
+    { rx: 24, ry: 20, rz: 4, x: 280, y: 190, s: 1.5 },
+    { rx: 18, ry: -24, rz: -3, x: 240, y: 160, s: 1.45 }
+  ];
+  cartes.forEach(function (e, i) {
+    var p = poses[i % poses.length], t = T0 + i * PAS, sens = i % 2 ? -1 : 1;
+    if (vertical) { p = { rx: p.rx, ry: p.ry * 0.6, rz: p.rz, x: p.x * 0.35, y: p.y * 0.6, s: p.s * 0.85 }; }
+    tl.fromTo(e, { opacity: 0, x: p.x + 360 * sens, y: p.y, rotationX: p.rx, rotationY: p.ry + 22 * sens, rotationZ: p.rz, scale: p.s * 0.94, filter: "blur(8px)" },
+      { opacity: 1, x: p.x, rotationY: p.ry, scale: p.s, filter: "blur(0px)", duration: 0.3, ease: "expo.out", immediateRender: false }, t);
+    tl.to(e, { x: p.x - 60 * sens, y: p.y - 20, duration: PAS - 0.3, ease: "sine.out" }, t + 0.3);
+    tl.fromTo(e.querySelectorAll(".t3k-pile-in div"), { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "back.out(1.6)", stagger: 0.07, immediateRender: false }, t + 0.06);
+    if (i < cartes.length - 1) tl.to(e, { opacity: 0, duration: 0.05, ease: "none" }, t + PAS);
+    else tl.to(e, { opacity: 0, x: p.x - 300 * sens, filter: "blur(12px)", duration: 0.25, ease: "power2.in" }, t + PAS + 0.05);
+  });
+  // la première carte se forme en points
+  var pts = cartes[0].querySelector(".t3k-points");
+  tl.fromTo(pts, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T0 + 0.12);
+  tl.fromTo(cam, { x: 0 }, { x: -60, duration: D, ease: "sine.inOut" }, 0);
+  window.__timelines["t3k"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

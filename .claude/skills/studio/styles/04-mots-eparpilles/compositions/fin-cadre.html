@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°4 · DÉGRADÉS VIFS · SCÈNE « FIN EN CADRE » (l'offre et l'appel), 6,5 s, 16:9
+
+    Ce qu'elle montre : sur le fond sombre de la marque, un cadre au trait fin (un contour en
+    dégradé) se pose ; la phrase d'appel s'écrit dedans un mot à la fois, en petit et en léger ;
+    les mots s'effacent dans le désordre, le cadre se resserre en une carte qui s'allume d'un
+    dégradé de l'accent ; deux autres cartes en sortent de chaque côté : les trois parties de
+    l'offre (icône, nom, une ligne) ; elles se rejoignent en une barre, la barre s'aplatit en un
+    trait lumineux ; au-dessus du trait, le nom ; dessous, le bouton. Tenu 2,1 s.
+
+    À remplacer :
+      1. L'identifiant « t04-fin » partout (racine, scène, préfixe des ids, clé de la timeline).
+      2. APPEL : la phrase d'appel, 4 à 7 mots (un mot à la fois).
+      3. CARTES : les trois parties RÉELLES de l'offre [icône du kit, nom, une ligne] (modules,
+         accompagnement, bonus ; ou trois fonctions d'un logiciel). Deux ou quatre cartes aussi.
+      4. Le nom (#t04-fin-nom ; un logo se pose en <img src="brand/logo.svg"> à sa place) et le
+         bouton (#t04-fin-bouton : le vrai libellé du bouton de sa page, 1 à 3 mots).
+    Couleurs : var(--brand-*) et des dégradés dérivés de l'accent (--t04-ecart, défaut 50).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t04-fin {
+      --t04-ecart: 50;
+      --t04-c1: oklch(from var(--brand-accent) calc(l * 0.55 + 0.33) calc(c * 0.95) calc(h + var(--t04-ecart) * 0.9));
+      --t04-c2: var(--brand-accent);
+      --t04-c3: oklch(from var(--brand-accent) calc(l * 0.50 + 0.32) calc(c * 0.95) calc(h - var(--t04-ecart) * 0.8));
+      --t04-sombre: color-mix(in oklab, var(--brand-bg) 70%, var(--brand-accent));
+      background: var(--brand-bg);
+    }
+    #t04-fin .t04-fin-cadre { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
+    #t04-fin .t04-fin-appel {
+      position: absolute; left: 0; right: 0; top: 426px; text-align: center; white-space: nowrap;
+      font-family: var(--brand-font-body); font-weight: 400; font-size: 70px; letter-spacing: -0.02em; color: var(--brand-text);
+    }
+    #t04-fin .t04-fin-appel span { display: inline-block; margin: 0 0.13em; }
+    #t04-fin .t04-fin-carte {
+      position: absolute; left: 960px; top: 470px; width: 380px; height: 240px; margin: -120px 0 0 -190px; border-radius: 26px; overflow: hidden;
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.35) inset, 0 30px 60px rgba(0, 0, 0, 0.35);
+      font-family: "Inter", var(--brand-font-body); color: #fff; text-align: center;
+    }
+    #t04-fin .t04-fin-carte .grad { position: absolute; inset: 0; }
+    #t04-fin .t04-fin-carte .contenu { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0 22px;
+      color: var(--brand-contrast); }
+    #t04-fin .t04-fin-carte .ic { width: 40px; height: 40px; margin-bottom: 6px; }
+    #t04-fin .t04-fin-carte .ic svg { width: 100%; height: 100%; }
+    #t04-fin .t04-fin-carte b { font-weight: 700; font-size: 28px; letter-spacing: -0.01em; }
+    #t04-fin .t04-fin-carte small { font-size: 19px; font-weight: 500; opacity: 0.78; }
+    #t04-fin .t04-fin-trait { position: absolute; left: 410px; top: 590px; width: 1100px; height: 3px; border-radius: 2px;
+      background: linear-gradient(90deg, transparent, var(--brand-accent) 20%, #fff 50%, var(--brand-accent) 80%, transparent);
+      box-shadow: 0 0 24px color-mix(in srgb, var(--brand-accent) 70%, transparent); }
+    #t04-fin .t04-fin-nom {
+      position: absolute; left: 0; right: 0; top: 450px; text-align: center; white-space: nowrap;
+      font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; letter-spacing: -0.03em; line-height: 1; color: var(--brand-text);
+      text-shadow: 0 0 40px color-mix(in srgb, var(--brand-accent) 45%, transparent);
+    }
+    #t04-fin .t04-fin-bouton {
+      position: absolute; left: 960px; top: 650px; height: 96px; padding: 0 52px; transform: translateX(-50%); border-radius: 999px; white-space: nowrap;
+      display: flex; align-items: center; background: var(--brand-accent); color: var(--brand-contrast);
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 40px; letter-spacing: -0.01em;
+      box-shadow: 0 0 40px color-mix(in srgb, var(--brand-accent) 40%, transparent);
+    }
+  </style>
+
+  <div data-composition-id="t04-fin" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+    <div id="t04-fin" class="k-scene">
+      <svg class="t04-fin-cadre" id="t04-fin-cadre" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="t04-fin-trace" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.8"/><stop offset="0.38" stop-color="#ffffff" stop-opacity="0.07"/>
+          <stop offset="0.62" stop-color="#ffffff" stop-opacity="0.07"/><stop offset="1" style="stop-color:var(--brand-accent)" stop-opacity="0.85"/></linearGradient></defs>
+        <rect id="t04-fin-rect" x="360" y="210" width="1200" height="520" rx="40" fill="none" stroke="url(#t04-fin-trace)" stroke-width="2.5"/>
+      </svg>
+      <div id="t04-fin-lueur" style="position:absolute; left:360px; top:210px; width:1200px; height:520px; border-radius:40px;
+        background: radial-gradient(ellipse 60% 70% at 50% 55%, color-mix(in srgb, var(--brand-accent) 30%, transparent), transparent);"></div>
+      <div class="t04-fin-appel" id="t04-fin-appel"></div>
+      <div id="t04-fin-cartes"></div>
+      <div class="t04-fin-trait" id="t04-fin-trait"></div>
+      <div class="t04-fin-nom" id="t04-fin-nom">Ta marque</div>
+      <div class="t04-fin-bouton" id="t04-fin-bouton">Je découvre</div>
+      <div id="t04-fin-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 6.5, ID = "t04-fin", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var APPEL = "Lance ton offre, sans t'épuiser.";
+      var CARTES = [["book-open", "La méthode", "pas à pas, en vidéo"], ["users", "Le groupe", "pour avancer à plusieurs"], ["gift", "Les bonus", "modèles prêts à l'emploi"]];
+
+      // Le cadre se pose ; la phrase s'écrit un mot à la fois.
+      // Le cadre se trace (le contour court autour de la carte), puis la phrase s'écrit.
+      var cadre = $("cadre"), rect = $("rect"), L = 2 * (1200 + 520);
+      rect.style.strokeDasharray = L + " " + L;
+      gsap.set(rect, { strokeDashoffset: L });
+      tl.to(rect, { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" }, 0.0);
+      var mots = APPEL.split(" ").map(function (w, i) {
+        var s = K.el($("appel"), "span", null, w);
+        K.cacher(s);
+        tl.fromTo(s, { opacity: 0, y: 18, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.3 + i * 0.22);
+        return s;
+      });
+      // Chaque mot allume un peu plus le cadre (une lueur de l'accent qui monte par paliers).
+      var lueur = $("lueur");
+      gsap.set(lueur, { opacity: 0 });
+      mots.forEach(function (m, i) { tl.to(lueur, { opacity: (i + 1) / mots.length, duration: 0.15, ease: "power2.out" }, 0.3 + i * 0.22); });
+      tl.to(lueur, { opacity: 0, duration: 0.3, ease: "power2.in" }, 2.0);
+      // Les mots s'effacent dans le désordre (ordre fixe, tiré à graine).
+      var r = K.rng(5), ordre = mots.map(function (m, i) { return [r(), m]; }).sort(function (a, b) { return a[0] - b[0]; });
+      ordre.forEach(function (o, k) { tl.set(o[1], { opacity: 0 }, 1.75 + k * 0.07); });
+
+      // Le cadre se resserre en carte ; la carte s'allume ; deux autres en sortent.
+      tl.to(rect, { attr: { x: 770, y: 350, width: 380, height: 240, rx: 26 }, duration: 0.55, ease: "expo.inOut" }, 2.0);
+      tl.to(cadre, { opacity: 0, duration: 0.2 }, 2.5);
+      var cartes = CARTES.map(function (c, i) {
+        var e = K.el($("cartes"), "div", "t04-fin-carte");
+        var fond = i === 0 ? "radial-gradient(circle at 30% 30%, var(--t04-c2), var(--t04-c1) 70%)"
+          : i === 1 ? "radial-gradient(circle at 40% 30%, #ffffff, var(--t04-c2) 45%, var(--t04-c3) 100%)"
+          : "radial-gradient(circle at 70% 70%, var(--t04-c2), var(--t04-c3) 70%)";
+        K.el(e, "div", "grad", null, "background:" + fond);
+        K.el(e, "div", "contenu", '<span class="ic">' + K.ic(c[0]) + "</span><b>" + c[1] + "</b><small>" + c[2] + "</small>");
+        return e;
+      });
+      var milieu = cartes[1];
+      gsap.set(cartes, { opacity: 0 });
+      tl.fromTo(milieu, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, 2.42);
+      tl.fromTo(milieu.querySelector(".grad"), { opacity: 0.2 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 2.42);
+      [cartes[0], cartes[2]].forEach(function (c, k) {
+        tl.fromTo(c, { opacity: 0, x: 0, scale: 0.9 }, { opacity: 1, x: k ? 420 : -420, scale: 1, duration: 0.55, ease: "expo.out" }, 2.75 + k * 0.06);
+      });
+      // Les trois cartes se rejoignent en une barre, qui s'aplatit en un trait lumineux.
+      tl.to(cartes[0], { x: -380, duration: 0.4, ease: "power3.inOut" }, 3.55);
+      tl.to(cartes[2], { x: 380, duration: 0.4, ease: "power3.inOut" }, 3.55);
+      tl.to(cartes.map(function (c) { return c.querySelector(".contenu"); }), { opacity: 0, duration: 0.2 }, 3.55);
+      tl.to(cartes, { borderRadius: 0, duration: 0.3 }, 3.7);
+      tl.to(cartes, { scaleY: 0.012, y: 120, duration: 0.45, ease: "expo.in" }, 3.85);
+      tl.to(cartes, { opacity: 0, duration: 0.12 }, 4.28);
+      var trait = $("trait");
+      gsap.set(trait, { scaleX: 0.75, opacity: 0 });
+      tl.to(trait, { opacity: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, 4.28);
+      tl.to(trait, { scaleX: 0.92, duration: D - 4.8, ease: "sine.inOut" }, 4.8);
+
+      // Le nom au-dessus du trait, le bouton dessous ; le curseur le désigne.
+      var nom = $("nom"), bouton = $("bouton");
+      K.cacher([nom, bouton]);
+      tl.fromTo(nom, { opacity: 0, y: 24, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 4.3);
+      tl.fromTo(bouton, { opacity: 0, y: 18, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(2)" }, 4.55);
+      var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+      K.cacher(curseur);
+      tl.to(curseur, { opacity: 1, duration: 0.2 }, 4.9);
+      K.trajet(tl, curseur, [[0, 1420, 930], [4.9, 1010, 702, 0.55, "power3.out"]]);
+      K.clic(tl, curseur, 5.5);
+      tl.fromTo(bouton, { scale: 1 }, { scale: 0.96, duration: 0.08, ease: "power2.out", yoyo: true, repeat: 1 }, 5.5);
+      tl.to(curseur, { x: 1160, y: 810, duration: 0.6, ease: "power2.inOut" }, 5.85);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

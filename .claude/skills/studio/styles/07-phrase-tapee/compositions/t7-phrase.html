@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°7 · Orbite · scène « La phrase tapée » (la solution, puis la démonstration).
+  Ce qu'elle montre : sur le fond taupe, deux lignes se tapent l'une sous l'autre (la première
+  blanche, la seconde grise) derrière un gros curseur de frappe à la couleur de ta marque ; coupe
+  sur fond clair : une barre de demande où la phrase se tape, les logos des outils empilés, le
+  curseur clique sur envoyer ; la barre s'efface et la fenêtre du résultat s'ouvre, ses cartes se
+  remplissent en cascade.
+  Durée : 6,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (lignes plus
+  courtes, barre et fenêtre à la largeur de l'écran).
+  À remplacer (objet R en tête du script) : les deux lignes, la demande tapée, les logos des
+  outils (posés par `studio_motion.py logos`), le titre de la fenêtre, et la capture de ton
+  produit (assets/images/… : elle remplit la fenêtre ; "" garde le squelette de cartes).
+  Couleurs : uniquement var(--brand-*) ; le taupe et le clair se dérivent du fond de la marque.
+  Identifiant : t7p (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t7p {
+    --t7-taupe: color-mix(in oklab, var(--brand-bg) 80%, var(--brand-muted));
+    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
+    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
+    --t7-gris: color-mix(in oklab, var(--brand-text) 55%, var(--t7-taupe));
+    --t7-police: var(--brand-font-display);
+    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--brand-text);
+  }
+  #t7p .t7p-plan { position: absolute; inset: 0; }
+  #t7p .t7p-taupe { background: var(--t7-taupe); }
+  #t7p .t7p-clair { background: var(--t7-clair); }
+  #t7p .t7p-lignes { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
+    font-size: 124px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.0; white-space: nowrap; }
+  #t7p .t7p-l2 { color: var(--t7-gris); }
+  #t7p .t7p-caret { display: inline-block; width: 0.075em; height: 0.84em; margin-left: 0.05em; vertical-align: -0.08em; background: var(--brand-accent); }
+  #t7p .t7p-scene3d { position: absolute; inset: 0; perspective: 2000px; }
+  #t7p .t7p-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  #t7p .t7p-barre { position: absolute; left: 50%; top: 50%; width: 1300px; height: 124px; margin: -62px 0 0 -650px; border-radius: 30px; background: #fff;
+    box-shadow: 0 24px 60px rgba(30, 25, 20, .10), 0 2px 6px rgba(30, 25, 20, .06), inset 0 0 0 1.5px rgba(0,0,0,.05);
+    display: flex; align-items: center; padding: 0 30px 0 36px; gap: 26px; color: var(--t7-encre); font-family: var(--brand-font-body); }
+  #t7p .t7p-plus { width: 34px; height: 34px; opacity: .55; flex: none; }
+  #t7p .t7p-demande { flex: 1; font-size: 40px; font-weight: 400; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; }
+  #t7p .t7p-demande::after { content: ""; display: inline-block; width: 3px; height: 42px; margin-left: 3px; vertical-align: -8px; background: var(--t7-encre); }
+  #t7p .t7p-logos { display: flex; flex: none; }
+  #t7p .t7p-logo { width: 62px; height: 62px; border-radius: 18px; background: #fff; display: grid; place-items: center; margin-left: -14px;
+    box-shadow: 0 0 0 2px #fff, 0 3px 10px rgba(0,0,0,.12), inset 0 0 0 1.5px rgba(0,0,0,.07); }
+  #t7p .t7p-logo svg { width: 36px; height: 36px; }
+  #t7p .t7p-envoyer { width: 76px; height: 76px; border-radius: 20px; background: var(--t7-encre); color: #fff; display: grid; place-items: center; flex: none; }
+  #t7p .t7p-envoyer svg { width: 36px; height: 36px; }
+  #t7p .t7p-fenetre { position: absolute; left: 50%; top: 50%; width: 1380px; height: 800px; margin: -400px 0 0 -690px; border-radius: 22px; background: #fff; overflow: hidden;
+    box-shadow: 0 50px 120px rgba(30,25,20,.16), 0 4px 14px rgba(30,25,20,.06), inset 0 0 0 1.5px rgba(0,0,0,.05); color: var(--t7-encre); font-family: var(--brand-font-body); }
+  #t7p .t7p-cote { position: absolute; left: 0; top: 0; bottom: 0; width: 270px; background: #f6f5f2; border-right: 1.5px solid rgba(0,0,0,.05); padding: 74px 22px; }
+  #t7p .t7p-item { height: 38px; border-radius: 10px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 0 12px; }
+  #t7p .t7p-item i { display: block; width: 20px; height: 20px; border-radius: 6px; background: rgba(0,0,0,.12); flex: none; }
+  #t7p .t7p-item b { display: block; height: 10px; border-radius: 5px; background: rgba(0,0,0,.12); }
+  #t7p .t7p-item.t7p-on { background: var(--t7-encre); }
+  #t7p .t7p-item.t7p-on i, #t7p .t7p-item.t7p-on b { background: rgba(255,255,255,.55); }
+  #t7p .t7p-feux { position: absolute; left: 22px; top: 24px; display: flex; gap: 9px; }
+  #t7p .t7p-feux i { width: 14px; height: 14px; border-radius: 50%; background: rgba(0,0,0,.13); }
+  #t7p .t7p-corps { position: absolute; left: 270px; right: 0; top: 0; bottom: 0; padding: 60px 56px; }
+  #t7p .t7p-titre { font-size: 44px; font-weight: 600; letter-spacing: -0.03em; display: flex; align-items: center; gap: 18px; }
+  #t7p .t7p-titre span { font-size: 22px; font-weight: 500; color: rgba(0,0,0,.4); letter-spacing: 0; }
+  #t7p .t7p-progres { height: 8px; border-radius: 4px; background: rgba(0,0,0,.07); margin: 26px 0 34px; overflow: hidden; }
+  #t7p .t7p-progres div { height: 100%; width: 100%; background: var(--t7-encre); transform-origin: 0 50%; }
+  #t7p .t7p-grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  #t7p .t7p-carte { height: 250px; border-radius: 18px; background: #faf9f7; box-shadow: inset 0 0 0 1.5px rgba(0,0,0,.06); padding: 14px; }
+  #t7p .t7p-carte .t7p-img { height: 150px; border-radius: 12px; display: grid; place-items: center; color: var(--brand-contrast); }
+  #t7p .t7p-carte .t7p-img svg { width: 48px; height: 48px; }
+  #t7p .t7p-carte b { display: block; height: 14px; border-radius: 7px; background: rgba(0,0,0,.14); margin: 18px 6px 0; width: 60%; }
+  #t7p .t7p-carte b + b { width: 38%; margin-top: 12px; background: rgba(0,0,0,.08); }
+  #t7p .t7p-capture { position: absolute; left: 270px; right: 0; top: 0; bottom: 0; background-size: cover; background-position: top left; }
+</style>
+
+<div data-composition-id="t7p" data-width="1920" data-height="1080" data-duration="6.6" style="position:absolute; inset:0;">
+  <div id="t7p" class="k-scene">
+    <div class="t7p-plan t7p-taupe" id="t7p-p1">
+      <div class="t7p-lignes"><div><span id="t7p-l1" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c1"></span></div><div class="t7p-l2"><span id="t7p-l2" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c2"></span></div></div>
+    </div>
+    <div class="t7p-plan t7p-clair" id="t7p-p2">
+      <div class="t7p-scene3d"><div class="t7p-cam" id="t7p-cam">
+        <div class="t7p-fenetre" id="t7p-fenetre">
+          <div class="t7p-cote" id="t7p-cote"><div class="t7p-feux"><i></i><i></i><i></i></div></div>
+          <div class="t7p-corps" id="t7p-corps">
+            <div class="t7p-titre" id="t7p-titre"></div>
+            <div class="t7p-progres"><div id="t7p-progres"></div></div>
+            <div class="t7p-grille" id="t7p-grille"></div>
+          </div>
+        </div>
+        <div class="t7p-barre" id="t7p-barre">
+          <div class="t7p-plus" id="t7p-plus"></div>
+          <div class="t7p-demande" id="t7p-demande"></div>
+          <div class="t7p-logos" id="t7p-logos"></div>
+          <div class="t7p-envoyer" id="t7p-envoyer"></div>
+        </div>
+      </div></div>
+      <div id="t7p-curseur-hote" style="position:absolute; inset:0; z-index:70;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer --------------------------------------------------------------------------
+  var R = {
+    ligne1: "Crée ta vidéo.",
+    ligne2: "En une phrase.",
+    demande: "Fais-moi une vidéo pour ma page de vente",
+    logos: ["logo-claude", "logo-openai", "logo-instagram"],   // 3 logos d'outils de l'offre
+    titre: "Ton offre", sousTitre: "6 vidéos prêtes",
+    vignettes: ["play", "image", "megaphone", "film", "smartphone", "sparkles"],
+    capture: ""                                     // "assets/images/ma-capture.png" : ta vraie interface
+  };
+  // -------------------------------------------------------------------------------------------
+  var D = 6.6;
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t7p")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  $("t7p-plus").innerHTML = K.ic("plus");
+  $("t7p-envoyer").innerHTML = K.ic("send");
+  R.logos.forEach(function (n) { K.el($("t7p-logos"), "div", "t7p-logo", K.ic(n) || K.ic("sparkles")); });
+  $("t7p-titre").innerHTML = R.titre + "<span>" + R.sousTitre + "</span>";
+  for (var i = 0; i < 7; i++) K.el($("t7p-cote"), "div", "t7p-item" + (i === 2 ? " t7p-on" : ""), "<i></i><b style='width:" + (60 + (i * 37) % 80) + "px'></b>");
+  R.vignettes.forEach(function (ic, i) {
+    var c = K.el($("t7p-grille"), "div", "t7p-carte", '<div class="t7p-img">' + (K.ic(ic) || K.ic("play")) + "</div><b></b><b></b>");
+    var img = c.querySelector(".t7p-img");
+    img.style.background = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 40%, #fff)", "var(--t7-encre)"][i % 3];
+    if (i % 3 === 2) img.style.color = "var(--brand-accent)";
+  });
+  if (R.capture) { var cap = K.el($("t7p-fenetre"), "div", "t7p-capture"); cap.style.backgroundImage = "url('" + R.capture + "')"; $("t7p-corps").style.visibility = "hidden"; }
+  if (vertical) {
+    $("t7p-l1").parentNode.parentNode.style.fontSize = "96px";
+    gsap.set("#t7p-barre", { scale: 0.74 }); gsap.set("#t7p-fenetre", { scale: 0.7 });
+  }
+  var curseur = K.curseur($("t7p-curseur-hote"), "t7p-curseur", false);
+
+  // États de départ
+  K.cacher(["#t7p-p2", "#t7p-c2", "#t7p-fenetre"]);
+  var tl = gsap.timeline({ paused: true });
+
+  // 1. Deux lignes tapées sur le taupe (0 → 2,35 s)
+  K.taper(tl, $("t7p-l1"), R.ligne1, 0.1, 0.85, D);
+  K.taper(tl, $("t7p-l2"), R.ligne2, 1.15, 1.9, D);
+  tl.set("#t7p-c1", { opacity: 0 }, 1.0); tl.set("#t7p-c2", { opacity: 1 }, 1.0);
+  [2.05, 2.25].forEach(function (t, i) { tl.set("#t7p-c2", { opacity: i % 2 ? 1 : 0 }, t); });
+  tl.fromTo(".t7p-lignes", { scale: 1 }, { scale: 1.03, duration: 2.35, ease: "sine.out" }, 0);
+
+  // 2. La barre de demande, sur fond clair (2,35 → 4,05 s)
+  tl.set("#t7p-p2", { opacity: 1 }, 2.35);
+  tl.set("#t7p-p1", { opacity: 0 }, 2.35);
+  tl.fromTo("#t7p-cam", { scale: 1.18 }, { scale: 1.0, duration: 1.7, ease: "power2.out" }, 2.35);
+  K.taper(tl, $("t7p-demande"), R.demande, 2.5, 3.35, D);
+  tl.fromTo("#t7p-logos .t7p-logo", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", stagger: 0.08 }, 2.6);
+  var bx = L / 2 + (vertical ? 0.74 : 1) * (650 - 30 - 38), by = H / 2 + 2;
+  K.trajet(tl, curseur, [[0, L * 0.82, H * 0.86], [3.3, bx + 6, by + 8, 0.55, "power3.out"]]);
+  K.cacher(curseur);
+  tl.to(curseur, { opacity: 1, duration: 0.15 }, 3.25);
+  K.clic(tl, curseur, 3.9);
+  tl.to("#t7p-envoyer", { scale: 0.88, duration: 0.08, ease: "power2.out" }, 3.9);
+  tl.to("#t7p-envoyer", { scale: 1, duration: 0.25, ease: "back.out(3)" }, 3.98);
+
+  // 3. La barre s'efface, la fenêtre du résultat s'ouvre et se remplit (4,05 → 6,6 s)
+  tl.to("#t7p-barre", { y: -260, scale: 0.6, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, 4.05);
+  tl.to(curseur, { opacity: 0, duration: 0.2 }, 4.1);
+  tl.fromTo("#t7p-fenetre", { opacity: 0, scale: (vertical ? 0.7 : 1) * 0.86, filter: "blur(14px) brightness(1.08)" },
+    { opacity: 1, scale: vertical ? 0.7 : 1, filter: "blur(0px) brightness(1)", duration: 0.7, ease: "expo.out" }, 4.3);
+  tl.fromTo("#t7p-cote .t7p-item", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", stagger: 0.04 }, 4.45);
+  tl.fromTo("#t7p-titre", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 4.55);
+  tl.fromTo("#t7p-progres", { scaleX: 0 }, { scaleX: 1, duration: 1.7, ease: "power1.inOut" }, 4.6);
+  tl.fromTo("#t7p-grille .t7p-carte", { opacity: 0, y: 30, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.12 }, 4.75);
+  tl.fromTo("#t7p-cam", { rotationX: 0, y: 0 }, { rotationX: 6, y: -10, duration: 2.2, ease: "sine.inOut", immediateRender: false }, 4.4);
+  tl.to("#t7p-cam", { scale: 1.06, duration: 2.2, ease: "sine.inOut" }, 4.4);
+  window.__timelines["t7p"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

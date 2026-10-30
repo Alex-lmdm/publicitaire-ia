@@ -47,6 +47,13 @@ vidéo, **où elle sera mise** (un ou plusieurs supports, chacun aura son format
 présente** (le lien, ou deux phrases et des captures). Recommande toujours une combinaison.
 Saute ce que tu sais déjà.
 
+**Un template du catalogue** (« fais-moi une vidéo dans le template 3 », « dans le style Interface
+3D », « comme celle de Polymarket ») : 8 looks de vidéos de lancement, refaits d'après de vraies
+vidéos et montrés dans sa formation (module « Templates »). Lis [styles/README.md](styles/README.md) :
+le template fixe le look, le brief garde le but, les supports et ce qu'on présente. Il dit
+« garde ce template pour mes prochaines vidéos » : ajoute `template N` à ses `preferences`
+(`studio.config.json`).
+
 Crée le dossier : `python3 tools/studio_motion.py nouvelle "<sujet>" --objectif <objectif>
 --videos <supports>` (`--ouvrir` les ouvre dans l'app HyperFrames). Il naît dans
 `videos/<sujet> · <date>/`, avec la marque à jour et un projet de l'app par vidéo et par format.
@@ -68,6 +75,8 @@ objets du sujet, pose les logos des outils (`python3 tools/studio_motion.py logo
 openai …`). S'il manque une matière importante, **une seule question à choix** (captures, une
 vidéo où il l'utilise, une vidéo dont il aime le style). S'il donne une vidéo de référence :
 `python3 tools/studio_motion.py reference "<dossier>" "<lien>"`, puis remplis son analyse.
+Avec un template, sa fiche (`styles/<NN-nom>/style.md`) remplace cette analyse : fonds, typo,
+mouvements et transitions viennent d'elle, toujours aux couleurs et aux polices de sa marque.
 
 ### 3. La structure et trois idées
 
@@ -109,7 +118,8 @@ effet nouveau, `hyperframes-animation`. Travaille **dans le dossier de chaque vi
 **kit** (`kit/`, chargé par `index.html`) : fonds vivants, curseur, objets flottants, chapitres,
 fenêtres, téléphone, frappe, compteurs. Commence par le support principal ; les autres formats
 sont des **mises en page** de la même vidéo (on replace les éléments, on garde le rythme), jamais
-des recadrages.
+des recadrages. Avec un template, pars des scènes de son kit (`styles/<NN-nom>/compositions/`,
+copiées dans le projet) : remplace leurs textes par ceux du plan, garde leurs mouvements signature.
 
 Une scène = une sous-composition dans `compositions/`, montée dans `index.html`. Fabrique scène
 par scène : écris-la, ajoute-la à `index.html`, capture 6 à 9 images (`npx hyperframes snapshot

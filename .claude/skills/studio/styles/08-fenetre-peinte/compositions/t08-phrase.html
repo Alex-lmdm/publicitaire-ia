@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°8 « FENÊTRES BARRES » · SCÈNE : LA PHRASE TAPÉE (titre de chapitre) · 1,4 s
+    Ce que la scène montre : sur le fond blanc chaud, une phrase centrée (une ou deux lignes) s'écrit
+    lettre à lettre à sa place définitive (les lettres apparaissent, rien ne glisse), se tient, puis
+    la scène coupe net. C'est le motif qui revient avant chaque partie de la vidéo : une phrase, puis
+    la démonstration. Aucun objet, aucune couleur : la typographie seule.
+    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte
+    (corps réduit, la phrase passe sur 2 ou 3 lignes).
+    Durée : D = temps de frappe (environ 25 lettres par seconde) + 0,7 s de tenue, jamais plus de
+    0,9 s : une phrase tenue 1 s ou plus est une image figée pour le contrôle de rythme du studio.
+
+    À REMPLACER :
+     1. L'id « t08-phrase » (racine, constante ID, préfixe CSS) par un id par phrase
+        (t08-phrase-1, t08-phrase-2…) : chaque chapitre a la sienne.
+     2. LIGNES : la phrase, 2 à 4 mots (6 au plus, rarement : alors sur deux lignes), ponctuée d'un
+        point. Une phrase entière au ton calme : « Un seul endroit. », « Tes résultats, mesurés. »
+     3. D et data-duration : 1,4 s pour 3 mots, 1,6 s pour 4 ; ajoute 0,25 s par mot de plus.
+    Couleurs : fond blanc chaud du look ; le texte prend l'encre de la marque (son fond s'il est
+    sombre, sinon son texte). Police : la police de titres de la marque, en 400.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t08-phrase { --t08-papier: #f7f7f4; --t08-encre: #1d1c19; background: var(--t08-papier); }
+  #t08-phrase .t08-fond { position: absolute; inset: -2px; background: var(--t08-papier); }
+  #t08-phrase .t08-phrase { position: absolute; left: 0; right: 0; top: 50%; text-align: center;
+    font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; line-height: 1.04; letter-spacing: -0.03em;
+    color: var(--t08-encre); transform-origin: 50% 50%; }
+  #t08-phrase .t08-ligne { display: block; white-space: pre; }
+  #t08-phrase .t08-l { opacity: 0; }
+  #t08-phrase.t08-vertical .t08-phrase { font-size: 92px; padding: 0 90px; }
+  #t08-phrase.t08-vertical .t08-ligne { white-space: normal; }
+</style>
+
+<div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="1.4" style="position:absolute; inset:0;">
+  <div id="t08-phrase" class="k-scene">
+    <div class="t08-fond"></div>
+    <div class="t08-phrase" id="t08-phrase-texte"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t08-phrase", D = 1.4;
+    // ---- À remplacer -------------------------------------------------------------------------
+    var LIGNES = ["Un seul endroit."];
+    // -------------------------------------------------------------------------------------------
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var cadre = K.cadre(racine), vertical = cadre.hauteur > cadre.largeur;
+    if (vertical) racine.classList.add("t08-vertical");
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
+      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
+
+    // La phrase est posée entière, lettre par lettre invisibles : la frappe ne fait que les montrer,
+    // à leur place définitive (le texte centré ne bouge pas pendant qu'il s'écrit).
+    var bloc = document.getElementById(ID + "-texte"), lettres = [];
+    LIGNES.forEach(function (ligne) {
+      var div = K.el(bloc, "div", "t08-ligne");
+      ligne.split(" ").forEach(function (mot, j, mots) {
+        var m = K.el(div, "span", null, null, "white-space:nowrap;");
+        mot.split("").forEach(function (c) { lettres.push(K.el(m, "span", "t08-l", c)); });
+        if (j < mots.length - 1) { var esp = K.el(div, "span", "t08-l", " "); lettres.push(esp); }
+      });
+      // Les boîtes des lettres (hautes de leur police) se touchent d'une ligne à l'autre ; les glyphes, non.
+      div.querySelectorAll(".t08-l").forEach(function (l) { l.setAttribute("data-layout-allow-overlap", ""); });
+    });
+    gsap.set(bloc, { yPercent: -50 });
+    // Frappe : environ 25 lettres par seconde, par petits paquets irréguliers (fixes, à graine) ;
+    // plus lente que l'original (45), pour que la phrase vive pendant qu'on la lit.
+    var r = K.rng(LIGNES.join("").length * 31 + 7), t = 0.06;
+    lettres.forEach(function (l, i) {
+      tl.set(l, { opacity: 1 }, t);
+      if (r() < 0.55) t += 0.05 + r() * 0.04;
+    });
+    // Pendant la tenue, la caméra avance lentement (5 % sur la scène) : l'image ne se fige jamais.
+    tl.fromTo(bloc, { scale: 1 }, { scale: 1.06, duration: D, ease: "none" }, 0);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>

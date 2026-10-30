@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°6 « PAPIER PINCEAU » · SCÈNE 4 : LA RÉVÉLATION, « BIENTÔT » (3,8 s)
+
+    Ce qu'elle montre : la page vide, d'un coup (coupe franche sur le temps fort de la musique).
+    L'initiale de l'offre change de forme à chaque quart de seconde (fine, grasse, en contour),
+    trois points arrivent à côté d'elle ; coupe : deux lignes posées au centre (« Ton offre. »
+    puis « Bientôt disponible. ») ; coupe : le nom de l'offre en capitales ; coupe au noir.
+    Rôle : l'offre et l'appel d'un teaser (ce qui arrive, quand, où le suivre).
+
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : tout est
+    centré, les tailles se réduisent à la largeur.
+
+    À REMPLACER :
+      1. L'id « t06-bientot » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. NOM (le nom de l'offre ; son initiale anime le début), LIGNES (deux lignes courtes : le
+         nom puis la promesse, « Bientôt disponible. », « Ouverture le 3 novembre. » seulement
+         avec une vraie date de OFFRE.json) et LOGO (chemin d'un logo du projet ; vide = le nom en
+         capitales).
+      3. Couleurs : l'encre est la couleur sombre de la marque si elle en a une ; les trois points
+         prennent l'accent de la marque. --t06-papier en tête du style.
+      Police des titres : celle de la marque (--t06-titres). Marque sans police imposée : la serif
+      du look (Source Serif 4, graisse 600), mode d'emploi dans style.md, section 4.
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t06-bientot {
+      --t06-papier: #e3e4de;
+      --t06-titres: var(--brand-font-display);
+      background: var(--t06-papier);
+    }
+    #t06-bientot canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-bientot .t06-plan { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    #t06-bientot .t06-sigle { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.12em; font: 400 150px/1 var(--t06-titres); letter-spacing: -0.02em; white-space: nowrap; }
+    #t06-bientot .t06-points { display: flex; gap: 0.1em; align-items: center; height: 0.7em; }
+    #t06-bientot .t06-points i { display: block; width: 0.26em; height: 0.26em; border-radius: 50%; }
+    #t06-bientot .t06-barres { display: flex; gap: 0.07em; align-items: stretch; height: 0.72em; }
+    #t06-bientot .t06-barres i { display: block; width: 0.12em; }
+    #t06-bientot .t06-lignes { text-align: center; font: 600 76px/1.2 var(--t06-titres); letter-spacing: -0.015em; white-space: nowrap; }
+    #t06-bientot .t06-lignes div { display: block; }
+    #t06-bientot .t06-nom { font: 700 104px/1 var(--brand-font-display); letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
+    #t06-bientot .t06-nom img { height: 120px; width: auto; display: block; }
+    #t06-bientot .t06-noir { position: absolute; inset: 0; }
+  </style>
+
+  <div data-composition-id="t06-bientot" data-width="1920" data-height="1080" data-duration="3.8" style="position:absolute; inset:0;">
+    <div id="t06-bientot" class="k-scene">
+      <canvas id="t06-bientot-papier"></canvas>
+      <div class="t06-plan" id="t06-bientot-p1"></div>
+      <div class="t06-plan" id="t06-bientot-p2"><div class="t06-lignes" id="t06-bientot-lignes"></div></div>
+      <div class="t06-plan" id="t06-bientot-p3"><div class="t06-nom" id="t06-bientot-nom"></div></div>
+      <div class="t06-noir" id="t06-bientot-noir"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t06-bientot", D = 3.8;
+      var NOM = "Ton offre";
+      var LIGNES = ["Ton offre.", "Bientôt disponible."];
+      var LOGO = ""; // ex. "brand/logo.svg" ; vide : le nom en capitales
+
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
+      var tl = gsap.timeline({ paused: true });
+
+      function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
+      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
+      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE, PAPIER = cs.getPropertyValue("--t06-papier").trim();
+      function papier(c, graine) {
+        c.width = L; c.height = H; var ctx = c.getContext("2d"), r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
+        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
+        ctx.lineCap = "round";
+        for (var f = 0; f < 260; f++) {
+          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
+          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
+        }
+      }
+      papier($("papier"), 23);
+      racine.style.color = ENCRE;
+      $("noir").style.background = ENCRE;
+
+      // 1. Le sigle qui change de forme : l'initiale, puis des barres, puis trois points.
+      var I = NOM.trim().charAt(0).toUpperCase(), p1 = $("p1");
+      var FORMES_SIGLE = [
+        { t: 0.06, poids: 400, contour: false, suite: "" },
+        { t: 0.3, poids: 900, contour: false, suite: "barres" },
+        { t: 0.54, poids: 700, contour: true, suite: "barres" },
+        { t: 0.78, poids: 400, contour: false, suite: "points" }
+      ];
+      var etats = FORMES_SIGLE.map(function (f) {
+        var e = K.el(p1, "div", "t06-sigle");
+        var lettre = K.el(e, "span", "", I, "font-weight:" + f.poids + ";" + (f.contour ? "color:transparent; -webkit-text-stroke:3px " + ENCRE + ";" : ""));
+        if (f.suite === "barres") { var b = K.el(e, "span", "t06-barres"); for (var k = 0; k < 3; k++) K.el(b, "i", "", "", "background:" + ENCRE + ";"); }
+        if (f.suite === "points") { var p = K.el(e, "span", "t06-points"); for (var k2 = 0; k2 < 3; k2++) K.el(p, "i", "", "", "background:" + (k2 === 2 ? ACCENT : ENCRE) + ";"); }
+        return e;
+      });
+      // Une seule forme visible à la fois (coupes franches), chacune centrée.
+      gsap.set(etats, { opacity: 0 });
+      etats.forEach(function (e, i) { tl.set(e, { opacity: 1 }, FORMES_SIGLE[i].t); if (i < etats.length - 1) tl.set(e, { opacity: 0 }, FORMES_SIGLE[i + 1].t); });
+      // les trois points arrivent l'un après l'autre
+      var points = etats[3].querySelectorAll(".t06-points i");
+      gsap.set(points, { scale: 0 });
+      points.forEach(function (p, k) { tl.to(p, { scale: 1, duration: 0.14, ease: "back.out(3)" }, 0.8 + k * 0.12); });
+      tl.set($("p1"), { opacity: 0 }, 1.32);
+
+      // 2. Les deux lignes, posées d'un coup (la deuxième un temps après la première)
+      var lignes = $("lignes");
+      LIGNES.forEach(function (l) { K.el(lignes, "div", "", l); });
+      var ls = lignes.querySelectorAll("div");
+      gsap.set(ls, { opacity: 0 });
+      tl.set(ls[0], { opacity: 1 }, 1.34);
+      if (ls[1]) tl.set(ls[1], { opacity: 1 }, 1.82);
+      tl.fromTo(lignes, { scale: 1 }, { scale: 1.035, duration: 1.3, ease: "none", immediateRender: false }, 1.34);
+      tl.set($("p2"), { opacity: 0 }, 2.66);
+
+      // 3. Le nom (ou le logo), puis coupe au noir
+      var nom = $("nom");
+      nom.innerHTML = LOGO ? '<img src="' + LOGO + '" alt="">' : NOM;
+      gsap.set($("p3"), { opacity: 0 });
+      tl.set($("p3"), { opacity: 1 }, 2.68);
+      tl.fromTo(nom, { scale: 1.04 }, { scale: 1, duration: 0.8, ease: "power2.out", immediateRender: false }, 2.68);
+      gsap.set($("noir"), { opacity: 0 });
+      tl.set($("noir"), { opacity: 1 }, 3.5);
+
+      // Les tailles suivent la largeur (une ligne trop longue se réduit).
+      var csL = getComputedStyle(lignes);
+      document.fonts.load(csL.fontWeight + " " + csL.fontSize + " " + csL.fontFamily).then(poser, poser);
+      function poser() {
+        var maxL = L * 0.8;
+        if (lignes.offsetWidth > maxL) lignes.style.fontSize = (76 * maxL / lignes.offsetWidth).toFixed(1) + "px";
+        if (nom.offsetWidth > maxL) nom.style.fontSize = (104 * maxL / nom.offsetWidth).toFixed(1) + "px";
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

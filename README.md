@@ -51,6 +51,11 @@ pas recadrée.
 5. **Prête à publier** : la vidéo, le texte de publication de chaque plateforme, la couverture ou
    l'affiche, la façon de la poser sur ta page, le calendrier d'un lancement.
 
+**8 templates de vidéos de lancement** : des looks repris de vraies vidéos de logiciels (Firecrawl,
+Polymarket, Cursor…), refaits pour ta marque. « Fais-moi une vidéo dans le template 3 » : ton
+assistant part de ses scènes, avec ton offre et tes couleurs. Une vidéo qui n'est pas dans la liste ?
+Donne son lien (YouTube, TikTok, Instagram, X), il en reprend le rythme et la mise en scène.
+
 Tu retouches chaque vidéo en une phrase. Sur Mac et Windows, l'app HyperFrames (gratuite, en option)
 te permet aussi de la regarder et de la retoucher à la souris.
 

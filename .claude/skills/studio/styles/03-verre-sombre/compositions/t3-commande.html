@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Template n°3 · Interface 3D · scène « Le bon de commande » (l'offre et le prix).
+  Ce qu'elle montre : le bon de commande de ton offre, en verre sombre, incliné en 3D. Il pivote
+  et entre de profil ; la caméra le descend de haut en bas avec une faible profondeur de champ
+  (le haut et le bas de l'image sont flous). Le prix tourne jusqu'à sa valeur, les pastilles de ce
+  qui est inclus s'allument, le curseur fait glisser le nombre de paiements, active le bonus, le
+  total se met à jour, puis il clique sur le bouton, qui se défait en points.
+  Durée : 7,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : le bon se recadre
+  seul (K.cadre), plus grand et moins incliné.
+  À remplacer (objet R en tête du script) : les formules, le nom, le prix, ce qui est inclus, le
+  nombre de paiements possible, le bonus (0 = pas de ligne bonus), le texte du bouton. Uniquement
+  ce que ta vraie page de paiement propose : retire une ligne qui n'existe pas chez toi (paiement
+  en plusieurs fois, bonus), n'invente ni réduction ni prix barré.
+  Couleurs : uniquement var(--brand-*) ; le verre sombre et le bleu nuit se dérivent du fond.
+  Identifiant : t3c (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t3c {
+    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    --t3-lueur: color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 16%, transparent);
+    --t3-verre: color-mix(in oklab, var(--brand-bg) 60%, #000);
+    --t3-police: var(--brand-font-body);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+  }
+  #t3c .t3c-fond {
+    position: absolute; inset: -2px;
+    background:
+      radial-gradient(ellipse 55% 48% at 20% -10%, var(--t3-lueur), transparent 72%),
+      radial-gradient(ellipse 50% 40% at 85% 105%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 10%, transparent), transparent 70%),
+      var(--t3-nuit);
+  }
+  #t3c .t3c-rail { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+  /* Le bon de commande : verre sombre, liseré clair en haut, grande ombre */
+  #t3c .t3c-bon {
+    position: absolute; left: -460px; top: 0; width: 920px; padding: 54px 56px 60px;
+    border-radius: 40px; background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.02) 40%, rgba(255,255,255,.035)), var(--t3-verre);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,255,.26), inset 0 0 0 1.5px rgba(255,255,255,.1), 0 70px 140px rgba(0,0,0,.6), 0 0 120px color-mix(in oklab, var(--brand-accent) 8%, transparent);
+    display: flex; flex-direction: column; gap: 34px;
+  }
+  #t3c .t3c-liseret { position: absolute; inset: 0; border-radius: 40px; pointer-events: none;
+    background: linear-gradient(100deg, rgba(255,255,255,.22), transparent 18%, transparent 82%, rgba(255,255,255,.1)); opacity: .55;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 2px; }
+  #t3c .t3c-voile { position: absolute; inset: 0; border-radius: 40px; pointer-events: none;
+    background: linear-gradient(180deg, rgba(246,247,255,.95), rgba(236,239,255,.7)); }
+  #t3c .t3c-ligne { display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; }
+  #t3c .t3c-onglets { display: flex; gap: 10px; align-items: center; }
+  #t3c .t3c-onglet { padding: 14px 30px; border-radius: 999px; font-size: 28px; font-weight: 600; color: var(--brand-muted); }
+  #t3c .t3c-onglet.t3c-actif { background: #fff; color: #15161a; }
+  #t3c .t3c-menu { font-size: 26px; font-weight: 500; color: var(--brand-muted); display: flex; align-items: center; gap: 8px; opacity: .7; }
+  #t3c .t3c-menu svg { width: 26px; height: 26px; }
+  #t3c .t3c-segment { position: relative; display: flex; border-radius: 999px; padding: 7px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); }
+  #t3c .t3c-seg-pastille { position: absolute; left: 7px; top: 7px; bottom: 7px; width: calc(50% - 7px); border-radius: 999px;
+    background: color-mix(in oklab, var(--brand-accent) 88%, #fff); box-shadow: 0 0 24px color-mix(in oklab, var(--brand-accent) 25%, transparent); }
+  #t3c .t3c-seg { position: relative; flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; font-size: 30px; font-weight: 600; color: var(--brand-muted); }
+  #t3c .t3c-lab { font-size: 31px; font-weight: 600; }
+  #t3c .t3c-sous { font-size: 23px; font-weight: 500; color: var(--brand-muted); margin-top: 6px; }
+  #t3c .t3c-prix { font-size: 112px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; text-shadow: 0 0 30px rgba(255,255,255,.18); }
+  #t3c .t3c-puces { display: flex; gap: 14px; }
+  #t3c .t3c-puce { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 0; border-radius: 18px;
+    background: rgba(255,255,255,.07); font-size: 26px; font-weight: 600; color: color-mix(in oklab, var(--brand-text) 80%, transparent); }
+  #t3c .t3c-puce svg { width: 26px; height: 26px; color: var(--brand-accent); }
+  #t3c .t3c-glisse { display: flex; align-items: center; gap: 28px; }
+  #t3c .t3c-piste { position: relative; flex: 1; height: 12px; border-radius: 6px; background: rgba(255,255,255,.14); }
+  #t3c .t3c-rempli { position: absolute; left: 0; top: 0; height: 100%; width: 100%; border-radius: 6px; background: var(--brand-accent); transform-origin: 0 50%; }
+  #t3c .t3c-bille { position: absolute; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 6px rgba(255,255,255,.08); }
+  #t3c .t3c-cran { position: absolute; top: 30px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: rgba(255,255,255,.3); }
+  #t3c .t3c-valeur { width: 128px; height: 70px; border-radius: 20px; display: grid; place-items: center; font-size: 32px; font-weight: 600;
+    background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 2px rgba(255,255,255,.16); }
+  #t3c .t3c-inter { position: relative; width: 92px; height: 52px; border-radius: 26px; background: rgba(255,255,255,.16); flex: none; }
+  #t3c .t3c-inter-plein { position: absolute; inset: 0; border-radius: 26px; background: var(--brand-accent); opacity: 0; }
+  #t3c .t3c-inter-bille { position: absolute; left: 5px; top: 5px; width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,.35); }
+  #t3c .t3c-bonus { overflow: hidden; }
+  #t3c .t3c-champs { display: flex; gap: 16px; padding-top: 4px; }
+  #t3c .t3c-champ { flex: 1; display: flex; align-items: center; gap: 14px; padding: 22px 26px; border-radius: 20px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.2); font-size: 30px; font-weight: 600; }
+  #t3c .t3c-champ svg { width: 30px; height: 30px; color: var(--brand-accent); }
+  #t3c .t3c-tag svg { width: 24px; height: 24px; display: block; }
+  #t3c .t3c-tag { margin-left: auto; padding: 6px 10px; border-radius: 10px; font-size: 22px; font-weight: 700;
+    color: var(--brand-accent); background: color-mix(in oklab, var(--brand-accent) 16%, transparent); }
+  #t3c .t3c-trait { height: 2px; background: rgba(255,255,255,.16); }
+  #t3c .t3c-res { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 600; }
+  #t3c .t3c-res svg { width: 30px; height: 30px; color: var(--brand-muted); }
+  #t3c .t3c-res .t3c-v { margin-left: auto; }
+  #t3c .t3c-bouton { position: relative; height: 112px; border-radius: 28px; display: grid; place-items: center; font-size: 38px; font-weight: 700;
+    background: var(--brand-accent); color: var(--brand-contrast); box-shadow: 0 0 40px color-mix(in oklab, var(--brand-accent) 30%, transparent); }
+  #t3c .t3c-points-bouton { position: absolute; inset: -6px; border-radius: 32px; opacity: 0;
+    background-image: radial-gradient(circle, color-mix(in oklab, var(--brand-accent) 70%, #fff) 2px, transparent 2.7px); background-size: 11px 11px; }
+  #t3c .t3c-mention { text-align: center; font-size: 22px; font-weight: 500; color: color-mix(in oklab, var(--brand-muted) 65%, var(--brand-text)); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: -12px; }
+  #t3c .t3c-mention svg { width: 22px; height: 22px; }
+  /* Profondeur de champ en écran : le haut et le bas de l'image passent au flou */
+  #t3c .t3c-flou { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 60; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
+  #t3c .t3c-flou-haut { top: 0; height: 34%; -webkit-mask-image: linear-gradient(#000 25%, transparent); mask-image: linear-gradient(#000 25%, transparent); }
+  #t3c .t3c-flou-bas { bottom: 0; height: 34%; -webkit-mask-image: linear-gradient(transparent, #000 75%); mask-image: linear-gradient(transparent, #000 75%); }
+  #t3c .t3c-ombre { position: absolute; inset: 0; pointer-events: none; z-index: 61;
+    background: linear-gradient(var(--t3-nuit), transparent 22%, transparent 78%, var(--t3-nuit)); opacity: .55; }
+  #t3c .t3c-eclat { position: absolute; left: 50%; top: 50%; width: 1500px; height: 900px; margin: -450px 0 0 -750px; border-radius: 50%; z-index: 62; pointer-events: none;
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in oklab, var(--brand-accent) 30%, transparent), transparent 70%); opacity: 0; }
+</style>
+
+<div data-composition-id="t3c" data-width="1920" data-height="1080" data-duration="7.2" style="position:absolute; inset:0;">
+  <div id="t3c" class="k-scene">
+    <div class="t3c-fond"></div>
+    <div class="k-scene3d" id="t3c-3d"><div class="k-camera" id="t3c-cam">
+      <div class="t3c-rail" id="t3c-rail">
+        <div class="t3c-bon" id="t3c-bon">
+          <div class="t3c-ligne" id="t3c-l-entete">
+            <div class="t3c-onglets" id="t3c-formules"></div>
+            <div class="t3c-menu" id="t3c-menu"></div>
+          </div>
+          <div class="t3c-segment" id="t3c-segment"><div class="t3c-seg-pastille" id="t3c-seg-pastille"></div><div class="t3c-seg" id="t3c-seg-1"></div><div class="t3c-seg" id="t3c-seg-2"></div></div>
+          <div class="t3c-ligne" id="t3c-l-prix">
+            <div><div class="t3c-lab" id="t3c-nom"></div><div class="t3c-sous" id="t3c-acces"></div></div>
+            <div class="t3c-prix" id="t3c-prix"></div>
+          </div>
+          <div class="t3c-puces" id="t3c-puces"></div>
+          <div id="t3c-l-fois">
+            <div class="t3c-lab" id="t3c-fois-lab" style="margin-bottom:22px"></div>
+            <div class="t3c-glisse">
+              <div class="t3c-piste" id="t3c-piste"><div class="t3c-rempli" id="t3c-rempli"></div><div class="t3c-bille" id="t3c-bille"></div></div>
+              <div class="t3c-valeur" id="t3c-valeur"></div>
+            </div>
+          </div>
+          <div class="t3c-ligne" id="t3c-l-bonus"><div class="t3c-lab" id="t3c-bonus-lab"></div>
+            <div class="t3c-inter" id="t3c-inter"><div class="t3c-inter-plein" id="t3c-inter-plein"></div><div class="t3c-inter-bille" id="t3c-inter-bille"></div></div>
+          </div>
+          <div class="t3c-bonus" id="t3c-bonus"><div class="t3c-champs" id="t3c-champs"></div></div>
+          <div class="t3c-trait"></div>
+          <div class="t3c-res" id="t3c-l-auj"></div>
+          <div class="t3c-res" id="t3c-l-total"></div>
+          <div class="t3c-bouton" id="t3c-bouton"><span id="t3c-bouton-texte"></span><div class="t3c-points-bouton" id="t3c-points-bouton"></div></div>
+          <div class="t3c-mention" id="t3c-mention"></div>
+          <div class="t3c-liseret"></div>
+          <div class="t3c-voile" id="t3c-voile"></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="t3c-flou t3c-flou-haut"></div>
+    <div class="t3c-flou t3c-flou-bas"></div>
+    <div class="t3c-ombre"></div>
+    <div class="t3c-eclat" id="t3c-eclat"></div>
+    <div class="k-vignette" style="z-index:63"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- À remplacer : ce que montre ta vraie page de paiement ---------------------------------
+  var R = {
+    formules: ["Essentiel", "Complet"],          // la 2e est active ; [] pour retirer la ligne
+    menu: "Accès à vie",                         // petit menu à droite ("" pour le retirer)
+    paiements: ["Paiement unique", "En plusieurs fois"],
+    nom: "Ton offre",
+    acces: "Accès immédiat",
+    prix: 99,                                    // prix TTC réel, en euros
+    inclus: [["play", "Vidéos"], ["file-text", "Modèles"], ["users", "Groupe"], ["gift", "Bonus"]],
+    foisMax: 3,                                  // paiement en 1 à N fois (1 = retire le curseur)
+    foisLab: "Nombre de paiements",
+    bonus: 27, bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // bonus: 0 = pas de ligne bonus
+    aujourdhui: "Aujourd'hui", total: "Total",
+    bouton: "Je rejoins",
+    mention: "Paiement sécurisé"
+  };
+  var euros = function (v) { var r = Math.round(v * 100) / 100; return (r % 1 ? r.toFixed(2).replace(".", ",") : String(r)) + " €"; };
+  // -------------------------------------------------------------------------------------------
+  var D = 7.2;
+  var $ = function (id) { return document.getElementById(id); };
+  var cadre = K.cadre($("t3c")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+
+  // Construction depuis R
+  R.formules.forEach(function (f, i) { K.el($("t3c-formules"), "div", "t3c-onglet" + (i === R.formules.length - 1 ? " t3c-actif" : ""), f); });
+  if (!R.formules.length) $("t3c-formules").style.visibility = "hidden";
+  $("t3c-menu").innerHTML = R.menu ? "<span>" + R.menu + "</span>" + K.ic("arrow-right").replace("<svg", '<svg style="transform:rotate(90deg)"') : "";
+  $("t3c-seg-1").textContent = R.paiements[0]; $("t3c-seg-2").textContent = R.paiements[1];
+  $("t3c-nom").textContent = R.nom; $("t3c-acces").textContent = R.acces;
+  R.inclus.forEach(function (p) { K.el($("t3c-puces"), "div", "t3c-puce", K.ic(p[0]) + "<span>" + p[1] + "</span>"); });
+  $("t3c-fois-lab").textContent = R.foisLab;
+  for (var c = 0; c < R.foisMax; c++) K.el($("t3c-piste"), "div", "t3c-cran", null, "left:" + (R.foisMax > 1 ? (c / (R.foisMax - 1)) * 100 : 0) + "%");
+  if (R.foisMax <= 1) $("t3c-l-fois").style.display = "none";
+  $("t3c-bonus-lab").textContent = R.bonusLab;
+  $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + R.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + euros(R.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
+  if (!R.bonus) { $("t3c-l-bonus").style.display = "none"; $("t3c-bonus").style.display = "none"; }
+  $("t3c-l-auj").innerHTML = K.ic("calendar") + "<span>" + R.aujourdhui + '</span><span class="t3c-v" id="t3c-v-auj"></span>';
+  $("t3c-l-total").innerHTML = K.ic("wallet") + "<span>" + R.total + '</span><span class="t3c-v" id="t3c-v-total"></span>';
+  $("t3c-bouton-texte").textContent = R.bouton;
+  $("t3c-mention").innerHTML = K.ic("lock") + "<span>" + R.mention + "</span>";
+  var curseur = K.curseur($("t3c-bon"), "t3c-curseur", false);
+  var css = getComputedStyle($("t3c"));
+  var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
+  gsap.set("#t3c-seg-1", { color: C("--brand-contrast", "#202022") });
+  gsap.set("#t3c-seg-2", { color: C("--brand-muted", "#a1a1a2") });
+
+  // États de départ
+  var cam = { rx: 22, ry: -10, rz: -3, s: vertical ? 1.02 : 1.22 };
+  gsap.set("#t3c-cam", { rotationX: cam.rx, rotationY: cam.ry, rotationZ: cam.rz, scale: cam.s });
+  gsap.set("#t3c-bon", { rotationY: 87, x: 320, opacity: 0, filter: "blur(10px)", transformOrigin: "50% 0%" });
+  gsap.set("#t3c-rempli", { scaleX: 0 });
+  gsap.set("#t3c-bonus", { height: 0 });
+  K.cacher(curseur);
+
+  function construire() {
+    var tl = gsap.timeline({ paused: true });
+    var bon = $("t3c-bon");
+    var y = function (el) { var v = 0; while (el && el !== bon) { v += el.offsetTop; el = el.offsetParent; } return v; };
+    var x = function (el) { var v = 0; while (el && el !== bon) { v += el.offsetLeft; el = el.offsetParent; } return v; };
+    var milieu = function (id) { var e = $(id); return y(e) + e.offsetHeight / 2; };
+    var hBonus = $("t3c-champs").offsetHeight + 4;
+    // la caméra suit un point du bon (repère du bon, avant l'ouverture du bonus)
+    // en vertical, le point suivi monte au-dessus du milieu : le bon remplit le haut de l'image
+    var haut = vertical ? H * 0.13 : 0;
+    var vise = function (t, cible, duree, ease) { tl.to("#t3c-rail", { y: -cible - haut, duration: duree, ease: ease || "power3.inOut" }, t); };
+    gsap.set("#t3c-rail", { y: -(milieu("t3c-l-prix") - 60) - haut });
+
+    // 1. Le bon pivote et entre (0 → 0,7 s)
+    tl.to("#t3c-bon", { opacity: 1, duration: 0.12, ease: "power1.out" }, 0.0);
+    tl.to("#t3c-bon", { rotationY: 0, x: 0, duration: 0.8, ease: "power4.inOut" }, 0.0);
+    tl.to("#t3c-bon", { filter: "blur(0px)", duration: 0.45, ease: "power2.out" }, 0.3);
+    tl.to("#t3c-voile", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 0.3);
+    var lignes = ["#t3c-l-entete", "#t3c-segment", "#t3c-l-prix", "#t3c-puces"];
+    tl.fromTo(lignes, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.08 }, 0.22);
+    var arrondi = function (cible) { return function (v) { return euros(Math.abs(v - cible) < 0.005 ? cible : Math.round(v)); }; };
+    K.compteur(tl, $("t3c-prix"), 0, R.prix, 0.45, 0.9, D, arrondi(R.prix), "expo.out");
+    tl.to("#t3c-cam", { rotationY: -5, rotationZ: -1.5, duration: D, ease: "sine.inOut" }, 0);
+    // ce qui est inclus s'allume, une puce après l'autre
+    tl.fromTo("#t3c-puces .t3c-puce", { backgroundColor: "rgba(255,255,255,0.07)" },
+      { backgroundColor: "rgba(255,255,255,0.15)", duration: 0.25, ease: "power2.out", stagger: 0.1 }, 0.95);
+    tl.fromTo("#t3c-puces svg", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.4)", stagger: 0.1 }, 0.95);
+
+    // 2. Le nombre de paiements (1,3 → 3,0 s)
+    var piste = $("t3c-piste"), wPiste = piste.offsetWidth, px = x(piste), py = y(piste) + 6;
+    var aujourdhui = function (fois, bonus) { return euros((R.prix + (bonus ? R.bonus : 0)) / fois); };
+    vise(1.25, milieu("t3c-l-fois"), 0.75);
+    tl.to("#t3c-cam", { scale: cam.s * 1.12, duration: 0.75, ease: "power3.inOut" }, 1.25);
+    K.trajet(tl, curseur, [[0, px + wPiste * 0.55, py + 260], [1.45, px + 4, py + 6, 0.5, "power3.out"]]);
+    tl.to(curseur, { opacity: 1, duration: 0.2 }, 1.45);
+    K.clic(tl, curseur, 2.0);
+    tl.fromTo("#t3c-bille", { x: 0 }, { x: wPiste, duration: 0.95, ease: "power2.inOut" }, 2.08);
+    tl.fromTo("#t3c-rempli", { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: "power2.inOut" }, 2.08);
+    tl.to(curseur, { x: px + wPiste + 4, duration: 0.95, ease: "power2.inOut" }, 2.08);
+    var fois = function (t) { var v = t < 2.08 ? 0 : t > 3.03 ? 1 : gsap.parseEase("power2.inOut")((t - 2.08) / 0.95); return 1 + Math.round(v * (R.foisMax - 1)); };
+    K.texteSelon(tl, $("t3c-valeur"), D, function (t) { return fois(t) + "×"; });
+    tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 2.55);
+    if (R.foisMax > 1) {
+      var wSeg = $("t3c-seg-1").offsetWidth;
+      tl.to("#t3c-seg-pastille", { x: wSeg, duration: 0.4, ease: "power3.inOut" }, 2.5);
+      tl.to("#t3c-seg-1", { color: C("--brand-muted", "#a1a1a2"), duration: 0.3 }, 2.55);
+      tl.to("#t3c-seg-2", { color: C("--brand-contrast", "#202022"), duration: 0.3 }, 2.55);
+    }
+    tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 2.98);
+
+    // 3. Le bonus (3,0 → 4,4 s)
+    var ix = x($("t3c-inter")), iy = y($("t3c-inter"));
+    vise(3.05, milieu("t3c-l-bonus") + hBonus / 2, 0.7);
+    tl.to(curseur, { x: ix + 62, y: iy + 30, duration: 0.6, ease: "power3.inOut" }, 3.1);
+    K.clic(tl, curseur, 3.72);
+    tl.to("#t3c-inter-bille", { x: 40, duration: 0.28, ease: "power3.inOut" }, 3.76);
+    tl.to("#t3c-inter-plein", { opacity: 1, duration: 0.28, ease: "power2.out" }, 3.76);
+    tl.to("#t3c-bonus", { height: hBonus, duration: 0.5, ease: "expo.out" }, 3.85);
+    tl.fromTo("#t3c-champs .t3c-champ", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.8)", stagger: 0.09 }, 3.9);
+
+    // 4. Le total et le bouton (4,4 → 6,3 s)
+    K.texteSelon(tl, $("t3c-v-auj"), D, function (t) { return aujourdhui(fois(t), t >= 4.5); });
+    K.compteur(tl, $("t3c-v-total"), R.prix, R.prix + R.bonus, 4.5, 0.7, D, arrondi(R.prix + R.bonus), "expo.out");
+    var by = milieu("t3c-bouton") + hBonus, bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
+    vise(4.35, milieu("t3c-l-total") + hBonus - 40, 0.75);
+    vise(5.15, by - 30, 0.7);
+    tl.to("#t3c-cam", { scale: cam.s * 1.2, rotationX: cam.rx - 4, duration: 1.3, ease: "power2.inOut" }, 4.6);
+    tl.to(curseur, { x: bx, y: by + 6, duration: 0.75, ease: "power3.inOut" }, 5.1);
+    K.clic(tl, curseur, 5.92);
+    tl.to("#t3c-bouton", { scale: 0.965, duration: 0.08, ease: "power2.out" }, 5.92);
+    tl.to("#t3c-bouton", { scale: 1, duration: 0.3, ease: "back.out(3)" }, 6.0);
+    tl.fromTo("#t3c-eclat", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1.2, duration: 0.5, ease: "expo.out" }, 5.95);
+
+    // 5. Le bouton se défait en points, le bon s'éloigne (6,3 → 7,6 s)
+    tl.to("#t3c-points-bouton", { opacity: 1, duration: 0.2, ease: "power1.out" }, 6.3);
+    tl.to("#t3c-bouton", { backgroundColor: "rgba(0,0,0,0)", boxShadow: "0 0 0 rgba(0,0,0,0)", color: "rgba(255,255,255,0)", duration: 0.35, ease: "power2.in" }, 6.32);
+    tl.to("#t3c-points-bouton", { opacity: 0, y: -30, scaleY: 1.4, filter: "blur(3px)", duration: 0.6, ease: "power2.in" }, 6.6);
+    tl.to(curseur, { opacity: 0, duration: 0.25 }, 6.4);
+    tl.to("#t3c-bon", { opacity: 0, z: -400, filter: "blur(6px)", duration: 0.55, ease: "power3.in" }, 6.6);
+    tl.to("#t3c-eclat", { opacity: 0, scale: 1.6, duration: 0.55, ease: "power2.in" }, 6.6);
+    window.__timelines["t3c"] = tl;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(construire); else construire();
+})();
+</script>
+</template>
+</body>
+</html>

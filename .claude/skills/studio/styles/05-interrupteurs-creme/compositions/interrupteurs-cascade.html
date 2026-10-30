@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°5 « INTERRUPTEURS » · SCÈNE 1 : LES INTERRUPTEURS EN CASCADE (6,5 s)
+
+    Ce qu'elle montre : un panneau de réglages de l'offre, vu de très près sur un papier crème. Une
+    main clique l'interrupteur maître, les sept interrupteurs s'allument en cascade. La caméra
+    recule et glisse : le panneau part au bord gauche, la phrase s'écrit au centre, un trait à main
+    levée entoure les mots clés, puis les disques des membres apparaissent à droite. Le trait
+    repart par le haut (il revient dans la scène 2, « trait-qui-relie »).
+    Rôle : l'accroche d'une annonce (nouveau module, bonus, fonction), ou la démonstration « un
+    clic suffit ».
+
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine (1080 × 1920) :
+    la scène se remet en page seule (panneau en haut, phrase au milieu, membres en bas).
+
+    À REMPLACER :
+      1. L'id « t05-cascade » partout (rechercher-remplacer) par l'id de la scène (s1, s2…), le même
+         que l'hôte dans index.html.
+      2. L'onglet (« Ton offre ») et l'interrupteur maître (« Tout activer ») : le nom de l'offre ou
+         de la partie annoncée.
+      3. Les RANGS (tableau en tête du script) : les vrais éléments de l'offre (modules, bonus,
+         fonctions), 5 à 7, avec une icône du kit (K.ic). Si l'offre branche des outils, leurs vrais
+         logos (studio_motion.py logos), comme l'original.
+      4. La phrase (les deux span.t05-ligne du HTML, 6 mots au plus) et les mots que le trait
+         entoure (le span.t05-cle) : ce que la vidéo annonce, tiré de OFFRE.json.
+      5. Les couleurs du look, en tête du style : --t05-papier (le crème), --t05-carte, --t05-encre.
+         L'interrupteur allumé et les icônes prennent l'accent de la marque ; le trait aussi, sauf si
+         l'accent est trop pâle sur le crème (jaune, pastel) : il passe alors à l'encre, tout seul.
+      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
+      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t05-cascade {
+      --t05-papier: #efefe5;   /* le fond crème du look */
+      --t05-carte: #f9f9f4;    /* panneau, disques */
+      --t05-pli: #e4e4d8;      /* onglet, rails éteints */
+      --t05-encre: #1d1d1b;    /* textes sur le papier */
+      --t05-gris: #8a8a82;     /* icônes des membres, filets */
+      --t05-allume: var(--brand-accent);
+      --t05-titres: var(--brand-font-display);
+      --t05-texte: var(--brand-font-body);
+      background: var(--t05-papier);
+    }
+    #t05-cascade .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t05-cascade .t05-onglet {
+      position: absolute; height: 88px; width: 400px; border-radius: 24px; background: var(--t05-pli);
+      display: flex; align-items: center; gap: 16px; padding-left: 36px;
+      font: 500 33px/1 var(--t05-texte); color: var(--t05-encre); letter-spacing: -0.01em;
+    }
+    #t05-cascade .t05-onglet svg { width: 34px; height: 34px; }
+    #t05-cascade .t05-panneau {
+      position: absolute; width: 632px; height: 743px; border-radius: 24px; background: var(--t05-carte);
+      box-shadow: inset 0 0 0 1.5px rgba(40, 40, 20, 0.08), 0 22px 50px rgba(60, 60, 30, 0.10), 0 3px 10px rgba(60, 60, 30, 0.05);
+    }
+    #t05-cascade .t05-rang {
+      position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
+      display: flex; align-items: center; gap: 16px; white-space: nowrap;
+      font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
+    }
+    #t05-cascade .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
+    #t05-cascade .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(30, 30, 20, 0.14); }
+    #t05-cascade .t05-ico {
+      width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center;
+      background: var(--brand-accent); color: var(--brand-contrast);
+    }
+    #t05-cascade .t05-ico svg { width: 21px; height: 21px; }
+    #t05-cascade .t05-inter {
+      position: absolute; right: 0; top: 12px; width: 62px; height: 36px; border-radius: 18px;
+      background: var(--t05-pli);
+    }
+    #t05-cascade .t05-plein {
+      position: absolute; inset: 0; border-radius: 18px; background: var(--t05-allume);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+    }
+    #t05-cascade .t05-bille {
+      position: absolute; left: 3px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+    #t05-cascade .t05-membre {
+      position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
+      background: var(--t05-carte); color: var(--t05-gris); display: grid; place-items: center;
+      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+    }
+    #t05-cascade .t05-membre svg { width: 50%; height: 50%; }
+    #t05-cascade .t05-titre {
+      position: absolute; width: 1200px; text-align: center; white-space: nowrap;
+      font: 400 72px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
+    }
+    #t05-cascade .t05-ligne { display: block; }
+    #t05-cascade .t05-mot, #t05-cascade .t05-cle { display: inline-block; }
+    #t05-cascade .t05-traits { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+    #t05-cascade .t05-traits path { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+    #t05-cascade .t05-main { position: absolute; left: 0; top: 0; width: 100px; height: 115px; margin: -5px 0 0 -40px; z-index: 80; }
+    #t05-cascade .t05-main svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
+  </style>
+
+  <div data-composition-id="t05-cascade" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+    <div id="t05-cascade" class="k-scene">
+      <div class="t05-cam" id="t05-cascade-cam" data-layout-allow-overflow>
+        <div class="t05-onglet" id="t05-cascade-onglet" data-layout-allow-overflow><span id="t05-cascade-onglet-ic"></span><span>Ton offre</span></div>
+        <div class="t05-panneau" id="t05-cascade-panneau" data-layout-allow-overflow>
+          <div class="t05-rang t05-tete" style="top:76px;"><span>Tout activer</span>
+            <div class="t05-inter" id="t05-cascade-maitre"><div class="t05-plein"></div><div class="t05-bille"></div></div>
+          </div>
+          <div class="t05-filet" style="top:132px;"></div>
+          <div id="t05-cascade-rangs"></div>
+        </div>
+        <div id="t05-cascade-membres"></div>
+        <div class="t05-titre" id="t05-cascade-titre">
+          <span class="t05-ligne"><span class="t05-mot">Tout</span> <span class="t05-mot">ton</span> <span class="t05-mot">programme</span></span>
+          <span class="t05-ligne"><span class="t05-mot">en</span> <span class="t05-cle"><span class="t05-mot">un</span> <span class="t05-mot">clic</span></span></span>
+          <svg class="t05-traits" id="t05-cascade-traits" width="10" height="10" data-layout-allow-overflow>
+            <defs>
+              <filter id="t05-cascade-rugueux" x="-20%" y="-20%" width="140%" height="140%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="bruit"/>
+                <feDisplacementMap in="SourceGraphic" in2="bruit" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+            <path id="t05-cascade-boucle" filter="url(#t05-cascade-rugueux)"/>
+          </svg>
+        </div>
+      </div>
+      <div id="t05-cascade-main-hote" style="position:absolute; inset:0; z-index:70;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t05-cascade", D = 6.5;
+      // Les éléments de l'offre, de haut en bas : [icône du kit, texte]. 5 à 7 rangs.
+      var RANGS = [
+        ["book-open", "Module 1 · Les bases"],
+        ["play", "Les vidéos"],
+        ["list-checks", "Les exercices"],
+        ["file-text", "Les modèles"],
+        ["users", "La communauté"],
+        ["calendar", "Les lives"],
+        ["gift", "Les bonus"]
+      ];
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cam = $("cam"), panneau = $("panneau"), onglet = $("onglet");
+      var titre = $("titre"), svg = $("traits"), boucle = $("boucle");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Outils du look (communs aux scènes du template 5) ---------------------------------
+      // La couleur du trait : l'accent s'il se voit sur le papier (contraste 2 ou plus), sinon l'encre.
+      function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
+      function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
+      function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--t05-papier"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
+      // Courbe lisse passant par des points (Catmull-Rom vers Bézier).
+      function chemin(p, n) { var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1); for (var i = 0; i < Math.min(p.length - 1, n == null ? 1e9 : n); i++) { var a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c; d += " C" + (b[0] + (c[0] - a[0]) / 6).toFixed(1) + " " + (b[1] + (c[1] - a[1]) / 6).toFixed(1) + " " + (c[0] - (e[0] - b[0]) / 6).toFixed(1) + " " + (c[1] - (e[1] - b[1]) / 6).toFixed(1) + " " + c[0].toFixed(1) + " " + c[1].toFixed(1); } return d; }
+      // Longueur du même chemin jusqu'au point n (mêmes points de contrôle que le chemin entier).
+      function longueur(p, n) { var t = document.createElementNS("http://www.w3.org/2000/svg", "path"); t.setAttribute("d", chemin(p, n)); svg.appendChild(t); var l = t.getTotalLength(); svg.removeChild(t); return l; }
+      // Un trait dont on montre le morceau [a, b] de sa longueur : il se dessine, voyage, repart.
+      function morceau(path) { var Lp = path.getTotalLength(); return function (a, b) { var d = Math.max(0, b - a); path.style.strokeDasharray = d.toFixed(1) + " " + (Lp + 20).toFixed(0); path.style.strokeDashoffset = (-a).toFixed(1); path.style.opacity = d > 0.5 ? "1" : "0"; }; }
+      // Valeur au temps t d'après des clés [[t, valeur, courbe], …] (fonction pure du temps).
+      function cle(cles, t) { if (t <= cles[0][0]) return cles[0][1]; for (var i = 1; i < cles.length; i++) { if (t <= cles[i][0]) { var a = cles[i - 1], b = cles[i], p = (t - a[0]) / (b[0] - a[0]); p = gsap.parseEase(b[2] || "power2.inOut")(p); return a[1] + (b[1] - a[1]) * p; } } return cles[cles.length - 1][1]; }
+      function selon(fn) { var o = { t: 0 }; tl.to(o, { t: D, duration: D, ease: "none", onUpdate: function () { fn(o.t); } }, 0); fn(0); }
+      // La main : un pointeur dessiné, sa pointe est son point actif.
+      function main(hote) {
+        var e = K.el(hote, "div", "t05-main");
+        e.id = ID + "-main";
+        e.setAttribute("data-layout-allow-overflow", "");
+        e.innerHTML = '<svg viewBox="0 0 40 46"><path d="M13 5C13 3.3 14.3 2 16 2C17.7 2 19 3.3 19 5L19 16.5C19.6 16.2 20.3 16 21 16C22.7 16 24 17.2 24.3 18.6C24.9 18.2 25.6 18 26.4 18C28 18 29.3 19.2 29.6 20.6C30.2 20.2 30.9 20 31.6 20C33.5 20 35 21.5 35 23.4L35 31C35 37.1 30.1 42 24 42L21.6 42C18.6 42 15.8 40.6 14 38.2L6.3 28.3C5.2 26.9 5.5 24.9 6.9 23.9C8.2 22.9 10 23.1 11 24.3L13 26.8Z" fill="#fff" stroke="#151515" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 16.5V24M24.3 18.6V25M29.6 20.6V26" fill="none" stroke="#151515" stroke-width="1.5" stroke-linecap="round"/></svg>';
+        gsap.set(e.querySelector("svg"), { transformOrigin: "40% 4%" });
+        return e;
+      }
+      // Caméra : échelle s autour du point P du monde, qui se pose au point V de l'image.
+      function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
+      function recadre(t, s, P, V, duree, ease) { tl.to(cam, Object.assign(vers(s, P, V), { duration: duree || 0.7, ease: ease || "expo.inOut" }), t); }
+      function clic(e, t) { var s = e.querySelector("svg"); tl.to(s, { scale: 0.86, duration: 0.08, ease: "power2.out" }, t).to(s, { scale: 1, duration: 0.25, ease: "back.out(3)" }, t + 0.08); }
+      function allumer(inter, t, duree) {
+        var plein = inter.querySelector(".t05-plein"), bille = inter.querySelector(".t05-bille");
+        tl.to(bille, { x: 26, duration: duree || 0.24, ease: "power3.inOut" }, t);
+        tl.to(plein, { opacity: 1, duration: (duree || 0.24) * 0.8, ease: "power2.out" }, t);
+        tl.fromTo(inter, { scale: 1 }, { scale: 1.07, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, t + 0.04);
+      }
+
+      // --- Mise en page : 16:9 (panneau au bord gauche) ou 9:16 (panneau en haut) -----------
+      var P = vertical ? { x: 224, y: 150 } : { x: -251, y: 172 };   // panneau, après le recul
+      var T = vertical ? { x: L / 2, y: 1210 } : { x: L / 2, y: 540 }; // centre de la phrase
+      var membres = [];
+      if (vertical) { for (var c = 0; c < 4; c++) for (var r2 = 0; r2 < 2; r2++) membres.push([182 + c * 238, 1635 + r2 * 238]); }
+      else { for (var c2 = 0; c2 < 2; c2++) for (var r = 0; r < 5; r++) membres.push([1606 + c2 * 235, 70 + r * 235]); }
+      gsap.set(panneau, { left: P.x, top: P.y });
+      gsap.set(onglet, { left: P.x - 332, top: P.y + 76 - 44 });
+      if (vertical) titre.style.fontSize = "84px";
+      gsap.set(titre, { left: T.x - 600, top: T.y - 79 });
+      if (vertical) gsap.set(onglet, { opacity: 0 });
+
+      // L'interrupteur maître en gros plan, puis le recul : caméra (échelle, x, y) calculée pour que
+      // l'interrupteur maître tombe au même endroit de l'image qu'à l'origine.
+      var maitre = { x: P.x + 632 - 86, y: P.y + 76 };
+      var s0 = vertical ? 1.45 : 1.68;
+      var vise = vertical ? { x: 820, y: 430 } : { x: 1628, y: 307 };
+      var cam0 = { scale: s0, x: vise.x - L / 2 - s0 * (maitre.x - L / 2), y: vise.y - H / 2 - s0 * (maitre.y - H / 2) };
+      gsap.set(cam, cam0);
+
+      // Les rangs
+      var hoteRangs = $("rangs"), inters = [];
+      RANGS.forEach(function (r, i) {
+        var e = K.el(hoteRangs, "div", "t05-rang", '<span class="t05-ico">' + K.ic(r[0]) + "</span><span>" + r[1] + '</span><div class="t05-inter"><div class="t05-plein"></div><div class="t05-bille"></div></div>', "top:" + (195 + i * 77.5) + "px;");
+        inters.push(e.querySelector(".t05-inter"));
+      });
+      $("onglet-ic").innerHTML = K.ic("layers");
+      gsap.set(racine.querySelectorAll(".t05-plein"), { opacity: 0 });
+
+      // Les disques des membres (ils restent pour la scène 2)
+      var hoteM = $("membres"), discs = [];
+      var icMembre = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9.6"/><circle cx="12" cy="9.6" r="3.4"/><path d="M6.4 18.6a7 7 0 0 1 11.2 0"/></svg>';
+      membres.forEach(function (m, i) { var e = K.el(hoteM, "div", "t05-membre", icMembre, "left:" + m[0] + "px; top:" + m[1] + "px;"); e.setAttribute("data-layout-allow-overflow", ""); discs.push(e); });
+      K.cacher(discs, { scale: 0.4 });
+
+      // --- La main et la cascade ------------------------------------------------------------
+      var hand = main($("main-hote"));
+      var mx = vise.x + 18, my = vise.y + 8; // la pointe sur la moitié droite de l'interrupteur
+      gsap.set(hand, { x: L + 120, y: vertical ? 760 : 620 });
+      tl.to(hand, { x: mx, y: my, duration: 0.75, ease: "power3.out" }, 0.15);
+      clic(hand, 0.95);
+      allumer($("maitre"), 0.98, 0.28);
+      inters.forEach(function (inter, i) { allumer(inter, 1.18 + i * 0.105); });
+      tl.to(hand, { x: mx + 60, y: my + 150, duration: 0.5, ease: "power2.inOut" }, 1.55);
+      tl.to(hand, { x: L + 160, y: my + 260, duration: 0.6, ease: "power3.in" }, 2.05);
+
+      // --- Le recul : le panneau part au bord, la phrase arrive ------------------------------
+      // La caméra vit : approche lente, petit coup au clic, elle descend avec la cascade, puis le recul.
+      var M = [maitre.x, maitre.y], V = [vise.x, vise.y];
+      recadre(0.1, s0 * 1.05, M, V, 0.85, "power2.inOut");
+      recadre(0.95, s0 * 1.1, M, V, 0.14, "power2.out");
+      recadre(1.09, s0 * 1.05, M, V, 0.36, "power2.out");
+      recadre(1.45, s0 * 1.05, M, [vise.x, vise.y - (vertical ? 120 : 250)], 0.7, "power2.inOut");
+      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.85, ease: "expo.inOut" }, 2.15);
+      // Recadrages doux, avec un léger glissement de côté (un zoom au centre seul ne se voit pas).
+      recadre(3.1, 1.06, [L / 2, H / 2], [L / 2 + (vertical ? 0 : 95), H / 2 + (vertical ? 70 : 0)], 0.55, "expo.inOut");
+      var lignes = titre.querySelectorAll(".t05-ligne");
+      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.85, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+      K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 3.2, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+      // Les membres arrivent en vague, du haut vers le bas
+      discs.forEach(function (d, i) { tl.to(d, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 4.25 + i * 0.07); });
+      // Sortie de la phrase (le trait est déjà reparti)
+      K.sortieMots(tl, titre.querySelectorAll(".t05-mot"), 5.75, { y: -10, flou: 12, duree: 0.4, decalage: 0.035 });
+
+      // --- Le trait à main levée : il entoure les mots clés, puis repart par le haut ----------
+      // Construit après le chargement des polices (on mesure les mots clés).
+      var cs = getComputedStyle(titre);
+      document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(construireTrait, construireTrait);
+      function construireTrait() {
+        // Une phrase trop large pour tenir entre le panneau et les membres se réduit.
+        var large = 0; lignes.forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
+        var maxL = vertical ? L - 120 : 900;
+        var fs0 = parseFloat(getComputedStyle(titre).fontSize);
+        if (large > maxL) titre.style.fontSize = (fs0 * Math.max(maxL / large, 0.7)).toFixed(1) + "px";
+        var cleEl = titre.querySelector(".t05-cle");
+        var x = cleEl.offsetLeft, y = cleEl.offsetTop, w = cleEl.offsetWidth, h = cleEl.offsetHeight; // relatifs à la phrase (son parent positionné)
+        var cx = x + w / 2, cy = y + h * 0.6, rx = w / 2 + 36, ry = h * 0.42 + 10, rng = K.rng(11), pts = [];
+        // Entrée par la gauche sous la ligne (points 0 et 1), un tour complet avec un peu de
+        // recouvrement (points 2 à 18), puis la queue qui continue de tourner et file hors de l'image
+        // par le haut à droite (elle revient dans la scène 2).
+        pts.push([x - 220, cy + ry * 0.95], [x - 100, cy + ry * 1.04]);
+        var a0 = Math.PI / 2 + 0.25, tour = Math.PI * 2 + 0.55;
+        for (var i = 0; i <= 16; i++) {
+          var a = a0 - (i / 16) * tour, j = 1 + (rng() - 0.5) * 0.05;
+          pts.push([cx + Math.cos(a) * rx * j, cy + Math.sin(a) * ry * j]);
+        }
+        // La queue passe à droite de la phrase (jamais à travers), puis monte hors de l'image.
+        var mots1 = lignes[0].querySelectorAll(".t05-mot"), dernier = mots1[mots1.length - 1];
+        var droite = Math.max(dernier.offsetLeft + dernier.offsetWidth, cx + rx) + 70;
+        pts.push([cx + rx * 0.75, cy + ry * 1.25], [droite, cy + ry * 0.3], [droite + 70, y - 150], [droite + 10, -titre.offsetTop - 240]);
+        boucle.setAttribute("d", chemin(pts));
+        boucle.setAttribute("stroke", couleurTrait());
+        var montrer = morceau(boucle), Ltot = boucle.getTotalLength();
+        var Lentree = longueur(pts, 2), Lboucle = longueur(pts, 18);
+        // Quand la boucle se ferme, la caméra s'approche des mots entourés, puis revient au plan large.
+        var CLE = [titre.offsetLeft + cx, titre.offsetTop + cy];
+        recadre(3.95, 1.13, CLE, [L / 2, H / 2 + (vertical ? 120 : 0)], 0.7, "expo.inOut");
+        recadre(5.05, 1, CLE, CLE, 0.8, "expo.inOut");
+        selon(function (t) {
+          var b = cle([[3.45, 0], [4.25, Lboucle, "power2.inOut"], [5.15, Lboucle, "none"], [5.9, Ltot, "power2.in"]], t);
+          var a = cle([[3.45, 0], [4.0, Lentree, "power2.inOut"], [5.25, Lentree, "none"], [5.95, Ltot, "power2.in"]], t);
+          montrer(a, b);
+        });
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

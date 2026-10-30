@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°1 « CARTES PIXELS » · RACCORD : LA MOSAÏQUE DE PIXELS · 1,45 s
+    Ce que le raccord montre : des blocs carrés sombres (chacun coupé en 2 × 2 pixels de tons
+    différents, quelques-uns clairs) surgissent par à-coups depuis les bords gauche et droit et
+    couvrent tout l'écran en 0,6 s ; l'écran couvert grossit un peu (0,4 s) ; puis les blocs tombent
+    rangée par rangée, du haut vers le bas, et découvrent la scène suivante.
+    Pose : sur la piste 2, PAR-DESSUS la coupe entre deux scènes, hôte en style="z-index:3",
+    data-start = (fin de la scène qui part) - 0,8. La coupe tombe pendant que tout est couvert.
+    Fond transparent : seuls les blocs se voient. S'adapte au 9:16 (data-width / data-height).
+    Le motif revient 2 ou 3 fois dans une vidéo de page, jamais deux fois de suite.
+
+    À REMPLACER : l'id « t01-raccord-pixels » (racine, constante ID, préfixe CSS) par un id unique
+    par raccord (t01-raccord-1, t01-raccord-2…) : deux raccords identiques dans un même index.html
+    se marcheraient dessus. GRAINE : change-la d'un raccord à l'autre (motif différent).
+    Couleurs : les tons sombres viennent de l'encre de la marque (son fond s'il est sombre, sinon son
+    texte), les tons clairs sont des gris du look. Aucune couleur d'accent : c'est voulu.
+  -->
+</head>
+<body>
+<template>
+<style>
+  #t01-raccord-pixels { --t01-encre: #1d1d1f; background: transparent; }
+  #t01-raccord-pixels .t01-mosaique { position: absolute; inset: 0; transform-origin: 50% 50%; }
+  #t01-raccord-pixels .t01-px { position: absolute; }
+  #t01-raccord-pixels .t01-bloc { position: absolute; box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); pointer-events: none; }
+</style>
+
+<div data-composition-id="t01-raccord-pixels" data-width="1920" data-height="1080" data-duration="1.45" style="position:absolute; inset:0;">
+  <div id="t01-raccord-pixels" class="k-scene">
+    <div class="t01-mosaique" id="t01-raccord-pixels-mosaique"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var ID = "t01-raccord-pixels", D = 1.45, GRAINE = 11;
+    var tl = gsap.timeline({ paused: true });
+    var racine = document.getElementById(ID);
+    var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
+
+    var rgb = function (css) {
+      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
+      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
+    };
+    var lum = function (c) {
+      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    var encre = lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)" : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f";
+    // Tons : trois sombres (l'encre, un peu éclaircie) et deux gris clairs.
+    var TONS = [encre, "color-mix(in srgb, " + encre + " 94%, #ffffff)", "color-mix(in srgb, " + encre + " 88%, #ffffff)",
+      "color-mix(in srgb, " + encre + " 22%, #ffffff)", "color-mix(in srgb, " + encre + " 36%, #ffffff)"];
+
+    var r = K.rng(GRAINE), BLOC = 240, P = BLOC / 2;
+    var nc = Math.ceil(L / BLOC), nl = Math.ceil(H / BLOC);
+    var ox = (L - nc * BLOC) / 2, oy = (H - nl * BLOC) / 2;
+    var mos = document.getElementById(ID + "-mosaique");
+    var tous = [];
+    for (var l = 0; l < nl; l++) for (var c = 0; c < nc; c++) {
+      // Le bord le plus proche décide de l'ordre d'arrivée : les côtés d'abord, le centre en dernier.
+      var bord = Math.min(c, nc - 1 - c) / Math.max(1, (nc - 1) / 2);
+      for (var s = 0; s < 4; s++) {
+        var x = ox + c * BLOC + (s % 2) * P, y = oy + l * BLOC + Math.floor(s / 2) * P;
+        var clair = r() < 0.17, ton = clair ? TONS[3 + Math.floor(r() * 2)] : TONS[Math.floor(r() * 3)];
+        var e = K.el(mos, "div", "t01-px", null, "left:" + x + "px; top:" + y + "px; width:" + P + "px; height:" + P + "px; background:" + ton + ";");
+        var arrivee = 0.02 + bord * 0.5 + r() * 0.1;
+        var depart = 1.0 + (l / Math.max(1, nl - 1)) * 0.3 + r() * 0.06;
+        K.cacher(e);
+        // Un pixel sur cinq passe d'abord par un gris clair : l'arrivée « clignote ».
+        if (!clair && r() < 0.2) {
+          var flash = K.el(mos, "div", "t01-px", null, "left:" + x + "px; top:" + y + "px; width:" + P + "px; height:" + P + "px; background:" + TONS[3] + ";");
+          K.cacher(flash);
+          tl.set(flash, { opacity: 1 }, arrivee).set(flash, { opacity: 0 }, arrivee + 0.07);
+          tl.set(e, { opacity: 1 }, arrivee + 0.07);
+        } else {
+          tl.set(e, { opacity: 1 }, arrivee);
+        }
+        tl.set(e, { opacity: 0 }, depart);
+        tous.push(e);
+      }
+      // Le filet clair qui sépare les blocs (comme sur l'original), visible tant que le bloc est là.
+      var b = K.el(mos, "div", "t01-bloc", null, "left:" + (ox + c * BLOC) + "px; top:" + (oy + l * BLOC) + "px; width:" + BLOC + "px; height:" + BLOC + "px;");
+      K.cacher(b);
+      tl.set(b, { opacity: 1 }, 0.02 + bord * 0.5 + 0.1).set(b, { opacity: 0 }, 1.0 + (l / Math.max(1, nl - 1)) * 0.3);
+    }
+    // L'écran couvert grossit un peu : la caméra continue d'avancer.
+    tl.fromTo(mos, { scale: 1 }, { scale: 1.04, duration: 0.9, ease: "power1.inOut" }, 0.45);
+
+    window.__timelines[ID] = tl;
+  })();
+</script>
+</template>
+</body>
+</html>
