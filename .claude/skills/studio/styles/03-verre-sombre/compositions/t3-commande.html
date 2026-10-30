@@ -16,16 +16,24 @@
   nombre de paiements possible, le bonus (0 = pas de ligne bonus), le texte du bouton. Uniquement
   ce que ta vraie page de paiement propose : retire une ligne qui n'existe pas chez toi (paiement
   en plusieurs fois, bonus), n'invente ni réduction ni prix barré.
-  Couleurs : uniquement var(--brand-*) ; le verre sombre et le bleu nuit se dérivent du fond.
+  Couleurs : la nuit, le verre, le texte clair et le gris sont ceux du look (fixes, quelle que
+  soit la marque) ; la marque donne l'accent, éclairci en --t3-accent-texte sur un texte.
   Identifiant : t3c (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3c {
-    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    /* La nuit du look reste celle de l'original quelle que soit la marque, claire ou sombre :
+       presque noire, teintée de 7 % de l'accent ; le texte posé dessus est clair. La marque ne
+       donne que les accents (--t3-accent-texte : l'accent, éclairci s'il est trop sombre pour
+       se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+    --t3-nuit: color-mix(in oklab, #030304 93%, var(--brand-accent));
+    --t3-texte: #ffffff;
+    --t3-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
     --t3-lueur: color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 16%, transparent);
-    --t3-verre: color-mix(in oklab, var(--brand-bg) 60%, #000);
+    --t3-verre: #0b0b0d;
+    --t3-gris: #a1a1a2;
     --t3-police: var(--brand-font-body);
-    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
   #t3c .t3c-fond {
     position: absolute; inset: -2px;
@@ -49,21 +57,21 @@
     background: linear-gradient(180deg, rgba(246,247,255,.95), rgba(236,239,255,.7)); }
   #t3c .t3c-ligne { display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; }
   #t3c .t3c-onglets { display: flex; gap: 10px; align-items: center; }
-  #t3c .t3c-onglet { padding: 14px 30px; border-radius: 999px; font-size: 28px; font-weight: 600; color: var(--brand-muted); }
+  #t3c .t3c-onglet { padding: 14px 30px; border-radius: 999px; font-size: 28px; font-weight: 600; color: var(--t3-gris); }
   #t3c .t3c-onglet.t3c-actif { background: #fff; color: #15161a; }
-  #t3c .t3c-menu { font-size: 26px; font-weight: 500; color: var(--brand-muted); display: flex; align-items: center; gap: 8px; opacity: .7; }
+  #t3c .t3c-menu { font-size: 26px; font-weight: 500; color: var(--t3-gris); display: flex; align-items: center; gap: 8px; opacity: .7; }
   #t3c .t3c-menu svg { width: 26px; height: 26px; }
   #t3c .t3c-segment { position: relative; display: flex; border-radius: 999px; padding: 7px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); }
   #t3c .t3c-seg-pastille { position: absolute; left: 7px; top: 7px; bottom: 7px; width: calc(50% - 7px); border-radius: 999px;
     background: color-mix(in oklab, var(--brand-accent) 88%, #fff); box-shadow: 0 0 24px color-mix(in oklab, var(--brand-accent) 25%, transparent); }
-  #t3c .t3c-seg { position: relative; flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; font-size: 30px; font-weight: 600; color: var(--brand-muted); }
+  #t3c .t3c-seg { position: relative; flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; font-size: 30px; font-weight: 600; color: var(--t3-gris); }
   #t3c .t3c-lab { font-size: 31px; font-weight: 600; }
-  #t3c .t3c-sous { font-size: 23px; font-weight: 500; color: var(--brand-muted); margin-top: 6px; }
+  #t3c .t3c-sous { font-size: 23px; font-weight: 500; color: var(--t3-gris); margin-top: 6px; }
   #t3c .t3c-prix { font-size: 112px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; text-shadow: 0 0 30px rgba(255,255,255,.18); }
   #t3c .t3c-puces { display: flex; gap: 14px; }
   #t3c .t3c-puce { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 0; border-radius: 18px;
-    background: rgba(255,255,255,.07); font-size: 26px; font-weight: 600; color: color-mix(in oklab, var(--brand-text) 80%, transparent); }
-  #t3c .t3c-puce svg { width: 26px; height: 26px; color: var(--brand-accent); }
+    background: rgba(255,255,255,.07); font-size: 26px; font-weight: 600; color: color-mix(in oklab, var(--t3-texte) 80%, transparent); }
+  #t3c .t3c-puce svg { width: 26px; height: 26px; color: var(--t3-accent-texte); }
   #t3c .t3c-glisse { display: flex; align-items: center; gap: 28px; }
   #t3c .t3c-piste { position: relative; flex: 1; height: 12px; border-radius: 6px; background: rgba(255,255,255,.14); }
   #t3c .t3c-rempli { position: absolute; left: 0; top: 0; height: 100%; width: 100%; border-radius: 6px; background: var(--brand-accent); transform-origin: 0 50%; }
@@ -78,19 +86,19 @@
   #t3c .t3c-bonus { overflow: hidden; }
   #t3c .t3c-champs { display: flex; gap: 16px; padding-top: 4px; }
   #t3c .t3c-champ { flex: 1; display: flex; align-items: center; gap: 14px; padding: 22px 26px; border-radius: 20px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.2); font-size: 30px; font-weight: 600; }
-  #t3c .t3c-champ svg { width: 30px; height: 30px; color: var(--brand-accent); }
+  #t3c .t3c-champ svg { width: 30px; height: 30px; color: var(--t3-accent-texte); }
   #t3c .t3c-tag svg { width: 24px; height: 24px; display: block; }
   #t3c .t3c-tag { margin-left: auto; padding: 6px 10px; border-radius: 10px; font-size: 22px; font-weight: 700;
-    color: var(--brand-accent); background: color-mix(in oklab, var(--brand-accent) 16%, transparent); }
+    color: var(--t3-accent-texte); background: color-mix(in oklab, var(--brand-accent) 16%, transparent); }
   #t3c .t3c-trait { height: 2px; background: rgba(255,255,255,.16); }
   #t3c .t3c-res { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 600; }
-  #t3c .t3c-res svg { width: 30px; height: 30px; color: var(--brand-muted); }
+  #t3c .t3c-res svg { width: 30px; height: 30px; color: var(--t3-gris); }
   #t3c .t3c-res .t3c-v { margin-left: auto; }
   #t3c .t3c-bouton { position: relative; height: 112px; border-radius: 28px; display: grid; place-items: center; font-size: 38px; font-weight: 700;
     background: var(--brand-accent); color: var(--brand-contrast); box-shadow: 0 0 40px color-mix(in oklab, var(--brand-accent) 30%, transparent); }
   #t3c .t3c-points-bouton { position: absolute; inset: -6px; border-radius: 32px; opacity: 0;
     background-image: radial-gradient(circle, color-mix(in oklab, var(--brand-accent) 70%, #fff) 2px, transparent 2.7px); background-size: 11px 11px; }
-  #t3c .t3c-mention { text-align: center; font-size: 22px; font-weight: 500; color: color-mix(in oklab, var(--brand-muted) 65%, var(--brand-text)); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: -12px; }
+  #t3c .t3c-mention { text-align: center; font-size: 22px; font-weight: 500; color: color-mix(in oklab, var(--t3-gris) 65%, var(--t3-texte)); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: -12px; }
   #t3c .t3c-mention svg { width: 22px; height: 22px; }
   /* Profondeur de champ en écran : le haut et le bas de l'image passent au flou */
   #t3c .t3c-flou { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 60; backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px); }
@@ -192,7 +200,7 @@
   var css = getComputedStyle($("t3c"));
   var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
   gsap.set("#t3c-seg-1", { color: C("--brand-contrast", "#202022") });
-  gsap.set("#t3c-seg-2", { color: C("--brand-muted", "#a1a1a2") });
+  gsap.set("#t3c-seg-2", { color: C("--t3-gris", "#a1a1a2") });
 
   // États de départ
   var cam = { rx: 22, ry: -10, rz: -3, s: vertical ? 1.02 : 1.22 };
@@ -247,7 +255,7 @@
     if (R.foisMax > 1) {
       var wSeg = $("t3c-seg-1").offsetWidth;
       tl.to("#t3c-seg-pastille", { x: wSeg, duration: 0.4, ease: "power3.inOut" }, 2.5);
-      tl.to("#t3c-seg-1", { color: C("--brand-muted", "#a1a1a2"), duration: 0.3 }, 2.55);
+      tl.to("#t3c-seg-1", { color: C("--t3-gris", "#a1a1a2"), duration: 0.3 }, 2.55);
       tl.to("#t3c-seg-2", { color: C("--brand-contrast", "#202022"), duration: 0.3 }, 2.55);
     }
     tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 2.98);

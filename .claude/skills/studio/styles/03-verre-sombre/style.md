@@ -12,8 +12,9 @@ pilote ; lancer une nouvelle formule.
 médian 0,30 s entre deux événements, 2 coupes franches seulement (à 28,2 s), 7,0 s d'image figée au
 total (surtout la fin : l'adresse et le logo tenus en silence). Musique à 93 battements par minute
 (un temps toutes les 0,65 s), entrée franche à 7,0 s.
-**Mesures de l'essai du kit** (4 scènes, marque LMDM, 23,7 s) : 1,34 événement par seconde, écart
-médian 0,50 s, aucune image figée, `rythme` « ok ».
+**Mesures de l'essai du kit** (les 4 scènes bout à bout, 24,5 s) : marque LMDM en 16:9, 1,29
+événement par seconde, écart médian 0,50 s, aucune image figée, `rythme` « ok » ; en 9:16, 1,10
+(marque claire, Dupliq.me) et 1,05 (LMDM), `rythme` « ok ».
 
 > On reprend la grammaire de la vidéo (rythme, mise en page, verre, caméra, trame de points,
 > transitions), jamais son contenu : ni ses textes, ni son logo, ni ses marchés, ni ses chiffres, ni
@@ -49,20 +50,35 @@ médian 0,50 s, aucune image figée, `rythme` « ok ».
 | L'appel | appel | 2,5 s | coupe franche dans le silence : le verbe seul, puis la ligne complète | `t3-fin` |
 | L'adresse et le logo | appel | 6,5 s | l'adresse qui brille (un impact), puis le logo et le nom, tenus | `t3-fin` |
 
-Pour une vidéo de page (60 à 90 s), enchaîne : `t3-onglets` → `t3-commande` → `t3-cartes` →
-`t3-fin`, et place entre les deux premières une ou deux démonstrations de ton produit dans le même
-verre (même caméra, même flou haut et bas). Pour un Reel : `t3-onglets` (raccourci à la plongée)
-→ `t3-commande` → `t3-fin`.
+Pour un Reel : `t3-onglets` (raccourci à la plongée) → `t3-commande` → `t3-fin`.
+
+**Une vidéo de page (16:9, 60 à 120 s) :** les quatre scènes du kit bout à bout ne font que
+24,5 s, et une vidéo de page montée avec elles seules sort à 25 s, loin de la cible. La durée
+vient de la démonstration, jamais de tenues plus longues : entre `t3-onglets` et `t3-cartes`,
+refais le cycle **interface, option, preuve** pour 2 ou 3 fonctionnalités réelles de l'offre (15 à
+20 s par cycle) :
+1. **L'interface** : un écran réel de la fonctionnalité dans le même verre incliné, la même caméra
+   qui descend par paliers et le curseur qui le pilote (copie de `t3-commande` avec ses vrais
+   champs, ou une capture dans le verre) ;
+2. **L'option** : le réglage qui change le résultat (un curseur glissé, un interrupteur, une
+   formule choisie), le total ou le résultat qui se met à jour ;
+3. **La preuve** : une carte de `t3-cartes` en gros plan avec le vrai chiffre, ou une ligne mot à
+   mot sur la trame de points.
+
+Trois cycles donnent 70 à 85 s avec l'ouverture et la fin ; ajoute le plein écran de l'accent sur
+le prix (section 3) au-delà d'une minute. Chaque copie de scène change son préfixe partout (`t3c`
+→ `t3c2`, `t3c3`). S'il manque une fonctionnalité réelle pour un troisième cycle, la vidéo reste
+plus courte : on n'invente rien pour tenir la durée.
 
 ## 3. Les fonds et les couleurs
 
 | Dans l'original | Son rôle | Avec la marque du client |
 |---|---|---|
-| Bleu nuit presque noir | le fond de toute la vidéo | `--t3-nuit` : le fond de la marque assombri (38 % fond, 62 % noir) et teinté de 7 % d'accent. LMDM : noir chaud |
+| Bleu nuit presque noir | le fond de toute la vidéo | `--t3-nuit` : un presque noir **fixe** (`#030304`) teinté de 7 % d'accent, sur toutes les marques. LMDM : noir chaud |
 | Lueur bleue diffuse en haut à gauche, plus faible en bas à droite | la lumière de la scène, qui bouge doucement | l'accent éclairci (60 % accent, 40 % blanc) à 16 % ; LMDM : un halo doré très doux |
-| Bleu vif | le mot de la fin de phrase, la pastille choisie, le bouton principal, le curseur rempli | `var(--brand-accent)` ; le texte posé dessus en `var(--brand-contrast)` |
-| Verre sombre (liseré clair en haut, reflets blancs à 10-25 %) | les interfaces et les cartes | `--t3-verre` : le fond de la marque mêlé de noir ; les reflets restent blancs |
-| Blanc, gris bleuté | textes, onglets inactifs, libellés | `var(--brand-text)` ; `var(--brand-muted)` légèrement teinté d'accent |
+| Bleu vif | le mot de la fin de phrase, la pastille choisie, le bouton principal, le curseur rempli | `var(--brand-accent)` ; le texte posé dessus en `var(--brand-contrast)` ; un mot ou un chiffre écrit à l'accent sur la nuit en `--t3-accent-texte` (l'accent, éclairci seul s'il est trop sombre pour se lire) |
+| Verre sombre (liseré clair en haut, reflets blancs à 10-25 %) | les interfaces et les cartes | `--t3-verre` : un presque noir **fixe** (`#0b0b0d`) ; les reflets restent blancs |
+| Blanc, gris bleuté | textes, onglets inactifs, libellés | blanc (`--t3-texte`) et gris clair (`--t3-gris`, `#a1a1a2`, teinté d'accent sur les onglets), sur toutes les marques |
 | Trame de points blancs | derrière le bouton, les cartes, et le texte qui se forme | identique (points blancs à 15-25 %) |
 | Vert et rouge (hausse, baisse) | le sens propre au trading | non repris : dans un bon de commande, l'accent suffit |
 
@@ -71,6 +87,13 @@ fond se font par la lumière (la lueur qui glisse, la trame qui s'allume, l'écl
 plan sur le bouton). Une vidéo de plus d'une minute ajoute un plein écran de la couleur d'accent sur
 le prix (recette 19) pour garder trois bascules par minute. Avec une marque à l'accent clair (jaune,
 vert pâle), le rendu devient noir et or plutôt que bleu nuit : c'est voulu.
+
+**Sur n'importe quelle marque, claire ou sombre.** La nuit, le verre, le texte blanc et le gris
+sont ceux de l'original, fixes : jamais `var(--brand-bg)`, `var(--brand-text)` ni
+`var(--brand-muted)` dans ce look (sur une marque claire, la nuit devenait un gris moyen et le
+texte noir sur gris). La marque ne donne que les accents : la lueur, la pastille, le bouton, le
+curseur rempli, les mots en couleur. Tout texte garde un contraste d'au moins 4,5:1 : un accent
+sombre (bleu marine, bordeaux) qui colore un texte passe par `--t3-accent-texte`.
 
 ## 4. La typographie
 
@@ -210,12 +233,13 @@ C'est un look : il se monte sur n'importe quelle offre. Ce qui suivait le tradin
 
 ## En vertical et en carré
 
-- **9:16 (essayé sur `t3-onglets` et `t3-commande`) :** passe la racine de la scène à
+- **9:16 (les quatre scènes essayées bout à bout, marque claire et marque sombre) :** passe la racine de la scène à
   1080 × 1920 ; tout se recadre seul (K.cadre) : les onglets à ×0,55, le bon moins rapproché
   (×1,02) et suivi plus haut dans l'image (le point visé à 37 % de la hauteur) pour qu'il remplisse
   le haut ; il occupe presque toute la largeur, c'est le format où il est le plus lisible.
-- **9:16, `t3-cartes` et `t3-fin` :** les cartes passent à ×0,85 et moins inclinées en Y ; la fin
-  est centrée et ne bouge pas. Vérifie à l'image qu'un nom long tient (sinon baisse sa taille).
+- **9:16, `t3-cartes` et `t3-fin` :** les cartes se resserrent à 940 px de large et passent à
+  ×0,72, moins inclinées en Y : la carte entière tient dans l'image, chiffre et durée compris ; la
+  fin est centrée et ne bouge pas. Vérifie à l'image qu'un nom long tient (sinon baisse sa taille).
 - **4:5 et 1:1 :** même règle (racine à 1080 × 1350 ou 1080 × 1080) ; garde le bon en entier en
   largeur, et vérifie le cadrage du carrousel (cartes coupées à droite et en bas, jamais en haut).
 
@@ -231,7 +255,7 @@ offre à l'autre est dans l'objet `R` en tête du script ; les couleurs ne vienn
 | `compositions/t3-onglets.html` | 8,2 s | la promesse floue → nette et le recul ; la barre d'onglets filée sous la pastille fixe ; la plongée dans le bouton sur la trame ; « Découvre Ton offre » qui se forme en points | la promesse (2 morceaux), les onglets (les sujets de son univers ; l'offre doit en faire partie), le nom de l'offre, le verbe d'appel, l'icône du premier onglet |
 | `compositions/t3-commande.html` | 7,2 s | le bon de commande en verre incliné : entrée de profil, prix qui tourne, pastilles de ce qui est inclus, curseur du nombre de paiements, interrupteur du bonus, total, bouton cliqué qui se défait en points | formules, menu, libellés de paiement, nom, accès, prix réel, ce qui est inclus (icône du kit + mot), nombre de paiements possible (1 = retire le curseur), bonus (0 = retire la ligne), texte du bouton, mention |
 | `compositions/t3-cartes.html` | 3,6 s | un mot seul, puis cinq cartes en gros plan incliné, une toutes les 0,5 s | le mot ; pour chaque carte : l'icône du kit ou le logo d'un outil, le nom, le sous-titre, le vrai chiffre et son unité, trois lignes réelles, la durée ("" pour la retirer). La durée de la scène suit le nombre de cartes (0,5 s chacune + 1,1 s) |
-| `compositions/t3-fin.html` | 4,8 s | le verbe d'appel seul, la ligne complète, l'adresse qui brille, le logo et le nom | le verbe, la suite de la ligne, l'adresse réelle (courte, sans https://), le logo (`brand/logo.svg`, "" sans logo), le nom |
+| `compositions/t3-fin.html` | 5,6 s | le verbe d'appel seul, la ligne complète sur la lueur et la trame, l'adresse qui brille, le logo et le nom (lisible en entier 1,85 s : une scène raccourcie raccourcit le début, jamais cette tenue) | le verbe, la suite de la ligne, l'adresse réelle (courte, sans https://), le logo (`brand/logo.svg`, "" sans logo), le nom |
 
 Les scènes `t3-onglets` et `t3-commande` attendent les polices avant de mesurer (onglets, lignes,
 positions du curseur) : garde la construction dans `construire()`. Identifiants préfixés `t3o`,

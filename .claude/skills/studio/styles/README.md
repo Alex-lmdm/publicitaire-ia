@@ -1,10 +1,12 @@
 # Les templates du catalogue
 
 Huit templates de vidéos de lancement, chacun repris d'une vraie vidéo de logiciel qui a fait ses
-preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé sur une vraie
-marque, en 16:9 et en 9:16. Le client les voit en vidéo dans sa formation (module « Templates ») et
-les demande par leur numéro, leur nom ou la marque d'origine : « fais-moi une vidéo dans le
-template 3 », « le template Verre sombre », « comme celle de Polymarket ».
+preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé en 16:9 et
+en 9:16, sur une marque claire comme sur une marque sombre : chaque scène a sa mise en page
+verticale (un fichier `-vertical.html`, ou une scène qui se remet en page seule). Le client les
+voit en vidéo dans sa formation (module « Templates ») et les demande par leur numéro, leur nom ou
+la marque d'origine : « fais-moi une vidéo dans le template 3 », « le template Verre sombre »,
+« comme celle de Polymarket ».
 
 **Un template est un look, pas un sujet.** Il se choisit à ce qu'on voit (fonds, typographie,
 mouvements, façon de montrer le produit) et se fait sur n'importe quelle offre : une formation, un
@@ -43,10 +45,18 @@ des connecteurs d'entreprise) s'adapte à son offre : section « Sur une autre o
 4. **La fabrication** : lis la fiche en entier, puis copie les scènes du kit (`compositions/`) dans
    le projet de chaque vidéo (`compositions/` du projet). Remplace leurs textes par ceux du plan,
    garde leurs mouvements signature et leur rythme : les recadrages et les gestes que la fiche
-   donne pour passer `rythme` ne se retirent pas. Les couleurs viennent de `var(--brand-*)`, jamais en
-   dur ; un logo absent de sa marque se remplace par son nom, jamais par un autre logo.
+   donne pour passer `rythme` ne se retirent pas. Un logo absent de sa marque se remplace par son
+   nom, jamais par un autre logo.
+   **Les couleurs, sur n'importe quelle marque.** Les fonds qui signent le look (la nuit, le noir,
+   le taupe, le papier, le crème) restent ceux du kit, fixes, que sa marque soit claire ou sombre :
+   ne les remplace jamais par `var(--brand-bg)`, et le texte posé sur un fond sombre reste clair
+   (jamais `var(--brand-text)` d'une marque claire). Sa marque donne les accents
+   (`var(--brand-accent)`, le texte posé dessus en `var(--brand-contrast)`) et ses polices. Tout
+   texte garde un contraste d'au moins 4,5:1 avec son fond (section 3 de chaque fiche).
 5. **Les autres formats** : section « En vertical et en carré » de la fiche. Une mise en page,
-   jamais un recadrage.
+   jamais un recadrage. En 9:16, prends la version `-vertical.html` d'une scène quand le kit en a
+   une (kits 2, 4 et 5) ; sinon passe la racine de la scène à 1080 × 1920, elle se remet en page
+   seule.
 6. **La revue**, comme toute vidéo ([revue.md](../references/revue.md)).
 7. **Il le garde** (« garde ce template pour mes prochaines vidéos ») : ajoute `template N` à ses
    `preferences` (`studio.config.json`) ; ses vidéos suivantes partent de ce kit, avec ses

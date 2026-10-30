@@ -12,7 +12,7 @@
     s'allument un à un (les mots à venir sont déjà là, pâles) ; les bulles de l'offre ont un petit
     orbe pour avatar et une étiquette ; le fil remonte et la caméra recadre à chaque bulle ; une
     carte de résultat arrive en dernier, sa barre se remplit et se coche ; à la fin, l'image
-    s'assombrit vers le fond de la marque (raccord avec fin-cadre.html).
+    passe au noir de l'original, fixe quelle que soit la marque (raccord avec fin-cadre.html).
 
     À remplacer :
       1. L'identifiant « t04-msg » partout (racine, scène, préfixe des ids, clé de la timeline).
@@ -81,7 +81,8 @@
       background: radial-gradient(circle at 38% 36%, #ffffff 0, var(--t04-apres-3) 22%, var(--t04-apres-4) 62%, var(--t04-apres-1) 100%);
       box-shadow: 0 0 22px color-mix(in srgb, var(--t04-apres-4) 70%, transparent);
     }
-    #t04-msg .t04-msg-voile { position: absolute; inset: 0; background: var(--brand-bg); z-index: 10; }
+    /* Le passage au noir de l'original (fixe : jamais var(--brand-bg), clair sur une marque claire). */
+    #t04-msg .t04-msg-voile { position: absolute; inset: 0; background: #050505; z-index: 10; }
   </style>
 
   <div data-composition-id="t04-msg" data-width="1920" data-height="1080" data-duration="6" style="position:absolute; inset:0;">
@@ -165,7 +166,7 @@
       tl.to(fil, { scale: 1.05, duration: 0.7, ease: "expo.inOut" }, 2.4);
       tl.to(fil, { scale: 0.97, duration: 0.8, ease: "expo.inOut" }, 4.4);
 
-      // Le voile : l'image s'assombrit vers le fond de la marque (raccord avec la scène suivante).
+      // Le voile : l'image passe au noir de l'original (raccord avec la scène suivante).
       gsap.set($("voile"), { opacity: 0 });
       tl.to($("voile"), { opacity: 1, duration: 0.6, ease: "power2.in" }, D - 0.62);
 

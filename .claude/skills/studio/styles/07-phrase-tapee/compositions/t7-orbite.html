@@ -12,25 +12,32 @@
   tape au centre. Coupe sur fond clair : un point d'encre se contracte, devient ton logo, ton nom
   sort, et la pastille d'appel en capitales se pose dessous.
   Durée : 9,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
-  au-dessus et au-dessous de la carte, la galaxie s'étire en hauteur).
+  au-dessus et au-dessous de la carte, les orbites prennent toute la largeur, deux autres systèmes
+  tournent déjà en haut et en bas de l'image, la galaxie s'étire en hauteur).
   À remplacer (objet R en tête du script) : les deux morceaux de la phrase, la carte (nom, une
   ligne de description, la ligne du bas, une capture "assets/images/…" ou "" pour un aperçu
   dessiné), les logos des outils (posés par `studio_motion.py logos`), les deux étiquettes, les
   cartes des autres systèmes, la conclusion, ton logo (brand/logo.svg ; "" sans logo), ton nom,
   l'appel de la pastille (avec ta vraie adresse).
-  Couleurs : uniquement var(--brand-*) ; le taupe, le très sombre et le clair se dérivent du fond.
+  Couleurs : le taupe, le noir chaud, le clair et l'encre sont ceux du look (fixes, quelle que
+  soit la marque) ; la marque donne l'accent (curseur, liserés, pastille d'appel).
   Identifiant : t7o (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7o {
-    --t7-nuit: color-mix(in oklab, var(--brand-bg) 86%, #000);
-    --t7-taupe: color-mix(in oklab, var(--brand-bg) 80%, var(--brand-muted));
-    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
-    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
+    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
+       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
+       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
+       var(--brand-text) ici. */
+    --t7-nuit: #1f1513;
+    --t7-taupe: #514643;
+    --t7-clair: #edece5;
+    --t7-encre: #1d1917;
+    --t7-texte: #f3f0eb;
     --t7-police: var(--brand-font-display);
     /* la pastille d'appel : en capitales espacées ; une police à chasse fixe si la marque en a une */
     --t7-police-pastille: var(--brand-font-body);
-    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--brand-text);
+    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--t7-texte);
   }
   #t7o .t7o-plan { position: absolute; inset: 0; z-index: 1; }
   #t7o #t7o-p2 { z-index: 2; }
@@ -73,12 +80,16 @@
   #t7o .t7o-pastille { position: absolute; left: 50%; top: 50%; margin-top: 110px; transform: translateX(-50%); white-space: nowrap; padding: 12px 24px;
     background: var(--brand-accent); color: var(--brand-contrast); font-family: var(--t7-police-pastille); font-size: 30px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
   #t7o .t7o-pixels { position: absolute; inset: 0; }
+  /* L'éclat de la couleur de la marque, derrière l'offre, quand un outil se connecte. */
+  #t7o .t7o-eclat { position: absolute; left: 50%; top: 50%; width: 1100px; height: 1100px; margin: -550px 0 0 -550px; border-radius: 50%; opacity: 0;
+    background: radial-gradient(circle, color-mix(in oklab, var(--brand-accent) 72%, transparent) 0%, color-mix(in oklab, var(--brand-accent) 34%, transparent) 36%, transparent 70%); }
 </style>
 
 <div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="9.6" style="position:absolute; inset:0;">
   <div id="t7o" class="k-scene">
     <div class="t7o-plan" id="t7o-p1">
       <div class="t7o-fond" id="t7o-fond"></div>
+      <div class="t7o-eclat" id="t7o-eclat"></div>
       <div class="t7o-monde" id="t7o-monde"></div>
       <div class="t7o-ligne" id="t7o-ligne"><div class="t7o-gauche" id="t7o-gauche" data-layout-allow-overflow></div><div class="t7o-droite" id="t7o-droite" data-layout-allow-overflow></div></div>
       <div class="t7o-conclusion" id="t7o-conclusion"><span id="t7o-conclusion-texte"></span><span class="t7o-caret" id="t7o-caret"></span></div>
@@ -164,7 +175,8 @@
     return { el: sys, anneaux: anneaux };
   }
   var centre = systeme(0, 0, true);
-  var places = vertical ? [[-600, -2000], [620, -2100], [-640, 2000], [600, 2150], [0, -3100], [0, 3100], [-1350, 250], [1350, -250]]
+  // En 9:16, les deux premiers systèmes tournent déjà au bord haut et au bord bas de l'image.
+  var places = vertical ? [[0, -1180], [0, 1180], [-620, -2300], [600, 2350], [0, -3300], [0, 3300], [-1350, 250], [1350, -250]]
     : [[-1650, -900], [1620, -880], [-1700, 920], [1680, 900], [-2450, 20], [2420, -30], [-60, -1320], [40, 1320]];
   var autres = R.autres.map(function (n, i) { return systeme(places[i % places.length][0], places[i % places.length][1], false, n); });
   // La phrase autour de la carte
@@ -195,9 +207,9 @@
   var gauche = $("t7o-gauche").children, droite = $("t7o-droite").children;
   K.cacher([gauche, droite, "#t7o-carte", "#t7o-conclusion", "#t7o-p2", "#t7o-pastille"]);
   centre.anneaux.forEach(function (a) { K.cacher(a.el.querySelector(".t7o-cercle")); K.cacher(a.items); });
-  gsap.set(monde, { scale: vertical ? 0.74 : 1 });
+  gsap.set(monde, { scale: vertical ? 0.95 : 1 });
   var tl = gsap.timeline({ paused: true });
-  var s0 = vertical ? 0.74 : 1;
+  var s0 = vertical ? 0.95 : 1;
 
   // 1. La carte dans la phrase (0 → 1,45 s)
   tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
@@ -223,18 +235,26 @@
   centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], 1.75); });
   autres.forEach(function (s, i) { s.anneaux.forEach(function (a, j) { rotation(a, (j ? -1 : 1) * (40 + i * 6), 0); }); });
 
-  // les outils se connectent à l'offre, un par un (un éclat de la couleur de la marque)
+  // les outils se connectent à l'offre, un par un (un éclat de la couleur de la marque) ; trois
+  // fois, l'éclat gagne toute l'orbite derrière la carte (un temps fort que l'œil et `rythme` voient)
+  [2.6, 3.2, 3.8].forEach(function (t) {
+    tl.fromTo("#t7o-eclat", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.07, ease: "power2.out", immediateRender: false }, t);
+    tl.to("#t7o-eclat", { opacity: 0, duration: 0.4, ease: "power2.in" }, t + 0.12);
+  });
   centre.anneaux[0].items.concat(centre.anneaux[1].items.slice(0, 2)).forEach(function (it, i) {
     var t = 2.6 + i * 0.3, tuile = it.firstChild;
     tl.fromTo(it, { scale: 1 }, { scale: 1.28, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.fromTo(tuile, { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 0px " + C("--brand-accent", "#ffee00") },
       { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 5px " + C("--brand-accent", "#ffee00"), duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
   });
-  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.08, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.3);
+  // la caméra avance par deux recadrages secs pendant que les outils se connectent (jamais immobile)
+  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.05, duration: 0.45, ease: "expo.out", immediateRender: false }, 2.45);
+  tl.to(monde, { scale: s0 * 1.11, duration: 0.45, ease: "expo.out" }, 3.35);
+  tl.to(monde, { scale: s0 * 1.13, duration: 0.5, ease: "sine.inOut" }, 3.8);
   // 3. La caméra recule sur la galaxie, tout passe au flou, la conclusion se tape (4,3 → 6,5 s)
   tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, 4.3);
-  tl.to("#t7o-fond", { backgroundColor: C("--brand-bg", "#202022"), duration: 1.4, ease: "power1.inOut" }, 4.5);
-  tl.to(monde, { filter: "blur(5px) brightness(0.7)", duration: 0.7, ease: "power2.inOut" }, 5.35);
+  tl.to("#t7o-fond", { backgroundColor: C("--t7-nuit", "#1f1513"), duration: 1.4, ease: "power1.inOut" }, 4.5);
+  tl.to(monde, { filter: "blur(6px) brightness(0.45)", duration: 0.7, ease: "power2.inOut" }, 5.35);
   tl.set("#t7o-conclusion", { opacity: 1 }, 5.45);
   K.taper(tl, $("t7o-conclusion-texte"), R.conclusion, 5.5, 6.1, D);
   tl.to(monde, { scale: s0 * 0.33, duration: 0.9, ease: "sine.out" }, 5.9);

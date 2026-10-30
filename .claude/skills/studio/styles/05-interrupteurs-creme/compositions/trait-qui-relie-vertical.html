@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°5 « INTERRUPTEURS » · SCÈNE 2 : LE TRAIT QUI SOULIGNE ET QUI RELIE,
+    VERSION VERTICALE 9:16 (1080 × 1920), 6,5 s
+    (la même scène que trait-qui-relie.html, remise en page pour un Reel, une story ou un TikTok)
+
+    Ce qu'elle montre : la suite directe de la scène 1 en 9:16 (interrupteurs-cascade.html, racine
+    en 1080 × 1920) : le même panneau en haut, les mêmes disques des membres sur deux rangées en bas.
+    Un mot fort au centre, entre les deux ; le trait à main levée descend par la droite du panneau
+    et le souligne, puis repart. Une phrase de deux lignes arrive ; le trait redescend, passe sous le
+    panneau et devient deux filets VERTICAUX qui RELIENT le panneau à la phrase (au-dessus) et la
+    phrase aux membres (au-dessous). La phrase cède la place au nom de l'offre, les filets
+    s'ajustent, les icônes des membres deviennent des anneaux, et la caméra glisse vers le bas : la
+    grille d'anneaux (5 colonnes) remplit l'image (raccord avec la scène 3 en 9:16,
+    « grille-de-coches », racine en 1080 × 1920).
+    Rôle : la solution (« une seule fois », « pour tous », « là où ils sont déjà »).
+
+    Format : 9:16 seulement (la version 16:9 est trait-qui-relie.html).
+
+    À REMPLACER :
+      1. L'id « t05-trait » partout (rechercher-remplacer) par l'id de la scène dans index.html.
+      2. MOT (le mot fort, 1 ou 2 mots), PHRASE (deux lignes, 5 mots au plus) et NOM (le nom de
+         l'offre, ou de l'outil qui relie : sa plateforme de cours, son logiciel), en tête du script.
+         Un logo à la place du nom : mets son SVG dans #t05-trait-nom (même taille, environ 100 px
+         de haut).
+      3. RANGS : les mêmes que dans la scène 1 (le panneau doit être identique au raccord).
+      4. Les couleurs du look : les mêmes variables qu'en scène 1 (--t05-papier, --t05-encre…).
+      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
+      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    Ne pas toucher : la place du panneau, des disques et de la caméra au début (raccord avec la
+    scène 1 en 9:16 : panneau en (224, 150), membres en 182 + 238 × colonne, 1635 + 238 × rangée)
+    et à la fin (raccord avec la scène 3 en 9:16 : grille de 5 × 9 disques en 70 + 235 × colonne,
+    76 + 235 × rangée, caméra au repos).
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t05-trait {
+      --t05-papier: #efefe5;
+      --t05-carte: #f9f9f4;
+      --t05-pli: #e4e4d8;
+      --t05-encre: #1d1d1b;
+      --t05-gris: #8a8a82;
+      --t05-allume: var(--brand-accent);
+      --t05-titres: var(--brand-font-display);
+      --t05-texte: var(--brand-font-body);
+      background: var(--t05-papier);
+    }
+    #t05-trait .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t05-trait .t05-panneau {
+      position: absolute; width: 632px; height: 743px; border-radius: 24px; background: var(--t05-carte);
+      box-shadow: inset 0 0 0 1.5px rgba(40, 40, 20, 0.08), 0 22px 50px rgba(60, 60, 30, 0.10), 0 3px 10px rgba(60, 60, 30, 0.05);
+    }
+    #t05-trait .t05-rang {
+      position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
+      display: flex; align-items: center; gap: 16px; white-space: nowrap;
+      font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
+    }
+    #t05-trait .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
+    #t05-trait .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(30, 30, 20, 0.14); }
+    #t05-trait .t05-ico { width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--brand-accent); color: var(--brand-contrast); }
+    #t05-trait .t05-ico svg { width: 21px; height: 21px; }
+    #t05-trait .t05-inter { position: absolute; right: 0; top: 12px; width: 62px; height: 36px; border-radius: 18px; background: var(--t05-allume); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07); }
+    #t05-trait .t05-bille { position: absolute; left: 29px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12); }
+    #t05-trait .t05-membre {
+      position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
+      background: var(--t05-carte); color: var(--t05-gris);
+      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+    }
+    #t05-trait .t05-membre .t05-ic { position: absolute; left: 25%; top: 25%; width: 50%; height: 50%; }
+    #t05-trait .t05-membre .t05-anneau { position: absolute; left: 24%; top: 24%; width: 52%; height: 52%; overflow: visible; }
+    /* Les textes tiennent sur toute la largeur, entre le bas du panneau et le haut des membres. */
+    #t05-trait .t05-texte-centre {
+      position: absolute; left: 0; width: 1080px; text-align: center; white-space: nowrap;
+      font: 400 84px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
+    }
+    #t05-trait .t05-ligne { display: block; }
+    #t05-trait .t05-mot { display: inline-block; }
+    #t05-trait .t05-gros { font-size: 128px; line-height: 1.1; }
+    #t05-trait .t05-nom { font-family: var(--brand-font-display); font-weight: 600; font-size: 104px; letter-spacing: -0.03em; }
+    #t05-trait .t05-traits { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+    #t05-trait .t05-traits path { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+
+  <div data-composition-id="t05-trait" data-width="1080" data-height="1920" data-duration="6.5" style="position:absolute; inset:0;">
+    <div id="t05-trait" class="k-scene">
+      <div class="t05-cam" id="t05-trait-cam" data-layout-allow-overflow>
+        <div class="t05-panneau" id="t05-trait-panneau" data-layout-allow-overflow>
+          <div class="t05-rang t05-tete" style="top:76px;"><span>Tout activer</span><div class="t05-inter"><div class="t05-bille"></div></div></div>
+          <div class="t05-filet" style="top:132px;"></div>
+          <div id="t05-trait-rangs"></div>
+        </div>
+        <div id="t05-trait-membres"></div>
+        <div class="t05-texte-centre t05-gros" id="t05-trait-mot"></div>
+        <div class="t05-texte-centre" id="t05-trait-phrase"></div>
+        <div class="t05-texte-centre t05-nom" id="t05-trait-nom"></div>
+        <svg class="t05-traits" id="t05-trait-traits" width="10" height="10" data-layout-allow-overflow>
+          <defs>
+            <filter id="t05-trait-rugueux" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7" result="bruit"/>
+              <feDisplacementMap in="SourceGraphic" in2="bruit" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+          </defs>
+          <path id="t05-trait-souligne" filter="url(#t05-trait-rugueux)"/>
+          <path id="t05-trait-gauche" filter="url(#t05-trait-rugueux)"/>
+          <path id="t05-trait-droite" filter="url(#t05-trait-rugueux)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ID = "t05-trait", D = 6.5;
+      var MOT = "Une fois.";
+      var PHRASE = ["Directement dans", "ton espace membre"];
+      var NOM = "Ton offre";
+      var RANGS = [
+        ["book-open", "Module 1 · Les bases"], ["play", "Les vidéos"], ["list-checks", "Les exercices"],
+        ["file-text", "Les modèles"], ["users", "La communauté"], ["calendar", "Les lives"], ["gift", "Les bonus"]
+      ];
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID), cam = $("cam"), svg = $("traits");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Outils du look (communs aux scènes du template 5) ---------------------------------
+      function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
+      function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
+      function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--t05-papier"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
+      function chemin(p, n) { var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1); for (var i = 0; i < Math.min(p.length - 1, n == null ? 1e9 : n); i++) { var a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c; d += " C" + (b[0] + (c[0] - a[0]) / 6).toFixed(1) + " " + (b[1] + (c[1] - a[1]) / 6).toFixed(1) + " " + (c[0] - (e[0] - b[0]) / 6).toFixed(1) + " " + (c[1] - (e[1] - b[1]) / 6).toFixed(1) + " " + c[0].toFixed(1) + " " + c[1].toFixed(1); } return d; }
+      function longueur(p, n) { var t = document.createElementNS("http://www.w3.org/2000/svg", "path"); t.setAttribute("d", chemin(p, n)); svg.appendChild(t); var l = t.getTotalLength(); svg.removeChild(t); return l; }
+      function morceau(path) { var Lp = path.getTotalLength(); return function (a, b) { var d = Math.max(0, b - a); path.style.strokeDasharray = d.toFixed(1) + " " + (Lp + 20).toFixed(0); path.style.strokeDashoffset = (-a).toFixed(1); path.style.opacity = d > 0.5 ? "1" : "0"; }; }
+      function cle(cles, t) { if (t <= cles[0][0]) return cles[0][1]; for (var i = 1; i < cles.length; i++) { if (t <= cles[i][0]) { var a = cles[i - 1], b = cles[i], p = (t - a[0]) / (b[0] - a[0]); p = gsap.parseEase(b[2] || "power2.inOut")(p); return a[1] + (b[1] - a[1]) * p; } } return cles[cles.length - 1][1]; }
+      function selon(fn) { var o = { t: 0 }; tl.to(o, { t: D, duration: D, ease: "none", onUpdate: function () { fn(o.t); } }, 0); fn(0); }
+      // Caméra : échelle s autour du point P du monde, qui se pose au point V de l'image.
+      function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
+      function recadre(t, s, P, V, duree, ease) { tl.to(cam, Object.assign(vers(s, P, V), { duration: duree || 0.7, ease: ease || "expo.inOut" }), t); }
+      function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
+      // Boîte (x, y, largeur, hauteur) des mots d'un texte, dans le repère de la caméra.
+      function boite(hote) { var ms = hote.querySelectorAll(".t05-mot"), x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; ms.forEach(function (m) { var x = hote.offsetLeft + m.offsetLeft, y = hote.offsetTop + m.offsetTop; x0 = Math.min(x0, x); x1 = Math.max(x1, x + m.offsetWidth); y0 = Math.min(y0, y); y1 = Math.max(y1, y + m.offsetHeight); }); return { x: x0, y: y0, l: x1 - x0, h: y1 - y0 }; }
+
+      // Un texte trop large (police large, phrase longue) se réduit pour tenir dans la largeur.
+      function ajuster(hote, max) { var b = boite(hote); if (b.l > max) { var fs = parseFloat(getComputedStyle(hote).fontSize); hote.style.fontSize = Math.max(fs * max / b.l, fs * 0.7).toFixed(1) + "px"; } }
+
+      // --- Le décor, identique à la fin de la scène 1 en 9:16 -------------------------------
+      // Le panneau en haut (comme la scène 1 en 9:16), les textes entre son bas et les membres.
+      var P = { x: 224, y: 150 }, BAS_PANNEAU = P.y + 743;
+      gsap.set($("panneau"), { left: P.x, top: P.y });
+      RANGS.forEach(function (r, i) { K.el($("rangs"), "div", "t05-rang", '<span class="t05-ico">' + K.ic(r[0]) + "</span><span>" + r[1] + '</span><div class="t05-inter"><div class="t05-bille"></div></div>', "top:" + (195 + i * 77.5) + "px;"); });
+      // Les membres : la grille de la scène 3 en 9:16 (5 colonnes, pas de 235 px), posée dans le
+      // monde de la caméra pour qu'après la glissade finale (FIN_CAM) elle tombe pile sur la sienne.
+      // Au début, chaque disque est décalé de quelques pixels (DX, DY) pour se poser exactement sur
+      // les quatre colonnes de la scène 1 (182 + 238 × c, 1635 + 238 × r) ; la cinquième colonne,
+      // absente de la scène 1, arrive avec la vague des anneaux. Les décalages se résorbent pendant
+      // la glissade (moins de 25 px sur 1 560 : invisibles).
+      var COLS = 5, LIGNES = 9, PAS = 235, FIN_CAM = { x: -116.5, y: -1560.5 };
+      var X0 = 70 - FIN_CAM.x, Y0 = 76 - FIN_CAM.y;            // 186,5 et 1 636,5 dans le monde
+      var HAUT_MEMBRES = 1635 - 89;                             // le haut des disques de la scène 1
+      var icMembre = '<svg class="t05-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9.6"/><circle cx="12" cy="9.6" r="3.4"/><path d="M6.4 18.6a7 7 0 0 1 11.2 0"/></svg>';
+      var anneau = '<svg class="t05-anneau" viewBox="0 0 100 100"><g filter="url(#t05-trait-rugueux)"><circle cx="50" cy="50" r="44" fill="none" stroke-width="6.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 50 50)"/></g></svg>';
+      var discs = [], nouveaux = [];
+      for (var r = 0; r < LIGNES; r++) for (var c = 0; c < COLS; c++) {
+        var wx = X0 + c * PAS, wy = Y0 + r * PAS;
+        var e = K.el($("membres"), "div", "t05-membre", icMembre + anneau, "left:" + wx + "px; top:" + wy + "px;");
+        e.dataset.c = c; e.dataset.r = r; e.setAttribute("data-layout-allow-overflow", "");
+        gsap.set(e, { x: (182 + c * 238) - wx, y: (1635 + r * 238) - wy });
+        if (c === COLS - 1) nouveaux.push(e);
+        discs.push(e);
+      }
+      K.cacher(nouveaux, { scale: 0.4 });
+
+      var tMot = mots($("mot"), [MOT]), tPhrase = mots($("phrase"), PHRASE);
+      $("nom").innerHTML = '<span class="t05-ligne"><span class="t05-mot">' + NOM + "</span></span>";
+      K.cacher([tMot, tPhrase, $("nom").querySelectorAll(".t05-mot")]);
+
+      var cs = getComputedStyle($("phrase"));
+      Promise.all([cs, getComputedStyle($("mot")), getComputedStyle($("nom"))].map(function (c) { return document.fonts.load(c.fontWeight + " " + c.fontSize + " " + c.fontFamily); })).then(construire, construire);
+
+      function construire() {
+        // Les textes : sur toute la largeur (marges de 70 px), centrés entre le panneau et les membres
+        ajuster($("phrase"), 940); ajuster($("nom"), 940); ajuster($("mot"), 940);
+        var TY = (BAS_PANNEAU + HAUT_MEMBRES) / 2, TC = [L / 2, TY];
+        ["mot", "phrase", "nom"].forEach(function (k) { var h = $(k); gsap.set(h, { top: TY - h.offsetHeight / 2 }); });
+        var trait = couleurTrait();
+        racine.querySelectorAll(".t05-anneau circle").forEach(function (c) { c.setAttribute("stroke", trait); });
+
+        // 1. Le mot fort, souligné par le trait qui descend par la droite du panneau
+        K.entreeMots(tl, tMot, 0.12, { y: 12, flou: 12, duree: 0.7, decalage: 0.08, echelle: 1 });
+        var bm = boite($("mot")), sous = bm.y + bm.h * 0.93;
+        var p1 = [[1000, -200], [990, 420], [bm.x + bm.l + 70, sous - 110], [bm.x + bm.l + 22, sous + 2], [bm.x + bm.l * 0.5, sous + 6], [bm.x - 10, sous + 1]];
+        var s1 = $("souligne"); s1.setAttribute("d", chemin(p1)); s1.setAttribute("stroke", trait);
+        var m1 = morceau(s1), L1 = s1.getTotalLength(), L1e = longueur(p1, 3);
+        K.sortieMots(tl, tMot, 2.05, { y: -10, flou: 12, duree: 0.38, decalage: 0.05 });
+
+        // 2. La phrase, et le trait qui redescend, passe sous le panneau et relie le panneau à la phrase
+        var lignes = $("phrase").querySelectorAll(".t05-ligne");
+        K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.45, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+        K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 2.7, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+        var bp = boite($("phrase")), bn = boite($("nom")), xl = L / 2;
+        // Filet du haut : du bas du panneau jusqu'au texte posé (la phrase, puis le nom).
+        var debutH = BAS_PANNEAU + 30, finP = bp.y - 50, finN = bn.y - 46, finMax = Math.max(finP, finN);
+        var p2 = [[1180, -200], [1000, 300], [950, 760], [880, 935], [xl + 60, debutH + 2], [xl, debutH + 26], [xl + 2, (debutH + 26 + finMax) / 2], [xl, finMax]];
+        var s2 = $("gauche"); s2.setAttribute("d", chemin(p2)); s2.setAttribute("stroke", trait);
+        var m2 = morceau(s2), L2 = s2.getTotalLength(), L2e = longueur(p2, 5);
+        var b2p = L2 - (finMax - finP), b2n = L2 - (finMax - finN);
+        // 3. Filet du bas : du texte posé jusqu'aux membres.
+        var debP = bp.y + bp.h + 50, debN = bn.y + bn.h + 46, debutD = Math.min(debP, debN), finD = HAUT_MEMBRES - 22;
+        var p3 = [[xl, debutD], [xl - 1.5, (debutD + finD) / 2], [xl + 1, finD]];
+        var s3 = $("droite"); s3.setAttribute("d", chemin(p3)); s3.setAttribute("stroke", trait);
+        var m3 = morceau(s3), L3 = s3.getTotalLength(), a3p = debP - debutD, a3n = debN - debutD;
+
+        selon(function (t) {
+          // souligné : il arrive (0,25 → 1,0), tient, puis rembobine et repart par où il est venu
+          var b = cle([[0.25, 0], [1.0, L1, "power2.inOut"], [1.95, L1, "none"], [2.45, 0, "power2.in"]], t);
+          var a = cle([[0.45, 0], [1.05, L1e, "power2.inOut"], [1.95, L1e, "none"], [2.35, 0, "power2.in"]], t);
+          m1(Math.min(a, b), b);
+          // filet du haut : le trait descend le long du panneau, passe dessous et file jusqu'à la phrase, puis au nom
+          var b2 = cle([[2.55, 0], [3.35, b2p, "power2.inOut"], [4.45, b2p, "none"], [4.95, b2n, "power2.inOut"]], t);
+          var a2 = cle([[2.75, 0], [3.4, L2e, "power2.inOut"]], t);
+          m2(Math.min(a2, b2), b2);
+          // filet du bas : il part de la phrase et rejoint les membres, puis s'ajuste au nom
+          var b3 = cle([[3.3, a3p], [3.75, L3, "power2.inOut"]], t);
+          var a3 = cle([[3.3, a3p], [4.45, a3p, "none"], [4.95, a3n, "power2.inOut"]], t);
+          m3(Math.min(a3, b3), b3);
+        });
+
+        // 4. La phrase cède la place au nom
+        K.sortieMots(tl, tPhrase, 4.35, { y: -8, flou: 14, duree: 0.28, decalage: 0.025 });
+        K.entreeMots(tl, $("nom").querySelectorAll(".t05-mot"), 4.62, { y: 0, flou: 16, duree: 0.6, echelle: 0.96 });
+
+        // 5. Les membres deviennent des anneaux (vague depuis la rangée la plus proche du nom) ;
+        //    la cinquième colonne arrive juste avant, comme les disques de la scène 1.
+        nouveaux.forEach(function (d) { tl.to(d, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 4.55 + (+d.dataset.r) * 0.07); });
+        discs.forEach(function (d) {
+          var t0 = 4.7 + (+d.dataset.r) * 0.07 + (+d.dataset.c) * 0.035;
+          tl.to(d.querySelector(".t05-ic"), { scale: 0.4, rotation: -90, opacity: 0, duration: 0.3, ease: "power2.in" }, t0);
+          tl.to(d.querySelector(".t05-anneau circle"), { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "power2.out" }, t0 + 0.12);
+        });
+
+        // 6. La caméra glisse vers le bas : la grille d'anneaux remplit l'image (raccord scène 3)
+        // La caméra respire avec les mots : elle s'approche du mot fort, recule pour la phrase,
+        // revient au nom, puis glisse vers la grille.
+        recadre(0.15, 1.065, TC, TC, 0.85, "expo.inOut");
+        recadre(1.15, 1.1, TC, [TC[0] - 42, TC[1] + 6], 0.55, "expo.inOut");
+        recadre(1.95, 1, TC, TC, 0.6, "expo.inOut");
+        recadre(2.75, 1.04, TC, [TC[0] + 30, TC[1]], 0.55, "expo.inOut");
+        recadre(3.45, 1.075, TC, [TC[0] - 18, TC[1]], 0.5, "expo.inOut");
+        recadre(4.3, 1.13, TC, TC, 0.6, "expo.inOut");
+        recadre(4.92, 1.085, TC, [TC[0] + 27, TC[1]], 0.3, "power2.inOut");
+        tl.to(cam, { x: FIN_CAM.x, y: FIN_CAM.y, scale: 1, duration: 1.05, ease: "expo.inOut" }, 5.2);
+        tl.to(discs, { x: 0, y: 0, duration: 1.05, ease: "expo.inOut" }, 5.2);
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

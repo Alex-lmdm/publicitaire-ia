@@ -7,7 +7,7 @@
     8,0 s, 16:9
 
     Ce qu'elle montre, en trois plans coupés franc :
-      plan A (0 à 2,4 s) : sur le fond sombre de la marque, l'étoile de rayons de la scène
+      plan A (0 à 2,4 s) : sur la nuit du look, l'étoile de rayons de la scène
         précédente se resserre au centre et disparaît ; une grille d'icônes au trait fin se dessine
         depuis le centre (chaque icône dans un cercle de construction pointillé, deux points sur
         le cercle) ; un cadre de sélection à poignées attrape une icône, qui passe à l'accent, et
@@ -15,7 +15,7 @@
       plan B (2,4 à 4,4 s) : le slogan géant, blanc, sur deux lignes, dans un espace profond aux
         teintes de l'accent ; une planète en bas à gauche, des cubes (le produit) qui dérivent, la
         sphère de verre qui passe derrière les lettres ;
-      plan C (4,4 à 8,0 s) : sur le fond sombre, le nom de la marque et ses repères de maquette ;
+      plan C (4,4 à 8,0 s) : sur la nuit, le nom de la marque et ses repères de maquette ;
         la sphère arrive, se pose et devient le bouton ; le curseur le clique, il se remplit de
         l'accent ; le nom et le bouton tiennent 2,6 s avec les cubes qui dérivent.
 
@@ -29,7 +29,8 @@
       4. Le nom (#t02-final-nom : le nom de sa marque ou de l'offre ; un logo se pose en
          <img src="brand/logo.svg"> à sa gauche, s'il en a un) et le bouton (#t02-final-btn-texte :
          le vrai libellé du bouton de sa page, 1 à 3 mots).
-    Couleurs : var(--brand-*) et teintes dérivées de l'accent (--t02-d, défaut -40 ; +40 pour un
+    Couleurs : la nuit et les textes blancs sont ceux du look (fixes, quelle que soit la marque) ;
+    la marque donne l'accent et les teintes dérivées de lui (--t02-d, défaut -40 ; +40 pour un
     accent vert). Polices : var(--brand-font-display) ; étiquettes en var(--brand-font-body).
   -->
 </head>
@@ -50,28 +51,36 @@
       --e-planete: oklch(from var(--brand-accent) calc(l * 0.40) calc(c * 0.75) calc(h + var(--t02-d) * 1.0));
       --e-planete-2: oklch(from var(--brand-accent) calc(l * 0.28) calc(c * 0.60) calc(h + var(--t02-d) * 1.2));
       --e-bord: oklch(from var(--brand-accent) calc(l * 0.72) calc(c * 0.85) calc(h + var(--t02-d) * 0.4));
-      background: var(--brand-bg);
+      /* La nuit du look (l'aubergine presque noir de l'original) reste sombre quelle que soit la
+         marque, claire ou sombre : presque noir, teinté de 10 % de l'accent ; le texte posé dessus
+         est blanc. La marque ne donne que les accents (--t02-accent-texte : l'accent, éclairci s'il
+         est trop sombre pour se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+      --t02-nuit: color-mix(in oklab, #120f17 90%, var(--brand-accent));
+      --t02-texte: #ffffff;
+      --t02-gris: #a9a5ae;
+      --t02-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
+      background: var(--t02-nuit);
     }
     #t02-final .t02-final-plan { position: absolute; inset: 0; overflow: hidden; }
     /* Plan A : la grille d'icônes. */
     #t02-final .t02-final-camA { position: absolute; inset: 0; }
-    #t02-final .t02-final-case { position: absolute; width: 150px; height: 150px; margin: -75px 0 0 -75px; color: var(--brand-text); }
+    #t02-final .t02-final-case { position: absolute; width: 150px; height: 150px; margin: -75px 0 0 -75px; color: var(--t02-texte); }
     #t02-final .t02-final-case svg { position: absolute; overflow: visible; }
     #t02-final .t02-final-case .rond { left: 0; top: 0; width: 150px; height: 150px; }
     #t02-final .t02-final-case .ic { left: 37px; top: 37px; width: 76px; height: 76px; }
-    #t02-final .t02-final-case.choisie { color: var(--brand-accent); }
+    #t02-final .t02-final-case.choisie { color: var(--t02-accent-texte); }
     #t02-final .t02-final-etoile { position: absolute; left: 960px; top: 680px; width: 0; height: 0; }
     #t02-final .t02-final-rai { position: absolute; left: 0; top: -1px; width: 1300px; height: 2px; background: rgba(255, 255, 255, 0.8); transform-origin: 0 50%; }
     #t02-final .t02-final-rai i { position: absolute; right: -6px; top: -5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
     #t02-final .t02-final-sel { position: absolute; border: 2px solid var(--brand-accent); }
-    #t02-final .t02-final-poignee { position: absolute; width: 14px; height: 14px; margin: -8px 0 0 -8px; background: var(--brand-bg); border: 2px solid var(--brand-accent); }
-    #t02-final .t02-final-etiquette { position: absolute; font-family: var(--brand-font-body); font-size: 24px; line-height: 1.3; color: var(--brand-text); white-space: nowrap; }
+    #t02-final .t02-final-poignee { position: absolute; width: 14px; height: 14px; margin: -8px 0 0 -8px; background: var(--t02-nuit); border: 2px solid var(--brand-accent); }
+    #t02-final .t02-final-etiquette { position: absolute; font-family: var(--brand-font-body); font-size: 24px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; }
     /* Plan B : l'espace et le slogan géant. */
-    #t02-final .t02-final-espace { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 85% at 78% 30%, var(--e-lueur) 0%, var(--e-fond) 48%, var(--brand-bg) 100%); }
+    #t02-final .t02-final-espace { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 85% at 78% 30%, var(--e-lueur) 0%, var(--e-fond) 48%, var(--t02-nuit) 100%); }
     #t02-final .t02-final-slogan {
       position: absolute; left: 230px; white-space: nowrap; z-index: 6;
       font-family: var(--brand-font-display); font-weight: 600; font-size: 236px; line-height: 1;
-      letter-spacing: -0.045em; color: var(--brand-text);
+      letter-spacing: -0.045em; color: var(--t02-texte);
     }
     #t02-final .t02-final-objet { position: absolute; left: 0; top: 0; width: 400px; height: 400px; margin: -200px 0 0 -200px; z-index: 4; }
     #t02-final .t02-final-objet svg { width: 100%; height: 100%; overflow: visible; }
@@ -84,10 +93,10 @@
     #t02-final .t02-final-nom {
       position: absolute; left: 0; right: 0; top: 330px; text-align: center; white-space: nowrap;
       font-family: var(--brand-font-display); font-weight: 600; font-size: 132px; line-height: 1;
-      letter-spacing: -0.04em; color: var(--brand-text);
+      letter-spacing: -0.04em; color: var(--t02-texte);
     }
     #t02-final .t02-final-trait { position: absolute; background: color-mix(in srgb, var(--brand-accent) 55%, transparent); }
-    #t02-final .t02-final-note { position: absolute; font-family: var(--brand-font-body); font-size: 21px; line-height: 1.3; color: var(--brand-muted); white-space: nowrap; }
+    #t02-final .t02-final-note { position: absolute; font-family: var(--brand-font-body); font-size: 21px; line-height: 1.3; color: var(--t02-gris); white-space: nowrap; }
     #t02-final .t02-final-btn {
       position: absolute; left: 960px; top: 650px; height: 120px; margin: -60px 0 0 0;
       border-radius: 999px; border: 3px solid var(--brand-accent); overflow: hidden;
@@ -96,7 +105,7 @@
     #t02-final .t02-final-btn .remplir { position: absolute; inset: 0; background: var(--brand-accent); transform-origin: 50% 50%; }
     #t02-final .t02-final-btn span {
       position: relative; font-family: var(--brand-font-display); font-weight: 600; font-size: 46px;
-      letter-spacing: -0.02em; color: var(--brand-accent); white-space: nowrap;
+      letter-spacing: -0.02em; color: var(--t02-accent-texte); white-space: nowrap;
     }
     #t02-final .t02-final-btn[data-etat="plein"] span { color: var(--brand-contrast); }
   </style>
@@ -124,7 +133,7 @@
         <div class="t02-final-slogan" id="t02-final-l2" style="top:500px;"><span class="k-mot" data-layout-allow-overlap>plus</span> <span class="k-mot" data-layout-allow-overlap>loin.</span></div>
       </div>
       <!-- Plan C -->
-      <div class="t02-final-plan" id="t02-final-planC" style="background:var(--brand-bg);">
+      <div class="t02-final-plan" id="t02-final-planC" style="background:var(--t02-nuit);">
         <div id="t02-final-cubesC"></div>
         <div class="t02-final-nom" id="t02-final-nom">Ta marque</div>
         <div id="t02-final-reperes"></div>

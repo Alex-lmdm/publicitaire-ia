@@ -38,14 +38,22 @@ L'original répète le motif papier / écran trois fois sur 13 s (trois besoins,
 | Dans l'original | Son rôle | Chez le client |
 |---|---|---|
 | Papier blanc cassé, grille grise de 100 px, cases gris clair | le monde d'avant, calme et neutre | identique : neutre, ce n'est pas la marque (le papier `#efeee9`, l'encre `#151515`, les cases `#e3e2de`) |
-| Trame bleu-vert en tirets | l'écran où le problème arrive | l'accent en tirets sur le fond sombre de la marque (`var(--brand-bg)`), avec une tache décalée vers le chaud |
+| Trame bleu-vert en tirets | l'écran où le problème arrive | l'accent en tirets sur un presque noir **fixe** (`#0c0d10` teinté d'accent), avec une tache décalée vers le chaud |
 | Dégradé rouge-orange vif | l'alerte, la bascule | l'accent tourné vers le rouge de `--t04-ecart` degrés (50 par défaut), en trois teintes |
-| Noir et anneaux fins | le vide autour de l'orbe | `var(--brand-bg)` et des anneaux blancs à 22 % |
+| Noir et anneaux fins | le vide autour de l'orbe, la fin | un noir **fixe** (`#050505`) et des anneaux blancs à 22 %, sur toutes les marques |
 | Dégradé vert, bleu, jaune, flou | l'après | l'accent entouré de ses voisines (une plus froide, une plus chaude, une presque blanche), toujours claires |
 | Bulles de verre clair, texte blanc | la conversation | du verre et une encre qui suivent `var(--brand-contrast)` : texte foncé sur verre clair pour un accent clair, l'inverse pour un accent sombre |
-| Cartes en dégradé vert-jaune, logo blanc | l'offre, la signature | les trois teintes de l'après ; le nom en `var(--brand-text)`, le bouton en `var(--brand-accent)` |
+| Cartes en dégradé vert-jaune, logo blanc | l'offre, la signature | les trois teintes de l'après ; la phrase d'appel et le nom en blanc (`--t04-texte`), le bouton en `var(--brand-accent)` |
 
-C'est le seul template qui sort d'une seule teinte : les dégradés tournent autour de l'accent (de 50 degrés de chaque côté). Une marque qui veut rester stricte règle `--t04-ecart` à 12 dans les quatre scènes. Avec un accent jaune : trame jaune-orangé sur gris anthracite, alerte rouge-orange, après citron, vert tendre et orangé.
+**Sur n'importe quelle marque, claire ou sombre.** Le papier de l'avant, l'écran tramé, le noir de
+l'orbe, le passage au noir et la fin restent ceux de l'original : des valeurs fixes (papier
+blanc cassé, presque noir, noir), jamais `var(--brand-bg)` ni `var(--brand-text)` (sur une marque
+claire, l'orbe et la fin devenaient blancs, le texte du cadre noir sur blanc : le look partait).
+Le texte posé sur le noir est blanc ; la marque ne donne que les accents (la trame, les dégradés
+dérivés, le bouton). Tout texte garde un contraste d'au moins 4,5:1 : sur le dégradé chaud, la
+phrase pivot blanche porte une ombre douce ; les bulles et les cartes suivent `var(--brand-contrast)`.
+
+C'est le seul template qui sort d'une seule teinte : les dégradés tournent autour de l'accent (de 50 degrés de chaque côté). Une marque qui veut rester stricte règle `--t04-ecart` à 12 dans les quatre scènes. Avec un accent jaune : trame jaune-orangé sur presque noir, alerte rouge-orange, après citron, vert tendre et orangé.
 
 ## 4. La typographie
 
@@ -124,8 +132,11 @@ Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait
 
 ## En vertical et en carré
 
-- **9:16 (testé, `messages-verre-vertical.html`)** : la conversation remplit l'écran comme sur un téléphone : colonne de 968 px, bulles de 44 px, le fil part du milieu et remonte de 560 px en tout, le recadrage est plus doux (×1,03).
-- **Les autres scènes en 9:16** : sur le papier, les mots en deux ou trois rangées dans la bande du milieu (de 600 à 1 300 px), les objets dans les bandes du haut et du bas (cases de 200 à 300 px) ; les carrés de pixels restent à 120 px (9 colonnes, 16 rangées) ; le téléphone plus grand (500 × 1 000 px), la pastille au-dessus de lui. L'orbe ne bouge pas (centré, anneaux plus grands). À la fin, le cadre fait 960 × 700 px, la phrase d'appel passe sur deux lignes et les trois cartes s'empilent avant de devenir le trait.
+- **9:16 : chaque scène a sa version verticale** (`mots-objets-vertical.html`, `orbe-pivot-vertical.html`, `messages-verre-vertical.html`, `fin-cadre-vertical.html`), remise en page et jamais recadrée. Les quatre bout à bout en 1080 × 1920 font 23,9 s (essai sur une marque claire et sur LMDM : `rythme` « ok », 1,28 événement par seconde, écart médian 0,70 s, aucune image figée, raccords image pour image).
+- **Le papier en 9:16** (`mots-objets-vertical.html`) : les mots à 96 px, en deux ou trois rangées dans la bande du milieu (de 780 à 1 100 px dans le kit, 600 à 1 300 au plus), 8 lettres au plus par mot ; les objets dans les bandes du haut et du bas (cases de 200 à 300 px sur la grille de 100 px : x = 40, 140…, y = 60, 160…), quelques petites cases sur les bords : l'écran est rempli de haut en bas. Les carrés de pixels restent à 120 px (9 colonnes, 16 rangées). Sur les écrans, le téléphone plus grand (500 × 1 000 px, centré, même inclinaison) et la pastille centrée au-dessus de lui.
+- **L'orbe en 9:16** (`orbe-pivot-vertical.html`) : centré, un peu plus grand (disque de 320 px de rayon, orbe de 200 px), anneaux plus larges (460, 740 et 1 080 px) qui occupent la hauteur ; la phrase pivot passe à 64 px ; l'après a les mêmes taches que `messages-verre-vertical.html`.
+- **La conversation en 9:16** (`messages-verre-vertical.html`) : elle remplit l'écran comme sur un téléphone : colonne de 968 px, bulles de 44 px, le fil part du milieu et remonte de 560 px en tout, le recadrage est plus doux (×1,03).
+- **La fin en 9:16** (`fin-cadre-vertical.html`) : le cadre fait 960 × 700 px, la phrase d'appel à 58 px passe seule sur deux lignes, centrée ; les trois cartes (720 × 240 px) sortent au-dessus et au-dessous de la première, s'empilent en colonne, puis la colonne s'aplatit en un trait de 860 px ; le nom à 88 px au-dessus, le bouton (pilule de 104 px, texte de 44 px) dessous, vers le milieu de l'écran.
 - **4:5 et 1:1** : comme le 16:9 resserré ; 9 colonnes de carrés, les objets seulement sur les côtés, deux cartes au lieu de trois en 1:1 si le texte ne tient pas.
 - Les mots clés restent hors des 10 % du haut et des 20 % du bas en vertical (les commandes de l'application).
 
@@ -138,5 +149,8 @@ Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait
 | `compositions/messages-verre.html` | 6,0 s | L'après : la conversation en bulles de verre sur le dégradé vif, les points qui annoncent les réponses, la carte du résultat qui se coche, puis le noir | L'id `t04-msg`, `MESSAGES` (un vrai échange), `ETIQUETTE`, `CADENCE`, `RESULTAT` (ou `null`) |
 | `compositions/messages-verre-vertical.html` | 6,0 s | La même conversation en 9:16 | Comme la version 16:9 |
 | `compositions/fin-cadre.html` | 6,5 s | L'offre et l'appel : le cadre et sa phrase, les trois cartes, le trait, le nom, le bouton cliqué | L'id `t04-fin`, `APPEL`, `CARTES` (les trois parties réelles de l'offre), le nom (ou son logo en `<img>`), le libellé du bouton |
+| `compositions/mots-objets-vertical.html` | 7,4 s | L'avant en 9:16 : les mots dans la bande du milieu, les objets en haut et en bas, le grand téléphone et sa pastille au-dessus, les carrés de pixels en 9 × 16 | Comme la version 16:9 ; les places des mots et des objets suivent la grille verticale (en-tête du fichier) |
+| `compositions/orbe-pivot-vertical.html` | 4,0 s | La bascule en 9:16 : l'orbe centré, plus grand, ses anneaux sur toute la hauteur | Comme la version 16:9 |
+| `compositions/fin-cadre-vertical.html` | 6,5 s | L'offre et l'appel en 9:16 : le cadre de 960 × 700 px, la phrase sur deux lignes, les trois cartes empilées, le trait, le nom, le bouton cliqué | Comme la version 16:9 ; trois cartes |
 
-Bout à bout dans cet ordre, elles font une vidéo de 23,9 s qui se tient seule (essai : `rythme` « ok », `check` sans erreur). Les raccords sont faits : la fin de `mots-objets` est la première image de `orbe-pivot` (le dégradé chaud plein cadre), la fin de `orbe-pivot` celle de `messages-verre` (le dégradé de l'après, mêmes taches), et `messages-verre` finit dans le noir où commence `fin-cadre`.
+Bout à bout dans cet ordre, elles font une vidéo de 23,9 s qui se tient seule, en 16:9 comme en 9:16 avec les versions `-vertical` (essais : `rythme` « ok », `check` sans erreur). Les raccords sont faits dans les deux formats : la fin de `mots-objets` est la première image de `orbe-pivot` (le dégradé chaud plein cadre), la fin de `orbe-pivot` celle de `messages-verre` (le dégradé de l'après, mêmes taches), et `messages-verre` finit dans le noir où commence `fin-cadre`. Un format = une seule famille de fichiers : en 9:16, monte les quatre `-vertical`, jamais une scène 16:9.

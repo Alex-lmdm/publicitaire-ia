@@ -10,22 +10,29 @@
   sur fond clair : une barre de demande où la phrase se tape, les logos des outils empilés, le
   curseur clique sur envoyer ; la barre s'efface et la fenêtre du résultat s'ouvre, ses cartes se
   remplissent en cascade.
-  Durée : 6,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (lignes plus
-  courtes, barre et fenêtre à la largeur de l'écran).
+  Durée : 6,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (classe
+  t7p-vertical, réglée seule : lignes plus courtes, barre plus haute où la demande passe sur deux
+  lignes, fenêtre en portrait qui remplit l'écran, cartes en deux colonnes).
   À remplacer (objet R en tête du script) : les deux lignes, la demande tapée, les logos des
   outils (posés par `studio_motion.py logos`), le titre de la fenêtre, et la capture de ton
   produit (assets/images/… : elle remplit la fenêtre ; "" garde le squelette de cartes).
-  Couleurs : uniquement var(--brand-*) ; le taupe et le clair se dérivent du fond de la marque.
+  Couleurs : le taupe, le clair et l'encre sont ceux du look (fixes, quelle que soit la marque) ;
+  la marque donne l'accent (le curseur de frappe, les aplats).
   Identifiant : t7p (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7p {
-    --t7-taupe: color-mix(in oklab, var(--brand-bg) 80%, var(--brand-muted));
-    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
-    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
-    --t7-gris: color-mix(in oklab, var(--brand-text) 55%, var(--t7-taupe));
+    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
+       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
+       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
+       var(--brand-text) ici. */
+    --t7-taupe: #514643;
+    --t7-clair: #edece5;
+    --t7-encre: #1d1917;
+    --t7-texte: #f3f0eb;
+    --t7-gris: #c3bdb8;
     --t7-police: var(--brand-font-display);
-    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--brand-text);
+    background: var(--t7-taupe); font-family: var(--t7-police); color: var(--t7-texte);
   }
   #t7p .t7p-plan { position: absolute; inset: 0; }
   #t7p .t7p-taupe { background: var(--t7-taupe); }
@@ -70,6 +77,24 @@
   #t7p .t7p-carte b { display: block; height: 14px; border-radius: 7px; background: rgba(0,0,0,.14); margin: 18px 6px 0; width: 60%; }
   #t7p .t7p-carte b + b { width: 38%; margin-top: 12px; background: rgba(0,0,0,.08); }
   #t7p .t7p-capture { position: absolute; left: 270px; right: 0; top: 0; bottom: 0; background-size: cover; background-position: top left; }
+  /* 9:16 : la même scène remise en page (une mise en page, jamais un recadrage). */
+  #t7p.t7p-vertical .t7p-barre { width: 1000px; height: auto; min-height: 200px; margin: 0 0 0 -500px; top: 50%; transform: translateY(-50%);
+    padding: 30px 26px 30px 34px; border-radius: 36px; }
+  #t7p.t7p-vertical .t7p-demande { font-size: 50px; line-height: 1.22; white-space: normal; }
+  #t7p.t7p-vertical .t7p-demande::after { height: 50px; vertical-align: -9px; }
+  #t7p.t7p-vertical .t7p-fenetre { width: 1000px; height: 1460px; margin: -730px 0 0 -500px; }
+  #t7p.t7p-vertical .t7p-cote { left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 96px; padding: 0 0 0 150px; display: flex; gap: 14px; align-items: center;
+    border-right: 0; border-bottom: 1.5px solid rgba(0,0,0,.05); }
+  #t7p.t7p-vertical .t7p-cote .t7p-item { margin: 0; flex: none; }
+  #t7p.t7p-vertical .t7p-cote .t7p-item:nth-child(n+6) { display: none; }
+  #t7p.t7p-vertical .t7p-feux { top: 41px; }
+  #t7p.t7p-vertical .t7p-corps { left: 0; top: 96px; padding: 56px 52px; }
+  #t7p.t7p-vertical .t7p-titre { font-size: 56px; }
+  #t7p.t7p-vertical .t7p-titre span { font-size: 28px; }
+  #t7p.t7p-vertical .t7p-grille { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+  #t7p.t7p-vertical .t7p-carte { height: 330px; }
+  #t7p.t7p-vertical .t7p-carte .t7p-img { height: 210px; }
+  #t7p.t7p-vertical .t7p-capture { left: 0; top: 96px; }
 </style>
 
 <div data-composition-id="t7p" data-width="1920" data-height="1080" data-duration="6.6" style="position:absolute; inset:0;">
@@ -129,7 +154,7 @@
   if (R.capture) { var cap = K.el($("t7p-fenetre"), "div", "t7p-capture"); cap.style.backgroundImage = "url('" + R.capture + "')"; $("t7p-corps").style.visibility = "hidden"; }
   if (vertical) {
     $("t7p-l1").parentNode.parentNode.style.fontSize = "96px";
-    gsap.set("#t7p-barre", { scale: 0.74 }); gsap.set("#t7p-fenetre", { scale: 0.7 });
+    $("t7p").classList.add("t7p-vertical");
   }
   var curseur = K.curseur($("t7p-curseur-hote"), "t7p-curseur", false);
 
@@ -150,7 +175,7 @@
   tl.fromTo("#t7p-cam", { scale: 1.18 }, { scale: 1.0, duration: 1.7, ease: "power2.out" }, 2.35);
   K.taper(tl, $("t7p-demande"), R.demande, 2.5, 3.35, D);
   tl.fromTo("#t7p-logos .t7p-logo", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", stagger: 0.08 }, 2.6);
-  var bx = L / 2 + (vertical ? 0.74 : 1) * (650 - 30 - 38), by = H / 2 + 2;
+  var bx = L / 2 + (vertical ? 500 - 26 - 38 : 650 - 30 - 38), by = H / 2 + 2;
   K.trajet(tl, curseur, [[0, L * 0.82, H * 0.86], [3.3, bx + 6, by + 8, 0.55, "power3.out"]]);
   K.cacher(curseur);
   tl.to(curseur, { opacity: 1, duration: 0.15 }, 3.25);
@@ -161,8 +186,8 @@
   // 3. La barre s'efface, la fenêtre du résultat s'ouvre et se remplit (4,05 → 6,6 s)
   tl.to("#t7p-barre", { y: -260, scale: 0.6, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, 4.05);
   tl.to(curseur, { opacity: 0, duration: 0.2 }, 4.1);
-  tl.fromTo("#t7p-fenetre", { opacity: 0, scale: (vertical ? 0.7 : 1) * 0.86, filter: "blur(14px) brightness(1.08)" },
-    { opacity: 1, scale: vertical ? 0.7 : 1, filter: "blur(0px) brightness(1)", duration: 0.7, ease: "expo.out" }, 4.3);
+  tl.fromTo("#t7p-fenetre", { opacity: 0, scale: 0.86, filter: "blur(14px) brightness(1.08)" },
+    { opacity: 1, scale: 1, filter: "blur(0px) brightness(1)", duration: 0.7, ease: "expo.out" }, 4.3);
   tl.fromTo("#t7p-cote .t7p-item", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", stagger: 0.04 }, 4.45);
   tl.fromTo("#t7p-titre", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 4.55);
   tl.fromTo("#t7p-progres", { scaleX: 0 }, { scaleX: 1, duration: 1.7, ease: "power1.inOut" }, 4.6);

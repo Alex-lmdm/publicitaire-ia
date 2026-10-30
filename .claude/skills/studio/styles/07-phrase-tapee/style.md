@@ -13,8 +13,9 @@ d'une offre (ses outils, ses modules, ses bonus).
 médian 0,30 s entre deux événements, 16 coupes franches (presque toutes avec un changement de
 fond), 4,4 s d'image figée au total. Musique à 104 battements par minute (un temps toutes les
 0,58 s), un silence net à 4,5 s puis l'entrée franche à 5,0 s.
-**Mesures de l'essai du kit** (4 scènes, marque LMDM, 28,5 s) : 1,08 événement par seconde, écart
-médian 0,50 s, aucune image figée, `rythme` « ok ».
+**Mesures de l'essai du kit** (les 4 scènes bout à bout, 28,5 s) : marque LMDM, 1,20 événement par
+seconde en 16:9 et 1,08 en 9:16 ; marque claire (Dupliq.me) en 9:16, 1,12 ; écart médian 0,60 s,
+aucune image figée, `rythme` « ok » partout.
 
 > On reprend la grammaire de la vidéo (phrases tapées, alternance des fonds, interfaces claires,
 > objets éparpillés, orbite, galaxie, point final), jamais son contenu : ni ses textes, ni son logo,
@@ -59,13 +60,21 @@ produit dans la même fenêtre claire) → `t7-eparpille` → (une preuve) → `
 
 | Dans l'original | Son rôle | Avec la marque du client |
 |---|---|---|
-| Noir chaud | l'ouverture, la galaxie | `--t7-nuit` : le fond de la marque assombri (86 % fond, 14 % noir) |
-| Taupe chaud | les phrases tapées sur deux lignes, l'orbite | `--t7-taupe` : le fond de la marque mêlé de 20 % de son gris. LMDM : graphite |
-| Blanc cassé chaud | les interfaces, les objets éparpillés, le logo | `--t7-clair` : blanc cassé teinté de 5 % du fond de la marque |
-| Lavande | le curseur de frappe, les mots qui s'allument, le nuage du mot géant, la pastille d'appel | `var(--brand-accent)`, texte posé dessus en `var(--brand-contrast)` |
-| Gris clair | la 2e ligne d'une phrase | `--t7-gris` : le texte de la marque à 55 % sur le taupe |
-| Encre | texte sur fond clair, bouton d'envoi, point final | `--t7-encre` : le fond de la marque assombri |
+| Noir chaud | l'ouverture, la galaxie | `--t7-nuit` : `#1f1513`, fixe, sur toutes les marques |
+| Taupe chaud | les phrases tapées sur deux lignes, l'orbite | `--t7-taupe` : `#514643`, fixe |
+| Blanc cassé chaud | les interfaces, les objets éparpillés, le logo | `--t7-clair` : `#edece5`, fixe |
+| Blanc cassé | le texte sur le noir et le taupe | `--t7-texte` : `#f3f0eb`, fixe |
+| Lavande | le curseur de frappe, les mots qui s'allument, le nuage du mot géant, la pastille d'appel | `var(--brand-accent)`, texte posé dessus en `var(--brand-contrast)` ; les mots qui s'allument sur le noir en `--t7-accent-texte` (l'accent, éclairci seul s'il est trop sombre pour se lire) |
+| Gris clair | la 2e ligne d'une phrase | `--t7-gris` : `#c3bdb8` sur le taupe, `#b4ada8` sur le noir (contraste de 4,5:1 au moins) |
+| Encre | texte sur fond clair, bouton d'envoi, point final | `--t7-encre` : `#1d1917`, fixe |
 | Blanc pur | cartes, barre de demande, fenêtres | blanc, ombres douces |
+
+**Sur n'importe quelle marque, claire ou sombre.** Le noir chaud, le taupe, le blanc cassé et
+l'encre sont ceux de l'original, mesurés sur sa vidéo et fixes : jamais `var(--brand-bg)` ni
+`var(--brand-text)` dans ce look (sur une marque claire, le noir et le taupe devenaient gris clair
+et le texte noir sur gris). La marque ne donne que les accents : le curseur de frappe, les mots qui
+s'allument, le nuage, la pastille, les liserés et l'éclat de l'orbite. Tout texte garde un
+contraste d'au moins 4,5:1.
 
 **Quatre fonds qui alternent par coupe franche** (noir, nuage de couleur, clair, taupe) : c'est la
 respiration du look, comme le veut le studio. Sur fond clair, l'accent ne sert qu'en **aplat** (le
@@ -121,9 +130,11 @@ nuage, la pastille, une vignette) : jamais en texte ni en trait fin, illisible a
 5. **L'orbite et la galaxie** (`t7-orbite`) : trois cercles en pointillés s'ouvrent autour de la
    carte (0,7 s, expo.out, 0,14 s d'écart), les objets surgissent dessus (0,035 s d'écart) ; chaque
    anneau tourne à sa vitesse (100°, −64°, 38° sur la scène, sine.inOut) et les objets restent
-   droits ; les outils « se connectent » un par un (liseré d'accent, 0,3 s d'écart) ; la caméra
-   recule de ×1,08 à ×0,36 en 1,6 s (expo.inOut) sur huit autres systèmes, le fond fonce, tout passe
-   au flou (5 px) pendant que la conclusion se tape.
+   droits ; les outils « se connectent » un par un (liseré d'accent, 0,3 s d'écart) et trois fois un
+   éclat de l'accent gagne toute l'orbite derrière la carte (0,07 s, puis s'éteint en 0,4 s) ; la
+   caméra avance par deux recadrages secs (×1,05 puis ×1,11, expo.out), puis recule à ×0,36 en 1,6 s
+   (expo.inOut) sur huit autres systèmes, le fond fonce, tout passe au flou (6 px, assombri de
+   moitié) pendant que la conclusion se tape.
 6. **Le point d'encre** (`t7-orbite`) : coupe sur fond clair, un point qui se contracte et se
    déforme (0,55 s), devient le logo (ou s'efface s'il n'y en a pas) ; le nom sort de derrière lui
    (0,6 s, expo.out) ; la pastille se dévoile de gauche à droite (0,45 s) ; la poussière de pixels
@@ -183,8 +194,8 @@ nuage, la pastille, une vignette) : jamais en texte ni en trait fin, illisible a
   « agents ») → seulement la pastille de l'ouverture et son curseur en pixels.
 - **La police matricielle** → la police de la marque vue à travers une trame de points (même effet de
   loin, lettres pleines de près).
-- **Les tons chauds** (brun, taupe, grège) → dérivés du fond de la marque : graphite et blanc cassé
-  froid pour LMDM.
+- **Les tons chauds** (brun, taupe, grège) : gardés tels quels (valeurs mesurées sur l'original),
+  quelle que soit la marque.
 - **La lavande sur fond clair** (curseur, liserés) → l'accent seulement en aplat sur le clair.
 - **La police à chasse fixe de la pastille** → la police de la marque en capitales espacées.
 - **La galaxie** (des dizaines de systèmes en vraie profondeur) → huit systèmes dans un même plan et
@@ -213,13 +224,15 @@ C'est un look : il se monte sur n'importe quelle offre. Ce qui suivait le logici
 
 ## En vertical et en carré
 
-- **9:16 (essayé sur `t7-accroche` et `t7-orbite`) :** passe la racine de la scène à 1080 × 1920.
-  La phrase d'ouverture passe seule sur deux lignes ; l'orbite est à ×0,74, les mots se placent
-  au-dessus et au-dessous de la carte, les autres systèmes surtout en haut et en bas ; le nom
+- **9:16 (les quatre scènes essayées bout à bout, marque claire et marque sombre) :** passe la
+  racine de chaque scène à 1080 × 1920, elle se remet en page seule. La phrase d'ouverture passe
+  sur deux lignes ; les deux lignes tapées à 96 px ; la barre de demande prend 1 000 px de large et
+  la demande passe sur deux lignes à 50 px ; la fenêtre du résultat passe en portrait (1 000 ×
+  1 460 px, barre d'onglets en haut, cartes en deux colonnes) et remplit l'écran ; les objets
+  éparpillés se répartissent au-dessus et au-dessous de la phrase, qui passe à la ligne ; l'orbite
+  est à ×0,95 (toute la largeur), les mots au-dessus et au-dessous de la carte, deux autres
+  systèmes tournent déjà au bord haut et au bord bas, les autres arrivent avec le recul ; le nom
   s'ajuste à sa longueur.
-- **9:16, `t7-phrase` et `t7-eparpille` (prévu dans le code, pas encore essayé) :** les deux lignes
-  à 96 px, la barre à ×0,74 et la fenêtre à ×0,7 ; les objets éparpillés se répartissent au-dessus
-  et au-dessous de la phrase, qui passe à la ligne. Regarde les images clés avant de livrer.
 - **4:5 et 1:1 :** même règle (racine à 1080 × 1350 ou 1080 × 1080) ; garde les trois anneaux dans le
   cadre et au moins un tiers de l'image libre autour de la phrase éparpillée.
 
@@ -236,7 +249,7 @@ offre à l'autre est dans l'objet `R` en tête du script ; les couleurs ne vienn
 | `compositions/t7-accroche.html` | 7,2 s | la phrase mot à mot avec une vignette et une pastille dans la ligne, la suite qui s'allume, le silence, le mot géant tapé sur le nuage de couleur, le logo et le nom sur fond clair | les morceaux de la phrase (`[carte]` et `[pastille]` placent les objets), les mots gris, les icônes de la vignette, les mots de la pastille, la suite, le mot géant, le logo (`brand/logo.svg`, "" sans logo), le nom |
 | `compositions/t7-phrase.html` | 6,6 s | deux lignes tapées sur le taupe ; la barre de demande tapée, les logos empilés, le clic sur envoyer ; la fenêtre du résultat qui se remplit | les deux lignes, la demande, les 3 logos, le titre et le sous-titre de la fenêtre, les icônes des vignettes, la capture de son produit |
 | `compositions/t7-eparpille.html` | 5,2 s | une grande phrase retapée trois fois, les notes, fichiers et icônes d'outils qui surgissent, tout qui se change en points, la conclusion en écriture de points | le début et les trois fins, les notes, les puces, les fichiers, 6 à 8 logos d'outils, la conclusion |
-| `compositions/t7-orbite.html` | 9,6 s | la carte de l'offre dans la phrase, les trois orbites et les outils qui tournent, le recul sur la galaxie, la conclusion tapée, le point d'encre, le logo, le nom, la pastille d'appel | les deux morceaux de la phrase, la carte (nom, ligne, bas, capture), les logos, les deux étiquettes, les autres systèmes, la conclusion, le logo, le nom, l'appel (avec sa vraie adresse) |
+| `compositions/t7-orbite.html` | 9,6 s | la carte de l'offre dans la phrase, les trois orbites et les outils qui tournent (l'éclat de l'accent à chaque connexion), le recul sur la galaxie, la conclusion tapée, le point d'encre, le logo, le nom, la pastille d'appel | les deux morceaux de la phrase, la carte (nom, ligne, bas, capture), les logos, les deux étiquettes, les autres systèmes, la conclusion, le logo, le nom, l'appel (avec sa vraie adresse) |
 
 Identifiants préfixés `t7a`, `t7p`, `t7e`, `t7o` : si tu montes deux fois la même scène, change le
 préfixe partout dans la copie.

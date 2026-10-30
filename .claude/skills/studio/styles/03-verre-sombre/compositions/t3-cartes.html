@@ -16,15 +16,23 @@
   (K.ic : "play", "gift", "users"…) ou le logo d'un outil de l'offre posé par
   `studio_motion.py logos` ("logo-notion"), son nom, son sous-titre, son vrai chiffre (nombre de
   vidéos, durée) et trois lignes réelles (titres de leçons, ce qu'on y trouve). 3 à 6 cartes.
-  Couleurs : uniquement var(--brand-*).
+  Couleurs : la nuit, le verre, le texte clair et le gris sont ceux du look (fixes, quelle que
+  soit la marque) ; la marque donne l'accent, éclairci en --t3-accent-texte sur un texte.
   Identifiant : t3k (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3k {
-    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
-    --t3-verre: color-mix(in oklab, var(--brand-bg) 60%, #000);
+    /* La nuit du look reste celle de l'original quelle que soit la marque, claire ou sombre :
+       presque noire, teintée de 7 % de l'accent ; le texte posé dessus est clair. La marque ne
+       donne que les accents (--t3-accent-texte : l'accent, éclairci s'il est trop sombre pour
+       se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+    --t3-nuit: color-mix(in oklab, #030304 93%, var(--brand-accent));
+    --t3-texte: #ffffff;
+    --t3-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
+    --t3-verre: #0b0b0d;
+    --t3-gris: #a1a1a2;
     --t3-police: var(--brand-font-body);
-    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
   #t3k .t3k-fond { position: absolute; inset: -2px;
     background: radial-gradient(ellipse 75% 60% at 25% 0%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 55%, #fff) 20%, transparent), transparent 70%),
@@ -48,19 +56,19 @@
   #t3k .t3k-tuile.t3k-logo { background: #fff; }
   #t3k .t3k-tuile.t3k-logo svg { width: 92px; height: 92px; }
   #t3k .t3k-nom { font-size: 62px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
-  #t3k .t3k-sous { font-size: 34px; font-weight: 500; color: var(--brand-muted); margin-top: 8px; }
+  #t3k .t3k-sous { font-size: 34px; font-weight: 500; color: var(--t3-gris); margin-top: 8px; }
   #t3k .t3k-chiffre { margin-left: auto; text-align: right; font-size: 58px; font-weight: 700; line-height: 1; }
-  #t3k .t3k-chiffre small { display: block; font-size: 30px; font-weight: 600; color: var(--brand-accent); margin-top: 10px; }
+  #t3k .t3k-chiffre small { display: block; font-size: 30px; font-weight: 600; color: var(--t3-accent-texte); margin-top: 10px; }
   #t3k .t3k-pile { position: relative; height: 150px; margin: 36px 0 0 186px; overflow: hidden;
     -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
   #t3k .t3k-pile-in { position: absolute; left: 0; top: 0; }
-  #t3k .t3k-pile-in div { height: 50px; line-height: 50px; font-size: 34px; font-weight: 600; color: var(--brand-accent); white-space: nowrap; }
+  #t3k .t3k-pile-in div { height: 50px; line-height: 50px; font-size: 34px; font-weight: 600; color: var(--t3-accent-texte); white-space: nowrap; }
   #t3k .t3k-bas { display: flex; gap: 22px; margin-top: 26px; }
   #t3k .t3k-bouton { flex: 1.6; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 44px; font-weight: 700;
     background: var(--brand-accent); color: var(--brand-contrast); }
   #t3k .t3k-bouton svg { width: 42px; height: 42px; }
   #t3k .t3k-duree { flex: 1; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 600;
-    background: rgba(255,255,255,.07); color: var(--brand-muted); }
+    background: rgba(255,255,255,.07); color: var(--t3-gris); }
   #t3k .t3k-duree svg { width: 38px; height: 38px; }
   #t3k .t3k-points { position: absolute; inset: 0; border-radius: 46px; opacity: 0; pointer-events: none;
     background-image: radial-gradient(circle, rgba(255,255,255,.75) 1.8px, transparent 2.5px); background-size: 10px 10px; }
@@ -101,6 +109,8 @@
     var e = K.el(cam, "div", "t3k-carte");
     e.id = "t3k-c" + i;
     e.setAttribute("data-layout-allow-overflow", "");
+    // En 9:16, la carte se resserre en largeur (940 px) : le chiffre et la durée restent dans l'image.
+    if (vertical) { e.style.width = "940px"; e.style.marginLeft = "-470px"; }
     var lignes = c.lignes.map(function (l) { return "<div>" + l + "</div>"; }).join("");
     e.innerHTML = '<div class="t3k-arete"></div>' +
       '<div class="t3k-tete"><div class="t3k-tuile' + (logo ? " t3k-logo" : "") + '">' + (K.ic(c.icone) || K.ic("star")) + "</div>" +
@@ -129,7 +139,7 @@
   ];
   cartes.forEach(function (e, i) {
     var p = poses[i % poses.length], t = T0 + i * PAS, sens = i % 2 ? -1 : 1;
-    if (vertical) { p = { rx: p.rx, ry: p.ry * 0.6, rz: p.rz, x: p.x * 0.35, y: p.y * 0.6, s: p.s * 0.85 }; }
+    if (vertical) { p = { rx: p.rx, ry: p.ry * 0.6, rz: p.rz, x: p.x * 0.12, y: p.y * 0.5, s: p.s * 0.72 }; }
     tl.fromTo(e, { opacity: 0, x: p.x + 360 * sens, y: p.y, rotationX: p.rx, rotationY: p.ry + 22 * sens, rotationZ: p.rz, scale: p.s * 0.94, filter: "blur(8px)" },
       { opacity: 1, x: p.x, rotationY: p.ry, scale: p.s, filter: "blur(0px)", duration: 0.3, ease: "expo.out", immediateRender: false }, t);
     tl.to(e, { x: p.x - 60 * sens, y: p.y - 20, duration: PAS - 0.3, ease: "sine.out" }, t + 0.3);

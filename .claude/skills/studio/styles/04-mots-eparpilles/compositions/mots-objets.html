@@ -10,8 +10,8 @@
       papier 1 (0 à 1,9 s) : un papier blanc cassé quadrillé ; une phrase courte arrive un mot à
         la fois, chaque mot à sa place sur la grille (en zigzag), et à chaque mot un objet du
         quotidien surgit sur sa case grise ;
-      écran 1 (1,9 à 3,2 s) : un écran tramé (l'accent en tirets sur le fond sombre de la
-        marque), un téléphone incliné qui vibre, une pastille de verre (« NOUVELLE DEMANDE ») ;
+      écran 1 (1,9 à 3,2 s) : un écran tramé (l'accent en tirets sur un fond presque noir), un
+        téléphone incliné qui vibre, une pastille de verre (« NOUVELLE DEMANDE ») ;
       papier 2 (3,2 à 4,5 s) : la deuxième phrase, d'autres objets ;
       écran 2 (4,5 à 5,6 s) : le téléphone sous un autre angle, une autre pastille (« APPEL MANQUÉ ») ;
       papier 3 (5,6 à 7,0 s) : la chute du problème, entourée de TOUS les objets ;
@@ -31,8 +31,9 @@
          et la notification du téléphone (titre, une ligne) ; leur place et l'angle du téléphone.
       4. GLYPHE : une icône du kit au trait plein, le sujet du problème (une horloge, un message).
     Couleurs : le papier et l'encre sont neutres (le monde d'avant) ; la trame et le dégradé chaud
-    se DÉRIVENT de l'accent (oklch relatif) : la trame est l'accent en tirets sur le fond sombre de
-    la marque ; le dégradé chaud tourne la teinte de l'accent de --t04-ecart degrés (défaut 50) vers
+    se DÉRIVENT de l'accent (oklch relatif) : la trame est l'accent en tirets sur un fond presque
+    noir, fixe (jamais le fond de la marque : sur une marque claire, l'écran perdrait sa nuit) ; le
+    dégradé chaud tourne la teinte de l'accent de --t04-ecart degrés (défaut 50) vers
     le rouge. Une marque qui veut rester dans une seule teinte met --t04-ecart à 12.
   -->
 </head>
@@ -45,8 +46,10 @@
       --t04-encre: #151515;
       --t04-case: #e3e2de;
       --t04-postit: oklch(from var(--brand-accent) 0.9 calc(c * 0.7) h);
-      --t04-trame-fond: color-mix(in oklab, var(--brand-bg) 90%, var(--brand-accent));
-      --t04-trame-1: color-mix(in oklab, var(--brand-bg) 62%, var(--brand-accent));
+      /* L'écran tramé garde la nuit de l'original quelle que soit la marque : presque noir, teinté
+         par l'accent. Jamais var(--brand-bg) ici. */
+      --t04-trame-fond: color-mix(in oklab, #0c0d10 90%, var(--brand-accent));
+      --t04-trame-1: color-mix(in oklab, #0c0d10 62%, var(--brand-accent));
       --t04-trame-2: var(--brand-accent);
       --t04-trame-3: oklch(from var(--brand-accent) calc(l * 0.78) c calc(h - var(--t04-ecart) * 0.7));
       --t04-chaud-1: oklch(from var(--brand-accent) calc(l * 0.35 + 0.16) calc(c * 0.9 + 0.1) calc(h - var(--t04-ecart) * 1.6));

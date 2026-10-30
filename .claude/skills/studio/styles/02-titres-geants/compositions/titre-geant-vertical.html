@@ -11,7 +11,7 @@
         grandes qu'elles touchent le haut et le bas du cadre et débordent à droite ; les mots changent de
         graisse sur les temps (gras ↔ léger), le bloc grossit doucement, la ligne du bas glisse
         vers la gauche et révèle la fin de son mot coupé ;
-      plan B (1,9 à 4,0 s) : le spécimen sur le fond sombre de la marque, une grille fine calée sur
+      plan B (1,9 à 4,0 s) : le spécimen sur la nuit du look (presque noire, fixe), une grille fine calée sur
         les lignes du texte, la phrase tapée lettre par lettre en deux voix (gras, puis léger et en
         retrait), des étiquettes de maquette (nom de la police, interlignage, approche) ; un cadre
         de sélection à poignées attrape la ligne légère, qui passe en gras puis revient, et
@@ -27,15 +27,26 @@
          grasses (2 à 3 mots en tout, 9 caractères au plus par ligne), une ligne légère en retrait
          (1 mot, 7 caractères au plus). Les étiquettes se remplissent seules.
       4. Les instants des bascules de graisse (BASCULES) : sur les temps de la musique.
-    Couleurs et polices : uniquement var(--brand-*) (accent plein, fond de la marque, texte posé
-    sur l'accent). Aucune police en dur : les graisses 400 et 600 de la police des titres doivent
+    Couleurs et polices : la nuit du spécimen et son texte blanc sont ceux du look (fixes, quelle
+    que soit la marque) ; la marque donne l'accent plein, le texte posé sur lui (--brand-contrast)
+    et la couleur du spécimen (l'accent, éclairci s'il est trop sombre pour la nuit). Aucune police en dur : les graisses 400 et 600 de la police des titres doivent
     exister dans brand/fonts.css (sinon le navigateur les simule, mal).
   -->
 </head>
 <body>
 <template>
   <style>
-    #t02-titre { background: var(--brand-bg); }
+    #t02-titre {
+      /* La nuit du look (l'aubergine presque noir de l'original) reste sombre quelle que soit la
+         marque, claire ou sombre : presque noir, teinté de 10 % de l'accent ; le texte posé dessus
+         est blanc. La marque ne donne que les accents (--t02-accent-texte : l'accent, éclairci s'il
+         est trop sombre pour se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+      --t02-nuit: color-mix(in oklab, #120f17 90%, var(--brand-accent));
+      --t02-texte: #ffffff;
+      --t02-gris: #a9a5ae;
+      --t02-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
+      background: var(--t02-nuit);
+    }
     /* --- Plan A : la couleur d'accent et le titre qui déborde --- */
     #t02-titre .t02-titre-planA { position: absolute; inset: 0; background: var(--brand-accent); overflow: hidden; }
     #t02-titre .t02-titre-blocA { position: absolute; inset: 0; transform-origin: 8% 50%; }
@@ -54,7 +65,7 @@
     #t02-titre #t02-titre-a6 { top: 1572px; }
 
     /* --- Plan B : le spécimen sur la grille --- */
-    #t02-titre .t02-titre-planB { position: absolute; inset: 0; background: var(--brand-bg); overflow: hidden; z-index: 5; }
+    #t02-titre .t02-titre-planB { position: absolute; inset: 0; background: var(--t02-nuit); overflow: hidden; z-index: 5; }
     #t02-titre .t02-titre-cameraB { position: absolute; inset: 0; transform-origin: 40% 55%; }
     #t02-titre .t02-titre-trait { position: absolute; background: color-mix(in srgb, var(--brand-accent) 30%, transparent); }
     #t02-titre .t02-titre-trait.h { left: 0; right: 0; height: 1px; transform-origin: 0 50%; }
@@ -62,14 +73,14 @@
     #t02-titre .t02-titre-ligneB {
       position: absolute; white-space: nowrap; line-height: 1;
       font-family: var(--brand-font-display); font-size: 220px; letter-spacing: -0.04em;
-      color: var(--brand-accent);
+      color: var(--t02-accent-texte);
     }
     #t02-titre #t02-titre-b1, #t02-titre #t02-titre-b2 { left: 60px; font-weight: 600; }
     #t02-titre #t02-titre-b3 { left: 250px; font-weight: 400; letter-spacing: -0.03em; }
-    #t02-titre #t02-titre-b3[data-voix="grasse"] { font-weight: 600; color: var(--brand-text); letter-spacing: -0.04em; }
+    #t02-titre #t02-titre-b3[data-voix="grasse"] { font-weight: 600; color: var(--t02-texte); letter-spacing: -0.04em; }
     #t02-titre .t02-titre-etiquette {
       position: absolute; font-family: var(--brand-font-body); font-weight: 400; font-size: 21px;
-      line-height: 1.25; color: var(--brand-text); opacity: 0.82; white-space: nowrap;
+      line-height: 1.25; color: var(--t02-texte); opacity: 0.82; white-space: nowrap;
     }
     /* Le cadre de sélection suit la ligne qu'il attrape (il vit dans elle) : il s'élargit seul
        quand la ligne passe en gras. */
@@ -79,7 +90,7 @@
     }
     #t02-titre .t02-titre-poignee {
       position: absolute; width: 14px; height: 14px; margin: -8px 0 0 -8px;
-      background: var(--brand-bg); border: 2px solid var(--brand-accent);
+      background: var(--t02-nuit); border: 2px solid var(--brand-accent);
     }
   </style>
 

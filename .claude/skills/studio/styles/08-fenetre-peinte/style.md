@@ -55,7 +55,8 @@ Chez toi (vidéo de page de 45 à 90 s), avec les compositions du kit :
 | Fond de bureau | un tableau impressionniste (bleus, verts, ocres) | un fond peint à touches de pinceau, généré (palette neutre de paysage, 2,5 % de touches à l'accent), ou une image à lui |
 | Accent | aucun | rare : la barre forte si l'accent est assez foncé pour se lire sur le blanc chaud, sinon un petit carré à l'accent devant le nom ; le bouton d'envoi de la fenêtre ; quelques touches du fond peint |
 
-- Le kit détecte seul si l'accent se lit sur le blanc chaud (luminance de 0,28 au plus). Avec le jaune de LMDM, la ligne forte passe à l'encre et un carré jaune cerné marque l'offre.
+- Le kit détecte seul si l'accent peut porter la ligne forte : assez foncé pour se lire sur le blanc chaud et pour que sa valeur, écrite en blanc dedans, s'y lise à 4,5:1 (luminance de 0,18 au plus). Sinon (le jaune de LMDM, l'orange de Dupliq.me), la ligne forte passe à l'encre et un carré de l'accent, cerné, marque l'offre.
+- **Sur n'importe quelle marque, claire ou sombre** : le blanc chaud, les gris et le fond peint restent ceux du kit, fixes ; l'encre se choisit seule (le fond de la marque s'il est sombre, sinon son texte, sinon `#1d1c19`), donc la fin reste sombre et son nom blanc cassé même sur une marque claire. Tout texte garde un contraste d'au moins 4,5:1.
 - Pas de dégradé, pas d'ombre sauf celle de la fenêtre (large et douce), pas de couleur pleine en fond : le seul passage sombre est la fin.
 - L'interface montrée garde ses propres couleurs (celles de l'offre), comme la fenêtre de l'original garde les siennes.
 

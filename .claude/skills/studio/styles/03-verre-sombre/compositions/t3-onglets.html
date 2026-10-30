@@ -15,16 +15,23 @@
   À remplacer (objet R en tête du script, rien d'autre) : la promesse en deux morceaux, les onglets
   (les sujets de ton univers, ceux de ta page, 6 à 9 ; « | » pose un séparateur ; le premier
   porte une icône), le nom de l'offre (il doit figurer dans les onglets), le mot d'appel.
-  Couleurs : uniquement var(--brand-*) ; le bleu nuit du look se dérive du fond et de l'accent.
+  Couleurs : la nuit, le texte clair et le gris sont ceux du look (fixes) ; la marque donne
+  l'accent (var(--brand-accent)), éclairci en --t3-accent-texte quand il colore un texte.
   Identifiant : t3o (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3o {
-    --t3-nuit: color-mix(in oklab, color-mix(in oklab, var(--brand-bg) 38%, #000) 93%, var(--brand-accent));
+    /* La nuit du look reste celle de l'original quelle que soit la marque, claire ou sombre :
+       presque noire, teintée de 7 % de l'accent ; le texte posé dessus est clair. La marque ne
+       donne que les accents (--t3-accent-texte : l'accent, éclairci s'il est trop sombre pour
+       se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+    --t3-nuit: color-mix(in oklab, #030304 93%, var(--brand-accent));
+    --t3-texte: #ffffff;
+    --t3-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
     --t3-lueur: color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 16%, transparent);
-    --t3-gris: color-mix(in oklab, var(--brand-muted) 78%, var(--brand-accent));
+    --t3-gris: color-mix(in oklab, #a1a1a2 78%, var(--brand-accent));
     --t3-police: var(--brand-font-body);
-    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--brand-text);
+    background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
   #t3o .t3o-fond {
     position: absolute; inset: -2px -160px -2px -160px;
@@ -51,9 +58,10 @@
     letter-spacing: -0.015em; text-shadow: 0 0 26px rgba(255, 255, 255, 0.22);
   }
   #t3o .t3o-ligne span { display: inline-block; }
-  #t3o .t3o-b { color: var(--brand-accent); }
+  #t3o .t3o-b { color: var(--t3-accent-texte); }
   #t3o .t3o-bm { display: inline-block; }
-  #t3o .t3o-a { position: relative; }
+  /* La promesse passe de l'accent au blanc : GSAP anime --t3m de 0 à 1 (une var() ne se tweene pas). */
+  #t3o .t3o-a { position: relative; color: color-mix(in oklab, var(--t3-accent-texte) calc(100% - var(--t3m, 0) * 100%), var(--t3-texte)); }
   #t3o .t3o-caret { position: absolute; left: -0.32em; top: 0.12em; width: 0.16em; height: 0.86em;
     background-image: radial-gradient(circle, rgba(255,255,255,.95) 1.6px, transparent 2.2px); background-size: 6px 6px; }
   /* La barre d'onglets */
@@ -64,10 +72,10 @@
   }
   #t3o .t3o-onglet { display: inline-flex; align-items: center; gap: 16px; height: 100px; position: relative; }
   #t3o .t3o-onglet svg { width: 46px; height: 46px; }
-  #t3o .t3o-premier { color: var(--brand-text); padding: 0 26px; border-radius: 22px;
+  #t3o .t3o-premier { color: var(--t3-texte); padding: 0 26px; border-radius: 22px;
     background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.08); }
   #t3o .t3o-sep { width: 2px; height: 50px; background: rgba(255, 255, 255, 0.16); }
-  #t3o .t3o-cible { color: var(--brand-text); }
+  #t3o .t3o-cible { color: var(--t3-texte); }
   /* La pastille de sélection, fixe au centre : les onglets défilent dessous. */
   #t3o .t3o-selection {
     position: absolute; left: 50%; top: 50%; height: 112px; margin-top: -56px; border-radius: 30px;
@@ -90,8 +98,8 @@
   }
   #t3o .t3o-texte span { display: inline-block; }
   #t3o .t3o-net { text-shadow: 0 0 26px rgba(255, 255, 255, 0.25); }
-  #t3o .t3o-net .t3o-f1 { color: var(--brand-text); }
-  #t3o .t3o-net .t3o-f2 { color: var(--brand-accent); }
+  #t3o .t3o-net .t3o-f1 { color: var(--t3-texte); }
+  #t3o .t3o-net .t3o-f2 { color: var(--t3-accent-texte); }
   #t3o .t3o-pix {
     color: #fff; letter-spacing: 0.02em;
     -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 62%); -webkit-mask-size: 7px 7px;
@@ -146,7 +154,7 @@
   // Les couleurs de la marque, lues sur la scène (GSAP anime des valeurs, pas des var()).
   var css = getComputedStyle($("t3o"));
   var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
-  var accent = C("--brand-accent", "#ffee00"), texte = C("--brand-text", "#ffffff");
+  var accent = C("--brand-accent", "#ffee00");
   var rgba = function (c, a) {
     var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c), h;
     if (!m) return c;
@@ -179,7 +187,7 @@
 
   // États de départ (première image comprise)
   gsap.set("#t3o-zoom", { scale: 4.6 * (vertical ? 0.62 : 1) });
-  gsap.set("#t3o-a", { filter: "blur(16px)", color: accent });
+  gsap.set("#t3o-a", { filter: "blur(16px)", "--t3m": 0 });
   K.cacher(["#t3o-b", "#t3o-barre", "#t3o-barre-haut", "#t3o-selection", "#t3o-final", "#t3o-trame"]);
   gsap.set("#t3o-barre", { filter: "url(#t3o-flou-h)" });
 
@@ -201,7 +209,7 @@
     gsap.set("#t3o-zoom", { scale: Math.min(4.6, (0.8 * L) / Math.max(1, wA)) });
 
     // 1. La promesse floue devient nette, la caméra recule d'un coup (0 → 3,2 s)
-    tl.to("#t3o-a", { filter: "blur(0px)", color: texte, duration: 0.45, ease: "power2.out" }, 0.02);
+    tl.to("#t3o-a", { filter: "blur(0px)", "--t3m": 1, duration: 0.45, ease: "power2.out" }, 0.02);
     tl.fromTo("#t3o-trame", { opacity: 0, scale: 1.25 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "power2.out" }, 0.12);
     tl.to("#t3o-trame", { opacity: 0, duration: 0.5, ease: "power2.in" }, 0.85);
     tl.to("#t3o-zoom", { scale: 1, duration: 0.75, ease: "expo.inOut" }, 0.42);

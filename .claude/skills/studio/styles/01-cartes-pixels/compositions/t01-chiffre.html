@@ -80,7 +80,9 @@
       var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
       return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
     };
-    var clair = lum(rgb("var(--brand-accent)")) > 0.28;
+    // Le chiffre est un texte : il garde l'accent seulement s'il s'y lit à 4,5:1 au moins sur le gris
+    // clair (luminance de 0,17 au plus) ; sinon il passe à l'encre, souligné d'un trait de couleur.
+    var clair = lum(rgb("var(--brand-accent)")) > 0.17;
     racine.classList.toggle("t01-accent-clair", clair);
     racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
       : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");

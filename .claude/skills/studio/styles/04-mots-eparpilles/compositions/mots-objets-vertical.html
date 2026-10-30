@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°4 · DÉGRADÉS VIFS · SCÈNE « MOTS ET OBJETS », VERSION VERTICALE 9:16 (1080 × 1920),
+    7,4 s (la même scène que mots-objets.html, remise en page pour un Reel, une story, un TikTok)
+
+    Ce qu'elle montre : le monde d'avant, en alternance, chaque bascule par une transition en
+    pixels (des carrés de 120 px, 9 colonnes et 16 rangées, qui passent d'un plan à l'autre en
+    balayant l'écran, 0,4 s) :
+      papier 1 (0 à 1,9 s) : un papier blanc cassé quadrillé ; une phrase courte arrive un mot à
+        la fois, chaque mot à sa place sur la grille (en zigzag, sur deux ou trois rangées dans
+        la bande du milieu), et à chaque mot un objet du quotidien surgit sur sa case grise,
+        dans les bandes du haut et du bas ;
+      écran 1 (1,9 à 3,2 s) : un écran tramé (l'accent en tirets sur un fond presque noir), un
+        grand téléphone incliné qui vibre (500 × 1 000 px), une pastille de verre au-dessus de
+        lui (« NOUVELLE DEMANDE ») ;
+      papier 2 (3,2 à 4,5 s) : la deuxième phrase, d'autres objets ;
+      écran 2 (4,5 à 5,6 s) : le téléphone sous un autre angle, une autre pastille (« APPEL MANQUÉ ») ;
+      papier 3 (5,6 à 7,0 s) : la chute du problème, entourée de TOUS les objets ;
+      la fin (6,95 à 7,4 s) : les carrés du dégradé chaud envahissent l'écran (raccord avec la
+        scène orbe-pivot, qui commence plein cadre sur ce dégradé).
+
+    À remplacer :
+      1. L'identifiant « t04-mots » partout (racine, scène, préfixe des ids, clé de la timeline).
+      2. PAPIERS : pour chaque papier, ses mots [mot, x, y, instant] (coin haut gauche en px ; 1 à
+         4 mots, lus de gauche à droite, en deux ou trois rangées entre 600 et 1 300 px de haut,
+         jamais dans les 10 % du haut ni les 20 % du bas ; 8 lettres au plus par mot) et ses
+         objets [objet, x, y, côté de la case, instant] (cases de 200 à 300 px, en haut et en bas,
+         calées sur la grille de 100 px : x = 40, 140, 240…, y = 60, 160, 260… ; un objet arrive
+         avec un mot : c'est ce qui fait le rythme).
+         Les objets viennent du quotidien de SON problème, par ordre de préférence : ses photos
+         d'objets détourées ({ img: "assets/images/…" }), les logos des outils de la corvée
+         ({ logo: "logo-…" }, posés par `studio_motion.py logos`), puis les objets dessinés ici
+         ({ dessin: "calendrier" | "tasse" | "reveil" | "postit" | "enveloppe" | "carnet" }).
+      3. ECRANS : la pastille (ce qui arrive sans qu'il puisse répondre, 2 ou 3 mots en capitales)
+         et la notification du téléphone (titre, une ligne) ; la place et l'angle du téléphone
+         (centré), la hauteur de la pastille (centrée au-dessus de lui).
+      4. GLYPHE : une icône du kit au trait plein, le sujet du problème (une horloge, un message).
+    Couleurs : le papier et l'encre sont neutres (le monde d'avant) ; la trame et le dégradé chaud
+    se DÉRIVENT de l'accent (oklch relatif) : la trame est l'accent en tirets sur un fond presque
+    noir, fixe (jamais le fond de la marque : sur une marque claire, l'écran perdrait sa nuit) ; le
+    dégradé chaud tourne la teinte de l'accent de --t04-ecart degrés (défaut 50) vers
+    le rouge. Une marque qui veut rester dans une seule teinte met --t04-ecart à 12.
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t04-mots {
+      --t04-ecart: 50;
+      --t04-papier: #efeee9;
+      --t04-encre: #151515;
+      --t04-case: #e3e2de;
+      --t04-postit: oklch(from var(--brand-accent) 0.9 calc(c * 0.7) h);
+      /* L'écran tramé garde la nuit de l'original quelle que soit la marque : presque noir, teinté
+         par l'accent. Jamais var(--brand-bg) ici. */
+      --t04-trame-fond: color-mix(in oklab, #0c0d10 90%, var(--brand-accent));
+      --t04-trame-1: color-mix(in oklab, #0c0d10 62%, var(--brand-accent));
+      --t04-trame-2: var(--brand-accent);
+      --t04-trame-3: oklch(from var(--brand-accent) calc(l * 0.78) c calc(h - var(--t04-ecart) * 0.7));
+      --t04-chaud-1: oklch(from var(--brand-accent) calc(l * 0.35 + 0.16) calc(c * 0.9 + 0.1) calc(h - var(--t04-ecart) * 1.6));
+      --t04-chaud-2: oklch(from var(--brand-accent) calc(l * 0.45 + 0.22) calc(c * 0.9 + 0.08) calc(h - var(--t04-ecart) * 1.0));
+      --t04-chaud-3: oklch(from var(--brand-accent) calc(l * 0.3 + 0.6) calc(c * 0.85) calc(h - var(--t04-ecart) * 0.4));
+      background: var(--t04-papier);
+    }
+    #t04-mots .t04-mots-plan { position: absolute; inset: 0; overflow: hidden; }
+    #t04-mots .t04-mots-papier {
+      background-color: var(--t04-papier);
+      background-image: linear-gradient(rgba(0, 0, 0, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+      background-size: 100px 100px; background-position: 40px 60px;
+    }
+    #t04-mots .t04-mots-mot {
+      position: absolute; white-space: nowrap; line-height: 1;
+      font-family: var(--brand-font-display); font-weight: 400; font-size: 96px; letter-spacing: -0.03em; color: var(--t04-encre);
+    }
+    #t04-mots .t04-mots-case { position: absolute; background: var(--t04-case); }
+    #t04-mots .t04-mots-objet { position: absolute; inset: -14%; display: grid; place-items: center; }
+    #t04-mots .t04-mots-objet svg, #t04-mots .t04-mots-objet img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.22)); }
+    #t04-mots .t04-mots-glyphe { position: absolute; width: 72px; height: 72px; color: var(--t04-encre); }
+    #t04-mots .t04-mots-glyphe svg { width: 100%; height: 100%; }
+    /* L'écran tramé : un dégradé clair vu à travers des tirets, posé sur un dégradé plus sombre. */
+    #t04-mots .t04-mots-trame { background: var(--t04-trame-fond); }
+    #t04-mots .t04-mots-tache { position: absolute; border-radius: 50%; filter: blur(80px); }
+    #t04-mots .t04-mots-tirets {
+      position: absolute; inset: -40px;
+      -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='12'><rect width='4' height='9' rx='1' fill='black'/></svg>");
+      mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='12'><rect width='4' height='9' rx='1' fill='black'/></svg>");
+      -webkit-mask-size: 7px 12px; mask-size: 7px 12px;
+    }
+    #t04-mots .t04-mots-scene-tel { position: absolute; width: 500px; height: 1000px; perspective: 1600px; }
+    #t04-mots .t04-mots-tel { position: absolute; inset: 0; transform-style: preserve-3d; }
+    #t04-mots .t04-mots-ecran { position: absolute; inset: 0; background: linear-gradient(165deg, color-mix(in oklab, var(--brand-accent) 28%, #16161a), #0c0c0e 62%); }
+    #t04-mots .t04-mots-notif {
+      position: absolute; left: 20px; right: 20px; top: 150px; padding: 20px 22px; border-radius: 26px;
+      background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.25);
+      font-family: "Inter", var(--brand-font-body); color: #fff; font-size: 24px; line-height: 1.3;
+    }
+    #t04-mots .t04-mots-notif b { display: block; font-weight: 600; font-size: 25px; }
+    #t04-mots .t04-mots-pastille {
+      position: absolute; padding: 16px 30px; border-radius: 999px; white-space: nowrap;
+      background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.45);
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 26px; letter-spacing: 0.04em; color: #fff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+    }
+    /* Le dégradé chaud qui envahit la fin (même rendu que le début de la scène orbe-pivot). */
+    #t04-mots .t04-mots-chaud { background: radial-gradient(ellipse 75% 85% at 50% 48%, var(--t04-chaud-1), var(--t04-chaud-2) 55%, var(--t04-chaud-3) 100%); }
+  </style>
+  <div data-composition-id="t04-mots" data-width="1080" data-height="1920" data-duration="7.4" style="position:absolute; inset:0;">
+    <div id="t04-mots" class="k-scene"></div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 7.4, ID = "t04-mots", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var racine = document.getElementById(ID);
+      var PIX = 0.4, GLYPHE = "clock";
+
+      var DESSINS = {
+        calendrier: '<svg viewBox="0 0 200 200"><g transform="rotate(-6 100 100)"><rect x="38" y="46" width="124" height="126" rx="14" fill="#fbfbfa" stroke="#d3d3cf" stroke-width="3"/>' +
+          '<path d="M38 60a14 14 0 0 1 14-14h96a14 14 0 0 1 14 14v22H38z" fill="#c4322b"/><rect x="66" y="32" width="9" height="26" rx="4.5" fill="#7d7d7d"/><rect x="125" y="32" width="9" height="26" rx="4.5" fill="#7d7d7d"/>' +
+          '<text x="100" y="74" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="17" fill="#fff" letter-spacing="2">LUNDI</text>' +
+          '<text x="100" y="150" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="58" fill="#222">14</text></g></svg>',
+        tasse: '<svg viewBox="0 0 200 200"><g transform="rotate(-10 100 110)"><path d="M150 88h10a24 24 0 0 1 0 48h-10" fill="none" stroke="#1c1c1e" stroke-width="13"/>' +
+          '<path d="M48 70h104v74a26 26 0 0 1-26 26H74a26 26 0 0 1-26-26z" fill="#1c1c1e"/><ellipse cx="100" cy="70" rx="52" ry="12" fill="#2b2b2e"/>' +
+          '<ellipse cx="100" cy="72" rx="44" ry="8" fill="#4a3022"/><rect x="60" y="86" width="10" height="66" rx="5" fill="#fff" opacity="0.13"/></g></svg>',
+        reveil: '<svg viewBox="0 0 200 200"><circle cx="62" cy="56" r="17" fill="#2a2a2a"/><circle cx="138" cy="56" r="17" fill="#2a2a2a"/>' +
+          '<path d="M70 164l-12 18M130 164l12 18" stroke="#2a2a2a" stroke-width="9" stroke-linecap="round"/><circle cx="100" cy="110" r="58" fill="#f4f4f2" stroke="#2a2a2a" stroke-width="9"/>' +
+          '<path d="M100 110V78" stroke="#2a2a2a" stroke-width="7" stroke-linecap="round"/><path d="M100 110l26 12" stroke="#e5483f" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="110" r="6" fill="#2a2a2a"/></svg>',
+        postit: '<svg viewBox="0 0 200 200"><g transform="rotate(6 100 100)"><path d="M42 40h116v94l-28 28H42z" style="fill:var(--t04-postit)"/><path d="M158 134l-28 28v-28z" fill="rgba(0,0,0,0.14)"/>' +
+          '<path d="M60 74h80M60 98h66M60 122h46" stroke="rgba(0,0,0,0.5)" stroke-width="7" stroke-linecap="round"/></g></svg>',
+        enveloppe: '<svg viewBox="0 0 200 200"><rect x="32" y="62" width="136" height="92" rx="12" fill="#fff" stroke="#cfcfca" stroke-width="3"/>' +
+          '<path d="M38 68l62 46 62-46" fill="none" stroke="#c4c4bf" stroke-width="6" stroke-linejoin="round"/><circle cx="160" cy="64" r="22" fill="#e5483f"/>' +
+          '<text x="160" y="72" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="23" fill="#fff">9</text></svg>',
+        carnet: '<svg viewBox="0 0 200 200"><g transform="rotate(8 100 100)"><rect x="52" y="34" width="104" height="138" rx="10" fill="#1f2a3a"/><rect x="138" y="34" width="8" height="138" fill="#e5483f"/>' +
+          '<g fill="#bdbdb8">' + [52, 72, 92, 112, 132, 152].map(function (y) { return '<rect x="44" y="' + y + '" width="18" height="6" rx="3"/>'; }).join("") + '</g>' +
+          '<rect x="70" y="56" width="52" height="16" rx="3" fill="#fff" opacity="0.85"/></g></svg>'
+      };
+
+      // ---------- Les plans, dans l'ordre : [type, début (le plan apparaît en pixels), contenu] ----------
+      // En 9:16 : les mots sur deux ou trois rangées dans la bande du milieu (600 à 1 300 px), les
+      // objets dans les bandes du haut et du bas, sur la grille de 100 px (x = 40, 140…, y = 60, 160…).
+      var PAPIERS = [
+        { debut: 0, mots: [["Ta", 140, 900, 0.15], ["journée", 300, 780, 0.55], ["file.", 640, 940, 0.95]],
+          objets: [[{ dessin: "calendrier" }, 640, 260, 300, 0.15], [{ dessin: "tasse" }, 140, 1260, 300, 0.55],
+            [{ dessin: "carnet" }, 640, 1360, 300, 0.95], [{ dessin: "enveloppe" }, 140, 360, 200, 1.3], [{ dessin: "reveil" }, 440, 1560, 200, 1.55]],
+          glyphe: [520, 1040, 1.15] },
+        { debut: 3.2, mots: [["Mille", 220, 820, 3.6], ["tâches.", 420, 960, 3.95]],
+          objets: [[{ dessin: "postit" }, 640, 360, 300, 3.6], [{ dessin: "reveil" }, 140, 260, 300, 3.95],
+            [{ dessin: "carnet" }, 140, 1260, 300, 4.2], [{ dessin: "tasse" }, 640, 1360, 300, 4.35]],
+          glyphe: [720, 860, 3.75] },
+        { debut: 5.6, mots: [["Et", 140, 880, 6.0], ["ton", 300, 780, 6.2], ["offre", 520, 860, 6.4], ["attend.", 400, 1000, 6.6]],
+          objets: [[{ dessin: "calendrier" }, 740, 260, 200, 5.95], [{ dessin: "tasse" }, 140, 1260, 300, 6.0], [{ dessin: "reveil" }, 440, 360, 100, 6.05],
+            [{ dessin: "postit" }, 640, 1360, 300, 6.2], [{ dessin: "enveloppe" }, 140, 260, 200, 6.25], [{ dessin: "carnet" }, 440, 1560, 200, 6.4],
+            [{ dessin: "postit" }, 940, 660, 100, 6.45], [{ dessin: "enveloppe" }, 40, 1160, 100, 6.6], [{ dessin: "tasse" }, 540, 160, 100, 6.65]],
+          glyphe: [840, 1010, 6.1] }
+      ];
+      // Le téléphone centré [x, y, angle Y, angle X, angle Z] ; la pastille centrée sur x, au-dessus de lui.
+      var ECRANS = [
+        { debut: 1.9, tel: [290, 520, -24, 10, -8], pastille: ["NOUVELLE DEMANDE", 540, 410], notif: ["Nouvelle demande", "Bonjour, c'est encore possible ?"], graine: 3 },
+        { debut: 4.5, tel: [290, 540, 26, 8, 9], pastille: ["APPEL MANQUÉ", 540, 430], notif: ["Appel manqué", "Un client a essayé de te joindre"], graine: 9 }
+      ];
+      var CHAUD = 6.95;
+
+      function plan(classe) { return K.el(racine, "div", "t04-mots-plan " + classe); }
+
+      // ---------- Un papier : ses objets sur leurs cases, ses mots, son glyphe ----------
+      function papier(p, n) {
+        var el = plan("t04-mots-papier");
+        p.objets.forEach(function (o, i) {
+          var c = K.el(el, "div", "t04-mots-case", null, "left:" + o[1] + "px; top:" + o[2] + "px; width:" + o[3] + "px; height:" + o[3] + "px;");
+          // Une illustration : ses chiffres dessinés (le jour du calendrier) ne sont pas du texte à lire.
+          c.setAttribute("data-layout-ignore", "");
+          var t = o[0], contenu = t.dessin ? DESSINS[t.dessin] : t.logo ? K.ic(t.logo) : '<img src="' + t.img + '" alt="">';
+          var obj = K.el(c, "div", "t04-mots-objet", contenu);
+          gsap.set(c, { opacity: 0, scale: 0.55 });
+          tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, o[4]);
+          tl.fromTo(obj, { y: 6, rotation: -3 + (i % 3) * 3 }, { y: -8, rotation: (i % 3) * 2 - 2, duration: D - o[4], ease: "sine.inOut" }, o[4]);
+        });
+        p.mots.forEach(function (m) {
+          var e = K.el(el, "div", "t04-mots-mot", null, "left:" + m[1] + "px; top:" + m[2] + "px;");
+          // Les mots se frôlent exprès (zigzag serré) : leurs boîtes se touchent, pas leurs lettres.
+          e.setAttribute("data-layout-allow-overlap", "");
+          K.taper(tl, e, m[0], m[3], m[3] + Math.min(0.2, 0.04 * m[0].length), D);
+        });
+        if (p.glyphe) {
+          var g = K.el(el, "div", "t04-mots-glyphe", K.ic(GLYPHE), "left:" + p.glyphe[0] + "px; top:" + p.glyphe[1] + "px;");
+          K.cacher(g); tl.to(g, { opacity: 1, duration: 0.05 }, p.glyphe[2]);
+        }
+        tl.fromTo(el, { scale: 1 }, { scale: 1.03, duration: 2.2, ease: "none", transformOrigin: "50% 50%" }, Math.max(0, p.debut));
+        return el;
+      }
+
+      // ---------- Un écran tramé : taches de couleur vues à travers des tirets, un téléphone ----------
+      function ecran(e) {
+        var el = plan("t04-mots-trame");
+        el.setAttribute("data-layout-allow-overflow", "");
+        var r = K.rng(e.graine);
+        var tache = function (hote, couleur) {
+          var w = 760 + r() * 320, h = 900 + r() * 400;
+          return K.el(hote, "div", "t04-mots-tache", null, "left:" + (r() * 800 - 300) + "px; top:" + (r() * 1500 - 300) + "px; width:" + w + "px; height:" + h + "px; background:var(" + couleur + ");");
+        };
+        var sombres = [tache(el, "--t04-trame-1"), tache(el, "--t04-trame-1")];
+        var tirets = K.el(el, "div", "t04-mots-tirets"), claires = K.el(tirets, "div", null, null, "position:absolute; inset:0;");
+        var vives = ["--t04-trame-2", "--t04-trame-3", "--t04-trame-2", "--t04-trame-3"].map(function (c) { return tache(claires, c); });
+        sombres.concat(vives).forEach(function (t, i) {
+          tl.fromTo(t, { x: 0, y: 0 }, { x: (i % 2 ? -1 : 1) * 120, y: (i % 3 - 1) * 160, duration: 2.0, ease: "sine.inOut" }, e.debut);
+        });
+        var scene = K.el(el, "div", "t04-mots-scene-tel", null, "left:" + e.tel[0] + "px; top:" + e.tel[1] + "px;");
+        var tel = K.el(scene, "div", "t04-mots-tel k-tel", null, "width:500px; height:1000px;");
+        K.el(tel, "div", "k-tel-ecran t04-mots-ecran", '<div class="k-tel-ilot"></div><div class="t04-mots-notif" data-layout-allow-overlap><b data-layout-allow-overlap>' +
+          e.notif[0] + "</b>" + e.notif[1] + "</div>");
+        gsap.set(tel, { rotationY: e.tel[2], rotationX: e.tel[3], rotationZ: e.tel[4], scale: 0.9 });
+        tl.fromTo(tel, { y: 90 }, { y: -10, duration: 1.4, ease: "power2.out" }, e.debut);
+        // Il vibre quand la demande arrive.
+        [0, 1, 2, 3, 4, 5].forEach(function (k) { tl.to(tel, { rotationZ: e.tel[4] + (k % 2 ? -3 : 3), duration: 0.06, ease: "none" }, e.debut + 0.5 + k * 0.06); });
+        tl.to(tel, { rotationZ: e.tel[4], duration: 0.1 }, e.debut + 0.86);
+        var pastille = K.el(el, "div", "t04-mots-pastille", e.pastille[0], "left:" + e.pastille[1] + "px; top:" + e.pastille[2] + "px;");
+        // Les deux écrans posent leur pastille au même endroit : celle du 1er reste sous le 2e écran (opaque).
+        pastille.setAttribute("data-layout-allow-overlap", "");
+        K.cacher(pastille, { xPercent: -50 });   // centrée sur x, au-dessus du téléphone
+        tl.fromTo(pastille, { opacity: 0, y: 24, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "expo.out" }, e.debut + 0.45);
+        return el;
+      }
+
+      // Les plans dans l'ordre d'apparition (chacun recouvre le précédent).
+      var ordre = [[papier(PAPIERS[0]), 0], [ecran(ECRANS[0]), ECRANS[0].debut], [papier(PAPIERS[1]), PAPIERS[1].debut],
+        [ecran(ECRANS[1]), ECRANS[1].debut], [papier(PAPIERS[2]), PAPIERS[2].debut], [plan("t04-mots-chaud"), CHAUD]];
+
+      // ---------- Les transitions en pixels : un plan apparaît par carrés de 120 px ----------
+      // Seuil de chaque carré = hasard (à graine) + balayage de gauche à droite.
+      var COTE = 120, COLS = 9, LIGS = 16;
+      function seuils(graine) {
+        var r = K.rng(graine), s = [];
+        for (var k = 0; k < COLS * LIGS; k++) s.push(0.55 * r() + 0.45 * ((k % COLS) / (COLS - 1)));
+        return s;
+      }
+      var TRANSITIONS = ordre.slice(1).map(function (o, i) { return [o[0], o[1], seuils(7 + i * 4)]; });
+      function rendre(t) {
+        TRANSITIONS.forEach(function (tr) {
+          var el = tr[0], p = (t - tr[1]) / PIX, s = tr[2];
+          if (p <= 0) { if (el.style.visibility !== "hidden") el.style.visibility = "hidden"; return; }
+          // Jamais « visible » écrit en dur : le plan doit pouvoir hériter du masquage de la scène
+          // quand elle est finie (sinon il reste affiché sous les scènes suivantes).
+          if (el.style.visibility) el.style.visibility = "";
+          if (p >= 1) { if (el.style.clipPath !== "none") el.style.clipPath = "none"; return; }
+          var d = "";
+          for (var k = 0; k < s.length; k++) {
+            if (s[k] < p) d += "M" + (k % COLS) * COTE + " " + Math.floor(k / COLS) * COTE + "h" + COTE + "v" + COTE + "h-" + COTE + "Z";
+          }
+          el.style.clipPath = d ? "path('" + d + "')" : "inset(50% 50% 50% 50%)";
+        });
+      }
+      var horloge = { t: 0 };
+      rendre(0);
+      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>

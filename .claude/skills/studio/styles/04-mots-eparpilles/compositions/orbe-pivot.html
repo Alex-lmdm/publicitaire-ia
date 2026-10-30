@@ -8,7 +8,7 @@
 
     Ce qu'elle montre : plein cadre, le dégradé chaud et vif de l'alerte (le même que la fin de
     mots-objets.html) qui bouge ; la phrase pivot s'écrit au centre, petite, un mot à la fois
-    (« Ça, c'était avant. ») ; le dégradé se resserre en un disque sur le fond sombre de la marque,
+    (« Ça, c'était avant. ») ; le dégradé se resserre en un disque sur le noir de l'original,
     des anneaux fins apparaissent autour ; le disque devient un orbe lumineux qui tourne et
     s'allume de blanc au cœur ; ses couleurs passent du chaud aux teintes de l'accent (l'après) ;
     l'orbe grandit jusqu'à remplir l'écran : la scène messages-verre.html commence sur ce dégradé.
@@ -20,7 +20,8 @@
       3. Les instants (MOMENTS) si la musique l'exige ; garde l'ordre (phrase, disque, orbe,
          couleurs, ouverture).
     Couleurs : --t04-ecart (défaut 50) tourne la teinte de l'accent vers le rouge pour l'avant ;
-    l'après reste autour de l'accent. Le noir autour du disque est var(--brand-bg).
+    l'après reste autour de l'accent. Le noir autour du disque est celui de l'original (#050505),
+    quelle que soit la marque : jamais var(--brand-bg), qui le rendrait clair sur une marque claire.
   -->
 </head>
 <body>
@@ -35,7 +36,8 @@
       --t04-apres-2: oklch(from var(--brand-accent) calc(l * 0.55 + 0.33) calc(c * 0.95) calc(h + var(--t04-ecart) * 0.9));
       --t04-apres-3: oklch(from var(--brand-accent) calc(l * 0.15 + 0.84) calc(c * 0.30) calc(h - var(--t04-ecart) * 0.2));
       --t04-apres-4: oklch(from var(--brand-accent) calc(l * 0.50 + 0.32) calc(c * 0.95) calc(h - var(--t04-ecart) * 0.8));
-      background: var(--brand-bg);
+      --t04-noir: #050505;
+      background: var(--t04-noir);
     }
     #t04-orbe .t04-orbe-anneau { position: absolute; left: 960px; top: 540px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.22); }
     #t04-orbe .t04-orbe-halo { position: absolute; left: 960px; top: 540px; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%;
@@ -50,6 +52,7 @@
     #t04-orbe .t04-orbe-texte {
       position: absolute; left: 0; right: 0; top: 494px; text-align: center; white-space: nowrap; z-index: 5;
       font-family: var(--brand-font-body); font-weight: 400; font-size: 76px; letter-spacing: -0.02em; color: #ffffff;
+      text-shadow: 0 2px 28px rgba(0, 0, 0, 0.28);
     }
     #t04-orbe .t04-orbe-texte span { display: inline-block; margin: 0 0.12em; }
   </style>

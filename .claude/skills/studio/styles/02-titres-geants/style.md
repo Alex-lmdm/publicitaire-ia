@@ -42,12 +42,20 @@ Une vidéo de page de 60 s double les pages du milieu (deux cartes paysage, deux
 
 | Dans l'original | Son rôle | Chez le client |
 |---|---|---|
-| Aubergine presque noir | le fond des pages sombres, la grille | `var(--brand-bg)` |
-| Lilas vif | le titre géant en plein écran, le texte du spécimen | `var(--brand-accent)` (le titre est écrit en `var(--brand-contrast)` dessus) |
+| Aubergine presque noir | le fond des pages sombres, la grille, l'espace | `--t02-nuit` : un presque noir **fixe** (`#120f17`) teinté de 10 % de l'accent, sur toutes les marques |
+| Lilas vif | le titre géant en plein écran, le texte du spécimen | `var(--brand-accent)` pour le plein écran (le titre est écrit en `var(--brand-contrast)` dessus) ; le spécimen, posé sur la nuit, en `--t02-accent-texte` (l'accent, éclairci seul s'il est trop sombre pour se lire) |
 | Violets profonds, roses et pêche du crépuscule | les paysages, la sphère, l'espace | des teintes **dérivées de l'accent** en oklch relatif : plus sombres et décalées de teinte pour les ombres (`--t02-d`, -40 degrés par défaut ; +40 pour un accent vert, sinon le ciel tire sur le kaki), plus claires et moins saturées pour les lumières |
 | Vert lime | le point qui bouge, les poignées, le surlignage, le logo final | l'accent lui-même : jamais une deuxième couleur inventée |
 | Blanc cassé | la page du dessin au trait | blanc cassé teinté de 7 % d'accent |
-| Blanc | le slogan, les titres posés sur un paysage | `var(--brand-text)` |
+| Blanc | le slogan, les titres posés sur un paysage, les étiquettes | blanc (`--t02-texte`), sur toutes les marques ; les notes en gris clair (`--t02-gris`) |
+
+**Sur n'importe quelle marque, claire ou sombre.** La nuit des pages sombres, l'espace et le premier
+plan du canyon restent ceux de l'original : des valeurs sombres fixes, à peine teintées d'accent,
+jamais `var(--brand-bg)` ni `var(--brand-text)` (sur une marque claire, la nuit devenait un gris
+clair, les falaises blanches et le texte noir : le look partait). Le texte posé sur la nuit est
+blanc ; la marque ne donne que les accents (le plein écran du titre, le spécimen, les poignées, le
+bouton, les paysages dérivés). Tout texte garde un contraste d'au moins 4,5:1 : un accent sombre
+(bleu marine, bordeaux) qui colore un texte sur la nuit passe par `--t02-accent-texte`.
 
 Les fonds alternent par coupe franche : accent plein, sombre quadrillé, sombre avec cartes, blanc cassé, paysage, espace, sombre. Au moins quatre bascules en 20 s. Avec un accent jaune, les paysages deviennent un coucher de soleil doré (ciel brun-orangé, horizon crème, îles brunes) ; avec un accent violet, on retrouve l'original.
 
@@ -129,8 +137,11 @@ Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait
 
 ## En vertical et en carré
 
-- **9:16 (testé, `titre-geant-vertical.html`)** : le titre géant passe à un mot par ligne, six lignes de 300 px qui remplissent la hauteur, la dernière déborde à droite ; le spécimen passe à 220 px, posé un peu au-dessus du milieu (les commandes de l'application occupent le bas). On ne recadre jamais une scène 16:9 : on la remet en page.
-- **Les autres scènes en 9:16** : la mosaïque en deux colonnes de cartes 16:9 (900 px de large) sur trois rangées ; le canyon plus haut, la sphère à 35 % de la hauteur, le faisceau plus long ; la grille d'icônes en 4 colonnes et 6 rangées ; le slogan sur trois lignes de 160 à 170 px ; le bouton aux deux tiers de la largeur, au-dessus de la bande du bas.
+- **9:16 : chaque scène a sa version verticale, testée** sur une marque claire et sur une marque sombre (les quatre bout à bout, 22 s : `rythme` « ok »). Prends le fichier `-vertical.html` à la place du 16:9 : on ne recadre jamais une scène 16:9, on la remet en page.
+  - `titre-geant-vertical.html` : le titre géant passe à un mot par ligne, six lignes de 300 px qui remplissent la hauteur, la dernière déborde à droite ; le spécimen passe à 220 px, posé un peu au-dessus du milieu (les commandes de l'application occupent le bas).
+  - `carte-paysage-vertical.html` : les cartes passent en portrait (960 × 1 360 px) et la grande remplit l'image ; le coin du départ et sa cote restent au-dessus de la bande du bas ; au recul, la mosaïque met deux cartes par rangée sur trois rangées (la grande au centre de la rangée du milieu, entre deux cartes coupées par les bords). Le bouton, la liste, le lecteur et les tuiles vont sur les cartes entières.
+  - `sphere-faisceau-vertical.html` : le canyon plus haut et plus étroit (falaises en gradins des deux côtés), la sphère qui monte jusqu'à 35 % de la hauteur, un faisceau d'environ 1 300 px jusqu'à l'horizon, posé à 60 % de la hauteur quand le cube se pose.
+  - `grille-final-vertical.html` : la grille d'icônes en 4 colonnes et 6 rangées ; le slogan sur trois lignes de 166 px (10 caractères au plus par ligne) ; le nom à 96 px et le bouton aux deux tiers de la largeur (720 px), au-dessus de la bande du bas, sa cote dessous.
 - **4:5 et 1:1** : le titre géant en quatre lignes de 260 px (4:5) ou trois lignes de 240 px (1:1) ; la mosaïque en 2 × 2 ; le reste suit le 16:9 resserré au centre.
 - Les mots clés restent hors des 10 % du haut et des 20 % du bas en vertical ; seul le titre géant déborde exprès, et sa ligne clé reste au milieu.
 
@@ -141,7 +152,10 @@ Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait
 | `compositions/titre-geant.html` | 4,0 s | L'accroche : le titre géant qui déborde sur l'accent (1,9 s), coupe, le spécimen tapé sur sa grille avec ses étiquettes et son cadre de sélection (2,1 s) | L'id `t02-titre`, les trois lignes du titre (un `<span>` par mot), les trois lignes du spécimen (`data-texte`), les instants des bascules (`BASCULES`) |
 | `compositions/titre-geant-vertical.html` | 4,0 s | La même scène remise en page en 9:16 : six lignes d'un mot, spécimen à 220 px | Comme la version 16:9 ; un mot par ligne, 6 caractères au plus sur les lignes du milieu |
 | `compositions/carte-paysage.html` | 5,0 s | Le produit : le coin et sa cote, la carte qui se remplit d'un paysage, les repères, le nom en léger, trois palettes sur les temps, puis la mosaïque de six cartes avec des morceaux du produit | L'id `t02-carte`, le nom de l'offre et la ligne dessous, le contenu des cartes (`CARTES` : ses vraies captures, ses vrais modules, le vrai libellé du bouton), leur palette et leur relief |
+| `compositions/carte-paysage-vertical.html` | 5,0 s | La même scène remise en page en 9:16 : cartes en portrait, la grande plein cadre, puis la mosaïque de deux cartes par rangée sur trois rangées | Comme la version 16:9 ; les morceaux du produit sur les cartes entières (c1, c2, c5, c6), jamais sur les cartes coupées (c3, c4) |
 | `compositions/sphere-faisceau.html` | 5,0 s | La révélation : la sphère dessinée au trait qui prend sa couleur, le canyon, la montée, le faisceau, le cube qui se pose, les rayons de perspective | L'id `t02-sphere`, les faces du cube (l'icône ou le logo de l'offre), les instants (`MOMENTS`) sur les temps de la musique ; aucun texte |
+| `compositions/sphere-faisceau-vertical.html` | 5,0 s | La même scène remise en page en 9:16 : canyon plus haut, sphère à 35 % de la hauteur, faisceau plus long | Comme la version 16:9 |
 | `compositions/grille-final.html` | 8,0 s | L'offre et l'appel : la grille d'icônes qui se dessine et son élément phare sélectionné, le slogan géant dans l'espace avec la sphère, le nom et ses repères, la sphère qui devient le bouton cliqué | L'id `t02-final`, les icônes (`ICONES` : une par élément réel de l'offre), `CHOISIE` et `ETIQUETTE`, le slogan (4 mots au plus), le nom (ou son logo en `<img>`), le libellé du bouton |
+| `compositions/grille-final-vertical.html` | 8,0 s | La même scène remise en page en 9:16 : grille de 4 × 6 icônes, slogan sur trois lignes, bouton aux deux tiers de la largeur | Comme la version 16:9 ; le slogan sur trois lignes (`#t02-final-l1` à `l3`, 10 caractères au plus par ligne) |
 
-Bout à bout dans cet ordre, elles font une vidéo de 22 s qui se tient seule (essai : `rythme` « ok », `check` sans erreur). Le changement de palette, les repères et les teintes dérivées marchent avec n'importe quel accent ; `--t02-d` se règle une fois par marque (+40 pour un accent vert).
+Bout à bout dans cet ordre, elles font une vidéo de 22 s qui se tient seule (essai : `rythme` « ok », `check` sans erreur). En 9:16, les quatre versions verticales bout à bout font aussi 22 s (essai sur la marque claire de Dupliq.me et sur la marque sombre de LMDM : `rythme` « ok », 1,7 à 1,8 événement par seconde, écart médian 0,40 s, aucune image figée). Le changement de palette, les repères et les teintes dérivées marchent avec n'importe quel accent ; `--t02-d` se règle une fois par marque (+40 pour un accent vert).

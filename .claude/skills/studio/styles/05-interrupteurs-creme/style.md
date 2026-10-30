@@ -48,6 +48,8 @@ Le kit regroupe ces temps en quatre scènes (section « Les compositions du kit 
 | Icônes des membres | lavande #8276B8 | gris neutre `--t05-gris` |
 | Icônes des rangs et des étapes | les vrais logos des outils | une icône du kit sur une tuile à l'accent, ou les vrais logos si l'offre branche des outils |
 
+**Sur n'importe quelle marque, claire ou sombre** : le papier crème, le blanc cassé, l'encre et les gris restent ceux de l'original, fixes (`--t05-*`), jamais `var(--brand-bg)` ni `var(--brand-text)` ; la marque ne donne que l'accent (interrupteurs, trait, pastilles, tuiles), et ce qui est écrit sur l'accent passe en `var(--brand-contrast)`. Tout texte garde un contraste d'au moins 4,5:1 (l'encre `#1d1d1b` sur le crème : 15:1).
+
 Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du papier crème à la fenêtre blanc cassé (scène 3 vers scène 4). N'ajoute ni fond sombre ni plein écran de couleur au milieu : le look s'effondre. Seule exception possible : la signature finale sur la couleur de la marque.
 
 ## 4. La typographie
@@ -126,8 +128,8 @@ Tous sont dans `compositions/`.
 ## En vertical et en carré
 
 - **Scènes 1 et 3 :** elles se remettent en page seules en 9:16 (change `data-width` et `data-height` de leur racine en 1080 et 1920) : panneau en haut, phrase au milieu (84 px), membres sur deux rangées en bas ; la grille passe à 5 colonnes et sa rangée du milieu se vide pour la phrase. Essayées en 1080 × 1920.
-- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %).
-- **Scène 2 :** en 16:9 seulement. En vertical : panneau en haut, phrase au centre, membres en bas, filets verticaux ; ou saute-la et passe de la scène 1 à la scène 3 par un recul.
+- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %). C'est la scène la plus calme du kit : seule, `rythme` la trouve sous 1 événement par seconde (en 16:9 comme en 9:16). Bout à bout en 9:16, les quatre scènes passent sur une marque claire (1,12 sur Dupliq.me) mais tombent à 0,96 avec un accent jaune (LMDM), qui se voit peu sur le crème : avec un accent clair, garde-lui un geste à l'encre de plus (une étape de plus, la main qui revient cliquer) ou raccourcis-la.
+- **Scène 2 (testée, `trait-qui-relie-vertical.html`) :** sa propre mise en page 9:16, à monter à la place de `trait-qui-relie.html`. Le panneau reste en haut et les membres sur deux rangées en bas, exactement là où la scène 1 en 9:16 les laisse ; le mot fort (128 px), la phrase (84 px) et le nom (104 px) se posent au centre, entre les deux ; le trait descend par la droite du panneau pour souligner, puis passe sous lui et devient deux filets verticaux (du panneau à la phrase, de la phrase aux membres). À la fin, la caméra glisse vers le bas et la grille d'anneaux (5 colonnes, la cinquième arrive avec la vague) tombe pile sur la première image de la scène 3 en 9:16. Essayée bout à bout avec les quatre scènes en 1080 × 1920, sur une marque claire et sur LMDM.
 - **Carré et 4:5 :** même logique que le vertical ; le panneau se coupe plus tôt (seule la colonne des interrupteurs reste), la phrase descend à 64 px.
 
 ## Les compositions du kit
@@ -138,5 +140,6 @@ Montées bout à bout dans cet ordre, elles raccordent image pour image (28,5 s)
 |---|---|---|---|
 | `compositions/interrupteurs-cascade.html` | 6,5 s | le panneau en gros plan, le clic, la cascade, le recul, la phrase entourée, les membres | l'onglet, l'interrupteur maître, les RANGS, la phrase et ses mots entourés |
 | `compositions/trait-qui-relie.html` | 6,5 s | le mot fort souligné, la phrase reliée par deux filets, le nom de l'offre, les membres qui deviennent des anneaux, le glissement vers la grille | MOT, PHRASE, NOM (ou un logo), les RANGS identiques à la scène 1 |
+| `compositions/trait-qui-relie-vertical.html` | 6,5 s | la même scène remise en page en 9:16 : panneau en haut, textes au centre, filets verticaux, membres en bas, glissement vers le bas jusqu'à la grille | comme la version 16:9 |
 | `compositions/grille-de-coches.html` | 6,5 s | la vague de coches, le zoom et la phrase, les cartes des membres, la plongée | TEXTE, SALUTS, ACCUEIL |
 | `compositions/fenetre-annonce.html` | 9 s | la fenêtre, le menu « + » en cascade, la demande, les étapes, la pastille et le titre, la signature | SALUT, ACCUEIL, MENU, DEMANDE, ETAPES, PASTILLE, TITRE, NOM, LOGO |

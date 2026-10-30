@@ -15,18 +15,25 @@
   À remplacer (objet R en tête du script) : les morceaux de la phrase (ce que contient ton offre),
   les icônes des vignettes, le mot de la pastille, la suite de la phrase, le mot géant, ton logo
   (brand/logo.svg ; "" sans logo) et le nom de l'offre.
-  Couleurs : uniquement var(--brand-*) ; le très sombre, le taupe et le clair se dérivent du
-  fond de la marque. Sur fond clair, l'accent ne sert qu'en aplat (jamais en texte fin).
+  Couleurs : le noir chaud, le clair et l'encre sont ceux du look (fixes, quelle que soit la
+  marque) ; la marque donne l'accent (éclairci en --t7-accent-texte quand il colore un texte).
+  Sur fond clair, l'accent ne sert qu'en aplat (jamais en texte fin).
   Identifiant : t7a (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7a {
-    --t7-nuit: color-mix(in oklab, var(--brand-bg) 86%, #000);
-    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
-    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
-    --t7-gris: color-mix(in oklab, var(--brand-text) 58%, var(--brand-bg));
+    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
+       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
+       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
+       var(--brand-text) ici. */
+    --t7-nuit: #1f1513;
+    --t7-clair: #edece5;
+    --t7-encre: #1d1917;
+    --t7-texte: #f3f0eb;
+    --t7-gris: #b4ada8;
+    --t7-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
     --t7-police: var(--brand-font-display);
-    background: var(--t7-nuit); font-family: var(--t7-police); color: var(--brand-text);
+    background: var(--t7-nuit); font-family: var(--t7-police); color: var(--t7-texte);
   }
   #t7a .t7a-plan { position: absolute; inset: 0; }
   #t7a .t7a-nuit { background: var(--t7-nuit); }
@@ -45,6 +52,8 @@
   #t7a .t7a-suite { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; white-space: nowrap;
     font-size: 116px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.1; }
   #t7a .t7a-suite span { display: inline-block; }
+  /* Un mot de la suite s'allume à l'accent : GSAP anime --t7m de 0 à 1 (une var() ne se tweene pas). */
+  #t7a .t7a-s { color: color-mix(in oklab, var(--t7-accent-texte) calc(var(--t7m, 0) * 100%), var(--t7-texte)); }
   #t7a .t7a-nuage { background: color-mix(in oklab, var(--brand-accent) 40%, #fff); overflow: hidden; }
   #t7a .t7a-tache { position: absolute; border-radius: 50%; filter: blur(70px); background: var(--brand-accent); }
   #t7a .t7a-geant { position: absolute; left: 0; right: 0; top: 50%; height: 300px; margin-top: -150px; text-align: center; white-space: nowrap;
@@ -96,7 +105,6 @@
   var cadre = K.cadre($("t7a")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
   var css = getComputedStyle($("t7a"));
   var C = function (n, d) { return (css.getPropertyValue(n) || "").trim() || d; };
-  var accent = C("--brand-accent", "#ffee00"), texte = C("--brand-text", "#ffffff");
 
   // La poussière de pixels : des grappes de petits carrés, toujours les mêmes (graine).
   var svg = $("t7a-poussiere"), NS = "http://www.w3.org/2000/svg", r = K.rng(7), grappes = [];
@@ -118,7 +126,7 @@
       carte = K.el(ligne, "div", "t7a-carte");
       R.vignettes.forEach(function (ic, i) {
         var v = K.el(carte, "div", "t7a-vignette", K.ic(ic) || K.ic("play"));
-        v.style.background = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 55%, #fff)", "color-mix(in oklab, var(--brand-accent) 70%, var(--brand-bg))"][i % 3];
+        v.style.background = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 55%, #fff)", "color-mix(in oklab, var(--brand-accent) 70%, var(--t7-nuit))"][i % 3];
         v.classList.add("t7a-v" + i);
       });
       K.el(carte, "div", "t7a-trait", null, "top:86px; width:46px");
@@ -165,15 +173,15 @@
   var sm = document.querySelectorAll("#t7a .t7a-s");
   tl.set("#t7a-suite", { opacity: 1 }, 2.45);
   tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, 2.45);
-  gsap.set(sm, { color: texte });
+  gsap.set(sm, { "--t7m": 0 });
   sm.forEach(function (m, i) {
     var t = 2.95 + i * 0.32;
-    tl.to(m, { color: accent, duration: 0.12, ease: "none" }, t);
+    tl.to(m, { "--t7m": 1, duration: 0.12, ease: "none" }, t);
     tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
-    tl.to(m, { color: texte, duration: 0.3, ease: "power1.out" }, t + 0.38);
+    tl.to(m, { "--t7m": 0, duration: 0.3, ease: "power1.out" }, t + 0.38);
   });
   tl.fromTo("#t7a-suite", { scale: 0.97 }, { scale: 1.04, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.45);
-  tl.to(sm, { color: accent, duration: 0.15, ease: "none", stagger: 0.05 }, 4.15);
+  tl.to(sm, { "--t7m": 1, duration: 0.15, ease: "none", stagger: 0.05 }, 4.15);
   tl.to("#t7a-suite", { opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power2.in" }, 4.45);
 
   // 3. Un temps, puis le mot géant tapé sur le nuage de couleur (4,85 → 6,0 s)

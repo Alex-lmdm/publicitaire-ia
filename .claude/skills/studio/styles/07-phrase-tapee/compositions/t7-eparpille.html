@@ -14,13 +14,18 @@
   À remplacer (objet R en tête du script) : le début de la phrase et ses trois fins, les textes
   des notes et des fichiers (ceux de ton sujet), les logos des outils (posés par
   `studio_motion.py logos` : ceux de ton offre, 6 à 8), la conclusion en points.
-  Couleurs : uniquement var(--brand-*) ; sur fond clair, l'accent ne colore que des aplats.
+  Couleurs : le clair et l'encre sont ceux du look (fixes, quelle que soit la marque) ; sur ce
+  fond clair, l'accent de la marque ne colore que des aplats.
   Identifiant : t7e (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7e {
-    --t7-clair: color-mix(in oklab, var(--brand-bg) 5%, #f3f2ee);
-    --t7-encre: color-mix(in oklab, var(--brand-bg) 88%, #000);
+    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
+       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
+       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
+       var(--brand-text) ici. */
+    --t7-clair: #edece5;
+    --t7-encre: #1d1917;
     --t7-police: var(--brand-font-display);
     background: var(--t7-clair); font-family: var(--t7-police); color: var(--t7-encre);
   }

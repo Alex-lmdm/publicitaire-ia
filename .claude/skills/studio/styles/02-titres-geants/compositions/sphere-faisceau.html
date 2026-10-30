@@ -33,6 +33,9 @@
   <style>
     #t02-sphere {
       --t02-d: -40;
+      /* Le premier plan du canyon prend la nuit du look (fixe, jamais var(--brand-bg) : sur une
+         marque claire, les falaises du bas deviendraient blanches). */
+      --t02-nuit: color-mix(in oklab, #120f17 90%, var(--brand-accent));
       --s-clair: oklch(from var(--brand-accent) 0.965 calc(c * 0.16) h);
       --s-moyen: oklch(from var(--brand-accent) calc(l * 0.62 + 0.30) calc(c * 0.62) calc(h + var(--t02-d) * 0.3));
       --s-sombre: oklch(from var(--brand-accent) calc(l * 0.55) calc(c * 0.80) calc(h + var(--t02-d) * 0.8));
@@ -49,8 +52,8 @@
       --p-sol-1: oklch(from var(--brand-accent) calc(l * 0.50) calc(c * 0.80) calc(h + var(--t02-d) * 0.9));
       --p-sol-2: oklch(from var(--brand-accent) calc(l * 0.34) calc(c * 0.65) calc(h + var(--t02-d) * 1.2));
       --p-plaine: oklch(from var(--brand-accent) calc(l * 0.42) calc(c * 0.70) calc(h + var(--t02-d) * 1.0));
-      --p-avant: oklch(from var(--brand-bg) calc(l + 0.07) c h);
-      --p-avant-2: var(--brand-bg);
+      --p-avant: oklch(from var(--t02-nuit) calc(l + 0.07) c h);
+      --p-avant-2: var(--t02-nuit);
       --p-trait: oklch(from var(--brand-accent) calc(l * 0.18) calc(c * 0.40) calc(h + var(--t02-d)));
       background: color-mix(in oklab, #ebeae4 93%, var(--brand-accent));
     }

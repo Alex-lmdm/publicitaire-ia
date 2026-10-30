@@ -39,6 +39,8 @@ Le kit suit le même ordre en quatre scènes de 4,5 s, 5 s, 2,8 s et 3,8 s (sect
 
 Le look est monochrome : c'est sa force. Ne remplis pas une forme de couleur, ne mets pas de fond sombre au milieu.
 
+**Sur n'importe quelle marque, claire ou sombre** : le papier reste celui de l'original (fixe, jamais `var(--brand-bg)`) ; l'encre prend le fond de la marque seulement s'il est foncé, sinon un noir d'encre `#141414` : jamais une encre claire sur le papier. Les deux lignes et le nom, écrits à l'encre, gardent un contraste d'au moins 4,5:1.
+
 ## 4. La typographie
 
 - **Les légendes d'imprimerie** (coins de la page) : la police de texte de la marque, 11 px (9 px pour la petite ligne), un mot clé en gras et en capitales espacées (0,08 em), un filet fin ; en bas, six nombres de 11 px qui changent tous les quarts de seconde. Mêmes tailles en 1080 × 1920.
@@ -72,7 +74,11 @@ Tous sont dans `compositions/`.
 ## 8. Le son
 
 - Original : une musique électronique sourde et régulière (environ 116 battements par minute), un accent tous les quatre temps (toutes les 2 s), le son qui se retient pendant les gravures, puis une frappe nette sur la coupe vers la page vide et un dernier accent sur le logotype.
-- Chez le client : une musique qui monte puis frappe (`musiques choisir --ambiance "Montée cinématique"`), calée pour que son entrée franche tombe sur la coupe vers la page vide (`musiques prendre <n> --a <instant de la coupe>`). Bruitages : un frottement de pinceau sur le geste, un grésillement bref sur la numérisation, un souffle léger pendant la nuée, de petits clics de papier sur les salves de gravures, un coup sourd sur la coupe, rien sur le noir final.
+- Chez le client : une musique qui monte puis frappe, et **jamais plus d'une seconde de silence au début de la vidéo**. La coupe vers la page vide tombe vers 12 à 13,5 s, alors que les morceaux de l'ambiance « Montée cinématique » n'ont que 3,5 à 8,5 s d'intro : caler leur batterie sur la coupe ferait démarrer la musique 4 à 9 s après l'image, et le teaser resterait muet au début. Deux façons justes, depuis le projet de la vidéo :
+  1. **Un morceau dont l'intro couvre la coupe.** `python3 ../../../tools/studio_motion.py musiques choisir --a <instant de la coupe> --duree <durée de la vidéo>` (sans imposer d'ambiance) classe d'abord les morceaux dont la batterie entre à la coupe ou après ; il écrit « démarre … s après le début (intro courte) » pour les autres : écarte ceux où ce retard dépasse une seconde. Puis `musiques prendre <n> --a <instant de la coupe> --duree <durée>` : la batterie frappe sur la révélation.
+  2. **Un morceau à l'intro courte** (il préfère une « Montée cinématique ») : la musique part à 0 et la batterie entre où elle entre, `musiques prendre <n> --a <instant de sa batterie> --duree <durée>` (l'instant que `musiques choisir` écrit après « batterie à »). La coupe vers la page vide garde alors son coup sourd (bruitage ci-dessous) pour frapper.
+  Après le rendu, écoute le début ou mesure-le (`ffmpeg -i <mp4> -af silencedetect=n=-45dB:d=1 -f null -` ne doit signaler aucun silence qui commence à 0).
+- Bruitages : un frottement de pinceau sur le geste, un grésillement bref sur la numérisation, un souffle léger pendant la nuée, de petits clics de papier sur les salves de gravures, un coup sourd sur la coupe, rien sur le noir final.
 
 ## 9. L'ouverture et la fin
 

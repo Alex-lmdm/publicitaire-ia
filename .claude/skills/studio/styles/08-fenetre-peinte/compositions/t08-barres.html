@@ -79,8 +79,9 @@
     };
     racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
       : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
-    // La ligne forte : l'accent s'il se lit sur le blanc chaud (contraste de 3 au moins), sinon l'encre.
-    var accentFonce = lum(rgb("var(--brand-accent)")) <= 0.28;
+    // La ligne forte : l'accent s'il est assez foncé pour porter sa valeur écrite en blanc (contraste
+    // de 4,5:1 au moins, luminance de 0,18 au plus), sinon l'encre et un carré de l'accent devant le nom.
+    var accentFonce = lum(rgb("var(--brand-accent)")) <= 0.18;
     racine.style.setProperty("--t08-fort", accentFonce ? "var(--brand-accent)" : "var(--t08-encre)");
 
     var G = document.getElementById(ID + "-graphe");

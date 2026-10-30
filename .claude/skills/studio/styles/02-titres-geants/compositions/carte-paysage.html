@@ -5,7 +5,7 @@
   <!--
     TEMPLATE N°2 · TITRES GÉANTS · SCÈNE « CARTE PAYSAGE » (le produit à l'écran), 5,0 s, 16:9
 
-    Ce qu'elle montre : sur le fond sombre de la marque, la caméra part tout près d'un coin arrondi
+    Ce qu'elle montre : sur la nuit du look, la caméra part tout près d'un coin arrondi
     (une cote « Rayon 64 px », un point d'accent), recule et découvre une grande carte vide ; la
     carte se remplit d'un paysage illustré qui se construit par couches (ciel, lueur, mer, reflets,
     îles, rivage), des repères de maquette se posent (deux traits pleins, deux traits pointillés,
@@ -16,7 +16,8 @@
     la grande carte change trois fois de palette sur les temps (jour, nuit, crépuscule).
 
     Les couleurs des paysages se DÉRIVENT de l'accent de la marque (oklch relatif) : crépuscule
-    (ombres décalées de teinte), jour (l'accent pur), nuit (le fond de la marque). Rien en dur.
+    (ombres décalées de teinte), jour (l'accent pur), nuit (la nuit du look, --t02-nuit : presque
+    noire quelle que soit la marque, jamais var(--brand-bg)). Les textes posés dessus sont blancs.
     --t02-d (défaut -40) : décalage de teinte des ombres, en degrés ; mets +40 pour un accent vert
     (sinon le ciel tire sur le kaki).
 
@@ -38,10 +39,20 @@
 <body>
 <template>
   <style>
-    #t02-carte { background: var(--brand-bg); --t02-d: -40; }
+    #t02-carte {
+      /* La nuit du look (l'aubergine presque noir de l'original) reste sombre quelle que soit la
+         marque, claire ou sombre : presque noir, teinté de 10 % de l'accent ; le texte posé dessus
+         est blanc. La marque ne donne que les accents (--t02-accent-texte : l'accent, éclairci s'il
+         est trop sombre pour se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
+      --t02-nuit: color-mix(in oklab, #120f17 90%, var(--brand-accent));
+      --t02-texte: #ffffff;
+      --t02-gris: #a9a5ae;
+      --t02-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
+      background: var(--t02-nuit); --t02-d: -40;
+    }
     #t02-carte .t02-carte-c {
       position: absolute; width: 1480px; height: 830px; margin: -415px 0 0 -740px;
-      border-radius: 64px; overflow: hidden; background: color-mix(in oklab, var(--brand-bg) 92%, var(--brand-accent));
+      border-radius: 64px; overflow: hidden; background: color-mix(in oklab, var(--t02-nuit) 92%, var(--brand-accent));
     }
     #t02-carte .t02-carte-c > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
     #t02-carte .t02-carte-contour {
@@ -72,15 +83,15 @@
       --p-trait: oklch(from var(--brand-accent) calc(l * 0.18) calc(c * 0.40) calc(h + var(--t02-d)));
     }
     #t02-carte .pal-nuit {
-      --p-ciel-1: var(--brand-bg);
-      --p-ciel-2: color-mix(in oklab, var(--brand-bg) 90%, var(--brand-accent));
+      --p-ciel-1: var(--t02-nuit);
+      --p-ciel-2: color-mix(in oklab, var(--t02-nuit) 90%, var(--brand-accent));
       --p-ciel-3: oklch(from var(--brand-accent) calc(l * 0.52) calc(c * 0.80) calc(h + var(--t02-d) * 0.7));
       --p-lueur: var(--brand-accent);
-      --p-mer-1: color-mix(in oklab, var(--brand-bg) 78%, var(--brand-accent));
-      --p-mer-2: var(--brand-bg);
-      --p-sol-1: color-mix(in oklab, var(--brand-bg) 93%, var(--brand-accent));
-      --p-sol-2: oklch(from var(--brand-bg) calc(l * 0.75) c h);
-      --p-trait: color-mix(in oklab, var(--brand-bg) 78%, var(--brand-accent));
+      --p-mer-1: color-mix(in oklab, var(--t02-nuit) 78%, var(--brand-accent));
+      --p-mer-2: var(--t02-nuit);
+      --p-sol-1: color-mix(in oklab, var(--t02-nuit) 93%, var(--brand-accent));
+      --p-sol-2: oklch(from var(--t02-nuit) calc(l * 0.75) c h);
+      --p-trait: color-mix(in oklab, var(--t02-nuit) 78%, var(--brand-accent));
     }
     #t02-carte .pal-aube {
       --p-ciel-1: oklch(from var(--brand-accent) calc(l * 0.22 + 0.72) calc(c * 0.40) calc(h + var(--t02-d) * 0.4));
@@ -98,19 +109,19 @@
     #t02-carte .t02-carte-guides { position: absolute; inset: 0; }
     #t02-carte .t02-carte-gv { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, 0.8); transform-origin: 50% 0; }
     #t02-carte .t02-carte-gh { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed rgba(255, 255, 255, 0.85); transform-origin: 0 50%; }
-    #t02-carte .t02-carte-bande { position: absolute; left: 12%; right: 12%; background: color-mix(in srgb, var(--brand-bg) 50%, transparent); transform-origin: 50% 50%; }
-    #t02-carte .t02-carte-pt { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-bg) 70%, transparent); }
+    #t02-carte .t02-carte-bande { position: absolute; left: 12%; right: 12%; background: color-mix(in srgb, var(--t02-nuit) 50%, transparent); transform-origin: 50% 50%; }
+    #t02-carte .t02-carte-pt { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px color-mix(in srgb, var(--t02-nuit) 70%, transparent); }
     #t02-carte .t02-carte-zone-titre { position: absolute; left: 12%; right: 12%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     #t02-carte .t02-carte-titre {
       font-family: var(--brand-font-display); font-weight: 400; font-size: 156px; line-height: 1;
-      letter-spacing: -0.035em; color: var(--brand-text); white-space: nowrap;
+      letter-spacing: -0.035em; color: var(--t02-texte); white-space: nowrap;
     }
     #t02-carte .t02-carte-signe {
       position: absolute; left: 0; right: 0; bottom: 64px; text-align: center;
-      font-family: var(--brand-font-display); font-weight: 600; font-size: 40px; letter-spacing: -0.02em; color: var(--brand-text);
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 40px; letter-spacing: -0.02em; color: var(--t02-texte);
     }
     /* La cote et le point du début (au-dessus de la caméra, en pixels d'écran). */
-    #t02-carte .t02-carte-cote { position: absolute; z-index: 20; font-family: var(--brand-font-body); font-size: 22px; line-height: 1.3; color: var(--brand-text); opacity: 0.85; white-space: nowrap; }
+    #t02-carte .t02-carte-cote { position: absolute; z-index: 20; font-family: var(--brand-font-body); font-size: 22px; line-height: 1.3; color: var(--t02-texte); opacity: 0.85; white-space: nowrap; }
     #t02-carte .t02-carte-repere { position: absolute; z-index: 20; background: color-mix(in srgb, var(--brand-accent) 45%, transparent); }
     #t02-carte .t02-carte-point { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--brand-accent); z-index: 5; }
 
@@ -127,7 +138,7 @@
     #t02-carte .t02-carte-bouton svg { width: 40px; height: 40px; }
     #t02-carte .t02-carte-bouton > svg, #t02-carte .t02-carte-bouton > span { position: relative; }
     #t02-carte .t02-carte-bouton .remplir { position: absolute; inset: 0; border-radius: 999px; background: var(--brand-accent); transform-origin: 0 50%; }
-    #t02-carte .t02-carte-tuile { width: 250px; height: 250px; border-radius: 60px; background: rgba(255, 255, 255, 0.9); display: grid; place-items: center; color: var(--brand-bg); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.6); }
+    #t02-carte .t02-carte-tuile { width: 250px; height: 250px; border-radius: 60px; background: rgba(255, 255, 255, 0.9); display: grid; place-items: center; color: var(--t02-nuit); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.6); }
     #t02-carte .t02-carte-tuile svg { width: 120px; height: 120px; }
     #t02-carte .t02-carte-lecteur { width: 760px; height: 428px; border-radius: 30px; background: rgba(12, 12, 14, 0.72); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3); overflow: hidden; }
     #t02-carte .t02-carte-lecteur .jouer { position: absolute; left: 50%; top: 46%; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%; background: rgba(255, 255, 255, 0.92); display: grid; place-items: center; color: #17171a; }

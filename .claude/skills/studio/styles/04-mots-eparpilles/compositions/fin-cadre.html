@@ -5,7 +5,7 @@
   <!--
     TEMPLATE N°4 · DÉGRADÉS VIFS · SCÈNE « FIN EN CADRE » (l'offre et l'appel), 6,5 s, 16:9
 
-    Ce qu'elle montre : sur le fond sombre de la marque, un cadre au trait fin (un contour en
+    Ce qu'elle montre : sur le noir de l'original (fixe, quelle que soit la marque), un cadre au trait fin (un contour en
     dégradé) se pose ; la phrase d'appel s'écrit dedans un mot à la fois, en petit et en léger ;
     les mots s'effacent dans le désordre, le cadre se resserre en une carte qui s'allume d'un
     dégradé de l'accent ; deux autres cartes en sortent de chaque côté : les trois parties de
@@ -19,7 +19,9 @@
          accompagnement, bonus ; ou trois fonctions d'un logiciel). Deux ou quatre cartes aussi.
       4. Le nom (#t04-fin-nom ; un logo se pose en <img src="brand/logo.svg"> à sa place) et le
          bouton (#t04-fin-bouton : le vrai libellé du bouton de sa page, 1 à 3 mots).
-    Couleurs : var(--brand-*) et des dégradés dérivés de l'accent (--t04-ecart, défaut 50).
+    Couleurs : le noir et le texte blanc sont ceux du look (fixes : jamais var(--brand-bg) ni
+    var(--brand-text), qui inverseraient la fin sur une marque claire) ; la marque donne l'accent
+    et des dégradés dérivés de lui (--t04-ecart, défaut 50).
   -->
 </head>
 <body>
@@ -30,13 +32,14 @@
       --t04-c1: oklch(from var(--brand-accent) calc(l * 0.55 + 0.33) calc(c * 0.95) calc(h + var(--t04-ecart) * 0.9));
       --t04-c2: var(--brand-accent);
       --t04-c3: oklch(from var(--brand-accent) calc(l * 0.50 + 0.32) calc(c * 0.95) calc(h - var(--t04-ecart) * 0.8));
-      --t04-sombre: color-mix(in oklab, var(--brand-bg) 70%, var(--brand-accent));
-      background: var(--brand-bg);
+      --t04-noir: #050505;
+      --t04-texte: #ffffff;
+      background: var(--t04-noir);
     }
     #t04-fin .t04-fin-cadre { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: visible; }
     #t04-fin .t04-fin-appel {
       position: absolute; left: 0; right: 0; top: 426px; text-align: center; white-space: nowrap;
-      font-family: var(--brand-font-body); font-weight: 400; font-size: 70px; letter-spacing: -0.02em; color: var(--brand-text);
+      font-family: var(--brand-font-body); font-weight: 400; font-size: 70px; letter-spacing: -0.02em; color: var(--t04-texte);
     }
     #t04-fin .t04-fin-appel span { display: inline-block; margin: 0 0.13em; }
     #t04-fin .t04-fin-carte {
@@ -56,7 +59,7 @@
       box-shadow: 0 0 24px color-mix(in srgb, var(--brand-accent) 70%, transparent); }
     #t04-fin .t04-fin-nom {
       position: absolute; left: 0; right: 0; top: 450px; text-align: center; white-space: nowrap;
-      font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; letter-spacing: -0.03em; line-height: 1; color: var(--brand-text);
+      font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; letter-spacing: -0.03em; line-height: 1; color: var(--t04-texte);
       text-shadow: 0 0 40px color-mix(in srgb, var(--brand-accent) 45%, transparent);
     }
     #t04-fin .t04-fin-bouton {

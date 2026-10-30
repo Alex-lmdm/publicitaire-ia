@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    TEMPLATE N°2 · TITRES GÉANTS · SCÈNE « SPHÈRE ET FAISCEAU », VERSION VERTICALE 9:16 (1080 × 1920),
+    5,0 s (la même scène que sphere-faisceau.html, remise en page pour un Reel, une story, un TikTok :
+    canyon plus haut et plus étroit, sphère qui monte à 35 % de la hauteur, faisceau plus long)
+
+    Ce qu'elle montre : sur un blanc cassé quadrillé de pointillés, une sphère de verre se dessine
+    au trait (contour, hublots, cerclages), puis se remplit de couleur sur fond blanc ; coupe : la
+    voilà qui flotte dans un canyon illustré au crépuscule (falaises en gradins, montagne,
+    nuages), en tournant doucement ; la caméra lève les yeux avec elle, la sphère monte dans le
+    ciel, un trait de lumière part de son dessous, le faisceau s'ouvre en cône et un cube (ton
+    produit) y descend en tournant ; la caméra redescend, le cube se pose au point de fuite et
+    des rayons de perspective partent de lui (ils deviennent l'icône de la scène suivante).
+
+    Tout est dessiné ici (SVG et CSS 3D), sans image ni modèle : la sphère, le canyon et le cube
+    prennent des teintes DÉRIVÉES de l'accent (oklch relatif), avec --t02-d (défaut -40) pour le
+    décalage de teinte des ombres (+40 pour un accent vert).
+
+    À remplacer :
+      1. L'identifiant « t02-sphere » partout (racine, scène, préfixe des ids et des dégradés SVG,
+         clé de la timeline).
+      2. Les faces du cube (#t02-sphere-cube .f) : vides par défaut ; une face peut porter l'icône
+         de l'offre (K.ic) ou son logo en <img>. Le cube EST le produit : ne le remplace pas par un
+         objet sans rapport.
+      3. Les instants (MOMENTS, plus bas) : la montée et l'ouverture du faisceau sur les temps forts
+         de la musique ; garde l'ordre.
+    Aucun texte à l'écran dans cette scène : elle se monte entre deux scènes qui parlent.
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t02-sphere {
+      --t02-d: -40;
+      /* Le premier plan du canyon prend la nuit du look (fixe, jamais var(--brand-bg) : sur une
+         marque claire, les falaises du bas deviendraient blanches). */
+      --t02-nuit: color-mix(in oklab, #120f17 90%, var(--brand-accent));
+      --s-clair: oklch(from var(--brand-accent) 0.965 calc(c * 0.16) h);
+      --s-moyen: oklch(from var(--brand-accent) calc(l * 0.62 + 0.30) calc(c * 0.62) calc(h + var(--t02-d) * 0.3));
+      --s-sombre: oklch(from var(--brand-accent) calc(l * 0.55) calc(c * 0.80) calc(h + var(--t02-d) * 0.8));
+      --s-vitre-1: oklch(from var(--brand-accent) calc(l * 0.70 + 0.18) calc(c * 0.90) calc(h + var(--t02-d) * 0.5));
+      --s-vitre-2: oklch(from var(--brand-accent) calc(l * 0.52) calc(c * 0.95) calc(h + var(--t02-d) * 1.0));
+      --s-trait: oklch(from var(--brand-accent) calc(l * 0.24) calc(c * 0.45) calc(h + var(--t02-d)));
+      --s-feu: var(--brand-accent);
+      --p-ciel-1: oklch(from var(--brand-accent) calc(l * 0.38) calc(c * 0.80) calc(h + var(--t02-d) * 1.2));
+      --p-ciel-2: oklch(from var(--brand-accent) calc(l * 0.64) calc(c * 0.95) calc(h + var(--t02-d) * 0.6));
+      --p-ciel-3: oklch(from var(--brand-accent) calc(l * 0.90 + 0.06) calc(c * 0.70) calc(h + var(--t02-d) * 0.2));
+      --p-lueur: oklch(from var(--brand-accent) 0.97 calc(c * 0.22) h);
+      --p-neige: oklch(from var(--brand-accent) 0.95 calc(c * 0.10) h);
+      --p-neige-ombre: oklch(from var(--brand-accent) 0.84 calc(c * 0.25) calc(h + var(--t02-d) * 0.5));
+      --p-sol-1: oklch(from var(--brand-accent) calc(l * 0.50) calc(c * 0.80) calc(h + var(--t02-d) * 0.9));
+      --p-sol-2: oklch(from var(--brand-accent) calc(l * 0.34) calc(c * 0.65) calc(h + var(--t02-d) * 1.2));
+      --p-plaine: oklch(from var(--brand-accent) calc(l * 0.42) calc(c * 0.70) calc(h + var(--t02-d) * 1.0));
+      --p-avant: oklch(from var(--t02-nuit) calc(l + 0.07) c h);
+      --p-avant-2: var(--t02-nuit);
+      --p-trait: oklch(from var(--brand-accent) calc(l * 0.18) calc(c * 0.40) calc(h + var(--t02-d)));
+      background: color-mix(in oklab, #ebeae4 93%, var(--brand-accent));
+    }
+    /* Le blanc cassé quadrillé du début. */
+    #t02-sphere .t02-sphere-papier { position: absolute; inset: 0; background: color-mix(in oklab, #ebeae4 93%, var(--brand-accent)); }
+    #t02-sphere .t02-sphere-blanc { position: absolute; inset: 0; background: #ffffff; }
+    #t02-sphere .t02-sphere-pv { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed rgba(0, 0, 0, 0.16); transform-origin: 50% 0; }
+    #t02-sphere .t02-sphere-ph { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed rgba(0, 0, 0, 0.16); transform-origin: 0 50%; }
+    /* Le monde : canyon, sphère, faisceau, cube, rayons ; la caméra le fait glisser en hauteur. */
+    #t02-sphere .t02-sphere-monde { position: absolute; left: 0; top: 0; width: 1080px; height: 3160px; transform-origin: 540px 2300px; }
+    #t02-sphere .t02-sphere-monde > svg { position: absolute; left: 0; top: 0; width: 1080px; height: 3160px; }
+    #t02-sphere .t02-sphere-objet { position: absolute; left: 0; top: 0; width: 400px; height: 400px; margin: -200px 0 0 -200px; }
+    #t02-sphere .t02-sphere-objet svg { width: 100%; height: 100%; overflow: visible; }
+    #t02-sphere .t02-sphere-cone {
+      position: absolute; left: 150px; width: 780px; transform-origin: 50% 0;
+      clip-path: polygon(48.2% 0, 51.8% 0, 100% 100%, 0 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.28) 28%, rgba(255, 255, 255, 0.92) 50%, rgba(255, 255, 255, 0.28) 72%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.2) 100%);
+      mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.2) 100%);
+    }
+    #t02-sphere .t02-sphere-ame { position: absolute; left: 537px; width: 6px; border-radius: 3px; background: #fff; box-shadow: 0 0 24px 6px rgba(255, 255, 255, 0.7); transform-origin: 50% 0; }
+    #t02-sphere .t02-sphere-halo { position: absolute; width: 1000px; height: 1700px; margin: -380px 0 0 -500px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0)); }
+    #t02-sphere .t02-sphere-scene-cube { position: absolute; width: 130px; height: 130px; margin: -65px 0 0 -65px; perspective: 900px; }
+    #t02-sphere .t02-sphere-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
+    #t02-sphere .t02-sphere-cube .f {
+      position: absolute; inset: 0; border: 3px solid var(--s-trait);
+      background: color-mix(in srgb, var(--s-clair) 88%, transparent); backface-visibility: visible;
+    }
+    #t02-sphere .t02-sphere-cube .f.haut { background: color-mix(in srgb, #ffffff 90%, transparent); }
+    #t02-sphere .t02-sphere-cube .f.cote { background: color-mix(in srgb, var(--s-moyen) 92%, transparent); }
+    #t02-sphere .t02-sphere-rayons { position: absolute; left: 540px; top: 2350px; width: 0; height: 0; }
+    #t02-sphere .t02-sphere-rayon { position: absolute; left: 0; top: -1px; width: 1700px; height: 2px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.35)); transform-origin: 0 50%; }
+    #t02-sphere .t02-sphere-axe { position: absolute; border-color: rgba(255, 255, 255, 0.7); border-style: dashed; border-width: 0; }
+  </style>
+
+  <div data-composition-id="t02-sphere" data-width="1080" data-height="1920" data-duration="5" style="position:absolute; inset:0;">
+    <div id="t02-sphere" class="k-scene">
+      <div class="t02-sphere-papier" id="t02-sphere-papier"></div>
+      <div class="t02-sphere-blanc" id="t02-sphere-blanc"></div>
+      <div id="t02-sphere-grille"></div>
+      <div class="t02-sphere-monde" id="t02-sphere-monde">
+        <div id="t02-sphere-decor"></div>
+        <div class="t02-sphere-halo" id="t02-sphere-halo" style="left:540px; top:1060px;"></div>
+        <div class="t02-sphere-cone" id="t02-sphere-cone" style="top:1030px; height:1330px;"></div>
+        <div class="t02-sphere-ame" id="t02-sphere-ame" style="top:1030px; height:1320px;"></div>
+        <div class="t02-sphere-rayons" id="t02-sphere-rayons"></div>
+        <div class="t02-sphere-scene-cube" id="t02-sphere-scube" style="left:540px; top:1080px;">
+          <div class="t02-sphere-cube" id="t02-sphere-cube">
+            <div class="f" style="transform: translateZ(65px);"></div>
+            <div class="f" style="transform: rotateY(180deg) translateZ(65px);"></div>
+            <div class="f cote" style="transform: rotateY(90deg) translateZ(65px);"></div>
+            <div class="f cote" style="transform: rotateY(-90deg) translateZ(65px);"></div>
+            <div class="f haut" style="transform: rotateX(90deg) translateZ(65px);"></div>
+            <div class="f haut" style="transform: rotateX(-90deg) translateZ(65px);"></div>
+          </div>
+        </div>
+        <div class="t02-sphere-objet" id="t02-sphere-objet" style="left:540px; top:2160px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      window.__timelines = window.__timelines || {};
+      var D = 5.0, ID = "t02-sphere", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      var MOMENTS = { couleur: 0.62, canyon: 0.95, faisceau: 2.15, cube: 2.55, descente: 3.5, pose: 4.25 };
+
+      // ---------- La sphère de verre (SVG 400 × 400) ----------
+      var FEN = "M120 112 Q200 90 280 112 Q296 116 296 134 L292 206 Q290 222 274 225 Q200 238 126 225 Q110 222 108 206 L104 134 Q104 116 120 112 Z";
+      var FEN_G = "M40 140 Q58 116 84 114 Q92 114 92 128 L94 206 Q94 218 82 219 Q62 220 48 214 Q32 180 40 140 Z";
+      var FEN_D = "M316 114 Q342 116 360 140 Q368 180 352 214 Q338 220 318 219 Q306 218 306 206 L308 128 Q308 114 316 114 Z";
+      var g = ID + "-s";
+      var svg = '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><defs>' +
+        '<radialGradient id="' + g + '-corps" cx="0.40" cy="0.30" r="0.78">' +
+        '<stop offset="0" style="stop-color:#ffffff"/><stop offset="0.32" style="stop-color:var(--s-clair)"/>' +
+        '<stop offset="0.78" style="stop-color:var(--s-moyen)"/><stop offset="1" style="stop-color:var(--s-sombre)"/></radialGradient>' +
+        '<linearGradient id="' + g + '-vitre" x1="0" y1="0" x2="0.25" y2="1"><stop offset="0" style="stop-color:var(--s-vitre-1)"/>' +
+        '<stop offset="1" style="stop-color:var(--s-vitre-2)"/></linearGradient>' +
+        '<radialGradient id="' + g + '-feu"><stop offset="0" style="stop-color:var(--s-feu);stop-opacity:0.95"/>' +
+        '<stop offset="1" style="stop-color:var(--s-feu);stop-opacity:0"/></radialGradient>' +
+        '<clipPath id="' + g + '-clip"><circle cx="200" cy="200" r="180"/></clipPath>' +
+        '<clipPath id="' + g + '-vclip"><path d="' + FEN + '"/></clipPath></defs>' +
+        '<g class="s-remplis">' +
+        '<ellipse cx="200" cy="384" rx="110" ry="40" fill="url(#' + g + '-feu)"/>' +
+        '<circle cx="200" cy="200" r="180" fill="url(#' + g + '-corps)"/>' +
+        '<g clip-path="url(#' + g + '-clip)"><g class="s-tourne">' +
+        '<path d="' + FEN + '" fill="url(#' + g + '-vitre)"/><path d="' + FEN_G + '" fill="url(#' + g + '-vitre)"/>' +
+        '<path d="' + FEN_D + '" fill="url(#' + g + '-vitre)"/>' +
+        '<g clip-path="url(#' + g + '-vclip)" stroke="#ffffff" stroke-opacity="0.38" stroke-linecap="round">' +
+        '<line x1="176" y1="86" x2="128" y2="246" stroke-width="18"/><line x1="214" y1="86" x2="168" y2="246" stroke-width="7"/></g>' +
+        '</g><path d="M318 64 A180 180 0 0 1 352 300" fill="none" stroke="#ffffff" stroke-opacity="0.6" stroke-width="9" stroke-linecap="round"/></g>' +
+        '<ellipse cx="200" cy="366" rx="54" ry="14" style="fill:var(--s-feu)"/></g>' +
+        '<g class="s-traits" fill="none" style="stroke:var(--s-trait)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle class="s-t" cx="200" cy="200" r="180"/>' +
+        '<path class="s-t" d="M66 72 Q200 26 334 72"/>' +
+        '<g clip-path="url(#' + g + '-clip)"><g class="s-tourne">' +
+        '<path class="s-t" d="' + FEN + '"/><path class="s-t" d="' + FEN_G + '"/><path class="s-t" d="' + FEN_D + '"/></g></g>' +
+        '<path class="s-t" d="M24 242 Q200 292 376 242"/><path class="s-t" d="M40 290 Q200 336 360 290"/>' +
+        '<path class="s-t" d="M86 340 Q200 370 314 340"/><ellipse class="s-t" cx="200" cy="366" rx="54" ry="14"/></g></svg>';
+      var objet = $("objet");
+      objet.innerHTML = svg;
+
+      // ---------- Le canyon (SVG du monde, 1080 × 3160 ; horizon à 2350), plus haut et plus étroit ----------
+      var c = ID + "-c";
+      $("decor").innerHTML = '<svg viewBox="0 0 1080 3160" xmlns="http://www.w3.org/2000/svg"><defs>' +
+        '<linearGradient id="' + c + '-ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--p-ciel-1)"/>' +
+        '<stop offset="0.62" style="stop-color:var(--p-ciel-2)"/><stop offset="0.93" style="stop-color:var(--p-ciel-3)"/>' +
+        '<stop offset="1" style="stop-color:var(--p-lueur)"/></linearGradient>' +
+        '<linearGradient id="' + c + '-plaine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--p-plaine)"/>' +
+        '<stop offset="1" style="stop-color:var(--p-sol-2)"/></linearGradient>' +
+        '<radialGradient id="' + c + '-lueur"><stop offset="0" style="stop-color:var(--p-lueur);stop-opacity:0.9"/>' +
+        '<stop offset="1" style="stop-color:var(--p-lueur);stop-opacity:0"/></radialGradient>' +
+        '<filter id="' + c + '-flou" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs>' +
+        '<rect width="1080" height="2360" fill="url(#' + c + '-ciel)"/>' +
+        '<ellipse cx="540" cy="2350" rx="760" ry="330" fill="url(#' + c + '-lueur)"/>' +
+        '<g style="fill:var(--p-neige)"><path d="M560 2350 L700 2080 L734 2112 L780 2030 L940 2350 Z"/></g>' +
+        '<g style="fill:var(--p-neige-ombre)"><path d="M780 2030 L940 2350 L830 2350 L766 2192 L800 2126 Z"/></g>' +
+        '<g filter="url(#' + c + '-flou)" style="fill:var(--p-lueur)" fill-opacity="0.75">' +
+        '<ellipse cx="470" cy="2294" rx="230" ry="40"/><ellipse cx="700" cy="2262" rx="180" ry="34"/><ellipse cx="330" cy="2332" rx="200" ry="26"/></g>' +
+        '<rect y="2350" width="1080" height="810" fill="url(#' + c + '-plaine)"/>' +
+        '<g style="stroke:var(--p-trait)" stroke-opacity="0.35" stroke-width="2" fill="none">' +
+        '<line x1="0" y1="2392" x2="1080" y2="2392"/><line x1="0" y1="2480" x2="1080" y2="2480"/><line x1="0" y1="2640" x2="1080" y2="2640"/></g>' +
+        '<g style="stroke:var(--p-trait)" stroke-width="2" stroke-linejoin="round">' +
+        '<path style="fill:var(--p-sol-1)" d="M-10 1180 L96 1180 L112 1204 L112 3170 L-10 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-2)" d="M112 1204 L152 1240 L152 3170 L112 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-1)" d="M40 1640 L190 1640 L206 1672 L206 3170 L40 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-2)" d="M206 1672 L256 1716 L256 3170 L206 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-2)" d="M-10 2250 L300 2250 L336 2292 L336 3170 L-10 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-1)" d="M1090 1100 L996 1100 L980 1130 L980 3170 L1090 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-2)" d="M980 1130 L940 1168 L940 3170 L980 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-1)" d="M1090 1600 L896 1600 L880 1634 L880 3170 L1090 3170 Z"/>' +
+        '<path style="fill:var(--p-sol-2)" d="M880 1634 L830 1680 L830 3170 L880 3170 Z"/>' +
+        '<path style="fill:var(--p-avant)" d="M1090 2450 L700 2450 L668 2512 L576 2512 L540 2600 L1090 2600 Z"/>' +
+        '<path style="fill:var(--p-avant-2)" d="M1090 2600 L512 2600 L456 3170 L1090 3170 Z"/></g></svg>';
+
+      // ---------- Le début : le dessin au trait sur le papier quadrillé ----------
+      var grille = $("grille");
+      var pv = [240, 840].map(function (x) { return K.el(grille, "i", "t02-sphere-pv", null, "left:" + x + "px"); });
+      var ph = [660, 1260].map(function (y) { return K.el(grille, "i", "t02-sphere-ph", null, "top:" + y + "px"); });
+      gsap.set(pv, { scaleY: 0 }); gsap.set(ph, { scaleX: 0 });
+      tl.to(pv, { scaleY: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.0);
+      tl.to(ph, { scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.05);
+      tl.to([grille, $("papier")], { opacity: 0, duration: 0.22, ease: "power2.in" }, MOMENTS.couleur);
+
+      var traits = objet.querySelectorAll(".s-t");
+      traits.forEach(function (t) {
+        var L = Math.ceil(t.getTotalLength ? t.getTotalLength() : 1200) + 2;
+        t.style.strokeDasharray = L + " " + L;
+        gsap.set(t, { strokeDashoffset: L });
+      });
+      tl.to(traits, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", stagger: 0.04 }, 0.04);
+      var remplis = objet.querySelector(".s-remplis");
+      K.cacher(remplis);
+      tl.to(remplis, { opacity: 1, duration: 0.24, ease: "power2.out" }, MOMENTS.couleur);
+      // Pendant le dessin, la sphère est un peu plus petite ; elle gonfle quand elle prend sa couleur.
+      gsap.set(objet, { scale: 0.86 });
+      tl.to(objet, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, MOMENTS.couleur);
+
+      // ---------- Le canyon : coupe franche, la sphère flotte et monte ----------
+      var monde = $("monde"), decor = $("decor");
+      K.cacher(decor);
+      tl.set(decor, { opacity: 1 }, MOMENTS.canyon);
+      tl.set($("blanc"), { opacity: 0 }, MOMENTS.canyon + 0.02);
+      // La caméra part sur l'horizon (à 60 % de la hauteur), lève les yeux avec la sphère, qui monte
+      // jusqu'à 35 % de la hauteur de l'image ; le faisceau tombe d'elle jusqu'à l'horizon.
+      gsap.set(monde, { y: -1200 });
+      tl.to(monde, { y: -268, duration: 1.3, ease: "power2.inOut" }, MOMENTS.canyon + 0.1);
+      tl.to(objet, { y: -1220, scale: 0.62, duration: 1.3, ease: "power2.inOut" }, MOMENTS.canyon + 0.1);
+      // La rotation lente : les hublots glissent derrière la silhouette.
+      tl.fromTo(objet.querySelectorAll(".s-tourne"), { x: -30 }, { x: 34, duration: D - MOMENTS.canyon, ease: "none" }, MOMENTS.canyon);
+      tl.fromTo(objet.querySelector("svg"), { rotation: -4 }, { rotation: 3, duration: D - MOMENTS.canyon, ease: "sine.inOut" }, MOMENTS.canyon);
+
+      // ---------- Le faisceau et le cube ----------
+      var ame = $("ame"), cone = $("cone"), halo = $("halo");
+      gsap.set(ame, { scaleY: 0 }); gsap.set(cone, { scaleX: 0 }); K.cacher(halo);
+      tl.to(ame, { scaleY: 1, duration: 0.3, ease: "power3.in" }, MOMENTS.faisceau);
+      tl.to(cone, { scaleX: 1, duration: 0.5, ease: "expo.out" }, MOMENTS.faisceau + 0.26);
+      tl.fromTo(halo, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" }, MOMENTS.faisceau + 0.26);
+      tl.to(ame, { opacity: 0.55, duration: 0.4 }, MOMENTS.faisceau + 0.5);
+
+      var scube = $("scube"), cube = $("cube");
+      gsap.set(scube, { scale: 0, opacity: 0 });
+      tl.to(scube, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, MOMENTS.cube);
+      tl.to(scube, { y: 1210, duration: MOMENTS.pose - MOMENTS.cube, ease: "power1.inOut" }, MOMENTS.cube + 0.1);
+      tl.fromTo(cube, { rotationX: -24, rotationY: 20 }, { rotationX: -14, rotationY: 250, duration: D - MOMENTS.cube, ease: "power1.out" }, MOMENTS.cube);
+      // La caméra redescend vers le point de pose.
+      tl.to(monde, { y: -1200, duration: 0.85, ease: "power2.inOut" }, MOMENTS.descente);
+
+      // ---------- Les rayons de perspective, depuis le point de pose ----------
+      var rayons = $("rayons"), ANGLES = [-168, -150, -128, -110, -70, -52, -30, -12, 8, 22, 40, 62, 90, 118, 140, 158, 172];
+      var lignes = ANGLES.map(function (a, i) {
+        var r = K.el(rayons, "i", "t02-sphere-rayon");
+        r.style.transform = "rotate(" + a + "deg)";
+        if (a < 0) r.style.opacity = "0.55";
+        return r;
+      });
+      var axeH = K.el(rayons, "i", "t02-sphere-axe", null, "left:-600px; top:0; width:1200px; height:0; border-top-width:2px;");
+      var axeV = K.el(rayons, "i", "t02-sphere-axe", null, "left:0; top:-1150px; width:0; height:1950px; border-left-width:2px;");
+      gsap.set(lignes, { scaleX: 0 }); gsap.set(axeH, { scaleX: 0 }); gsap.set(axeV, { scaleY: 0 });
+      tl.to(lignes, { scaleX: 1, duration: 0.55, ease: "expo.out", stagger: 0.018 }, MOMENTS.pose);
+      tl.to(axeH, { scaleX: 1, duration: 0.5, ease: "expo.out" }, MOMENTS.pose + 0.05);
+      tl.to(axeV, { scaleY: 1, duration: 0.5, ease: "expo.out" }, MOMENTS.pose + 0.1);
+      tl.to(monde, { scale: 1.03, duration: D - MOMENTS.pose, ease: "none" }, MOMENTS.pose);
+
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
+</body>
+</html>
