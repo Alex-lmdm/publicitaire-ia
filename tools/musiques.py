@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """LES MUSIQUES DE LANCEMENT : 17 musiques offertes avec la formation, rangées dans ce dossier.
 
-Le client les télécharge dans sa formation en cinq archives, une par ambiance
-(musiques-<ambiance>.zip). Chaque archive contient :
+Le client les télécharge dans sa formation en un fichier, musiques-lancement.zip (avant le
+30/10/2026 : cinq archives, une par ambiance, musiques-<ambiance>.zip). Chacun contient :
     musiques-lancement/<ambiance>/*.mp3           les morceaux (MP3 320 kbit/s) ;
     musiques-lancement/<ambiance>/catalog.json    la fiche de chacun : style, usage conseillé,
                                                   tempo, recalage à 120, premier temps, entrée
@@ -11,8 +11,9 @@ Le client les télécharge dans sa formation en cinq archives, une par ambiance
 
     installer [<zip ou dossier>…]   sans argument : les musiques-*.zip du dossier Téléchargements,
                                     et les dossiers musiques-lancement* qu'un navigateur (Safari)
-                                    a décompressés tout seul. Une, plusieurs ou les cinq ambiances :
-                                    chacune s'ajoute aux autres, refaire ne change rien.
+                                    a décompressés tout seul. Le fichier unique ou les archives
+                                    par ambiance : chacune s'ajoute aux autres, refaire ne
+                                    change rien.
     choisir                         les meilleures pour une vidéo, selon son but, son support, sa
                                     durée et l'instant où la batterie doit entrer.
 
@@ -165,8 +166,8 @@ def installer(racine: Path, sources: list[Path]) -> dict:
     """Range les ambiances trouvées dans les sources (archives ou dossiers). Un fichier identique
     n'est pas réécrit ; un morceau qui n'est plus dans la fiche de son ambiance est retiré."""
     if not sources:
-        raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : télécharge les cinq "
-                             "ambiances dans ta formation (module Musique), puis redemande")
+        raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : télécharge le "
+                             "fichier des 17 musiques dans ta formation (module Musique), puis redemande")
     copies: dict[str, bytes] = {}
     erreurs = []
     for source in sources:

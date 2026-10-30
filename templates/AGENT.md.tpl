@@ -44,7 +44,8 @@ LinkedIn, X, YouTube).
 - **La musique** : texte à l'écran et musique par défaut ; la musique vient de ses 17 musiques de
   lancement, offertes avec la formation (« installe mes musiques » → `python3
   {{MAISON}}tools/studio_motion.py musiques installer` ; à chaque vidéo, `musiques choisir` : skill
-  `studio`, `references/son.md`). Une voix off se fait à sa demande seulement (`references/voix.md`).
+  `studio`, `references/son.md` ; aucune ne lui plaît : les 18 de Mixkit, même fichier). Une voix off
+  se fait à sa demande seulement (`references/voix.md`).
 
 - **Le Pack SFX** (156 bruitages pro, vendus à part) : « installe le Pack SFX depuis pack-sfx.zip »
   → `python3 {{MAISON}}tools/studio_motion.py pack-sfx installer "<archive>"` ; « reprends le Pack SFX

@@ -152,6 +152,16 @@ class Installation(unittest.TestCase):
         self.assertEqual(res["ambiances"], {"lancement-energique": 7, "montee-cinematique": 3, "tech-minimale": 4,
                                             "court-percutant": 1, "premium-calme": 2})
 
+    @unittest.skipUnless((LIVRAISON / "complet" / "musiques-lancement.zip").is_file(), "fichier unique absent")
+    def test_vrai_fichier_unique(self):
+        """Le fichier unique de la formation (depuis le 30/10/2026) : les 17 d'un coup, renommé « (1) » par
+        le navigateur compris."""
+        copie = self.dl / "musiques-lancement (1).zip"
+        copie.write_bytes((LIVRAISON / "complet" / "musiques-lancement.zip").read_bytes())
+        self.assertEqual(musiques.sources_par_defaut(self.dl), [copie])
+        res = musiques.installer(self.racine, [copie])
+        self.assertEqual((res["total"], res["absentes"]), (17, []))
+
 
 class Choix(unittest.TestCase):
     @classmethod

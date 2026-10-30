@@ -67,8 +67,9 @@ INSTALL.md ». Détail : [INSTALL.md](INSTALL.md). Il faut Node 22 ou plus, Pyth
 ffmpeg (l'IA les installe avec ton accord) ; l'app HyperFrames est en option.
 
 **Les 17 musiques de lancement** (offertes avec la formation) s'installent d'une phrase, une fois
-les cinq ambiances téléchargées : « Installe mes 17 musiques de lancement depuis mon dossier
-Téléchargements ».
+leur fichier téléchargé : « Installe mes 17 musiques de lancement depuis mon dossier
+Téléchargements ». Aucune ne te plaît pour une vidéo ? Ton assistant te propose les 18 musiques
+gratuites de Mixkit de ta formation.
 
 **Le Pack SFX** (156 bruitages pro, vendu à part) s'ajoute d'une phrase : « Installe le Pack SFX
 depuis le fichier pack-sfx.zip de mon dossier Téléchargements », ou « Reprends le Pack SFX de mon

@@ -185,12 +185,14 @@ l'archive. Une fois installé, le choix des bruitages pioche d'abord dans ses so
 
 ## Les musiques de lancement
 
-17 musiques offertes avec la formation, en cinq ambiances. « Installe mes 17 musiques de
+17 musiques offertes avec la formation, en un fichier (musiques-lancement.zip, cinq ambiances
+dedans). « Installe mes 17 musiques de
 lancement depuis mon dossier Téléchargements » (ou « installe mes musiques ») : suis
 [son.md](references/son.md), section « Les musiques de lancement »
 (`studio_motion.py musiques installer`). Une fois installées, elles sont la musique de chaque
 vidéo, sauf s'il donne la sienne : `musiques choisir` propose les meilleures pour son but et son
-support, `musiques prendre` la cale.
+support, `musiques prendre` la cale. Aucune ne lui plaît : les 18 musiques gratuites de Mixkit de
+sa formation (son.md, « Les 18 musiques de Mixkit »).
 
 ## Ce que tu ne fais jamais
 

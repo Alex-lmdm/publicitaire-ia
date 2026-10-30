@@ -86,7 +86,7 @@ et ce que tu vends, une seule fois, puis on fait ta première vidéo. » Mise à
 
 ## Tes 17 musiques de lancement (offertes avec la formation)
 
-Télécharge les cinq ambiances dans ta formation (module Musique), sans les ouvrir, puis écris à l'IA :
+Télécharge leur fichier dans ta formation (module Musique), sans l'ouvrir, puis écris à l'IA :
 
 - « Installe mes 17 musiques de lancement depuis mon dossier Téléchargements »
 
@@ -128,7 +128,8 @@ nouveau : ses réglages restent, ceux de la nouvelle version s'ajoutent. Puis re
   d'écran de ta page, ça suffit pour ta marque et ton offre.
 - **Une police remplacée dans la vidéo** : dis « ma police est X » ; l'assistant la récupère
   (polices libres) ou te demande ses fichiers.
-- **Les musiques ne s'installent pas** (« aucune archive musiques-….zip ») : vérifie que les cinq
-  fichiers sont bien dans ton dossier Téléchargements, ou glisse-les dans la conversation.
+- **Les musiques ne s'installent pas** (« aucune archive musiques-….zip ») : vérifie que
+  `musiques-lancement.zip` est bien dans ton dossier Téléchargements, ou glisse-le dans la
+  conversation.
 - **Relier HeyGen pour une voix de synthèse** (ou le refaire) : dis « relie mon compte HeyGen » ;
   l'assistant te guide (skill `studio`, `references/heygen.md`).

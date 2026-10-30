@@ -25,8 +25,8 @@ un seul message (saute la question dont tu connais déjà la réponse) :
 >
 > **3. La musique de tes vidéos** (tes vidéos sont en texte à l'écran et en musique ; une voix
 > off s'ajoute quand tu veux, il suffit de la demander) :
-> A) mes 17 musiques de lancement (le bonus de ta formation) : télécharge les cinq ambiances
-> dans le module Musique, dis « go », et je les installe ·
+> A) mes 17 musiques de lancement (le bonus de ta formation) : télécharge leur fichier dans le
+> module Musique, dis « go », et je les installe ·
 > B) j'ai déjà ma musique : glisse le fichier ici ·
 > C) plus tard
 >

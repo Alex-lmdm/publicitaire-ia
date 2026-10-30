@@ -22,7 +22,7 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   lesquelles sont installées), choisies comme dit plus bas. Dans l'app HyperFrames aussi : la
   commande `musiques`, jamais `find_music`.
 - Musiques pas installées : dis-le une fois, en une phrase : « Tes 17 musiques de lancement ne sont
-  pas encore installées : télécharge les cinq ambiances dans ta formation (module Musique), puis
+  pas encore installées : télécharge leur fichier dans ta formation (module Musique), puis
   dis-moi « installe mes musiques ». » En attendant, sa musique ou la vidéo sans musique, en le
   disant.
 - La bibliothèque de musiques de HeyGen ne se propose plus : avec un compte gratuit, ses conditions
@@ -56,18 +56,18 @@ les sons posés vont dans le projet de la vidéo (`assets/sons/`, fait par `sons
 ## Les musiques de lancement (offertes avec la formation)
 
 17 musiques faites pour les vidéos qui vendent, en cinq ambiances, chacune avec une vraie entrée
-de batterie. Le client les installe une fois, d'une phrase : « Installe mes 17 musiques de
+de batterie, livrées en un fichier (`musiques-lancement.zip`). Le client les installe une fois, d'une phrase : « Installe mes 17 musiques de
 lancement depuis mon dossier Téléchargements » (ou toute demande d'installer ses musiques) :
 
 ```bash
 python3 tools/studio_motion.py musiques installer
 ```
 
-Depuis la racine. Sans argument, il prend les `musiques-*.zip` du dossier Téléchargements et les
-dossiers que Safari a décompressés tout seul ; une archive rangée ailleurs se donne en argument.
-Refaire ne change rien, et une ambiance téléchargée plus tard s'ajoute aux autres. Réponds en une
-ligne : combien sont installées, et les ambiances qui manquent s'il en manque (il les télécharge
-dans sa formation, module Musique). Elles ne sont jamais versionnées ni livrées : seul le morceau
+Depuis la racine. Sans argument, il prend les `musiques-*.zip` du dossier Téléchargements (le
+fichier unique, ou les anciennes archives par ambiance) et les dossiers que Safari a décompressés
+tout seul ; une archive rangée ailleurs se donne en argument. Refaire ne change rien. Réponds en une
+ligne : combien sont installées ; s'il en manque, il retélécharge le fichier dans sa formation
+(module Musique). Elles ne sont jamais versionnées ni livrées : seul le morceau
 choisi va dans le projet de la vidéo.
 
 ## Poser les sons
@@ -136,6 +136,41 @@ Ses demandes, à tout moment :
   pas encore entendues pour cette vidéo).
 - « Mets ma musique » (un fichier glissé) : elle passe avant ; range-la dans `assets/audio/`, puis
   `musique <fichier>` l'analyse.
+- Aucune des 17 ne lui plaît : les 18 de Mixkit, ci-dessous.
+
+### Les 18 musiques de Mixkit (quand aucune des 17 ne lui plaît)
+
+Sa formation (module Musique) lui donne aussi 18 musiques gratuites de Mixkit, autorisées en pub et
+sans crédit à afficher. On ne les livre pas : la licence de Mixkit interdit d'en redistribuer les
+fichiers. Il les écoute et les télécharge lui-même. Quand il a entendu les 17 sans en garder une
+(« aucune », « autre chose », ou `musiques choisir --autres` n'a plus rien à proposer), propose-lui
+les trois de cette liste qui vont le mieux avec sa vidéo, chacune avec son lien, en une phrase :
+« Clique, ▶ pour écouter, la flèche pour télécharger, puis glisse le fichier ici. » Il le glisse :
+c'est « Mets ma musique » ci-dessus, et sa ligne dans `assets/audio/SOURCE.md` dit « Mixkit,
+licence Mixkit Stock Music Free (pub permise, sans crédit) ».
+
+| Musique | Son | Pour |
+|---|---|---|
+| [Can't Get You Off My Mind](https://mixkit.co/free-stock-music/discover/cant-get-you-off-my-mind/) | future bass positive | une nouveauté, la révélation de l'offre |
+| [Karma](https://mixkit.co/free-stock-music/discover/karma/) | EDM confiante | la révélation de l'offre |
+| [Take this Higher](https://mixkit.co/free-stock-music/discover/take-this-higher/) | pop électro confiante | le haut de page de vente, un lancement |
+| [Super Strong](https://mixkit.co/free-stock-music/discover/super-strong/) | EDM motivante | un avant / après |
+| [It's Now or Never](https://mixkit.co/free-stock-music/discover/its-now-or-never/) | synthpop puissante | une nouveauté, une ouverture |
+| [Friday Routine](https://mixkit.co/free-stock-music/discover/friday-routine/) | house entraînante | un Reel léger, une story |
+| [Flopper](https://mixkit.co/free-stock-music/discover/flopper/) | dubstep puissant | le prix qui tombe |
+| [No Warning](https://mixkit.co/free-stock-music/discover/no-warning/) | breakbeat déterminé | un teaser |
+| [Suffocation](https://mixkit.co/free-stock-music/discover/suffocation/) | électro intense | une accroche qui frappe |
+| [Games Music](https://mixkit.co/free-stock-music/discover/games-music/) | bande-annonce, breakbeat | un compte à rebours, des impacts |
+| [Trap Electro Vibes](https://mixkit.co/free-stock-music/discover/trap-electro-vibes/) | drum and bass nerveuse | une accroche, une pub courte |
+| [Protesting Robot](https://mixkit.co/free-stock-music/discover/protesting-robot/) | grime futuriste | un teaser sombre |
+| [Razor Edge](https://mixkit.co/free-stock-music/discover/razor-edge/) | EDM industrielle | la démo d'un outil, d'une IA |
+| [Minimal Techno 02](https://mixkit.co/free-stock-music/discover/minimal-techno-02/) | techno minimale | une interface, une explication |
+| [Bootleg](https://mixkit.co/free-stock-music/discover/bootleg/) | électro mécanique | une démo de produit |
+| [Dance 02](https://mixkit.co/free-stock-music/discover/dance-02/) | EDM futuriste | une fonctionnalité |
+| [Golem Dance](https://mixkit.co/free-stock-music/discover/golem-dance/) | house mécanique | une démo qui file |
+| [Anthem #01](https://mixkit.co/free-stock-music/discover/anthem-01/) | électro house | une vidéo de lancement longue |
+
+Chaque lien ouvre la recherche Mixkit du titre, où la musique sort en premier.
 
 Puis, depuis le projet :
 

@@ -49,6 +49,9 @@ ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monte
   Pro), livrées aux acheteurs avec la formation, jamais dans ce dépôt ; leur licence est dans
   `assets/musiques/LICENCE.md` une fois installées (usage dans toutes les vidéos, publicités
   comprises ; pas de redistribution des fichiers seuls).
+- **Musiques de Mixkit** : 18 liens vers mixkit.co (licence Mixkit Stock Music Free : pub permise,
+  sans crédit), dans `references/son.md` du skill `studio`. Aucun fichier n'est fourni ici : le
+  client télécharge lui-même celle qu'il veut. https://mixkit.co/license/
 - **Bibliothèque de musiques, bruitages et voix de HeyGen** : cherchés et pris avec le compte du
   client (`studio_motion.py heygen`), par l'API de HeyGen, pour ses seules vidéos, aux conditions de
   HeyGen ; la source de chaque morceau est notée dans `assets/audio/SOURCE.md` du projet.
