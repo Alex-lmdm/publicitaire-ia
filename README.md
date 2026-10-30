@@ -51,8 +51,8 @@ pas recadrée.
 5. **Prête à publier** : la vidéo, le texte de publication de chaque plateforme, la couverture ou
    l'affiche, la façon de la poser sur ta page, le calendrier d'un lancement.
 
-Tu retouches chaque vidéo en une phrase. Sur Mac, l'app HyperFrames (gratuite, en option) te permet
-aussi de la regarder et de la retoucher à la souris.
+Tu retouches chaque vidéo en une phrase. Sur Mac et Windows, l'app HyperFrames (gratuite, en option)
+te permet aussi de la regarder et de la retoucher à la souris.
 
 ## Installation
 

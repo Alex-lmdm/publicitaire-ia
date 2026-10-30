@@ -98,7 +98,11 @@ test('seul un vrai projet HyperFrames s’ouvre dans l’app', (t) => {
 
   const noApp = ouvrir(dir, { platform: 'darwin', app: null, cli: null, run: () => assert.fail('rien à lancer') });
   assert.match(noApp.how, /Ouvrir un dossier.*hyperframes\.dev\/studio/);
-  assert.match(ouvrir(dir, { platform: 'win32', app: null, cli: null }).how, /pas encore sous Windows/);
+  // Windows (app disponible depuis octobre 2026) : l'app reçoit le dossier ; sans elle, le geste à la main.
+  const win = [];
+  assert.equal(ouvrir(dir, { platform: 'win32', app: 'C:\\L\\HyperFrames.exe', cli: null, launch: (...a) => win.push(a) }).opened, true);
+  assert.deepEqual(win, [['C:\\L\\HyperFrames.exe', [dir]]]);
+  assert.match(ouvrir(dir, { platform: 'win32', app: null, cli: null }).how, /Ctrl \+ O.*hyperframes\.dev\/studio/);
   // Linux : la CLI HyperFrames du dossier ouvre le projet dans l'app.
   const linux = [];
   assert.equal(ouvrir(dir, { platform: 'linux', app: null, cli: '/m/node_modules/.bin/hyperframes', run: (...a) => linux.push(a) }).opened, true);
@@ -106,12 +110,15 @@ test('seul un vrai projet HyperFrames s’ouvre dans l’app', (t) => {
   assert.match(ouvrir(dir, { platform: 'linux', app: null, cli: null }).how, /Ouvrir un dossier/);
 });
 
-test('l’app est cherchée dans les deux dossiers Applications du Mac seulement', () => {
+test('l’app est cherchée dans les dossiers Applications du Mac et dans Programs sous Windows', () => {
   const seen = (paths) => (p) => paths.includes(p);
   assert.equal(findApp({ platform: 'darwin', home: '/Users/a', exists: seen(['/Users/a/Applications/HyperFrames.app']) }),
     '/Users/a/Applications/HyperFrames.app');
   assert.equal(findApp({ platform: 'darwin', home: '/Users/a', exists: seen([]) }), null);
   assert.equal(findApp({ platform: 'linux', exists: () => true }), null);
+  const exe = 'C:\\Users\\a\\AppData\\Local\\Programs\\HyperFrames\\HyperFrames.exe';
+  assert.equal(findApp({ platform: 'win32', env: { LOCALAPPDATA: 'C:\\Users\\a\\AppData\\Local' }, exists: seen([exe]) }), exe);
+  assert.equal(findApp({ platform: 'win32', env: {}, exists: () => true }), null);
 });
 
 // Les consignes générées font quelques Kio, sous la limite de 32 Kio de Codex : rien à y régler.

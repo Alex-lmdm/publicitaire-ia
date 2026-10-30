@@ -29,7 +29,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const SCRIPT = fileURLToPath(import.meta.url);
@@ -122,10 +122,23 @@ export function commande(sous, depuis = dossierAppel()) {
   return `node ${entreGuillemets(script)} ${sous}`;
 }
 
-/** Chemin de l'app installée, ou null. Sur Linux, l'emplacement varie : on n'en cherche pas. */
-export function findApp({ platform = process.platform, home = os.homedir(), exists = fs.existsSync } = {}) {
+/** Chemin de l'app installée, ou null. Windows : là où son installateur la pose (le même chemin
+ *  que la CLI HyperFrames). Sur Linux, l'emplacement varie : on n'en cherche pas. */
+export function findApp({ platform = process.platform, home = os.homedir(), env = process.env, exists = fs.existsSync } = {}) {
+  if (platform === "win32") {
+    if (!env.LOCALAPPDATA) return null;
+    const exe = path.win32.join(env.LOCALAPPDATA, "Programs", "HyperFrames", "HyperFrames.exe");
+    return exists(exe) ? exe : null;
+  }
   if (platform !== "darwin") return null;
   return ["/Applications/HyperFrames.app", path.join(home, "Applications", "HyperFrames.app")].find(exists) ?? null;
+}
+
+/** Lance l'app Windows sur un dossier sans l'attendre : déjà ouverte, elle reçoit le dossier. */
+function lancer(exe, args) {
+  const child = spawn(exe, args, { detached: true, stdio: "ignore" });
+  child.on("error", () => {});
+  child.unref();
 }
 
 /** Vrai si l'app reconnaît ce dossier comme un projet. */
@@ -164,11 +177,11 @@ export function pasUnProjet(target, depuis = dossierAppel()) {
     "Depuis le dossier d'un projet de vidéo : node ../../../scripts/app-hyperframes.mjs ouvrir .";
 }
 
-/** Ouvre un projet dans l'app (Mac, Linux). Ailleurs, explique le geste à faire à la main.
+/** Ouvre un projet dans l'app (Mac, Windows, Linux). Sinon, explique le geste à faire à la main.
  *  Un chemin relatif se lit depuis le dossier où la commande a été tapée. */
 export function ouvrir(dir, {
   platform = process.platform, app = findApp({ platform }), cli = localCli({ platform }), run = execFileSync,
-  depuis = dossierAppel(),
+  depuis = dossierAppel(), launch = lancer,
 } = {}) {
   const target = path.resolve(depuis, dir);
   if (!isProject(target)) throw new Error(pasUnProjet(target, depuis));
@@ -176,15 +189,16 @@ export function ouvrir(dir, {
     run("open", ["-b", APP_ID, target]);
     return { opened: true, target };
   }
+  if (platform === "win32" && app) {
+    launch(app, [target]);
+    return { opened: true, target };
+  }
   if (platform === "linux" && cli) {
     run(cli, ["open", target]);
     return { opened: true, target };
   }
-  const how =
-    platform === "win32"
-      ? "L'app HyperFrames n'existe pas encore sous Windows : continue dans Claude Code ou Codex."
-      : `Dans l'app HyperFrames, menu Fichier > Ouvrir un dossier, puis choisis ${target}.` +
-        (platform === "darwin" ? ` (App introuvable : télécharge-la sur ${DOWNLOAD_URL}.)` : "");
+  const how = `Dans l'app HyperFrames, menu Fichier > Ouvrir un dossier (${platform === "darwin" ? "Cmd" : "Ctrl"} + O), puis choisis ${target}.` +
+    (platform === "linux" ? "" : ` (App introuvable : télécharge-la sur ${DOWNLOAD_URL}.)`);
   return { opened: false, target, how };
 }
 
@@ -196,8 +210,7 @@ function describe(env = process.env) {
   else if (state.branche) lines.push(`Config Claude Code : l'app lit les instructions de ${PRODUIT}.`);
   else lines.push(`Config Claude Code : à brancher (${commande("brancher")}).`);
   lines.push("Codex : rien à brancher, il lit lui-même AGENTS.md et .agents/skills/ du dossier ouvert.");
-  if (process.platform === "win32") lines.push("App HyperFrames : pas encore disponible sous Windows.");
-  else if (process.platform !== "darwin") lines.push("App HyperFrames : à ouvrir depuis le menu de ton système (Linux).");
+  if (process.platform === "linux") lines.push("App HyperFrames : à ouvrir depuis le menu de ton système (Linux).");
   else lines.push(app ? `App HyperFrames : installée (${app}).` : `App HyperFrames : pas installée (${DOWNLOAD_URL}).`);
   return { state, app, text: lines.join("\n") };
 }

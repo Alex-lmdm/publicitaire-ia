@@ -14,7 +14,7 @@ L'IA télécharge le dossier, vérifie ton ordinateur, te dit ce qu'il manque, p
 **Quand elle te propose de commencer, réponds « go ».** Elle exécute les commandes : tu n'as rien
 à recopier dans un terminal. Si une manipulation est nécessaire de ton côté, elle te guide.
 
-L'app **HyperFrames** (Mac) est en option : elle sert à voir et retoucher chaque vidéo à la
+L'app **HyperFrames** (Mac ou Windows) est en option : elle sert à voir et retoucher chaque vidéo à la
 souris. L'installation la branche si elle est là.
 
 ---
@@ -61,7 +61,8 @@ termine par « sync incomplet », lance `npm run sync` : il doit finir par « ok
 **3. `npx hyperframes browser ensure`** : le navigateur qui fabrique les images de la vidéo (il
 garde celui qui est déjà là). Jamais `npx puppeteer browsers install`.
 
-**4. App HyperFrames** (Mac, seulement si `/Applications/HyperFrames.app` existe) :
+**4. App HyperFrames** (seulement si elle est installée : `/Applications/HyperFrames.app` sur Mac,
+`%LOCALAPPDATA%\Programs\HyperFrames\HyperFrames.exe` sous Windows ; `npm run app -- etat` le dit) :
 `npm run app -- brancher`. Il permet à l'app de lire les instructions de ce dossier : une ligne
 ajoutée à la configuration de Claude Code (`~/.claude/settings.json`), avec une sauvegarde. Rien
 d'autre n'est modifié, ni la configuration de Codex. Explique-le en une phrase avant. Sans l'app,
