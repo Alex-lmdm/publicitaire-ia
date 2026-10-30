@@ -1,6 +1,6 @@
 # Écrire ce qui s'affiche (et ce qui se dit)
 
-Le motion design qui décore vend mal : dans l'étude Motion de 550 000 publicités Meta
+Le motion design qui décore vend mal : dans l'étude Motion de 578 750 publicités Meta
 (septembre 2025 à janvier 2026), l'animation seule gagne dans 4,6 % des cas, quand le texte clair
 (11,6 %), l'annonce d'une nouveauté (11,4 %) ou d'une promo et le prix d'ancrage gagnent plus de
 deux fois plus souvent. **Le mouvement sert le message et la démonstration, jamais l'inverse.**

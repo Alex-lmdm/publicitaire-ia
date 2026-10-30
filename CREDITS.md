@@ -88,5 +88,5 @@ elles (la plus stricte a été retenue) et adaptées au format vertical d'Instag
   image (un événement toutes les demi-secondes, peu de texte, chapitres à interrupteur, fonds qui
   alternent, mosaïque finale qui devient le bouton). Aucun contenu n'en est repris.
 - Repères publics des plateformes (zones de sécurité Meta, TikTok, YouTube ; durées LinkedIn et X)
-  et étude Motion « Creative Benchmarks 2026 » sur 550 000 publicités Meta (le motion design
+  et étude Motion « Creative Benchmarks 2026 » sur 578 750 publicités Meta (le motion design
   décoratif gagne moins que la démonstration, le texte lisible et l'offre claire).

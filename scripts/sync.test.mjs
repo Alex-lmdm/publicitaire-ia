@@ -48,6 +48,28 @@ test("CLAUDE.md et AGENTS.md portent le nom du produit, chacun son agent, à la 
   assert.doesNotMatch(dansAccueil, /Tu es à la racine/);
 });
 
+test("les phrases de l'app HyperFrames ont leur consigne, à la racine comme dans l'accueil", (t) => {
+  const dir = dossierDeTest(t);
+  const accueil = path.join(dir, "Accueil test");
+  fs.mkdirSync(accueil);
+  fs.writeFileSync(path.join(accueil, "meta.json"), JSON.stringify({ studioMotion: { lieu: "accueil" } }));
+  genererInstructions(dir);
+  const { nom } = lireProduit(dir);
+  for (const [lieu, maison] of [[dir, ""], [accueil, "../"]]) {
+    for (const fichier of ["CLAUDE.md", "AGENTS.md"]) {
+      const texte = fs.readFileSync(path.join(lieu, fichier), "utf8").replace(/\s+/g, " ");
+      assert.ok(texte.includes(`« J'ai installé l'app HyperFrames : branche-la sur ${nom} »`), `${fichier} : brancher`);
+      assert.ok(texte.includes(`node ${maison}scripts/app-hyperframes.mjs brancher`), `${fichier} : la commande`);
+      assert.ok(texte.includes("« Ouvre ma dernière vidéo dans l'app HyperFrames »"), `${fichier} : ouvrir`);
+      assert.ok(texte.includes(`node ${maison}scripts/app-hyperframes.mjs ouvrir`), `${fichier} : ouvrir`);
+      assert.ok(texte.includes("« Mets à jour la livraison de ma vidéo »"), `${fichier} : livraison`);
+    }
+  }
+  // La livraison se refait dans l'assistant, jamais depuis l'app.
+  assert.match(fs.readFileSync(path.join(dir, "CLAUDE.md"), "utf8").replace(/\s+/g, " "), /skill `studio`, « Les retouches »/);
+  assert.match(fs.readFileSync(path.join(accueil, "CLAUDE.md"), "utf8").replace(/\s+/g, " "), /elle ne se fait pas dans l'app/);
+});
+
 test("la copie des skills pour Codex suit exactement .claude/skills", (t) => {
   const dir = dossierDeTest(t);
   const skill = path.join(dir, ".claude", "skills", "studio");

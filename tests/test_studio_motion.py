@@ -740,6 +740,30 @@ class Voix(unittest.TestCase):
         self.assertIn("-ar 48000", voix)
 
 
+class Consignes(unittest.TestCase):
+    SKILL = RACINE / ".claude" / "skills" / "studio"
+
+    def test_le_skill_ne_cite_que_des_templates_du_catalogue(self):
+        catalogue = (self.SKILL / "styles" / "README.md").read_text(encoding="utf-8")
+        noms = set(re.findall(r"^\| \d+ \| ([^|]+?) \|", catalogue, re.M))
+        self.assertEqual(len(noms), 8)
+        skill = " ".join((self.SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        cites = re.findall(r"« dans le style ([^»]+?) »", skill)
+        self.assertTrue(cites)
+        self.assertLessEqual(set(cites), noms)
+
+    def test_la_voix_proposee_en_premier_est_celle_de_google(self):
+        skill = " ".join((self.SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        self.assertNotIn("voix de synthèse HeyGen", skill)
+        self.assertIn("voix IA gratuite de Google AI Studio", skill)
+
+    def test_l_etude_motion_a_la_taille_de_la_page_de_vente(self):
+        for doc in (self.SKILL / "references" / "ecriture.md", RACINE / "CREDITS.md"):
+            texte = doc.read_text(encoding="utf-8")
+            self.assertIn("578 750 publicités", texte, doc.name)
+            self.assertNotIn("550 000", texte, doc.name)
+
+
 def racine_de_test(base: Path) -> Path:
     """Un dossier du produit, réduit à ce que la création d'une vidéo lit : produit.json, les
     gabarits et le kit du dépôt, un style de marque."""

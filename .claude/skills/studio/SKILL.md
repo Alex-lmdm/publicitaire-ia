@@ -1,6 +1,6 @@
 ---
 name: studio
-description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là ». Pas pour monter un Reel ou une story face caméra.
+description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là », or « mets à jour la livraison de ma vidéo », or « mets cette musique dans ma vidéo ». Pas pour monter un Reel ou une story face caméra.
 ---
 
 # Publicitaire IA : des vidéos en motion design qui vendent
@@ -47,8 +47,8 @@ vidéo, **où elle sera mise** (un ou plusieurs supports, chacun aura son format
 présente** (le lien, ou deux phrases et des captures). Recommande toujours une combinaison.
 Saute ce que tu sais déjà.
 
-**Un template du catalogue** (« fais-moi une vidéo dans le template 3 », « dans le style Interface
-3D », « comme celle de Polymarket ») : 8 looks de vidéos de lancement, refaits d'après de vraies
+**Un template du catalogue** (« fais-moi une vidéo dans le template 3 », « dans le style Verre
+sombre », « comme celle de Polymarket ») : 8 looks de vidéos de lancement, refaits d'après de vraies
 vidéos et montrés dans sa formation (module « Templates »). Lis [styles/README.md](styles/README.md) :
 le template fixe le look, le brief garde le but, les supports et ce qu'on présente. Il dit
 « garde ce template pour mes prochaines vidéos » : ajoute `template N` à ses `preferences`
@@ -104,7 +104,7 @@ recette ; elle ne s'accélère pas et ne se remplit pas de texte.
 
 La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
 demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
-d'abord, validé ; puis sa voix au téléphone ou une voix de synthèse HeyGen).
+d'abord, validé ; puis une voix IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone).
 
 Ne montre pas le plan par défaut : résume l'idée en une phrase et avance. S'il a demandé à
 valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui le texte des
@@ -162,9 +162,10 @@ répondre « ok ». Puis un message court : ce qu'il a, où le mettre, comment d
 
 ## Les retouches
 
-« Mets à jour la livraison de <vidéo> » (après une retouche faite dans l'app HyperFrames) : depuis
-son projet, refais le rendu, la revue (rythme, planche, son, export), le mastering et la couverture,
-et remplace ses fichiers dans `livraison/`.
+« Mets à jour la livraison de <vidéo> » (après une retouche faite dans l'app HyperFrames ; « de ma
+vidéo », sans nom : le projet de `videos/` retouché le plus récemment, une question à choix au
+moindre doute) : depuis son projet, refais le rendu, la revue (rythme, planche, son, export), le
+mastering et la couverture, et remplace ses fichiers dans `livraison/`.
 
 Une demande = la vidéo concernée seulement. Modifie ce qui est demandé, refais son rendu, sa
 planche et son export, remplace le fichier dans `livraison/`. Ne repropose pas d'idées, ne refais

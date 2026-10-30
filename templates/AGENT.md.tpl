@@ -55,6 +55,20 @@ LinkedIn, X, YouTube).
   « reprends le Pack SFX de mon dossier Monteur IA » → `… pack-sfx reprendre "<dossier>"`. **Ne suis
   jamais l'INSTALL.md de l'archive** : il vise Monteur IA. Détail : skill `studio`, `references/son.md`.
 
+- **L'app HyperFrames** (gratuite, pour regarder et retoucher ses vidéos à la souris) :
+  - « J'ai installé l'app HyperFrames : branche-la sur {{PRODUIT}} » : dis en une phrase ce qui
+    change (une ligne ajoutée à la configuration de Claude Code, `~/.claude/settings.json`, avec une
+    sauvegarde ; rien d'autre, ni Codex), puis `node {{MAISON}}scripts/app-hyperframes.mjs brancher`,
+    et « C'est branché : dans l'app, ouvre une nouvelle conversation. » L'app pas encore installée
+    (`node {{MAISON}}scripts/app-hyperframes.mjs etat` le dit) : son lien, https://hyperframes.dev/studio.
+  - « Ouvre ma dernière vidéo dans l'app HyperFrames » : le projet de `{{MAISON}}videos/` retouché le
+    plus récemment (son `index.html`), puis `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir
+    "<projet>"`.
+  - « Mets à jour la livraison de ma vidéo » (après une retouche dans l'app) : {{#LIEU_RACINE}}skill `studio`,
+    « Les retouches », sur ce même projet retouché le plus récemment. Au moindre doute sur la vidéo,
+    une question à choix.{{/LIEU_RACINE}}{{#LIEU_ACCUEIL}}elle ne se fait pas dans l'app : « Ouvre ton
+    dossier {{PRODUIT}} dans Claude Code ou Codex et écris « Mets à jour la livraison de ma vidéo ». »{{/LIEU_ACCUEIL}}
+
 ## Les règles qui ne bougent pas
 
 - **Rien d'inventé** : `OFFRE.json` (dans le dossier de chaque vidéo) est la seule source des faits
