@@ -48,7 +48,7 @@ const { nom: PRODUIT, code: CODE } = produit();
 
 export const VARIABLE = "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD";
 export const APP_ID = "dev.hyperframes.desktop";
-export const DOWNLOAD_URL = "https://hyperframes.dev/studio";
+export const DOWNLOAD_URL = "https://hyperframes.studio/studio";
 // Un dossier est un projet pour l'app s'il a un index.html et l'un de ces fichiers.
 const PROJECT_MARKERS = ["hyperframes.json", "meta.json", "project.json"];
 

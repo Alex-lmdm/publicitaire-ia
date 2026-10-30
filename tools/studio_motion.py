@@ -631,7 +631,7 @@ def cmd_verifier(_a) -> None:
           if source_hg == "oauth" else "ℹ️ HeyGen : pas relié (optionnel, pour une voix de synthèse)")
     marque = mq.lire(r)
     if not marque:
-        print("ℹ️ marque pas encore réglée : le premier /studio s'en charge (une question sur la source)")
+        print("ℹ️ marque pas encore réglée : « Personnalise Publicitaire IA à ma marque » s'en charge (une question sur la source)")
     else:
         print(f"ℹ️ marque : {marque.get('nom') or 'sans nom'} ({'validée' if marque.get('valide') else 'à valider'})")
     for famille in polices_manquantes(r):
@@ -707,7 +707,7 @@ def assurer_accueil(r: Path, s: dict) -> Path:
         "PRODUIT": html.escape(str(produit().get("nom", ""))),
         "MARQUE": html.escape(s.get("nom") or "Ta marque"),
         "ETAT": "Ta marque, telle que tes vidéos la porteront" if s.get("personnalisee")
-                else "Style de départ : tape /studio, ta marque se règle en une question",
+                else "Style de départ : ta marque se règle en une phrase, « Personnalise Publicitaire IA à ma marque »",
         "FOND": s["fond"], "TEXTE": s["texte"], "ACCENT": s["accent"],
         "PASTILLE_SECONDAIRE": (f'<div class="pastille"><i style="background:{s["secondaire"]}"></i>2e {s["secondaire"]}</div>'
                                 if s["secondaire"] != s["accent"] else ""),

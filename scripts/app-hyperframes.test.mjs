@@ -97,12 +97,12 @@ test('seul un vrai projet HyperFrames s’ouvre dans l’app', (t) => {
   assert.deepEqual(calls, [['open', ['-b', APP_ID, dir]]]);
 
   const noApp = ouvrir(dir, { platform: 'darwin', app: null, cli: null, run: () => assert.fail('rien à lancer') });
-  assert.match(noApp.how, /Ouvrir un dossier.*hyperframes\.dev\/studio/);
+  assert.match(noApp.how, /Ouvrir un dossier.*hyperframes\.studio\/studio/);
   // Windows (app disponible depuis octobre 2026) : l'app reçoit le dossier ; sans elle, le geste à la main.
   const win = [];
   assert.equal(ouvrir(dir, { platform: 'win32', app: 'C:\\L\\HyperFrames.exe', cli: null, launch: (...a) => win.push(a) }).opened, true);
   assert.deepEqual(win, [['C:\\L\\HyperFrames.exe', [dir]]]);
-  assert.match(ouvrir(dir, { platform: 'win32', app: null, cli: null }).how, /Ctrl \+ O.*hyperframes\.dev\/studio/);
+  assert.match(ouvrir(dir, { platform: 'win32', app: null, cli: null }).how, /Ctrl \+ O.*hyperframes\.studio\/studio/);
   // Linux : la CLI HyperFrames du dossier ouvre le projet dans l'app.
   const linux = [];
   assert.equal(ouvrir(dir, { platform: 'linux', app: null, cli: '/m/node_modules/.bin/hyperframes', run: (...a) => linux.push(a) }).opened, true);

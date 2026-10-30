@@ -60,7 +60,7 @@ LinkedIn, X, YouTube).
     change (une ligne ajoutée à la configuration de Claude Code, `~/.claude/settings.json`, avec une
     sauvegarde ; rien d'autre, ni Codex), puis `node {{MAISON}}scripts/app-hyperframes.mjs brancher`,
     et « C'est branché : dans l'app, ouvre une nouvelle conversation. » L'app pas encore installée
-    (`node {{MAISON}}scripts/app-hyperframes.mjs etat` le dit) : son lien, https://hyperframes.dev/studio.
+    (`node {{MAISON}}scripts/app-hyperframes.mjs etat` le dit) : son lien, https://hyperframes.studio/studio.
   - « Ouvre ma dernière vidéo dans l'app HyperFrames » : le projet de `{{MAISON}}videos/` retouché le
     plus récemment (son `index.html`), puis `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir
     "<projet>"`.
