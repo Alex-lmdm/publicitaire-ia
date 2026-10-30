@@ -138,8 +138,12 @@ Ses demandes, à tout moment :
   `musiques choisir --ambiance "<ambiance>"`.
 - « Fais-moi écouter d'autres musiques », « aucune » : `musiques choisir --autres` (trois qu'il n'a
   pas encore entendues pour cette vidéo).
-- « Mets ma musique » (un fichier glissé) : elle passe avant ; range-la dans `assets/audio/`, puis
-  `musique <fichier>` l'analyse.
+- « Mets ma musique », « Mets cette musique dans ma vidéo » (un fichier glissé, ou le morceau le
+  plus récent de ses Téléchargements) : elle passe avant les musiques de lancement. Dite pendant une
+  vidéo, elle vaut **pour cette vidéo** : range-la dans `assets/audio/` de son projet, note sa
+  source dans `assets/audio/SOURCE.md`, puis `musique <fichier>` l'analyse et la cale (« Le caler »,
+  plus bas). Elle ne devient sa musique de marque, pour toutes ses vidéos (`marque regler --musique
+  "<fichier>"`), que s'il le demande (« garde-la pour toutes mes vidéos »).
 - Aucune des 17 ne lui plaît : les 18 de Mixkit, ci-dessous.
 
 ### Les 18 musiques de Mixkit (quand aucune des 17 ne lui plaît)
@@ -202,6 +206,12 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   ```
 
   Les événements de la vidéo, posés sur la grille de 0,5 s, tombent alors sur les temps.
+- **Sans entrée franche** (la batterie part dès la première seconde, fréquent, Mixkit compris),
+  l'analyse dit « pas d'entrée franche » et la même commande cale le **premier temps fort du
+  morceau au début de la vidéo** : `--a` ne sert alors à rien, le message le dit. Recalé à 120, chaque
+  temps tombe sur la grille de 0,5 s ; un tempo trop loin de 120 est gardé, et le message donne
+  l'écart entre deux temps : cale les événements forts dessus. Le pivot se marque alors à l'image
+  (un impact, un changement de fond), pas par la musique.
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : musique facultative ; si oui, la même que le Reel, plus discrète.
 

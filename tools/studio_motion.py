@@ -2214,15 +2214,38 @@ def entree_de(env: list[float], fps: float, saut_db: float = 6.0, jusqu_a: float
     return None
 
 
+def facteur_tempo(bpm: float, cible_bpm: float) -> float:
+    """Le facteur qui ramène le morceau au tempo de la grille, s'il en est à 10 % au plus ; sinon 1."""
+    return cible_bpm / bpm if cible_bpm and 0.9 <= cible_bpm / bpm <= 1.1 else 1.0
+
+
 def calage(entree: float, phase: float, bpm: float, cible_bpm: float, a_t: float) -> dict:
     """Facteur de tempo et décalage pour que l'entrée (posée sur le temps fort le plus proche)
     tombe à `a_t` s dans la vidéo. decalage > 0 : on coupe le début du morceau ; < 0 : il démarre
     plus tard dans la vidéo."""
-    facteur = cible_bpm / bpm if cible_bpm and 0.9 <= cible_bpm / bpm <= 1.1 else 1.0
+    facteur = facteur_tempo(bpm, cible_bpm)
     temps = 60 / bpm
     sur_temps = phase + round((entree - phase) / temps) * temps     # l'entrée recalée sur un temps fort
     entree_etiree = sur_temps / facteur
     return {"facteur": round(facteur, 6), "entree": round(entree_etiree, 3), "decalage": round(entree_etiree - a_t, 3)}
+
+
+def premier_temps_fort(env_graves: list[float], fps: float, fenetre: float = 4.0) -> float:
+    """Instant (s) de la première attaque de grosse caisse : la première fois que l'énergie des graves
+    dépasse 30 % de son maximum des premières secondes (un silence au début est donc sauté). Pris sur
+    l'attaque elle-même, pas sur la grille de `phase_de` : sur tout le morceau, un tempo estimé à 0,2
+    battement près décale cette grille de plusieurs centièmes."""
+    debut = env_graves[: max(1, int(fenetre * fps))]
+    seuil = 0.3 * max(debut, default=0.0)
+    return next((i for i, e in enumerate(debut) if e >= seuil), 0) / fps
+
+
+def calage_sans_entree(premier: float, bpm: float, cible_bpm: float) -> dict:
+    """Un morceau sans entrée franche (la batterie part dès le début) : son premier temps fort tombe au
+    début de la vidéo, ramené au tempo de la grille comme pour `calage`."""
+    facteur = facteur_tempo(bpm, cible_bpm)
+    debut = round(premier / facteur, 3)
+    return {"facteur": round(facteur, 6), "entree": debut, "decalage": debut}
 
 
 def filtres_calage(c: dict, duree: float | None = None) -> str:
@@ -2277,9 +2300,14 @@ def cmd_musique(a) -> None:
           + (f"entrée franche à {entree:.2f} s" if entree is not None else "pas d'entrée franche dans les 40 premières secondes"))
     if not a.sortie:
         return
-    if a.a is None or entree is None:
-        sys.exit("ERREUR : donne --a <instant de la vidéo où l'entrée doit tomber> (le morceau doit avoir une entrée franche).")
-    c = calage(entree, phase, bpm, a.bpm, a.a)
+    if entree is None:
+        # La batterie part dès le début (fréquent, Mixkit compris) : rien à poser sur le pivot. Son premier
+        # temps fort tombe au début de la vidéo ; recalé à la grille, chaque temps tombe ensuite sur ses 0,5 s.
+        c = calage_sans_entree(premier_temps_fort(graves, fps), bpm, a.bpm)
+    elif a.a is None:
+        sys.exit("ERREUR : donne --a <instant de la vidéo où l'entrée franche doit tomber> (le pivot, en secondes).")
+    else:
+        c = calage(entree, phase, bpm, a.bpm, a.a)
     r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(source), "-af", filtres_calage(c, a.duree), "-c:a", "pcm_s16le",
                 str(a.sortie)])
     if r.returncode != 0:
@@ -2295,8 +2323,24 @@ def cmd_musique(a) -> None:
             print(f"⚠️ le morceau calé dure {longueur:.1f} s, moins que la vidéo ({a.duree:g} s) : la fin serait muette ; "
                   "prends un morceau plus long.")
     vitesse = f"tempo ramené à {a.bpm:g} ({(c['facteur'] - 1) * 100:+.1f} %), " if c["facteur"] != 1.0 else ""
-    print(f"• {a.sortie} : {vitesse}l'entrée tombe à {a.a:g} s de la vidéo, sur un temps fort. "
-          "Pose-le comme musique avec `sons` (musique_db vers -17 sans voix, voir son.md).")
+    pose = "Pose-le comme musique avec `sons` (musique_db vers -17 sans voix, voir son.md)."
+    if entree is None:
+        print(message_sans_entree(a.sortie, c, bpm, a.bpm) + " " + pose)
+        return
+    print(f"• {a.sortie} : {vitesse}l'entrée tombe à {a.a:g} s de la vidéo, sur un temps fort. {pose}")
+
+
+def message_sans_entree(sortie, c: dict, bpm: float, cible_bpm: float) -> str:
+    """Ce que devient un morceau sans entrée franche : son premier temps fort au début de la vidéo, puis
+    ses temps sur la grille de la vidéo s'il a été recalé, sinon toutes les 60/bpm s."""
+    debut = (f"• {sortie} : pas d'entrée franche (la batterie part dès le début), donc rien à poser sur le pivot : "
+             "le premier temps fort du morceau est calé au début de la vidéo")
+    if not cible_bpm or (c["facteur"] == 1.0 and abs(bpm - cible_bpm) >= 0.05):
+        trop_loin = f", trop loin de {cible_bpm:g} pour le recaler" if cible_bpm else ""
+        return (f"{debut} ; son tempo est gardé ({bpm:.1f} battements par minute{trop_loin}) : ses temps tombent "
+                f"toutes les {60 / bpm:.3f} s" + (", pas sur la grille de la vidéo." if cible_bpm else "."))
+    recale = f", tempo ramené à {cible_bpm:g} ({(c['facteur'] - 1) * 100:+.1f} %)" if c["facteur"] != 1.0 else ""
+    return f"{debut}{recale} : chaque temps tombe sur la grille de {60 / cible_bpm:g} s."
 
 
 # ---------------------------------------------------------------------------
@@ -2861,7 +2905,8 @@ def main(argv: list[str] | None = None) -> None:
     mu = s.add_parser("musique", help="Tempo, temps forts et entrée d'un morceau ; version calée sur la vidéo.")
     mu.add_argument("entree")
     mu.add_argument("--sortie", help="Fichier WAV calé à écrire (sinon : analyse seule).")
-    mu.add_argument("--a", type=float, help="Instant de la vidéo (s) où l'entrée franche doit tomber.")
+    mu.add_argument("--a", type=float, help="Instant de la vidéo (s) où l'entrée franche doit tomber (sans entrée "
+                                            "franche, inutile : le premier temps fort tombe au début de la vidéo).")
     mu.add_argument("--bpm", type=float, default=120.0, help="Tempo de la grille de la vidéo (défaut 120 ; 0 = garder le sien).")
     mu.add_argument("--duree", type=float, help="Durée de la vidéo (s), pour couper le morceau.")
     mu.set_defaults(f=cmd_musique)

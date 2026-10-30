@@ -327,6 +327,51 @@ class Musique(unittest.TestCase):
         self.assertLess(sm.calage(2.0, 0.0, 120.0, 120.0, 8.0)["decalage"], 0)      # démarre plus tard
 
 
+    def test_premier_temps_fort(self):
+        self.assertAlmostEqual(sm.premier_temps_fort(self.pulsations(124.0, debut=0.3), self.FPS), 0.3, delta=0.011)
+        self.assertEqual(sm.premier_temps_fort(self.pulsations(100.0), self.FPS), 0.0)
+        self.assertEqual(sm.premier_temps_fort([0.0] * 500, self.FPS), 0.0)          # muet : rien à couper
+        self.assertEqual(sm.premier_temps_fort([], self.FPS), 0.0)
+
+    def test_calage_sans_entree(self):
+        c = sm.calage_sans_entree(0.25, 124.0, 120.0)
+        self.assertAlmostEqual(c["facteur"], 120 / 124, places=5)
+        self.assertAlmostEqual(c["decalage"], 0.25 * 124 / 120, places=3)          # le premier temps à 0 s
+        self.assertEqual(sm.calage_sans_entree(0.1, 100.0, 120.0), {"facteur": 1.0, "entree": 0.1, "decalage": 0.1})
+
+    def test_message_sans_entree(self):
+        recale = sm.message_sans_entree("m.wav", sm.calage_sans_entree(0.0, 124.0, 120.0), 124.0, 120.0)
+        self.assertIn("pas d'entrée franche", recale)
+        self.assertIn("premier temps fort du morceau est calé au début de la vidéo, tempo ramené à 120 (-3.2 %)", recale)
+        self.assertTrue(recale.endswith("chaque temps tombe sur la grille de 0.5 s."))
+        garde = sm.message_sans_entree("m.wav", sm.calage_sans_entree(0.0, 100.2, 120.0), 100.2, 120.0)
+        self.assertIn("son tempo est gardé (100.2 battements par minute, trop loin de 120 pour le recaler)", garde)
+        self.assertIn("toutes les 0.599 s, pas sur la grille de la vidéo", garde)
+        self.assertIn("ses temps tombent toutes les 0.500 s.", sm.message_sans_entree("m.wav", {"facteur": 1.0}, 120.0, 0))
+
+    @unittest.skipUnless(shutil.which("ffmpeg"), "ffmpeg absent")
+    def test_morceau_sans_entree_franche(self):
+        """« Mets ma musique » avec un morceau dont la batterie part tout de suite : avant, `musique` répondait
+        « donne --a » alors que --a était donné. Le premier temps fort tombe au début de la vidéo."""
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            morceau, sortie = Path(d) / "m.wav", Path(d) / "c.wav"
+            kick = "if(gte(t,0.25)*lt(mod(t-0.25,60/124),0.08),sin(2*PI*55*t)*exp(-30*mod(t-0.25,60/124)),0)"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"aevalsrc='{kick}':d=30:s=44100",
+                            "-f", "lavfi", "-i", "sine=f=330:d=30", "-filter_complex",
+                            "[1]volume=0.05[b];[0][b]amix=inputs=2:normalize=0", "-ar", "44100", str(morceau)], check=True)
+            ffmpeg = shutil.which("ffmpeg")
+            fps = sm.MUSIQUE_SR / sm.MUSIQUE_PAS
+            self.assertIsNone(sm.entree_de(sm.enveloppe(ffmpeg, morceau), fps))
+            sortie_texte = io.StringIO()
+            with contextlib.redirect_stdout(sortie_texte):
+                sm.main(["musique", str(morceau), "--sortie", str(sortie), "--a", "8", "--duree", "15"])
+            self.assertIn("pas d'entrée franche (la batterie part dès le début)", sortie_texte.getvalue())
+            graves = sm.enveloppe(ffmpeg, sortie, graves=True)
+            premiere = next(i for i, v in enumerate(graves) if v > max(graves) * 0.3) / fps
+            self.assertLess(premiere, 0.03)                                  # le premier temps à 0 s
+            self.assertAlmostEqual(len(graves) / fps, 15.6, delta=0.1)       # coupé à la durée de la vidéo
+
     def test_filtres_calage(self):
         plus_tard = sm.filtres_calage({"facteur": 0.98, "decalage": -1.5}, 20)
         self.assertEqual(plus_tard, "atempo=0.980000,adelay=1500|1500,asetpts=N/SR/TB,atrim=duration=20.60")
