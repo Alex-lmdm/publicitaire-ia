@@ -22,7 +22,8 @@
 {{/LIEU_ACCUEIL}}## Ce que fait ce dossier
 
 Le client vend quelque chose (une formation, un coaching, un logiciel, un template, une
-communauté). Il tape `/studio`, ou demande « une vidéo pour ma page de vente », « une pub »,
+communauté). Il écrit « fais-moi une nouvelle vidéo » ou « personnalise {{PRODUIT}} à ma marque »
+(les phrases de sa formation), tape `/studio`, ou demande « une vidéo pour ma page de vente », « une pub »,
 « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design
 pour mon offre », ou colle le lien de sa page en demandant une vidéo :
 **charge le skill `studio` et suis-le**, étape par étape. Il fabrique des vidéos en motion design

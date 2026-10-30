@@ -4,8 +4,8 @@ Un dossier à télécharger, à ouvrir dans **Claude Code** ou **Codex**, et qui
 motion design sur ton ordinateur, avec ton abonnement Claude ou ChatGPT
 habituel. Pas d'abonnement en plus.
 
-Tu vends une formation, un coaching, un logiciel, un template ? Tu tapes `/studio` (dans Codex :
-`$studio`), ou simplement « fais-moi une vidéo ». Ton assistant
+Tu vends une formation, un coaching, un logiciel, un template ? Tu écris « Fais-moi une nouvelle
+vidéo » (raccourci : `/studio`, dans Codex `$studio`). Ton assistant
 te pose quelques questions à choix (une seule fois sur ta marque et ce que tu vends, puis à chaque
 vidéo : le but et où tu vas la mettre), et fabrique la vidéo.
 
@@ -16,7 +16,8 @@ l'entrée de la batterie au moment où ton offre apparaît. Une voix off s'ajout
 sur une vidéo déjà faite : ta voix enregistrée au téléphone, ou une voix de synthèse HeyGen
 (quelques centimes).
 
-**Ta marque en une question.** Au premier `/studio`, il te demande d'où la prendre : le lien de
+**Ta marque en une question.** La première fois (« Personnalise Publicitaire IA à ma marque »), il
+te demande d'où la prendre : le lien de
 ta page de vente (il en tire tes couleurs, tes polices et ton logo), des images, une vidéo dont tu
 aimes le style, ou ton dossier Monteur IA si tu en as un (il reprend ses réglages sans y toucher).
 Il te montre le résultat ; tu dis « ok » ou ce qui cloche.

@@ -73,12 +73,12 @@ pas installées » sont normales.
 
 **6. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
 navigateur, app HyperFrames ou « sans l'app », test final). Si tout est ✅, conclus par :
-« C'est installé. Tape /studio (dans Codex : $studio) : je te demande d'où prendre ta marque et ce que tu vends, une
-seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
+« C'est installé. Écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce
+que tu vends, une seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
 ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
 installé dans ton dossier Vidéos. Ouvre le dossier Publicitaire IA dans ton assistant, dans une
-nouvelle conversation, puis tape /studio (dans Codex : $studio) : je te demande d'où prendre ta marque et ce que tu
-vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas de tableau, une seule ligne,
+nouvelle conversation, puis écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque
+et ce que tu vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas de tableau, une seule ligne,
 « Publicitaire IA est à jour, tout est ✅. » (le tableau ne s'affiche que si une étape a échoué).
 
 ---
