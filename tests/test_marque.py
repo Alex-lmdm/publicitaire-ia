@@ -267,6 +267,8 @@ class MonteurIA(unittest.TestCase):
             '  src: url("fonts/Titrage-700.woff2") format("woff2");\n}\n', encoding="utf-8")
         (m / "brand" / "fonts" / "Titrage-700.woff2").write_bytes(WOFF2)
         (m / "assets" / "logos").mkdir(parents=True)
+        (m / "assets" / "logos" / "bytedance.svg").write_text("<svg/>", encoding="utf-8")
+        (m / "assets" / "logos" / "claude.svg").write_text("<svg/>", encoding="utf-8")
         (m / "assets" / "logos" / "ma-marque.png").write_bytes(PNG)
         (m / "assets" / "music").mkdir(parents=True)
         (m / "assets" / "music" / "fond.mp3").write_bytes(b"ID3" + b"\x00" * 100)
@@ -281,6 +283,7 @@ class MonteurIA(unittest.TestCase):
             marque = mq.depuis_monteur(racine, monteur)
             self.assertEqual(empreinte(monteur), avant)
             self.assertEqual(marque["source"]["type"], "monteur")
+            # Son logo (« ma-marque.png ») est repris ; ByteDance et Claude, logos d'outils rangés au même endroit, jamais.
             self.assertEqual((marque["nom"], marque["mot_cle"]), ("Ma Marque", "GUIDE"))
             self.assertEqual(marque["couleurs"]["fond"], "#202022")
             self.assertEqual(marque["couleurs"]["texte"], "#ffffff")  # #131313 illisible sur ce fond
@@ -292,6 +295,16 @@ class MonteurIA(unittest.TestCase):
             self.assertTrue(any("Pack SFX" in n for n in marque["notes"]))
             mq.ecrire(racine, marque)
             self.assertEqual(mq.ecrire_style(racine)["manquantes"], [])
+
+    def test_logos_des_outils_jamais_pris_pour_le_sien(self):
+        with tempfile.TemporaryDirectory() as d:
+            racine = racine_vide(Path(d))
+            monteur = self.dossier_monteur(Path(d))
+            (monteur / "assets" / "logos" / "ma-marque.png").unlink()
+            marque = mq.depuis_monteur(racine, monteur)
+            self.assertIsNone(marque["logo"])
+            self.assertTrue(any("aucun logo" in n for n in marque["notes"]))
+            self.assertFalse(any((racine / "marque").glob("logo.*")))
 
     def test_pas_un_dossier_monteur(self):
         with tempfile.TemporaryDirectory() as d:

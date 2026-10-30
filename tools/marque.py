@@ -836,7 +836,10 @@ def depuis_monteur(racine: Path, dossier: Path) -> dict:
     marque_cfg = config.get("brand") or {}
     cta = config.get("cta") or {}
     musique = _copier_musique(racine, dossier, (config.get("audio") or {}).get("musicFile"), notes)
-    logo = _copier_logo_monteur(racine, dossier)
+    logo = _copier_logo_monteur(racine, dossier, marque_cfg.get("name"), marque_cfg.get("handle"))
+    if not logo:
+        notes.append("aucun logo de sa marque dans son dossier Monteur IA (ses logos sont ceux des outils de ses Reels) : "
+                     "demande-lui le sien, ou ses vidéos s'en passent")
     pack = dossier / "assets" / "sfx" / "pack"
     if pack.is_dir():
         notes.append(f"Pack SFX présent dans son dossier Monteur IA ({pack}) : `pack-sfx reprendre` le copie ici, avec son accord")
@@ -905,14 +908,32 @@ def _copier_musique(racine: Path, dossier: Path, fichier, notes: list) -> str | 
     return None
 
 
-def _copier_logo_monteur(racine: Path, dossier: Path) -> str | None:
-    """Son logo : la première image de assets/logos/, sinon une image « logo » de assets/images/."""
+def _simple(texte: str | None) -> str:
+    return re.sub(r"[^a-z0-9]", "", (texte or "").lower())
+
+
+# Outils que les Reels de Monteur IA montrent souvent (assets/logos/), en plus des marques tierces.
+OUTILS_REELS = ("bytedance", "cursor", "deepseek", "kimi", "kling", "github", "hyperframes", "nanobanana",
+                "glm", "codex", "midjourney", "runway", "heygen", "elevenlabs", "suno", "perplexity", "mistral",
+                "grok", "qwen", "higgsfield", "seedance", "veo", "sora", "dupliq")
+
+
+def _copier_logo_monteur(racine: Path, dossier: Path, nom: str | None = None, handle: str | None = None) -> str | None:
+    """Son logo : une image de assets/logos/ ou de assets/images/ dont le nom dit qu'elle est à lui (son
+    nom, son @, « logo », « marque », « brand »), jamais celle d'un outil. assets/logos/ de Monteur IA
+    range surtout les logos des OUTILS montrés dans ses Reels (ByteDance, CapCut, Claude…) : prendre la
+    première image donnait le logo de ByteDance à une marque (30/10/2026). Rien de sûr : pas de logo."""
     images = (".png", ".svg", ".jpg", ".jpeg", ".webp")
+    cles = {k for k in (_simple(nom), _simple(handle)) if len(k) >= 3} | {"logo", "marque", "brand"}
+    tiers = {_simple(t) for t in MARQUES_TIERCES + OUTILS_REELS}
     candidats = []
-    for base, il_faut_logo in ((dossier / "assets" / "logos", False), (dossier / "assets" / "images", True)):
+    for base in (dossier / "assets" / "logos", dossier / "assets" / "images"):
         if base.is_dir():
-            candidats += [f for f in sorted(base.iterdir())
-                          if f.is_file() and f.suffix.lower() in images and (not il_faut_logo or "logo" in f.name.lower())]
+            for f in sorted(base.iterdir()):
+                cle = _simple(f.stem)
+                if (f.is_file() and f.suffix.lower() in images and any(k in cle for k in cles)
+                        and not any(t and t in cle for t in tiers)):
+                    candidats.append(f)
     if not candidats:
         return None
     dest = racine / "marque" / ("logo" + candidats[0].suffix.lower())
