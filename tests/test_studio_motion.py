@@ -754,6 +754,46 @@ def racine_de_test(base: Path) -> Path:
     return racine
 
 
+class NomsDeDossiers(unittest.TestCase):
+    def test_sans_dollar_ni_accent_grave(self):
+        """Les noms se tapent entre guillemets dans les commandes : `$` et l'accent grave y sont actifs."""
+        self.assertEqual(sm.propre("Gagne 1000$ par mois"), "Gagne 1000 par mois")
+        self.assertEqual(sm.propre("L`atelier d'$HOME"), "L'atelier d'HOME")
+        self.assertEqual(sm.propre("Promo : 50 % / été"), "Promo - 50 % - été")
+
+    def test_coupe_sur_une_limite_de_mot(self):
+        self.assertEqual(sm.propre("Nouvelle fonctionnalité de sous-titres automatiques", 30), "Nouvelle fonctionnalité de")
+        self.assertEqual(sm.propre("Promo #1 -50% & L'Été d'Émilie, la formation crochet", 30),
+                         "Promo #1 -50% & L'Été d'Émilie")
+        self.assertEqual(sm.propre("Anticonstitutionnellement", 10), "Anticonsti")      # un seul mot : coupé net
+        self.assertEqual(sm.propre("Offre", 30), "Offre")
+
+    def test_chemin_windows_sous_200_caracteres(self):
+        """Le sujet était répété en entier dans le dossier et dans le projet : avec un nom d'utilisateur
+        Windows ordinaire, le chemin d'un son posé atteignait 226 caractères (240 pour une story)."""
+        self.assertEqual(sm.NOMS_MAX, 73)
+        specs = ["reel", "story:dernier-jour", "story:ouverture", "page", "page@1x1", "section", "linkedin", "pub@4x5",
+                 "tiktok", "youtube"]
+        with tempfile.TemporaryDirectory() as d:
+            maison = racine_de_test(Path(d))
+            sujet = "Promo #1 -50% & L'Été d'Émilie, la formation crochet complète en 30 jours"
+            premier = sm.creer(maison, sujet, "lancement", [sm.lire_video(s) for s in specs], "2026-10-30")
+            deuxieme = sm.creer(maison, sujet, "lancement", [sm.lire_video(s) for s in specs], "2026-10-30")
+            self.assertEqual(deuxieme.name, "Promo #1 -50% & L'Été d'Émilie · 2026-10-30 (2)")
+            noms = {meta["video"]: p.name for p, meta in sm.projets(premier)}
+            self.assertEqual(noms["reel"], "Promo #1 -50% & L'Été · Reel")
+            self.assertEqual(noms["story-dernier-jour"], "Promo #1 · Story dernier jour")
+            self.assertEqual({meta["video"]: p.name for p, meta in sm.projets(deuxieme)}["reel"], "Promo #1 -50% · Reel")
+            sm.ajouter(maison, deuxieme, [sm.lire_video("x")])
+            for dossier in (premier, deuxieme):
+                for projet, meta in sm.projets(dossier):
+                    self.assertTrue(projet.name.endswith(sm.nom_video(meta)), projet.name)
+                    fichiers = [p.relative_to(projet).as_posix() for p in projet.rglob("*") if p.is_file()]
+                    self.assertLessEqual(max(map(len, fichiers)), len(sm.FICHIER_LE_PLUS_PROFOND))
+                    chemin = f"{sm.EXEMPLE_WINDOWS}{dossier.name}\\{projet.name}\\{sm.FICHIER_LE_PLUS_PROFOND}"
+                    self.assertLess(len(chemin), 200, chemin)
+
+
 class Creation(unittest.TestCase):
     def test_serie_multi_formats(self):
         with tempfile.TemporaryDirectory() as d:

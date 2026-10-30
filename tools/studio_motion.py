@@ -438,8 +438,16 @@ DOSSIER = "videos"
 
 
 def propre(texte: str, longueur: int = 40) -> str:
-    texte = re.sub(r"\s+", " ", INTERDITS_NOM.sub("-", str(texte))).strip(" .-")
-    return texte[:longueur].rstrip(" .-")
+    """Un nom de dossier valable sur Mac et sous Windows, d'au plus `longueur` caractères, coupé sur une
+    limite de mot. Il se tape aussi entre guillemets dans les commandes : `$` y appellerait une variable
+    (bash, PowerShell), il est retiré ; l'accent grave (substitution en bash, échappement en PowerShell)
+    devient une apostrophe."""
+    texte = INTERDITS_NOM.sub("-", str(texte)).replace("$", "").replace("`", "'")
+    texte = re.sub(r"\s+", " ", texte).strip(" .-")
+    if len(texte) > longueur and texte[longueur] not in " ,;.!?)":       # la coupe tomberait dans un mot
+        espace = texte[:longueur].rfind(" ")
+        texte = texte[:espace] if espace > longueur // 2 else texte[:longueur]
+    return texte[:longueur].rstrip(" .,;&+-")
 
 
 def racine() -> Path:
@@ -1374,13 +1382,13 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     cles = [cle_video(v) for v in videos]
     if len(set(cles)) != len(cles):
         sys.exit(f"ERREUR : deux vidéos portent le même nom ({', '.join(cles)}) : donne-leur un rôle ou un format.")
-    noms = [nom_projet(sujet, v) for v in videos]
-    if len(set(noms)) != len(noms):
-        sys.exit(f"ERREUR : deux vidéos auraient le même dossier ({', '.join(noms)}) : donne-leur un rôle ou un format.")
-    base = r / DOSSIER / " · ".join(p for p in (propre(sujet), date) if p)
+    base = r / DOSSIER / nom_dossier(sujet, date)
     dossier, n = base, 2
     while dossier.exists():
         dossier, n = base.with_name(f"{base.name} ({n})"), n + 1
+    noms = [nom_projet(sujet, v, dossier.name) for v in videos]
+    if len(set(noms)) != len(noms):
+        sys.exit(f"ERREUR : deux vidéos auraient le même dossier ({', '.join(noms)}) : donne-leur un rôle ou un format.")
     for sous in ("sources", "livraison"):
         (dossier / sous).mkdir(parents=True, exist_ok=True)
     fiche = json.loads(json.dumps(FICHE_VIDE))
@@ -1405,10 +1413,31 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     return dossier
 
 
-def nom_projet(sujet: str, v: dict) -> str:
-    """« <sujet> · <support> » : le sujet seul est raccourci, le support reste entier (deux vidéos
-    d'un sujet long portaient le même nom tronqué, et la création plantait à mi-chemin)."""
-    return f"{propre(sujet, 40)} · {propre(nom_video(v), 40)}"
+# Sous Windows, un chemin de plus de 260 caractères casse ffmpeg, Chrome et l'Explorateur. Le plus long
+# que l'on crée : « C:\Users\Émilie Dupont\Videos\Publicitaire IA\videos\ », le dossier de la vidéo, son
+# projet, puis le fichier le plus profond qu'on y range (la variante d'un son du Pack SFX au nom le plus
+# long, posée par `sons`). Visé : moins de 200, ce qui laisse NOMS_MAX caractères au dossier et au projet.
+EXEMPLE_WINDOWS = "C:\\Users\\Émilie Dupont\\Videos\\Publicitaire IA\\videos\\"
+FICHIER_LE_PLUS_PROFOND = "assets/sons/pack-slices-slice-horror-metal-scrape-variante-0123abcd.wav"
+CHEMIN_MAX = 199
+NOMS_MAX = CHEMIN_MAX - len(EXEMPLE_WINDOWS) - len(FICHIER_LE_PLUS_PROFOND) - 2   # dossier + projet (73)
+SUJET_MAX = 30                       # le sujet dans le nom du dossier de la vidéo
+
+
+def nom_dossier(sujet: str, date: str) -> str:
+    """« <sujet> · <date> », le sujet raccourci à SUJET_MAX caractères sur une limite de mot."""
+    return " · ".join(p for p in (propre(sujet, SUJET_MAX), date) if p)
+
+
+def nom_projet(sujet: str, v: dict, dossier: str) -> str:
+    """« <sujet> · <support> » : le support reste entier (deux vidéos d'un sujet long portaient le même
+    nom tronqué, et la création plantait à mi-chemin) ; le sujet, déjà dans le nom du dossier, se
+    raccourcit pour que le dossier et le projet tiennent ensemble en NOMS_MAX caractères. Sans assez de
+    place, le projet ne porte que le support."""
+    support = propre(nom_video(v), 40)
+    place = min(SUJET_MAX, NOMS_MAX - len(dossier) - len(" · ") - len(support))
+    court = propre(sujet, place) if place >= 8 else ""
+    return f"{court} · {support}" if court else support
 
 
 def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, date: str) -> Path:
@@ -1418,7 +1447,7 @@ def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
     s = SUPPORTS[v["support"]]
     largeur, hauteur = FORMATS[v["format"]]
     cle, duree = cle_video(v), duree_cible(v)
-    projet = dossier / nom_projet(sujet, v)
+    projet = dossier / nom_projet(sujet, v, dossier.name)
     projet.mkdir(parents=True)
     for sous in ("assets/images", "assets/audio", "exports", "work"):
         (projet / sous).mkdir(parents=True, exist_ok=True)
@@ -1468,8 +1497,9 @@ def ajouter(r: Path, dossier: Path, videos: list[dict]) -> list[Path]:
     sujet, objectif, date = meta0.get("sujet", dossier.name), meta0.get("objectif", "vente"), meta0.get("date", "")
     occupes = {p.name for p, _m in existants}
     for v in videos:
-        if nom_projet(sujet, v) in occupes:
-            sys.exit(f"ERREUR : le dossier « {nom_projet(sujet, v)} » existe déjà : donne un autre format (@4x5) ou un rôle.")
+        if nom_projet(sujet, v, dossier.name) in occupes:
+            sys.exit(f"ERREUR : le dossier « {nom_projet(sujet, v, dossier.name)} » existe déjà : donne un autre "
+                     "format (@4x5) ou un rôle.")
     plan = dossier / "PLAN.md"
     ajouts = []
     for v in videos:
