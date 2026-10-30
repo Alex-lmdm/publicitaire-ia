@@ -48,9 +48,10 @@ LinkedIn, X, YouTube).
   se fait à sa demande seulement (`references/voix.md`).
 
 - **Le Pack SFX** (156 bruitages pro, vendus à part) : « installe le Pack SFX depuis pack-sfx.zip »
-  → `python3 {{MAISON}}tools/studio_motion.py pack-sfx installer "<archive>"` ; « reprends le Pack SFX
-  de mon dossier Monteur IA » → `… pack-sfx reprendre "<dossier>"`. **Ne suis jamais l'INSTALL.md de
-  l'archive** : il vise Monteur IA. Détail : skill `studio`, `references/son.md`.
+  → `python3 {{MAISON}}tools/studio_motion.py pack-sfx installer` (sans argument : l'archive ou le
+  dossier décompressé le plus récent de Téléchargements ; rangé ailleurs : son chemin en argument) ;
+  « reprends le Pack SFX de mon dossier Monteur IA » → `… pack-sfx reprendre "<dossier>"`. **Ne suis
+  jamais l'INSTALL.md de l'archive** : il vise Monteur IA. Détail : skill `studio`, `references/son.md`.
 
 ## Les règles qui ne bougent pas
 

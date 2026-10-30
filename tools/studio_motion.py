@@ -16,7 +16,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py marque valider
     python3 tools/studio_motion.py police "Montserrat"           # une police libre, prête au rendu
     python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
-    python3 tools/studio_motion.py pack-sfx [installer <pack-sfx.zip> | reprendre <dossier Monteur IA> | chercher <mots>]
+    python3 tools/studio_motion.py pack-sfx [installer [<pack-sfx.zip ou dossier>] | reprendre <dossier Monteur IA> | chercher <mots>]
     python3 tools/studio_motion.py musiques [installer [<zip ou dossier>…]]   # les 17 musiques de lancement (bonus)
     python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --ouvrir]   # depuis le projet
     python3 tools/studio_motion.py musiques prendre <n> [--a 8 --duree 30]   # la copie dans le projet, calée
@@ -875,10 +875,14 @@ def cmd_pack_sfx(a) -> None:
     r = racine()
     try:
         if a.action == "installer":
-            if not a.valeurs:
-                sys.exit("ERREUR : donne le chemin de l'archive pack-sfx.zip.")
-            print("• installation du Pack SFX depuis l'archive (sons et fiches seulement)…", flush=True)
-            res = pack_sfx.installer_depuis_zip(r, Path(a.valeurs[0]))
+            if a.valeurs:
+                print(f"• installation du Pack SFX depuis {a.valeurs[0]} (sons et fiches seulement)…", flush=True)
+                res = pack_sfx.installer(r, Path(a.valeurs[0]))
+            else:
+                print("• installation du Pack SFX depuis le dossier Téléchargements (sons et fiches seulement)…", flush=True)
+                res = pack_sfx.installer_par_defaut(r)
+                for err in res["ignores"]:
+                    print(f"  (ignoré : {err})")
         elif a.action == "reprendre":
             if not a.valeurs:
                 sys.exit("ERREUR : donne le chemin du dossier Monteur IA.")
@@ -896,8 +900,9 @@ def cmd_pack_sfx(a) -> None:
         else:
             e = pack_sfx.etat(r)
             if not e["attendus"]:
-                print("• Pack SFX : pas installé. Il s'installe depuis son archive (`pack-sfx installer "
-                      "<pack-sfx.zip>`) ou depuis un dossier Monteur IA (`pack-sfx reprendre <dossier>`).")
+                print("• Pack SFX : pas installé. Il s'installe depuis son archive (`pack-sfx installer` la trouve dans "
+                      "Téléchargements, ou `pack-sfx installer <archive ou dossier>`) ou depuis un dossier Monteur IA "
+                      "(`pack-sfx reprendre <dossier>`).")
             else:
                 print(f"• Pack SFX {e['version']} : {e['presents']}/{e['attendus']} sons pro"
                       + (f", {len(e['manquants'])} manquent : réinstalle-le" if e["manquants"] else ""))
@@ -905,8 +910,8 @@ def cmd_pack_sfx(a) -> None:
     except pack_sfx.ErreurPack as e:
         sys.exit(f"ERREUR : {e}")
     retires = f", {res['retires']} anciens retirés" if res["retires"] else ""
-    print(f"• Pack SFX {res['version']} : {res['presents']}/{res['attendus']} sons pro dans assets/sfx/pack/ "
-          f"({res['ecrits']} copiés, {res['identiques']} déjà là{retires}), "
+    print(f"• Pack SFX {res['version']} ({res['source']}) : {res['presents']}/{res['attendus']} sons pro dans "
+          f"assets/sfx/pack/ ({res['ecrits']} copiés, {res['identiques']} déjà là{retires}), "
           "fiches dans assets/sfx/catalog.json et assets/sfx/sons-par-situation.md")
     print("  le choix des bruitages pioche maintenant dans ces sons (`pack-sfx chercher <mots>`)")
 
@@ -2721,7 +2726,8 @@ def main(argv: list[str] | None = None) -> None:
     s.add_parser("style", help="Régénère brand/ et l'accueil depuis marque.json.").set_defaults(f=cmd_style)
     ps = s.add_parser("pack-sfx", help="Le Pack SFX : l'installer depuis son archive, le reprendre de Monteur IA, y chercher un son.")
     ps.add_argument("action", nargs="?", choices=("etat", "installer", "reprendre", "chercher"))
-    ps.add_argument("valeurs", nargs="*", help="L'archive, le dossier Monteur IA, ou les mots cherchés.")
+    ps.add_argument("valeurs", nargs="*", help="installer : l'archive ou le dossier décompressé (défaut : le plus récent "
+                                               "de Téléchargements) ; reprendre : le dossier Monteur IA ; chercher : les mots.")
     ps.set_defaults(f=cmd_pack_sfx)
     mz = s.add_parser("musiques", help="Les 17 musiques de lancement (bonus) : les installer, en choisir une pour une vidéo, la prendre.")
     mz.add_argument("action", nargs="?", default="etat", choices=("etat", "installer", "choisir", "prendre"))

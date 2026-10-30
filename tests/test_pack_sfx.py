@@ -6,15 +6,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "tools"))
+import musiques  # noqa: E402
 import pack_sfx  # noqa: E402
 
 CATALOGUE = {"pack": "pack-sfx", "version": "1.1.0", "sounds": [
@@ -131,6 +135,107 @@ class Installation(unittest.TestCase):
             self.assertFalse((racine / "assets/sfx/starter/click-ui.mp3").exists())  # ses sons de démarrage restent chez lui
             with self.assertRaises(pack_sfx.ErreurPack):
                 pack_sfx.reprendre_depuis_monteur(racine, Path(d))
+
+
+class Telechargements(unittest.TestCase):
+    """Sans chemin : le Pack SFX pris dans Téléchargements, l'archive ou le dossier que Safari a
+    décompressé tout seul (il ouvre les ZIP téléchargés et jette l'archive)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.racine = self.tmp / "publicitaire"
+        self.racine.mkdir()
+        self.dl = self.tmp / "Downloads"
+        self.dl.mkdir()
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def decompresse(self, nom: str = "pack-sfx") -> Path:
+        with zipfile.ZipFile(ecrire_archive(self.tmp / "a.zip", ARCHIVE)) as z:
+            z.extractall(self.tmp / "x")
+        (self.tmp / "x" / "pack-sfx").rename(self.dl / nom)
+        return self.dl / nom
+
+    def test_dossier_decompresse_par_safari(self):
+        dossier = self.decompresse("pack-sfx 2")
+        self.assertEqual(pack_sfx.sources_par_defaut(self.dl), [dossier])
+        res = pack_sfx.installer_par_defaut(self.racine, self.dl)
+        self.assertEqual((res["presents"], res["attendus"], res["ignores"]), (2, 2, []))
+        for absent in ("INSTALL.md", "install.py", "tools", ".claude", "assets/sfx/pack/ui/.DS_Store"):
+            self.assertFalse((self.racine / absent).exists(), absent)
+        self.assertEqual(pack_sfx.installer(self.racine, dossier)["identiques"], 4)   # le dossier en argument
+
+    def test_le_plus_recent_l_emporte(self):
+        ancien = ecrire_archive(self.dl / "pack-sfx.zip", {
+            **ARCHIVE, "pack-sfx/assets/sfx/catalog.json": json.dumps({**CATALOGUE, "version": "1.0.0"}).encode()})
+        os.utime(ancien, (1_000_000_000, 1_000_000_000))
+        recent = ecrire_archive(self.dl / "pack-sfx (1).zip", ARCHIVE)
+        (self.dl / "photos.zip").write_bytes(b"x")
+        self.assertEqual(pack_sfx.sources_par_defaut(self.dl), [ancien, recent])
+        self.assertEqual(pack_sfx.installer_par_defaut(self.racine, self.dl)["version"], "1.1.0")
+
+    def test_un_telechargement_interrompu_laisse_place_au_suivant(self):
+        bon = ecrire_archive(self.dl / "pack-sfx.zip", ARCHIVE)
+        os.utime(bon, (1_000_000_000, 1_000_000_000))
+        (self.dl / "pack-sfx (1).zip").write_bytes(b"PK\x03\x04 interrompu")
+        res = pack_sfx.installer_par_defaut(self.racine, self.dl)
+        self.assertEqual(res["presents"], 2)
+        self.assertEqual(len(res["ignores"]), 1)
+        self.assertTrue(res["ignores"][0].startswith("pack-sfx (1).zip : "))
+
+    def test_rien_dans_telechargements(self):
+        (self.dl / "photos.zip").write_bytes(b"x")
+        with self.assertRaisesRegex(pack_sfx.ErreurPack, "aucun Pack SFX"):
+            pack_sfx.installer_par_defaut(self.racine, self.dl)
+
+    def test_acces_refuse(self):
+        archive = ecrire_archive(self.dl / "pack-sfx.zip", ARCHIVE)
+        refus = PermissionError(1, "Operation not permitted")
+        with mock.patch.object(Path, "iterdir", side_effect=refus):
+            with self.assertRaisesRegex(pack_sfx.ErreurPack, "glisse le fichier ici"):
+                pack_sfx.installer_par_defaut(self.racine, self.dl)
+        with mock.patch("zipfile.ZipFile", side_effect=refus):
+            with self.assertRaisesRegex(pack_sfx.ErreurPack, "glisse le fichier ici"):
+                pack_sfx.installer(self.racine, archive)
+        self.assertIn("Autorise l'accès dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers, "
+                      "ou glisse le fichier ici", musiques.acces_refuse(self.dl, "darwin"))
+
+    def test_commande_sans_chemin(self):
+        """`pack-sfx installer` seul, dans une copie du dossier, avec le dossier que Safari a laissé."""
+        copie = self.tmp / "Publicitaire IA"
+        copie.mkdir()
+        shutil.copy2(RACINE / "produit.json", copie / "produit.json")
+        shutil.copy2(RACINE / "VERSION", copie / "VERSION")
+        shutil.copytree(RACINE / "tools", copie / "tools", ignore=shutil.ignore_patterns("__pycache__"))
+        self.decompresse()
+        env = {**os.environ, "HOME": str(self.tmp), "USERPROFILE": str(self.tmp)}
+        r = subprocess.run([sys.executable, str(copie / "tools" / "studio_motion.py"), "pack-sfx", "installer"],
+                           cwd=copie, env=env, capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("2/2 sons pro", r.stdout)
+        self.assertIn("dossier pack-sfx", r.stdout)
+        self.assertTrue((copie / "assets" / "sfx" / "pack" / "ui" / "ui-check-pop.mp3").is_file())
+
+    @unittest.skipIf(os.name == "nt" or os.geteuid() == 0, "droits POSIX d'un utilisateur ordinaire")
+    def test_commande_dossier_illisible(self):
+        """Téléchargements illisible : un message à suivre, jamais une trace Python."""
+        copie = self.tmp / "Publicitaire IA"
+        copie.mkdir()
+        shutil.copy2(RACINE / "produit.json", copie / "produit.json")
+        shutil.copytree(RACINE / "tools", copie / "tools", ignore=shutil.ignore_patterns("__pycache__"))
+        self.dl.chmod(0)
+        try:
+            env = {**os.environ, "HOME": str(self.tmp), "USERPROFILE": str(self.tmp)}
+            for commande in (["pack-sfx", "installer"], ["musiques", "installer"]):
+                r = subprocess.run([sys.executable, str(copie / "tools" / "studio_motion.py"), *commande],
+                                   cwd=copie, env=env, capture_output=True, text=True, encoding="utf-8")
+                self.assertEqual(r.returncode, 1, commande)
+                self.assertIn("glisse le fichier ici", r.stderr, commande)
+                self.assertNotIn("Traceback", r.stderr, commande)
+        finally:
+            self.dl.chmod(0o755)
 
 
 class JamaisDansLeDepot(unittest.TestCase):

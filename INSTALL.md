@@ -102,8 +102,10 @@ Une fois Publicitaire IA installé, écris à l'IA l'une de ces deux phrases :
 - « Reprends le Pack SFX de mon dossier Monteur IA »
 
 Seuls les sons et leurs fiches sont copiés dans Publicitaire IA ; ton dossier Monteur IA n'est pas
-modifié. (Pour l'IA : `python3 tools/studio_motion.py pack-sfx installer "<archive>"` ou
-`pack-sfx reprendre "<dossier>"`, jamais l'INSTALL.md de l'archive, écrit pour Monteur IA.)
+modifié. (Pour l'IA : `python3 tools/studio_motion.py pack-sfx installer`, sans argument : il prend le
+plus récent des `pack-sfx*.zip` de Téléchargements, ou le dossier `pack-sfx` que Safari a décompressé
+tout seul ; une archive ou un dossier rangé ailleurs se donne en argument. Ou `pack-sfx reprendre
+"<dossier>"`. Jamais l'INSTALL.md de l'archive, écrit pour Monteur IA.)
 
 ## Mettre à jour
 
@@ -133,3 +135,6 @@ nouveau : ses réglages restent, ceux de la nouvelle version s'ajoutent. Puis re
   conversation.
 - **Relier HeyGen pour une voix de synthèse** (ou le refaire) : dis « relie mon compte HeyGen » ;
   l'assistant te guide (skill `studio`, `references/heygen.md`).
+- **« macOS refuse l'accès »** à Téléchargements (musiques, Pack SFX) : autorise l'app de ton
+  assistant dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers, ou glisse
+  le fichier dans la conversation.

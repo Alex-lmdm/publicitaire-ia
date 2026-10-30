@@ -2,8 +2,12 @@
 """PACK SFX : la bibliothèque de bruitages pro (produit vendu à part), rangée dans ce dossier.
 
 Deux chemins, au choix du client :
-    installer <pack-sfx.zip>          l'archive qu'il a achetée (son INSTALL.md vise Monteur IA :
-                                      on ne le suit pas, on prend seulement les sons et leurs fiches) ;
+    installer [<pack-sfx.zip ou dossier>]
+                                      l'archive qu'il a achetée (son INSTALL.md vise Monteur IA :
+                                      on ne le suit pas, on prend seulement les sons et leurs fiches),
+                                      ou le dossier qu'un navigateur (Safari) en a décompressé tout
+                                      seul. Sans argument : le plus récent des pack-sfx*.zip et des
+                                      dossiers pack-sfx* de Téléchargements ;
     reprendre <dossier Monteur IA>    le pack déjà installé chez lui, lu sans rien y modifier.
 
 Ce qui est copié, et rien d'autre :
@@ -24,6 +28,9 @@ import posixpath
 import unicodedata
 import zipfile
 from pathlib import Path
+
+# Le dossier Téléchargements et le message d'un accès refusé, communs avec les musiques de lancement.
+from musiques import acces_refuse, telechargements
 
 SONS = "assets/sfx/pack/"
 FICHES = {
@@ -106,20 +113,78 @@ def _ecrire(racine: Path, copies: dict[str, bytes], source: str) -> dict:
     if e["manquants"]:
         raise ErreurPack(f"pack incomplet : {len(e['manquants'])} son(s) du catalogue absents "
                          f"(ex. {', '.join(e['manquants'][:3])}) ; l'archive est peut-être abîmée, retélécharge-la")
-    return {**e, "ecrits": ecrits, "identiques": identiques, "retires": retires}
+    return {**e, "ecrits": ecrits, "identiques": identiques, "retires": retires, "source": source}
 
 
 def installer_depuis_zip(racine: Path, archive: Path) -> dict:
     archive = Path(archive).expanduser()
-    if not archive.is_file():
-        raise ErreurPack(f"archive introuvable : {archive}")
     try:
+        if not archive.is_file():
+            raise ErreurPack(f"archive introuvable : {archive}")
         with zipfile.ZipFile(archive) as z:
             choix = selection(z.namelist())
             copies = {rel: z.read(nom) for nom, rel in choix.items()}
     except zipfile.BadZipFile as e:
         raise ErreurPack(f"{archive.name} n'est pas une archive ZIP lisible ({e})") from e
+    except PermissionError as e:
+        raise ErreurPack(acces_refuse(archive)) from e
     return _ecrire(racine, copies, f"archive {archive.name}")
+
+
+def installer_depuis_dossier(racine: Path, dossier: Path) -> dict:
+    """Le dossier qu'un navigateur a décompressé tout seul (Safari : « pack-sfx », « pack-sfx 2 ») : les
+    mêmes fichiers que l'archive, pris de la même façon (sons et fiches seulement)."""
+    dossier = Path(dossier).expanduser()
+    try:
+        fichiers = {p.relative_to(dossier).as_posix(): p for p in dossier.rglob("*") if p.is_file()}
+        choix = selection(list(fichiers))
+        copies = {rel: fichiers[nom].read_bytes() for nom, rel in choix.items()}
+    except PermissionError as e:
+        raise ErreurPack(acces_refuse(dossier)) from e
+    return _ecrire(racine, copies, f"dossier {dossier.name}")
+
+
+def installer(racine: Path, source: Path) -> dict:
+    """Depuis l'archive pack-sfx.zip, ou depuis le dossier décompressé à sa place."""
+    source = Path(source).expanduser()
+    try:
+        dossier = source.is_dir()
+    except PermissionError as e:
+        raise ErreurPack(acces_refuse(source)) from e
+    return installer_depuis_dossier(racine, source) if dossier else installer_depuis_zip(racine, source)
+
+
+def sources_par_defaut(dossier: Path | None = None) -> list[Path]:
+    """Les pack-sfx*.zip du dossier Téléchargements (« pack-sfx (1).zip » compris) et les dossiers
+    pack-sfx* qu'un navigateur a décompressés, du plus ancien au plus récent. Lève ErreurPack si
+    l'ordinateur refuse de lire ce dossier."""
+    d = dossier or telechargements()
+    try:
+        if not d.is_dir():
+            return []
+        trouves = [p for p in d.iterdir() if p.name.lower().startswith("pack-sfx")
+                   and ((p.is_file() and p.suffix.lower() == ".zip") or p.is_dir())]
+        return sorted(trouves, key=lambda p: p.stat().st_mtime)
+    except PermissionError as e:
+        raise ErreurPack(acces_refuse(d)) from e
+
+
+def installer_par_defaut(racine: Path, dossier: Path | None = None) -> dict:
+    """Le Pack SFX trouvé dans Téléchargements : le plus récent l'emporte ; s'il n'est pas lisible
+    (téléchargement interrompu, autre chose qu'un pack), le suivant, et ce qui a été écarté est rendu
+    dans « ignores »."""
+    d = dossier or telechargements()
+    sources = sources_par_defaut(d)
+    if not sources:
+        raise ErreurPack(f"aucun Pack SFX dans {d} (ni pack-sfx….zip, ni dossier pack-sfx décompressé) : "
+                         "télécharge le fichier pack-sfx.zip de ton achat, puis redemande, ou glisse-le ici")
+    ignores: list[str] = []
+    for source in reversed(sources):
+        try:
+            return {**installer(racine, source), "ignores": ignores}
+        except ErreurPack as e:
+            ignores.append(f"{source.name} : {e}")
+    raise ErreurPack(" ; ".join(ignores))
 
 
 def reprendre_depuis_monteur(racine: Path, dossier: Path) -> dict:

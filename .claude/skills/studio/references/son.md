@@ -37,8 +37,12 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
 Le client l'installe d'une phrase ; ne suis **jamais** l'INSTALL.md de l'archive (il vise Monteur IA) :
 
 - « Installe le Pack SFX depuis le fichier pack-sfx.zip de mon dossier Téléchargements » :
-  `python3 tools/studio_motion.py pack-sfx installer ~/Downloads/pack-sfx.zip` (Windows :
-  `%USERPROFILE%\Downloads\pack-sfx.zip`). Seuls les sons et leurs fiches sont copiés.
+  `python3 tools/studio_motion.py pack-sfx installer`, sans argument. Il prend le plus récent des
+  `pack-sfx*.zip` de Téléchargements, ou le dossier `pack-sfx` que Safari a décompressé tout seul ;
+  une archive ou un dossier rangé ailleurs se donne en argument (`pack-sfx installer
+  "<archive ou dossier>"`). Seuls les sons et leurs fiches sont copiés. « macOS refuse l'accès » :
+  dis-lui d'autoriser l'app de son assistant dans Réglages Système > Confidentialité et sécurité >
+  Fichiers et dossiers, ou de glisser le fichier ici.
 - « Reprends le Pack SFX de mon dossier Monteur IA » : `python3 tools/studio_motion.py pack-sfx
   reprendre "<dossier Monteur IA>"` (le chemin est dans `marque.json` → `monteur_ia` s'il a déjà
   repris sa marque ; sinon demande-le). Son dossier Monteur IA n'est jamais modifié.

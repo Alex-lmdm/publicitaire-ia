@@ -14,6 +14,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 RACINE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RACINE / "tools"))
@@ -115,6 +116,22 @@ class Installation(unittest.TestCase):
     def test_rien_a_installer(self):
         with self.assertRaisesRegex(musiques.ErreurMusiques, "aucune archive"):
             musiques.installer(self.racine, [])
+
+    def test_acces_refuse_a_telechargements(self):
+        """macOS protège Téléchargements : l'app de l'assistant doit y avoir été autorisée. Un message à
+        suivre, jamais une PermissionError brute."""
+        zip_, = self.zips("tech-minimale")
+        refus = PermissionError(1, "Operation not permitted")
+        with mock.patch.object(Path, "iterdir", side_effect=refus):
+            with self.assertRaisesRegex(musiques.ErreurMusiques, "glisse le fichier ici"):
+                musiques.sources_par_defaut(self.dl)
+        with mock.patch("zipfile.ZipFile", side_effect=refus):
+            with self.assertRaisesRegex(musiques.ErreurMusiques, "glisse le fichier ici"):
+                musiques.installer(self.racine, [zip_])
+        self.assertEqual(musiques.acces_refuse(self.dl, "darwin"),
+                         f"macOS refuse l'accès à {self.dl}. Autorise l'accès dans Réglages Système > Confidentialité "
+                         "et sécurité > Fichiers et dossiers, ou glisse le fichier ici.")
+        self.assertIn("glisse le fichier ici", musiques.acces_refuse(self.dl, "win32"))
 
     def test_archive_abimee_ou_etrangere(self):
         (self.dl / "musiques-x.zip").write_bytes(b"pas un zip")

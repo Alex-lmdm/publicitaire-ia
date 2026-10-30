@@ -28,6 +28,7 @@ import json
 import os
 import posixpath
 import re
+import sys
 import zipfile
 from pathlib import Path
 
@@ -130,17 +131,19 @@ def selection(noms: list[str], lire) -> dict[str, str]:
 
 def _lire_source(source: Path) -> dict[str, bytes]:
     """{chemin dans ce dossier: contenu} pour une archive ZIP ou un dossier décompressé."""
-    if source.is_dir():
-        fichiers = {p.relative_to(source).as_posix(): p for p in source.rglob("*") if p.is_file()}
-        # Le dossier donné peut être « musiques-lancement » lui-même, ou celui qui le contient.
-        choix = selection(list(fichiers), lambda n: fichiers[n].read_bytes())
-        return {dest: fichiers[nom].read_bytes() for nom, dest in choix.items()}
     try:
+        if source.is_dir():
+            fichiers = {p.relative_to(source).as_posix(): p for p in source.rglob("*") if p.is_file()}
+            # Le dossier donné peut être « musiques-lancement » lui-même, ou celui qui le contient.
+            choix = selection(list(fichiers), lambda n: fichiers[n].read_bytes())
+            return {dest: fichiers[nom].read_bytes() for nom, dest in choix.items()}
         with zipfile.ZipFile(source) as z:
             choix = selection(z.namelist(), z.read)
             return {dest: z.read(nom) for nom, dest in choix.items()}
     except zipfile.BadZipFile as e:
         raise ErreurMusiques(f"{source.name} n'est pas une archive ZIP lisible ({e}) : retélécharge-la") from e
+    except PermissionError as e:
+        raise ErreurMusiques(acces_refuse(source)) from e
 
 
 def telechargements() -> Path:
@@ -150,16 +153,35 @@ def telechargements() -> Path:
     return Path.home() / "Downloads"
 
 
+# Le geste à faire quand l'ordinateur refuse de lire Téléchargements (commun au Pack SFX).
+GESTE_ACCES = ("Autorise l'accès dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers, "
+               "ou glisse le fichier ici")
+
+
+def acces_refuse(chemin: Path, plateforme: str | None = None) -> str:
+    """Le message d'un accès refusé. Sur Mac, c'est la protection des dossiers personnels : l'app de
+    l'assistant (Terminal, Claude, Codex…) n'a pas reçu l'accès à Téléchargements, ou l'a vu refusé une
+    fois. Ailleurs, le fichier est le plus souvent encore ouvert par le navigateur."""
+    if (plateforme or sys.platform) == "darwin":
+        return f"macOS refuse l'accès à {chemin}. {GESTE_ACCES}."
+    return (f"accès refusé à {chemin} (fichier encore ouvert, téléchargement en cours ?) : réessaie dans "
+            "un instant, ou glisse le fichier ici.")
+
+
 def sources_par_defaut(dossier: Path | None = None) -> list[Path]:
     """Les archives musiques-*.zip du dossier Téléchargements (« musiques-tech-minimale (1).zip »
     compris), et les dossiers musiques-… qu'un navigateur ou Windows a décompressés (Safari en fait
-    « musiques-lancement », « musiques-lancement 2 »…). Ce qui n'est pas une ambiance est ignoré."""
+    « musiques-lancement », « musiques-lancement 2 »…). Ce qui n'est pas une ambiance est ignoré.
+    Lève ErreurMusiques si l'ordinateur refuse de lire ce dossier."""
     d = dossier or telechargements()
-    if not d.is_dir():
-        return []
-    trouves = [p for p in d.iterdir() if p.name.lower().startswith("musiques-")
-               and ((p.is_file() and p.suffix.lower() == ".zip") or p.is_dir())]
-    return sorted(trouves, key=lambda p: p.stat().st_mtime)   # le plus récent en dernier : il l'emporte
+    try:
+        if not d.is_dir():
+            return []
+        trouves = [p for p in d.iterdir() if p.name.lower().startswith("musiques-")
+                   and ((p.is_file() and p.suffix.lower() == ".zip") or p.is_dir())]
+        return sorted(trouves, key=lambda p: p.stat().st_mtime)   # le plus récent en dernier : il l'emporte
+    except PermissionError as e:
+        raise ErreurMusiques(acces_refuse(d)) from e
 
 
 def installer(racine: Path, sources: list[Path]) -> dict:
@@ -172,11 +194,13 @@ def installer(racine: Path, sources: list[Path]) -> dict:
     erreurs = []
     for source in sources:
         source = Path(source).expanduser()
-        if not source.exists():
-            erreurs.append(f"{source} introuvable")
-            continue
         try:
+            if not source.exists():
+                erreurs.append(f"{source} introuvable")
+                continue
             copies.update(_lire_source(source))
+        except PermissionError:
+            erreurs.append(acces_refuse(source))
         except ErreurMusiques as e:
             erreurs.append(f"{source.name} : {e}")
     if not copies:
