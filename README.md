@@ -98,7 +98,8 @@ dossier Monteur IA ».
 
 Ce qui t'appartient reste chez toi et n'est jamais remplacé par une mise à jour : `marque.json` et
 `marque/` (ta marque), `studio.config.json` (ton profil), `videos/` (tes vidéos), et le Pack SFX
-si tu l'as installé (`assets/sfx/pack/` et ses fiches), tes musiques de lancement (`assets/musiques/`).
+si tu l'as installé (`assets/sfx/pack/` et ses fiches), tes musiques de lancement (`assets/musiques/`),
+tes réglages de Claude Code pour ce dossier (`.claude/settings.local.json`).
 Rien de tout ça n'est dans le dépôt. Ta clé
 HeyGen, si tu en relies une, reste hors du dossier, dans `~/.heygen/credentials`.
 

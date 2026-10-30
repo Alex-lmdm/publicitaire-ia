@@ -39,6 +39,10 @@ __pycache__/
 # La voix de synthèse locale (voix.md, D), installée à part.
 /.venv-voix/
 
+# Les réglages de Claude Code propres à l'ordinateur du client (ses autorisations) : jamais versionnés,
+# jamais remplacés par une mise à jour.
+/.claude/settings.local.json
+
 # Caches : HyperFrames, registres des logos (une semaine).
 /.cache/
 .thumbnails/

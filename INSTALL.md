@@ -140,15 +140,28 @@ tout seul ; une archive ou un dossier rangé ailleurs se donne en argument. Ou `
 
 ## Mettre à jour
 
-Écris à l'IA : « Mets à jour Publicitaire IA ». Pour l'IA : dans le dossier, si c'est un clone git
-propre, `git pull --ff-only` ; sinon, télécharge l'archive de l'étape 0 et remplace les fichiers du
-dossier **sauf** ce qui appartient au client, qu'une nouvelle version ne contient jamais :
+Écris à l'IA : « Mets à jour Publicitaire IA ». Pour l'IA, dans le dossier :
+
+- **Il a un `.git/`** (installé avec git) : `git fetch origin`. Si `git status --porcelain
+  --untracked-files=no` affiche quelque chose, des fichiers du produit ont été modifiés dans ce
+  dossier : mets-les de côté avec `git stash push -m "avant mise à jour"` et dis-le-lui en une
+  phrase (« Des fichiers de Publicitaire IA avaient été modifiés : je les ai mis de côté, rien
+  n'est perdu. »). Puis `git merge --ff-only origin/main`. S'il refuse, ne force rien : diagnostic
+  en trois lignes.
+- **Pas de `.git/`** : télécharge l'archive de l'étape 0 dans un dossier temporaire, décompresse-la,
+  puis copie ses fichiers dans le dossier : **recopie par-dessus, n'efface rien**. Si le client a
+  déjà son propre `.claude/settings.json`, fusionne-le avec le nouveau : ses réglages restent, ceux
+  de la nouvelle version s'ajoutent.
+
+Ce qui appartient au client ne se touche jamais (une nouvelle version ne le contient pas) :
 `marque.json`, `studio.config.json`, les dossiers `marque/`, `videos/` et « Accueil … » (la vignette
-de l'app HyperFrames et son historique), et le Pack SFX (`assets/sfx/pack/`, `assets/sfx/catalog.json`,
+de l'app HyperFrames et son historique), le Pack SFX (`assets/sfx/pack/`, `assets/sfx/catalog.json`,
 `assets/sfx/sons-par-situation.md`, `assets/sfx/.pack-sfx-manifest.json`), les musiques de lancement
-(`assets/musiques/`) et le téléchargeur de vidéos (`.telechargeur-venv/`). Si le client a déjà son propre `.claude/settings.json`, fusionne-le avec le
-nouveau : ses réglages restent, ceux de la nouvelle version s'ajoutent. Puis refais les étapes 2,
-3 et 5.
+(`assets/musiques/`), le téléchargeur de vidéos (`.telechargeur-venv/`), la voix de synthèse locale
+(`.venv-voix/`), ses réglages de Claude Code pour ce dossier (`.claude/settings.local.json`) et
+l'historique git (`.git/`).
+
+Puis refais les étapes 2, 3 et 5.
 
 ## Problèmes courants
 

@@ -555,6 +555,20 @@ class Kit(unittest.TestCase):
             self.assertNotIn("../", css.read_text(encoding="utf-8"), css.name)
 
 
+class AuClient(unittest.TestCase):
+    def test_jamais_versionne(self):
+        """Ce qui appartient au client (INSTALL.md, « Mettre à jour ») n'entre jamais dans le dépôt : une mise
+        à jour par git ne peut donc pas l'écraser."""
+        import subprocess
+        chemins = [".claude/settings.local.json", ".venv-voix/bin/python", ".telechargeur-venv/bin/yt-dlp",
+                   "marque.json", "studio.config.json", "videos/Offre · 2026-10-30/OFFRE.json", "assets/musiques/LICENCE.md"]
+        r = subprocess.run(["git", "-c", "core.quotepath=off", "check-ignore", "--no-index", *chemins], cwd=RACINE,
+                           capture_output=True, text=True, encoding="utf-8")
+        if r.returncode == 128:
+            self.skipTest("pas un dépôt git")
+        self.assertEqual(sorted(r.stdout.splitlines()), sorted(chemins))
+
+
 class Planche(unittest.TestCase):
     def test_un_par_seconde_et_derniere_image(self):
         t = sm.instants_planche(3.0, None)
