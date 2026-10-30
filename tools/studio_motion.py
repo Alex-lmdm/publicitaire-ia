@@ -528,13 +528,59 @@ def meta_de(chemin: Path) -> dict | None:
 # ---------------------------------------------------------------------------
 # Commandes
 # ---------------------------------------------------------------------------
-def node_ok() -> bool:
-    """Node 22 ou plus, trouvé dans le PATH (celui que npm et npx utiliseront)."""
+NODE_MIN = (22, 12)      # puppeteer-core, le navigateur piloté par HyperFrames, exige Node 22.12
+
+
+def version_node(texte: str) -> tuple[int, int] | None:
+    """« v22.12.0 » -> (22, 12) ; None si la sortie de `node --version` est illisible."""
+    m = re.match(r"\s*v?(\d+)\.(\d+)", texte or "")
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
+def node_installe() -> tuple[bool, str]:
+    """(Node 22.12 ou plus ?, version trouvée) pour le Node du PATH, celui que npm et npx utiliseront."""
     node = shutil.which("node")
     if not node:
-        return False
-    m = re.match(r"v(\d+)", lancer([node, "--version"]).stdout.strip())
-    return bool(m) and int(m.group(1)) >= 22
+        return False, ""
+    sortie = lancer([node, "--version"]).stdout.strip()
+    v = version_node(sortie)
+    return bool(v) and v >= NODE_MIN, sortie
+
+
+def app_hyperframes(plateforme: str | None = None, maison: Path | None = None, env=None,
+                    applications: Path = Path("/Applications")) -> Path | None:
+    """L'app HyperFrames installée, cherchée comme scripts/app-hyperframes.mjs la cherche : sur Mac dans
+    /Applications ou ~/Applications ; sous Windows là où son installateur la pose
+    (LOCALAPPDATA\\Programs\\HyperFrames\\HyperFrames.exe). Ailleurs, rien."""
+    plateforme = plateforme or sys.platform
+    maison = maison or Path.home()
+    env = os.environ if env is None else env
+    if plateforme.startswith("win"):
+        exe = Path(env["LOCALAPPDATA"]) / "Programs" / "HyperFrames" / "HyperFrames.exe" if env.get("LOCALAPPDATA") else None
+        return exe if exe and exe.is_file() else None
+    if plateforme == "darwin":
+        return next((a for a in (applications / "HyperFrames.app", maison / "Applications" / "HyperFrames.app")
+                     if a.is_dir()), None)
+    return None
+
+
+def ligne_app(app: Path | None, plateforme: str | None = None, maison: Path | None = None, env=None) -> str | None:
+    """La ligne de `verifier` sur l'app HyperFrames : branchée ou pas (la variable posée par `npm run app --
+    brancher` dans la config de Claude Code, CLAUDE_CONFIG_DIR compris, comme Claude Code la lit)."""
+    if not app:
+        return None
+    plateforme = plateforme or sys.platform
+    env = os.environ if env is None else env
+    config = Path(env["CLAUDE_CONFIG_DIR"]) if env.get("CLAUDE_CONFIG_DIR") else (maison or Path.home()) / ".claude"
+    try:
+        reglages = json.loads((config / "settings.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        reglages = {}
+    variables = reglages.get("env") if isinstance(reglages, dict) else None
+    if isinstance(variables, dict) and variables.get("CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD") == "1":
+        return "ℹ️ app HyperFrames : installée et branchée"
+    npm = "npm.cmd" if plateforme.startswith("win") else "npm"
+    return f"ℹ️ app HyperFrames : installée, pas encore branchée (`{npm} run app -- brancher`, étape 4 d'INSTALL.md)"
 
 
 def cmd_verifier(_a) -> None:
@@ -543,6 +589,7 @@ def cmd_verifier(_a) -> None:
         style_et_accueil(r)
     ok = True
     python_ok = sys.version_info >= (3, 9)
+    node_bon, node_version = node_installe()
     for nom, present in (
         ("dossier complet", (r / "produit.json").is_file() and (r / "tools" / "marque.py").is_file()),
         ("Python 3.9 ou plus", python_ok),
@@ -556,7 +603,7 @@ def cmd_verifier(_a) -> None:
         ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
         ("ffmpeg", binaire("ffmpeg") is not None),
         ("ffprobe", binaire("ffprobe") is not None),
-        ("Node 22 ou plus", node_ok()),
+        ("Node 22.12 ou plus" + (f" (trouvé : {node_version})" if node_version and not node_bon else ""), node_bon),
     ):
         print(f"{'✅' if present else '❌'} {nom}")
         ok = ok and present
@@ -567,15 +614,9 @@ def cmd_verifier(_a) -> None:
     print(f"ℹ️ musiques de lancement : {mus['total']} installées"
           + (f" (il manque : {', '.join(mus['absentes'])})" if mus["absentes"] else "") if mus["installe"]
           else "ℹ️ musiques de lancement : pas installées (le bonus de la formation : `musiques installer`)")
-    app = Path("/Applications/HyperFrames.app")
-    if sys.platform == "darwin" and app.is_dir():
-        try:
-            reglages = json.loads((Path.home() / ".claude" / "settings.json").read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            reglages = {}
-        branchee = str((reglages.get("env") or {}).get("CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD", "")) == "1"
-        print("ℹ️ app HyperFrames : installée et branchée" if branchee else
-              "ℹ️ app HyperFrames : installée, pas encore branchée (`npm run app -- brancher`, étape 4 d'INSTALL.md)")
+    app = ligne_app(app_hyperframes())
+    if app:
+        print(app)
     source_hg = heygen.source_cle()
     print("ℹ️ HeyGen : relié (voix de synthèse)" if source_hg not in (None, "oauth") else
           "ℹ️ HeyGen : connecté par le navigateur, sans clé lisible ici (`heygen` explique comment la relier)"

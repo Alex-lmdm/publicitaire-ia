@@ -124,7 +124,8 @@ def installer() -> str:
     if not py.exists():
         base = python_recent()
         if not base:
-            conseil = ("brew install python@3.12" if sys.platform == "darwin"
+            conseil = ("brew install python@3.12 (sans Homebrew : son installeur Homebrew.pkg, étape 1 d'INSTALL.md, "
+                       "jamais son script install.sh)" if sys.platform == "darwin"
                        else "winget install -e --id Python.Python.3.12" if WIN else "sudo apt install python3.12-venv")
             raise ErreurTelechargeur("il faut un Python 3.10 ou plus récent pour le téléchargeur (celui de "
                                      f"l'ordinateur est plus ancien) : {conseil}, puis relance l'installation.")

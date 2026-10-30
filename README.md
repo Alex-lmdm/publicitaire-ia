@@ -63,7 +63,7 @@ te permet aussi de la regarder et de la retoucher à la souris.
 
 Dans Claude Code ou Codex : « Télécharge Publicitaire IA depuis
 https://github.com/Alex-lmdm/publicitaire-ia et suis les instructions d'installation de son
-INSTALL.md ». Détail : [INSTALL.md](INSTALL.md). Il faut Node 22 ou plus, Python 3.9 ou plus et
+INSTALL.md ». Détail : [INSTALL.md](INSTALL.md). Il faut Node 22.12 ou plus, Python 3.9 ou plus et
 ffmpeg (l'IA les installe avec ton accord) ; l'app HyperFrames est en option.
 
 **Les 17 musiques de lancement** (offertes avec la formation) s'installent d'une phrase, une fois

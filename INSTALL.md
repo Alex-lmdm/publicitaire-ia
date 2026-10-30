@@ -26,15 +26,22 @@ maintenant. Garde les noms des fichiers et des commandes tels quels. Ne passe ja
 suivante si l'étape en cours a échoué ; en cas d'échec, diagnostique en trois lignes (message
 d'erreur → cause probable → UNE action corrective), puis retente.
 
+Sous Windows : `npm.cmd` et `npx.cmd` au lieu de `npm` et `npx` (PowerShell refuse souvent leurs
+scripts `.ps1`), et `python` au lieu de `python3` (ou `py -3` si `python` ne répond pas).
+
 **0. Le dossier.** Si le dossier courant contient déjà `produit.json` et
 `tools/studio_motion.py`, c'est lui : passe à l'étape 1 (si tu es dans une vignette « Accueil … »
 de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
 
-- Emplacement : `~/Movies/Publicitaire IA` sur Mac, `%USERPROFILE%\Videos\Publicitaire IA` sous
-  Windows. Évite Documents et le Bureau : souvent synchronisés avec iCloud ou OneDrive, qui
-  retirent les fichiers du disque pour faire de la place.
-- Si ce dossier existe déjà et contient `produit.json`, c'est une **mise à jour** : voir « Mettre
-  à jour » plus bas, et ne touche à rien de ce qui appartient au client.
+- Emplacement : `~/Movies/Publicitaire IA` sur Mac, `~/Videos/Publicitaire IA` sous Windows.
+  Évite Documents et le Bureau : souvent synchronisés avec iCloud ou OneDrive, qui retirent les
+  fichiers du disque pour faire de la place. Entre guillemets, `~` ne se développe pas : dans une
+  commande, écris `"$HOME/Movies/Publicitaire IA"` (Mac), `"$HOME/Videos/Publicitaire IA"` (Git
+  Bash) ou `"$env:USERPROFILE\Videos\Publicitaire IA"` (PowerShell).
+- Si ce dossier existe déjà et contient `produit.json` : sans `node_modules/`, l'installation a été
+  interrompue (pour rouvrir l'assistant, par exemple) : reprends à l'étape 1, dans ce dossier. Avec
+  `node_modules/`, c'est une **mise à jour** : voir « Mettre à jour » plus bas, et ne touche à rien
+  de ce qui appartient au client.
 - Sinon, avec git : `git clone https://github.com/Alex-lmdm/publicitaire-ia.git "<emplacement>"`.
   Sans git : télécharge `https://github.com/Alex-lmdm/publicitaire-ia/archive/refs/heads/main.zip`
   dans un dossier temporaire, décompresse-le, et range le dossier `publicitaire-ia-main` à
@@ -42,31 +49,55 @@ de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
 - Travaille ensuite **dans ce dossier**, et dis au client qu'il y ouvrira son assistant pour ses
   vidéos.
 
-**1. Bilan, sans rien installer.** `node --version` (22 ou plus), `python3 --version` (3.9 ou plus ;
-Windows : `python --version`), `ffmpeg -version`. Montre un tableau ✅ / ❌. S'il manque quelque
-chose, dis en une phrase ce que tu vas installer et attends qu'il réponde « go » :
+**1. Bilan, sans rien installer.** `node --version` (22.12 ou plus), `python3 --version` (3.9 ou
+plus), `ffmpeg -version`. Montre un tableau ✅ / ❌. S'il manque quelque chose, dis en une phrase ce
+que tu vas installer **et les fenêtres qui vont s'ouvrir**, puis attends qu'il réponde « go » :
 
-- Mac : Homebrew s'il manque (https://brew.sh), puis `brew install node ffmpeg` ; pour Python,
-  accepter l'installation des « outils de développement » que le Mac propose.
-- Windows : `winget install -e --id OpenJS.NodeJS.LTS`, `winget install -e --id Python.Python.3.12`,
-  `winget install -e --id Gyan.FFmpeg`, puis lui faire fermer et rouvrir l'assistant (sinon le
-  nouveau chemin n'est pas vu). Sous Windows, les commandes `python3` s'écrivent `python` (ou `py -3`
-si `python` ne répond pas).
+- **Mac.** Tu n'as pas de terminal où taper son mot de passe : chaque installeur officiel s'ouvre
+  dans une fenêtre du Mac, où **il** clique et tape le mot de passe de son Mac. Annonce-le avant le
+  « go », par exemple : « Il manque Node et ffmpeg. Je télécharge leurs installeurs officiels :
+  deux fenêtres du Mac vont s'ouvrir, tu y cliqueras « Continuer » puis « Installer » et tu
+  taperas le mot de passe de ton Mac. Réponds « go ». » **Jamais le script `curl … install.sh` de
+  Homebrew** : sans terminal, il s'arrête sur « Need sudo access ». Dans cet ordre, en attendant
+  après chaque fenêtre qu'il te dise que l'installation est finie :
+  - Python manque : `python3 --version` fait apparaître la fenêtre des « outils de développement »
+    du Mac ; il clique « Installer » (quelques minutes). Fenêtre fermée par erreur :
+    `xcode-select --install` la rouvre.
+  - Node manque, ou est plus ancien que 22.12 : l'installeur officiel de la dernière version LTS
+    (environ 100 Mo), téléchargé dans Téléchargements, puis ouvert :
+    ```bash
+    V=$(curl -fsSL https://nodejs.org/dist/index.tab | awk -F'\t' 'NR>1 && $10 != "-" && !v {v=$1} END {print v}')
+    curl -fL -o ~/Downloads/node-$V.pkg "https://nodejs.org/dist/$V/node-$V.pkg" && open ~/Downloads/node-$V.pkg
+    ```
+  - ffmpeg manque : si Homebrew est là (`brew --version`), `brew install ffmpeg`. Sinon, d'abord
+    l'installeur officiel de Homebrew (dernière version, environ 150 Mo), même geste :
+    ```bash
+    curl -fL -o ~/Downloads/Homebrew.pkg https://github.com/Homebrew/brew/releases/latest/download/Homebrew.pkg && open ~/Downloads/Homebrew.pkg
+    ```
+    puis `brew install ffmpeg` (sur puce Apple, `/opt/homebrew/bin/brew install ffmpeg` tant que
+    l'assistant n'a pas été rouvert).
+- **Windows** : `winget install -e --id OpenJS.NodeJS.LTS`, `winget install -e --id Python.Python.3.12`,
+  `winget install -e --id Gyan.FFmpeg`.
+- Après une installation, Mac ou Windows, fais-lui fermer et rouvrir l'assistant (sinon le nouveau
+  chemin n'est pas vu), ouvert dans le dossier Publicitaire IA, puis écrire « Continue
+  l'installation de Publicitaire IA avec son INSTALL.md » : reprends alors ici, au bilan.
 
-**2. `npm ci`** à la racine du dossier : il installe HyperFrames et GSAP aux versions prévues, puis
-prépare le dossier (instructions de l'assistant, style de départ, vignette d'accueil, copie des
-skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est fait. Si la sortie se
-termine par « sync incomplet », lance `npm run sync` : il doit finir par « ok ».
+**2. `npm ci`** à la racine du dossier (Windows : `npm.cmd ci`) : il installe HyperFrames et GSAP aux
+versions prévues, puis prépare le dossier (instructions de l'assistant, style de départ, vignette
+d'accueil, copie des skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est
+fait. Si la sortie contient « sync incomplet », lance `npm run sync` : il doit finir par « ok ».
 
-**3. `npx hyperframes browser ensure`** : le navigateur qui fabrique les images de la vidéo (il
-garde celui qui est déjà là). Jamais `npx puppeteer browsers install`.
+**3. `npx hyperframes telemetry disable`**, puis **`npx hyperframes browser ensure`** (Windows :
+`npx.cmd hyperframes …`). Le premier coupe les statistiques d'usage que HyperFrames enverrait
+sinon : rien ne quitte l'ordinateur du client. Le second installe le navigateur qui fabrique les
+images de la vidéo (il garde celui qui est déjà là). Jamais `npx puppeteer browsers install`.
 
 **4. App HyperFrames** (seulement si elle est installée : `/Applications/HyperFrames.app` sur Mac,
-`%LOCALAPPDATA%\Programs\HyperFrames\HyperFrames.exe` sous Windows ; `npm run app -- etat` le dit) :
-`npm run app -- brancher`. Il permet à l'app de lire les instructions de ce dossier : une ligne
-ajoutée à la configuration de Claude Code (`~/.claude/settings.json`), avec une sauvegarde. Rien
-d'autre n'est modifié, ni la configuration de Codex. Explique-le en une phrase avant. Sans l'app,
-saute cette étape.
+`$env:LOCALAPPDATA\Programs\HyperFrames\HyperFrames.exe` sous Windows ; `npm run app -- etat` le
+dit) : `npm run app -- brancher` (Windows : `npm.cmd run app -- brancher`). Il permet à l'app de
+lire les instructions de ce dossier : une ligne ajoutée à la configuration de Claude Code
+(`~/.claude/settings.json`), avec une sauvegarde. Rien d'autre n'est modifié, ni la configuration
+de Codex. Explique-le en une phrase avant. Sans l'app, saute cette étape.
 
 **5. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
 Les lignes « marque pas encore réglée », « Pack SFX : pas installé » et « musiques de lancement :
@@ -123,9 +154,11 @@ nouveau : ses réglages restent, ceux de la nouvelle version s'ajoutent. Puis re
 
 - **« produit.json introuvable »** : l'assistant n'est pas ouvert dans le dossier Publicitaire IA.
   Ouvre-le (celui qui contient `INSTALL.md`), puis redemande.
-- **❌ HyperFrames ou GSAP** : `npm ci` n'est pas allé au bout (connexion coupée, Node trop ancien).
-  Vérifie `node --version`, puis relance `npm ci`.
-- **❌ ffmpeg** juste après l'avoir installé (Windows) : ferme et rouvre l'assistant.
+- **❌ HyperFrames ou GSAP** : `npm ci` n'est pas allé au bout (connexion coupée, Node plus ancien
+  que 22.12). Vérifie `node --version`, puis relance `npm ci`.
+- **❌ ffmpeg ou Node** juste après les avoir installés : ferme et rouvre l'assistant.
+- **« Need sudo access »** pendant l'installation de Homebrew : c'est son script, lancé sans
+  terminal. Prends son installeur `Homebrew.pkg` (étape 1).
 - **La lecture de ta page échoue** (page protégée, page de paiement) : donne deux ou trois captures
   d'écran de ta page, ça suffit pour ta marque et ton offre.
 - **Une police remplacée dans la vidéo** : dis « ma police est X » ; l'assistant la récupère

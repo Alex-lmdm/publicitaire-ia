@@ -82,7 +82,8 @@ LinkedIn, X, YouTube).
   (`--help` les liste). Toujours lancé depuis le dossier indiqué par le skill.
 - `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir "<projet>"` : ouvre un projet de vidéo dans l'app
   HyperFrames (depuis un projet : `node ../../../scripts/app-hyperframes.mjs ouvrir .`).
-- `npx hyperframes …` (version figée dans `package.json`) : capture, check, snapshot, render.
+- `npx hyperframes …` (version figée dans `package.json`) : capture, check, snapshot, render. Sous
+  Windows, `npx.cmd` et `npm.cmd` au lieu de `npx` et `npm` (PowerShell refuse souvent leurs scripts).
 - Skills : `studio` (la méthode), `hyperframes-core` (contrat d'une composition),
   `hyperframes-animation` (effets), `hyperframes-cli` (commandes).
 

@@ -80,6 +80,56 @@ class Videos(unittest.TestCase):
         self.assertLessEqual(sm.SUPPORTS["page"]["ideal"][1], 120)
 
 
+class Installation(unittest.TestCase):
+    def test_node_22_12_au_moins(self):
+        """puppeteer-core (le navigateur de HyperFrames) exige Node 22.12 : un 22.11 passait `verifier`."""
+        self.assertEqual(sm.version_node("v22.12.0\n"), (22, 12))
+        self.assertGreaterEqual(sm.version_node("v26.13.0"), sm.NODE_MIN)
+        self.assertLess(sm.version_node("v22.11.0"), sm.NODE_MIN)
+        self.assertLess(sm.version_node("v20.19.5"), sm.NODE_MIN)
+        self.assertIsNone(sm.version_node(""))
+        with mock.patch("shutil.which", return_value="/usr/local/bin/node"), \
+             mock.patch.object(sm, "lancer", return_value=mock.Mock(stdout="v22.11.0\n")):
+            self.assertEqual(sm.node_installe(), (False, "v22.11.0"))
+        with mock.patch("shutil.which", return_value=None):
+            self.assertEqual(sm.node_installe(), (False, ""))
+
+    def test_app_hyperframes_sur_mac_et_sous_windows(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            applications, maison, local = d / "Applications", d / "maison", d / "AppData" / "Local"
+            for p in (applications, maison):
+                p.mkdir()
+            self.assertIsNone(sm.app_hyperframes("darwin", maison, {}, applications))
+            (maison / "Applications" / "HyperFrames.app").mkdir(parents=True)
+            self.assertEqual(sm.app_hyperframes("darwin", maison, {}, applications), maison / "Applications" / "HyperFrames.app")
+            (applications / "HyperFrames.app").mkdir()
+            self.assertEqual(sm.app_hyperframes("darwin", maison, {}, applications), applications / "HyperFrames.app")
+            exe = local / "Programs" / "HyperFrames" / "HyperFrames.exe"
+            self.assertIsNone(sm.app_hyperframes("win32", maison, {"LOCALAPPDATA": str(local)}, applications))
+            exe.parent.mkdir(parents=True)
+            exe.write_bytes(b"MZ")
+            self.assertEqual(sm.app_hyperframes("win32", maison, {"LOCALAPPDATA": str(local)}, applications), exe)
+            self.assertIsNone(sm.app_hyperframes("win32", maison, {}, applications))
+            self.assertIsNone(sm.app_hyperframes("linux", maison, {}, applications))
+
+    def test_ligne_de_l_app(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = Path(d)
+            app = maison / "HyperFrames.exe"
+            self.assertIsNone(sm.ligne_app(None, "win32", maison, {}))
+            self.assertIn("`npm.cmd run app -- brancher`", sm.ligne_app(app, "win32", maison, {}))
+            self.assertIn("`npm run app -- brancher`", sm.ligne_app(app, "darwin", maison, {}))
+            config = maison / "config-claude"
+            config.mkdir()
+            (config / "settings.json").write_text('{"env": {"CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD": "1"}}',
+                                                  encoding="utf-8")
+            self.assertEqual(sm.ligne_app(app, "win32", maison, {"CLAUDE_CONFIG_DIR": str(config)}),
+                             "ℹ️ app HyperFrames : installée et branchée")
+            (config / "settings.json").write_text('["pas un objet"]', encoding="utf-8")
+            self.assertIn("pas encore branchée", sm.ligne_app(app, "darwin", maison, {"CLAUDE_CONFIG_DIR": str(config)}))
+
+
 class Lecture(unittest.TestCase):
     def test_plancher(self):
         self.assertEqual(sm.lecture("Nouveau"), 0.8)
