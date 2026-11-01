@@ -177,23 +177,9 @@ son format (et se raccourcit pour une story), elle ne se recadre pas.
 Une voix off sur une vidéo déjà faite (« ajoute une voix off ») : [voix.md](references/voix.md),
 le texte d'abord, validé ; la version avec voix s'ajoute à côté de l'originale.
 
-## Le Pack SFX
+## Pack SFX et musiques de lancement
 
-Bibliothèque de 156 bruitages pro, vendue à part. « Installe le Pack SFX depuis pack-sfx.zip… » ou
-« reprends le Pack SFX de mon dossier Monteur IA » : suis [son.md](references/son.md), section
-« Le Pack SFX » (`studio_motion.py pack-sfx installer` ou `reprendre`), jamais l'INSTALL.md de
-l'archive. Une fois installé, le choix des bruitages pioche d'abord dans ses sons.
-
-## Les musiques de lancement
-
-17 musiques offertes avec la formation, en un fichier (musiques-lancement.zip, cinq ambiances
-dedans). « Installe mes 17 musiques de
-lancement depuis mon dossier Téléchargements » (ou « installe mes musiques ») : suis
-[son.md](references/son.md), section « Les musiques de lancement »
-(`studio_motion.py musiques installer`). Une fois installées, elles sont la musique de chaque
-vidéo, sauf s'il donne la sienne : `musiques choisir` propose les meilleures pour son but et son
-support, `musiques prendre` la cale. Aucune ne lui plaît : les 18 musiques gratuites de Mixkit de
-sa formation (son.md, « Les 18 musiques de Mixkit »).
+Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une archive).
 
 ## Ce que tu ne fais jamais
 
