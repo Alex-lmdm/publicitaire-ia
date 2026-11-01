@@ -11,7 +11,7 @@ la demande lui-même, dis-le-lui une fois avant de chercher.
 |---|---|
 | Chercher, écouter et prendre une musique | gratuit (le solde ne bouge pas) |
 | Écouter les voix de synthèse | gratuit |
-| Générer une voix off de synthèse | payant, prélevé sur son solde HeyGen : environ 0,12 $ la minute ; le compte gratuit n'a pas de solde, il se recharge de quelques dollars |
+| Générer une voix off de synthèse | payant, prélevé sur son solde HeyGen : le coût que l'outil affiche avant de générer ; le compte gratuit n'a pas de solde, il se recharge de quelques dollars |
 
 Tout passe par `python3 tools/studio_motion.py heygen …` (`connecter` et l'état depuis la racine ;
 `musiques`, `bruitages`, `prendre`, `voix` et `parler` depuis le projet d'une vidéo, avec

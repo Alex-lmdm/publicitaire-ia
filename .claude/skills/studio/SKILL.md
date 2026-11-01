@@ -26,8 +26,8 @@ Où lancer quoi (Windows : `python`, ou `py -3` si `python` ne répond pas) :
   `offre`, `reference`, `livrer` (avec le chemin du dossier de la vidéo, `videos/<sujet> · <date>`) ;
 - **depuis le projet d'une vidéo** (le dossier qui contient `index.html`), `python3
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir` et `musiques prendre`,
-  `heygen bruitages`, `prendre`,
-  `voix` et `parler`, `musique`, `sons`,
+  `heygen bruitages`, `heygen prendre`,
+  `heygen voix` et `heygen parler`, `musique`, `sons`,
   `rythme`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
   `export`), avec `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
