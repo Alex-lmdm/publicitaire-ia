@@ -188,7 +188,7 @@
     $("t7o-conclusion").style.fontSize = "76px";
   }
   // fin : logo, nom, pastille, poussière claire
-  if (R.logo) $("t7o-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t7o-logo").style.display = "none";
+  if (R.logo) $("t7o-logo").innerHTML = '<img src="' + R.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t7o-logo").style.display = "none";
   $("t7o-nom").textContent = R.nom; $("t7o-pastille").textContent = R.appel;
   $("t7o-nom").style.fontSize = Math.min(150, Math.round((0.84 * L - (R.logo ? 190 : 0)) / (R.nom.length * 0.58))) + "px";
   var svg = $("t7o-pixels"), NS = "http://www.w3.org/2000/svg";

@@ -58,11 +58,15 @@ LinkedIn, X, YouTube).
   jamais l'INSTALL.md de l'archive** : il vise Monteur IA. Détail : skill `studio`, `references/son.md`.
 
 - **L'app HyperFrames** (gratuite, pour regarder et retoucher ses vidéos à la souris) :
-  - « J'ai installé l'app HyperFrames : branche-la sur {{PRODUIT}} » : dis en une phrase ce qui
-    change (une ligne ajoutée à la configuration de Claude Code, `~/.claude/settings.json`, avec une
-    sauvegarde ; rien d'autre, ni Codex), puis `node {{MAISON}}scripts/app-hyperframes.mjs brancher`,
-    et « C'est branché : dans l'app, ouvre une nouvelle conversation. » L'app pas encore installée
-    (`node {{MAISON}}scripts/app-hyperframes.mjs etat` le dit) : son lien, https://hyperframes.studio/studio.
+  - « J'ai installé l'app HyperFrames : branche-la sur {{PRODUIT}} » : `node
+    {{MAISON}}scripts/app-hyperframes.mjs etat`. « Téléchargée, pas encore rangée » (Windows, un ZIP) :
+    `node {{MAISON}}scripts/app-hyperframes.mjs installer` d'abord ; pas téléchargée : son lien,
+    https://hyperframes.studio/studio. {{#CLAUDE_CODE}}Dis en une phrase ce qui change (une ligne ajoutée à
+    la configuration de Claude Code, `~/.claude/settings.json`, avec une sauvegarde ; rien d'autre), puis
+    `node {{MAISON}}scripts/app-hyperframes.mjs brancher`.{{/CLAUDE_CODE}}{{#CODEX}}Rien à brancher pour
+    Codex : l'app lit AGENTS.md toute seule.{{/CODEX}} Puis `node {{MAISON}}scripts/app-hyperframes.mjs
+    ouvrir "{{MAISON}}Accueil {{PRODUIT}}"`, et « L'app est ouverte sur l'accueil de {{PRODUIT}} :
+    écris-y un premier message pour connecter ton assistant. »
   - « Ouvre ma dernière vidéo dans l'app HyperFrames » : le projet de `{{MAISON}}videos/` retouché le
     plus récemment (son `index.html`), puis `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir
     "<projet>"`.

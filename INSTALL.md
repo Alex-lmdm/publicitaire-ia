@@ -100,7 +100,9 @@ images de la vidéo (il garde celui qui est déjà là). Jamais `npx puppeteer b
 
 **4. App HyperFrames** (seulement si elle est installée : `/Applications/HyperFrames.app` sur Mac,
 `$env:LOCALAPPDATA\Programs\HyperFrames\HyperFrames.exe` sous Windows ; `npm run app -- etat` le
-dit) : `npm run app -- brancher` (Windows : `npm.cmd run app -- brancher`). Il permet à l'app de
+dit ; sous Windows, depuis le 2 novembre 2026, elle arrive en ZIP : « téléchargée, pas encore
+rangée » → `npm.cmd run app -- installer`, qui la range là et l'ajoute au menu Démarrer) :
+`npm run app -- brancher` (Windows : `npm.cmd run app -- brancher`). Il permet à l'app de
 lire les instructions de ce dossier : une ligne ajoutée à la configuration de Claude Code
 (`~/.claude/settings.json`), avec une sauvegarde. Rien d'autre n'est modifié, ni la configuration
 de Codex. Explique-le en une phrase avant. Sans l'app, saute cette étape.

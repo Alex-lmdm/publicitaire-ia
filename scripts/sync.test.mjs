@@ -59,7 +59,12 @@ test("les phrases de l'app HyperFrames ont leur consigne, à la racine comme dan
     for (const fichier of ["CLAUDE.md", "AGENTS.md"]) {
       const texte = fs.readFileSync(path.join(lieu, fichier), "utf8").replace(/\s+/g, " ");
       assert.ok(texte.includes(`« J'ai installé l'app HyperFrames : branche-la sur ${nom} »`), `${fichier} : brancher`);
-      assert.ok(texte.includes(`node ${maison}scripts/app-hyperframes.mjs brancher`), `${fichier} : la commande`);
+      // Seul Claude Code se branche ; Codex lit AGENTS.md tout seul (sinon il écrirait hors du dossier).
+      assert.equal(texte.includes(`node ${maison}scripts/app-hyperframes.mjs brancher`), fichier === "CLAUDE.md", `${fichier} : la commande`);
+      if (fichier === "AGENTS.md") assert.ok(texte.includes("Rien à brancher pour Codex"), `${fichier} : rien à brancher`);
+      // Windows : l'app arrive en ZIP ; puis l'app s'ouvre sur l'accueil, avant le premier message.
+      assert.ok(texte.includes(`node ${maison}scripts/app-hyperframes.mjs installer`), `${fichier} : installer`);
+      assert.ok(texte.includes(`ouvrir "${maison}Accueil ${nom}"`), `${fichier} : l'accueil`);
       assert.ok(texte.includes("« Ouvre ma dernière vidéo dans l'app HyperFrames »"), `${fichier} : ouvrir`);
       assert.ok(texte.includes(`node ${maison}scripts/app-hyperframes.mjs ouvrir`), `${fichier} : ouvrir`);
       assert.ok(texte.includes("« Mets à jour la livraison de ma vidéo »"), `${fichier} : livraison`);

@@ -141,7 +141,7 @@
   });
   R.suite.forEach(function (m, i) { K.el($("t7a-suite"), "span", "t7a-s", m + (i < R.suite.length - 1 ? "&nbsp;" : "")); });
   if (vertical) { ligne.style.fontSize = "92px"; $("t7a-suite").style.fontSize = "100px"; $("t7a-geant").style.fontSize = "200px"; }
-  if (R.logo) $("t7a-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t7a-logo").style.display = "none";
+  if (R.logo) $("t7a-logo").innerHTML = '<img src="' + R.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t7a-logo").style.display = "none";
   $("t7a-nom").textContent = R.nom;
   // un nom long tient dans l'image (environ 0,58 em par lettre en graisse 600)
   $("t7a-nom").style.fontSize = Math.min(150, Math.round((0.84 * L - (R.logo ? 190 : 0)) / (R.nom.length * 0.58))) + "px";

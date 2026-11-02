@@ -5,6 +5,7 @@
  *   node scripts/app-hyperframes.mjs etat               où en est le branchement (ne modifie rien)
  *   node scripts/app-hyperframes.mjs brancher           l'app lit désormais les instructions du projet
  *   node scripts/app-hyperframes.mjs ouvrir <dossier>   ouvre un projet (accueil ou vidéo) dans l'app
+ *   node scripts/app-hyperframes.mjs installer          Windows : range l'app téléchargée en ZIP
  *
  * Le chemin du script se donne depuis là où l'on est : depuis un projet de vidéo
  * (`videos/<vidéo>/<format>/`, qui a son propre package.json, donc pas de `npm run app`),
@@ -134,6 +135,90 @@ export function findApp({ platform = process.platform, home = os.homedir(), env 
   return ["/Applications/HyperFrames.app", path.join(home, "Applications", "HyperFrames.app")].find(exists) ?? null;
 }
 
+// ---------------------------------------------------------------------------
+// Windows : l'app arrive en ZIP (depuis le 02/11/2026)
+// ---------------------------------------------------------------------------
+/** Le dossier de l'app dans le ZIP de HyperFrames pour Windows (HyperFrames-win-x64.zip). */
+export const DOSSIER_WIN = "HyperFrames-win32-x64";
+
+/** Ce que l'élève a téléchargé : le dossier déjà décompressé (« Extraire tout » le met dans
+ *  HyperFrames-win-x64\, ou il est à la racine de Téléchargements), sinon le ZIP le plus récent. */
+export function sourceWindows(downloads, { p = path.win32, fsx = fs } = {}) {
+  let entries = [];
+  try {
+    entries = fsx.readdirSync(downloads, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  const dossiers = entries.filter((e) => e.isDirectory() && /^HyperFrames-win/i.test(e.name))
+    .flatMap((e) => [p.join(downloads, e.name), p.join(downloads, e.name, DOSSIER_WIN)])
+    .filter((d) => fsx.existsSync(p.join(d, "HyperFrames.exe")));
+  if (dossiers.length) return { dossier: dossiers[0] };
+  const zips = entries.filter((e) => e.isFile() && /^HyperFrames-win.*\.zip$/i.test(e.name))
+    .map((e) => p.join(downloads, e.name))
+    .sort((a, b) => fsx.statSync(b).mtimeMs - fsx.statSync(a).mtimeMs);
+  return zips.length ? { zip: zips[0] } : null;
+}
+
+/** Range l'app là où son ancien installeur la posait (%LOCALAPPDATA%\Programs\HyperFrames, que
+ *  lisent findApp et la CLI HyperFrames), puis l'ajoute au menu Démarrer. Décompresse avec `tar`,
+ *  livré avec Windows 10 et 11. Une app déjà rangée est remplacée seulement une fois la nouvelle
+ *  prête ; ouverte, Windows refuse : on le dit. */
+export function installerWindows({ env = process.env, home = os.homedir(), p = path.win32, fsx = fs, run = execFileSync } = {}) {
+  if (!env.LOCALAPPDATA) throw new Error("LOCALAPPDATA introuvable : ce n'est pas une session Windows ordinaire.");
+  const downloads = p.join(env.USERPROFILE || home, "Downloads");
+  const source = sourceWindows(downloads, { p, fsx });
+  if (!source) throw new Error(`aucun HyperFrames-win-x64.zip dans ${downloads} : télécharge l'app sur ${DOWNLOAD_URL} (Download for Windows), puis redemande.`);
+  const programmes = p.join(env.LOCALAPPDATA, "Programs");
+  const dest = p.join(programmes, "HyperFrames");
+  const tmp = `${dest}.nouvelle`;
+  fsx.rmSync(tmp, { recursive: true, force: true });
+  fsx.mkdirSync(tmp, { recursive: true });
+  let pret = source.dossier;
+  if (source.zip) {
+    run("tar", ["-xf", source.zip, "-C", tmp]);
+    pret = p.join(tmp, DOSSIER_WIN);
+    if (!fsx.existsSync(p.join(pret, "HyperFrames.exe"))) {
+      fsx.rmSync(tmp, { recursive: true, force: true });
+      throw new Error(`${source.zip} ne contient pas ${DOSSIER_WIN}\HyperFrames.exe : retélécharge-le.`);
+    }
+  } else {
+    fsx.cpSync(pret, p.join(tmp, DOSSIER_WIN), { recursive: true });
+    pret = p.join(tmp, DOSSIER_WIN);
+  }
+  // L'ancienne app est d'abord mise de côté d'un seul geste : ouverte, Windows refuse ce renommage, et
+  // rien n'est abîmé ; elle n'est effacée qu'une fois la nouvelle en place.
+  const ancienne = `${dest}.ancienne`;
+  try {
+    fsx.rmSync(ancienne, { recursive: true, force: true });
+    if (fsx.existsSync(dest)) fsx.renameSync(dest, ancienne);
+    fsx.renameSync(pret, dest);
+  } catch (error) {
+    if (!fsx.existsSync(dest) && fsx.existsSync(ancienne)) fsx.renameSync(ancienne, dest);
+    throw new Error(`impossible de remplacer ${dest} (${error.code ?? error.message}) : ferme l'app HyperFrames, puis redemande.`);
+  } finally {
+    fsx.rmSync(tmp, { recursive: true, force: true });
+  }
+  try {
+    fsx.rmSync(ancienne, { recursive: true, force: true });
+  } catch {
+    // Un reste de l'ancienne app ne gêne rien : la prochaine installation le retire.
+  }
+  const exe = p.join(dest, "HyperFrames.exe");
+  let raccourci = null;
+  if (env.APPDATA) {
+    raccourci = p.join(env.APPDATA, "Microsoft", "Windows", "Start Menu", "Programs", "HyperFrames.lnk");
+    try {
+      const q = (v) => `'${v.replaceAll("'", "''")}'`;
+      run("powershell", ["-NoProfile", "-NonInteractive", "-Command",
+        `$s = (New-Object -ComObject WScript.Shell).CreateShortcut(${q(raccourci)}); $s.TargetPath = ${q(exe)}; $s.Save()`]);
+    } catch {
+      raccourci = null;
+    }
+  }
+  return { exe, source: source.zip ?? source.dossier, raccourci };
+}
+
 /** Lance l'app Windows sur un dossier sans l'attendre : déjà ouverte, elle reçoit le dossier. */
 function lancer(exe, args) {
   const child = spawn(exe, args, { detached: true, stdio: "ignore" });
@@ -211,7 +296,10 @@ function describe(env = process.env) {
   else lines.push(`Config Claude Code : à brancher (${commande("brancher")}).`);
   lines.push("Codex : rien à brancher, il lit lui-même AGENTS.md et .agents/skills/ du dossier ouvert.");
   if (process.platform === "linux") lines.push("App HyperFrames : à ouvrir depuis le menu de ton système (Linux).");
-  else lines.push(app ? `App HyperFrames : installée (${app}).` : `App HyperFrames : pas installée (${DOWNLOAD_URL}).`);
+  else if (app) lines.push(`App HyperFrames : installée (${app}).`);
+  else if (process.platform === "win32" && sourceWindows(path.win32.join(env.USERPROFILE || os.homedir(), "Downloads")))
+    lines.push(`App HyperFrames : téléchargée, pas encore rangée (${commande("installer")}).`);
+  else lines.push(`App HyperFrames : pas installée (${DOWNLOAD_URL}).`);
   return { state, app, text: lines.join("\n") };
 }
 
@@ -238,13 +326,27 @@ function main(argv) {
       return 1;
     }
   }
+  if (command === "installer") {
+    if (process.platform !== "win32") {
+      console.log("Rien à faire ici : sur Mac, l'app s'installe en double-cliquant sur Install HyperFrames.");
+      return 0;
+    }
+    try {
+      const { exe, source, raccourci } = installerWindows();
+      console.log(`Installée : ${exe} (depuis ${source}).` + (raccourci ? " Elle est dans le menu Démarrer." : ""));
+      return 0;
+    } catch (error) {
+      console.error(`❌ App HyperFrames : ${error.message}`);
+      return 1;
+    }
+  }
   if (command === "ouvrir") {
     // Sans dossier : celui où la commande est tapée (le projet de vidéo où l'on se trouve).
     const result = ouvrir(arg ?? ".");
     console.log(result.opened ? `Ouvert dans l'app : ${result.target}` : result.how);
     return 0;
   }
-  console.error(`Usage : ${commande("etat [--json] | brancher | ouvrir <dossier>")}\n` +
+  console.error(`Usage : ${commande("etat [--json] | brancher | ouvrir <dossier> | installer")}\n` +
     "Depuis un projet de vidéo : node ../../../scripts/app-hyperframes.mjs ouvrir .");
   return 2;
 }

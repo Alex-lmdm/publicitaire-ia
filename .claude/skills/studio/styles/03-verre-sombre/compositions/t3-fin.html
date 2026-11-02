@@ -85,7 +85,7 @@
     R.suite.map(function (m, i) { return '<span class="t3f-suite' + (i === R.suite.length - 1 ? " t3f-accent" : "") + '">' + m + "</span>"; }).join("&nbsp;");
   $("t3f-adresse").innerHTML = R.adresse[0] + "<b>" + R.adresse[1] + "</b>";
   $("t3f-nom").textContent = R.nom;
-  if (R.logo) $("t3f-logo").innerHTML = '<img src="' + R.logo + '" alt="">'; else $("t3f-logo").style.display = "none";
+  if (R.logo) $("t3f-logo").innerHTML = '<img src="' + R.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t3f-logo").style.display = "none";
   K.cacher([".t3f-suite", "#t3f-adresse", "#t3f-signe"]);
   gsap.set("#t3f-verbe", { "--t3m": 0 });
 
