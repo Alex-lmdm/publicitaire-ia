@@ -7,8 +7,11 @@ ordinateur, avec ton abonnement Claude ou ChatGPT habituel.
 Ouvre **Claude Code** ou **Codex** et écris :
 
 ```text
-Télécharge Publicitaire IA depuis https://github.com/Alex-lmdm/publicitaire-ia et suis les instructions d'installation de son INSTALL.md
+Télécharge Publicitaire IA depuis https://github.com/Alex-lmdm/publicitaire-ia et suis les instructions d'installation de son INSTALL.md. Mes musiques : <ton lien>
 ```
+
+Copie la phrase depuis ta formation : elle contient le lien de tes 35 musiques de lancement, qui
+s'installent en même temps.
 
 L'IA télécharge le dossier, vérifie ton ordinateur, te dit ce qu'il manque, puis installe tout.
 **Quand elle te propose de commencer, réponds « go ».** Elle exécute les commandes : tu n'as rien
@@ -48,6 +51,9 @@ de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
   l'emplacement, renommé `Publicitaire IA`.
 - Travaille ensuite **dans ce dossier**, et dis au client qu'il y ouvrira son assistant pour ses
   vidéos.
+- Sa phrase finit par « Mes musiques : <lien> » ? Écris ce lien, seul, dans le fichier
+  `.cache/musiques-lien.txt` de ce dossier (crée `.cache/`) : il survit à un redémarrage de
+  l'assistant, et l'étape 5 le reprend toute seule.
 
 **1. Bilan, sans rien installer.** `node --version` (22.12 ou plus), `python3 --version` (3.9 ou
 plus), `ffmpeg -version`. Montre un tableau ✅ / ❌. S'il manque quelque chose, dis en une phrase ce
@@ -99,12 +105,19 @@ lire les instructions de ce dossier : une ligne ajoutée à la configuration de 
 (`~/.claude/settings.json`), avec une sauvegarde. Rien d'autre n'est modifié, ni la configuration
 de Codex. Explique-le en une phrase avant. Sans l'app, saute cette étape.
 
-**5. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
-Les lignes « marque pas encore réglée », « Pack SFX : pas installé » et « musiques de lancement :
-pas installées » sont normales.
+**5. Les musiques de lancement** (offertes avec la formation, 35 en tout) :
+`python3 tools/studio_motion.py musiques installer` : il reprend le lien noté à l'étape 0 (ou
+donne-le avec `--lien "<lien>"`). Il
+télécharge les 17 de la formation (90 Mo) et les 18 de Mixkit, puis les range : rien à faire de son
+côté. Réponds en une ligne (« Tes 35 musiques sont installées. »). Si seules les 17 manquent (lien
+expiré, pas de lien), ne bloque pas l'installation : dis-lui de coller plus tard la phrase « Installe
+mes musiques de lancement » du module Musique de sa formation.
 
-**6. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
-navigateur, app HyperFrames ou « sans l'app », test final). Si tout est ✅, conclus par :
+**6. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
+Les lignes « marque pas encore réglée » et « Pack SFX : pas installé » sont normales.
+
+**7. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
+navigateur, app HyperFrames ou « sans l'app », musiques, test final). Si tout est ✅, conclus par :
 « C'est installé. Écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce
 que tu vends, une seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
 ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
@@ -115,15 +128,14 @@ et ce que tu vends, une seule fois, puis on fait ta première vidéo. » Mise à
 
 ---
 
-## Tes 17 musiques de lancement (offertes avec la formation)
+## Tes 35 musiques de lancement (offertes avec la formation)
 
-Télécharge leur fichier dans ta formation (module Musique), sans l'ouvrir, puis écris à l'IA :
-
-- « Installe mes 17 musiques de lancement depuis mon dossier Téléchargements »
-
-Elles sont rangées dans Publicitaire IA, et chaque vidéo prend celle qui va avec son but. (Pour
-l'IA : `python3 tools/studio_motion.py musiques installer`, sans argument ; une archive rangée
-ailleurs se donne en argument.)
+Elles s'installent avec Publicitaire IA, par le lien de ta phrase d'installation. Elles manquent
+(installé avant le 2 novembre 2026, ou lien expiré) ? Colle la phrase « Installe mes musiques de
+lancement » du module Musique de ta formation : elle contient un lien neuf. Chaque vidéo prend
+celle qui va avec son but. (Pour l'IA : `python3 tools/studio_motion.py musiques installer --lien
+"<lien>"` ; sans lien, `musiques installer` prend les 18 de Mixkit et un fichier
+`musiques-lancement.zip` de Téléchargements, ou une archive donnée en argument.)
 
 ## Le Pack SFX (si tu l'as acheté)
 
@@ -161,7 +173,9 @@ de l'app HyperFrames et son historique), le Pack SFX (`assets/sfx/pack/`, `asset
 (`.venv-voix/`), ses réglages de Claude Code pour ce dossier (`.claude/settings.local.json`) et
 l'historique git (`.git/`).
 
-Puis refais les étapes 2, 3 et 5.
+Puis refais les étapes 2, 3 et 6, et `python3 tools/studio_motion.py musiques` : s'il en manque
+(il en a moins de 35), `musiques installer` reprend celles de Mixkit ; pour les 17 de la formation,
+dis-lui de coller la phrase « Installe mes musiques de lancement » du module Musique.
 
 ## Problèmes courants
 
@@ -176,9 +190,9 @@ Puis refais les étapes 2, 3 et 5.
   d'écran de ta page, ça suffit pour ta marque et ton offre.
 - **Une police remplacée dans la vidéo** : dis « ma police est X » ; l'assistant la récupère
   (polices libres) ou te demande ses fichiers.
-- **Les musiques ne s'installent pas** (« aucune archive musiques-….zip ») : vérifie que
-  `musiques-lancement.zip` est bien dans ton dossier Téléchargements, ou glisse-le dans la
-  conversation.
+- **Les musiques ne s'installent pas** (« le lien a expiré », ou rien de Mixkit) : colle la phrase
+  « Installe mes musiques de lancement » du module Musique de ta formation, elle contient un lien
+  neuf. Avec Codex, il faut **Accès complet** pour télécharger.
 - **Relier HeyGen pour une voix de synthèse** (ou le refaire) : dis « relie mon compte HeyGen » ;
   l'assistant te guide (skill `studio`, `references/heygen.md`).
 - **« macOS refuse l'accès »** à Téléchargements (musiques, Pack SFX) : autorise l'app de ton

@@ -17,7 +17,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py police "Montserrat"           # une police libre, prête au rendu
     python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
     python3 tools/studio_motion.py pack-sfx [installer [<pack-sfx.zip ou dossier>] | reprendre <dossier Monteur IA> | chercher <mots>]
-    python3 tools/studio_motion.py musiques [installer [<zip ou dossier>…]]   # les 17 musiques de lancement (bonus)
+    python3 tools/studio_motion.py musiques [installer [--lien <url>] [<zip ou dossier>…]]   # les 35 musiques de lancement (bonus)
     python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --ouvrir]   # depuis le projet
     python3 tools/studio_motion.py musiques prendre <n> [--a 8 --duree 30]   # la copie dans le projet, calée
     python3 tools/studio_motion.py supports                      # supports, formats, durées
@@ -620,7 +620,7 @@ def cmd_verifier(_a) -> None:
           else "ℹ️ Pack SFX : pas installé (optionnel, les 22 sons de démarrage suffisent pour commencer)")
     mus = banque.etat(r)
     print(f"ℹ️ musiques de lancement : {mus['total']} installées"
-          + (f" (il manque : {', '.join(mus['absentes'])})" if mus["absentes"] else "") if mus["installe"]
+          + (f" ({mus['lancement']} de la formation, {mus['mixkit']} de Mixkit)" if mus["total"] < 35 else "") if mus["installe"]
           else "ℹ️ musiques de lancement : pas installées (le bonus de la formation : `musiques installer`)")
     app = ligne_app(app_hyperframes())
     if app:
@@ -997,19 +997,53 @@ def cmd_musiques(a) -> None:
     r = racine()
     try:
         if a.action == "installer":
-            sources = [Path(v).expanduser() for v in a.valeurs] or banque.sources_par_defaut()
-            print(f"• installation des musiques de lancement depuis {len(sources)} source(s)…", flush=True)
-            res = banque.installer(r, sources)
-            for err in res["erreurs"]:
-                print(f"  (ignoré : {err})")
-            detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in res["ambiances"].items())
-            print(f"✅ {res['total']} musiques de lancement dans {banque.DOSSIER}/ ({detail}) ; "
-                  f"{res['ecrits']} copiées, {res['identiques']} déjà là"
-                  + (f", {res['retires']} anciennes retirées" if res["retires"] else "") + ".")
-            if res["absentes"]:
-                print(f"  il manque : {', '.join(res['absentes'])}. Retélécharge le fichier des musiques dans la formation (module Musique), puis "
-                      "redis-moi de les installer.")
-            print("  à chaque vidéo, `musiques choisir` propose les meilleures pour son but et son support.")
+            # Les 17 : par le lien de la formation, sinon les archives données ou celles de Téléchargements.
+            # Puis les 18 de Mixkit, téléchargées depuis Mixkit. Une moitié qui échoue n'empêche pas l'autre.
+            probleme = None
+            pack = None
+            note = r / banque.LIEN_NOTE
+            a.lien = a.lien or banque.lien_note(r)
+            if a.lien:
+                print("• téléchargement des 17 musiques de la formation (90 Mo)…", flush=True)
+                try:
+                    pack = banque.telecharger_pack(r, a.lien)
+                except banque.ErreurMusiques as e:
+                    probleme = str(e)
+            sources = ([pack] if pack else []) + [Path(v).expanduser() for v in a.valeurs]
+            if not sources and not a.lien:
+                try:
+                    sources = banque.sources_par_defaut()
+                except banque.ErreurMusiques as e:
+                    probleme = str(e)
+            if sources:
+                try:
+                    res = banque.installer(r, sources)
+                    for err in res["erreurs"]:
+                        print(f"  (ignoré : {err})")
+                except banque.ErreurMusiques as e:
+                    probleme = str(e)
+                finally:
+                    if pack:
+                        pack.unlink(missing_ok=True)
+            if pack and not probleme:
+                note.unlink(missing_ok=True)   # les 17 sont là : le lien ne sert plus
+            print("• les musiques Mixkit…", flush=True)
+            mk = banque.installer_mixkit(r)
+            e = banque.etat(r)
+            detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in e["ambiances"].items())
+            print(f"{'✅' if e['total'] else '❌'} {e['total']} musiques de lancement dans {banque.DOSSIER}/ : "
+                  f"{e['lancement']} de la formation" + (f" ({detail})" if detail else "")
+                  + f", {e['mixkit']}/{e['mixkit_attendus']} de Mixkit.")
+            if probleme:
+                sys.exit(f"ERREUR : les 17 de la formation : {probleme}.")
+            if not e["lancement"]:
+                print("  les 17 de la formation ne sont pas encore là : le client recopie la phrase « Installe mes musiques de lancement » "
+                      "de sa formation (module Musique), elle contient leur lien.")
+            if mk["erreurs"]:
+                print(f"  Mixkit : {len(mk['erreurs'])} pas venue(s) ({'; '.join(mk['erreurs'][:2])}). Refaire `musiques installer` "
+                      "les reprend (connexion coupée, ou Codex sans Accès complet).")
+            if e["total"]:
+                print("  à chaque vidéo, `musiques choisir` propose les meilleures pour son but et son support.")
             return
         if a.action in ("choisir", "prendre"):
             projet = _projet_ou_none(a.dans)
@@ -1017,7 +1051,7 @@ def cmd_musiques(a) -> None:
                 sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>).")
             if not banque.etat(r)["installe"]:
                 sys.exit("ERREUR : les musiques de lancement ne sont pas installées : `musiques installer` depuis la "
-                         "racine (le client télécharge le fichier des 17 musiques dans sa formation, module Musique).")
+                         "racine (les 17 de la formation viennent par le lien de sa phrase, module Musique).")
             liste_f = projet / "work" / "musiques.json"
         if a.action == "choisir":
             meta = meta_de(projet) or {}
@@ -1068,10 +1102,12 @@ def cmd_musiques(a) -> None:
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(m["chemin"], dest)
             _source_audio(projet, f"- `{dest.name}` : « {m.get('style', '')} », musiques de lancement, {m['id']} "
-                                  f"(ambiance {m['nom_ambiance']}), offertes avec la formation ; licence dans "
-                                  f"{banque.DOSSIER}/LICENCE.md du dossier ; prise le {datetime.date.today().isoformat()}.")
-            print(f"• {dest.relative_to(projet)} ({m['nom_ambiance']}, batterie à {float(m.get('entree_franche_s') or 0):.1f} s), "
-                  "source notée dans assets/audio/SOURCE.md.")
+                                  f"(ambiance {m['nom_ambiance']}), offertes avec la formation ; {m['licence']} ; "
+                                  f"prise le {datetime.date.today().isoformat()}.")
+            entree = m.get("entree_franche_s")
+            print(f"• {dest.relative_to(projet)} ({m['nom_ambiance']}, "
+                  + ("batterie dès le début" if entree is None else f"batterie à {float(entree):.1f} s")
+                  + "), source notée dans assets/audio/SOURCE.md.")
             if a.a is None or not a.duree:
                 print(f"  ensuite : `musique {dest.relative_to(projet)} --sortie assets/audio/musique.wav --a <instant> "
                       "--duree <durée>` pour la caler.")
@@ -1081,12 +1117,13 @@ def cmd_musiques(a) -> None:
             return
         e = banque.etat(r)
         if not e["installe"]:
-            print("• musiques de lancement : pas installées. Le client télécharge le fichier des 17 musiques dans sa "
-                  "formation (module Musique), puis `musiques installer` les range depuis son dossier Téléchargements.")
+            print("• musiques de lancement : pas installées. `musiques installer --lien <lien>` avec le lien de la phrase "
+                  "de sa formation (module Musique) ; sans lien, `musiques installer` (Mixkit, et Téléchargements).")
             return
         detail = ", ".join(f"{banque.AMBIANCES[k]} {n}" for k, n in e["ambiances"].items())
-        print(f"• musiques de lancement {e['version'] or ''} : {e['total']} installées ({detail})"
-              + (f" ; il manque : {', '.join(e['absentes'])}" if e["absentes"] else "")
+        print(f"• musiques de lancement {e['version'] or ''} : {e['total']} installées ({e['lancement']} de la formation"
+              + (f" : {detail}" if detail else "") + f", {e['mixkit']}/{e['mixkit_attendus']} de Mixkit)"
+              + (f" ; il manque : {', '.join(e['absentes'])}" if e["absentes"] and e["lancement"] else "")
               + (f" ; {len(e['manquants'])} fichiers absents : réinstalle-les" if e["manquants"] else ""))
     except banque.ErreurMusiques as e:
         sys.exit(f"ERREUR : {e}")
@@ -3109,8 +3146,9 @@ def main(argv: list[str] | None = None) -> None:
     ps.add_argument("valeurs", nargs="*", help="installer : l'archive ou le dossier décompressé (défaut : le plus récent "
                                                "de Téléchargements) ; reprendre : le dossier Monteur IA ; chercher : les mots.")
     ps.set_defaults(f=cmd_pack_sfx)
-    mz = s.add_parser("musiques", help="Les 17 musiques de lancement (bonus) : les installer, en choisir une pour une vidéo, la prendre.")
+    mz = s.add_parser("musiques", help="Les 35 musiques de lancement (bonus) : les installer, en choisir une pour une vidéo, la prendre.")
     mz.add_argument("action", nargs="?", default="etat", choices=("etat", "installer", "choisir", "prendre"))
+    mz.add_argument("--lien", help="installer : le lien des 17 musiques, donné par la phrase de la formation.")
     mz.add_argument("valeurs", nargs="*", help="installer : archives ou dossiers (défaut : Téléchargements) ; prendre : le numéro.")
     mz.add_argument("--dans", help="Le projet de la vidéo (défaut : le dossier courant).")
     mz.add_argument("--objectif", choices=sorted(OBJECTIFS), help="choisir : le but (défaut : celui du projet).")

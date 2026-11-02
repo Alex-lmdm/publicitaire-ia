@@ -25,17 +25,18 @@ un seul message (saute la question dont tu connais déjà la réponse) :
 >
 > **3. La musique de tes vidéos** (tes vidéos sont en texte à l'écran et en musique ; une voix
 > off s'ajoute quand tu veux, il suffit de la demander) :
-> A) mes 17 musiques de lancement (le bonus de ta formation) : télécharge leur fichier dans le
-> module Musique, dis « go », et je les installe ·
+> A) mes 35 musiques de lancement (le bonus de ta formation) : colle ici la phrase « Installe mes
+> musiques de lancement » du module Musique ·
 > B) j'ai déjà ma musique : glisse le fichier ici ·
 > C) plus tard
 >
 > Réponds par exemple « a monsite.fr/formation, a, A ».
 
-Saute la question 3 si `python3 tools/studio_motion.py musiques` dit qu'elles sont installées.
+Saute la question 3 si `python3 tools/studio_motion.py musiques` dit qu'elles sont installées (le cas
+normal : l'installation les a mises) ; il n'y a alors que deux questions.
 
 La réponse 1 se traite avec [marque.md](marque.md) : l'outil lit la source, puis tu lui montres
-sa marque et tu attends son accord. La réponse 3 A : `python3 tools/studio_motion.py musiques installer` dès qu'il dit « go »
+sa marque et tu attends son accord. La réponse 3 A : `python3 tools/studio_motion.py musiques installer --lien "<le lien de sa phrase>"`
 ([son.md](son.md), « Les musiques de lancement ») ;
 3 B : `python3 tools/studio_motion.py marque regler --musique "<fichier>"`. Enregistre le reste
 dans `studio.config.json` : `{"vend": [...], "page": "...", "voix": "texte", "dm": null,

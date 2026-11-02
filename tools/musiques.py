@@ -1,24 +1,33 @@
 #!/usr/bin/env python3
-"""LES MUSIQUES DE LANCEMENT : 17 musiques offertes avec la formation, rangées dans ce dossier.
+"""LES MUSIQUES DE LANCEMENT : 35 musiques offertes avec la formation, rangées dans ce dossier.
 
-Le client les télécharge dans sa formation en un fichier, musiques-lancement.zip (avant le
-30/10/2026 : cinq archives, une par ambiance, musiques-<ambiance>.zip). Chacun contient :
+17 viennent de la formation, en un fichier, musiques-lancement.zip (avant le 30/10/2026 : cinq
+archives, une par ambiance, musiques-<ambiance>.zip). Depuis le 02/11/2026, l'installation le
+télécharge elle-même par le lien personnel de la phrase de la formation (« Mes musiques : … ») ;
+sinon le client le télécharge et l'IA le prend dans Téléchargements. Il contient :
     musiques-lancement/<ambiance>/*.mp3           les morceaux (MP3 320 kbit/s) ;
     musiques-lancement/<ambiance>/catalog.json    la fiche de chacun : style, usage conseillé,
                                                   tempo, recalage à 120, premier temps, entrée
                                                   franche (la batterie qui arrive), durée ;
     musiques-lancement/LICENCE.md                 ce qu'il a le droit d'en faire.
 
-    installer [<zip ou dossier>…]   sans argument : les musiques-*.zip du dossier Téléchargements,
+Les 18 autres sont des musiques de Mixkit (fiche : tools/musiques-mixkit.json). Leur licence interdit de
+redistribuer les fichiers : on ne les livre pas, `installer` les télécharge depuis Mixkit, sur
+l'ordinateur du client, dans assets/musiques/mixkit/. Pour le client, il n'y a qu'une banque de 35.
+
+    installer [--lien <url>] [<zip ou dossier>…]
+                                    --lien : télécharge le fichier des 17 par le lien de la formation.
+                                    Sans source : les musiques-*.zip du dossier Téléchargements,
                                     et les dossiers musiques-lancement* qu'un navigateur (Safari)
                                     a décompressés tout seul. Le fichier unique ou les archives
                                     par ambiance : chacune s'ajoute aux autres, refaire ne
-                                    change rien.
+                                    change rien. Puis les 18 de Mixkit, celles qui manquent.
     choisir                         les meilleures pour une vidéo, selon son but, son support, sa
                                     durée et l'instant où la batterie doit entrer.
 
-Rangement : assets/musiques/<ambiance>/ (morceaux et fiche) et assets/musiques/LICENCE.md. Jamais
-versionné (.gitignore) : la licence interdit de partager les fichiers seuls, et le dépôt est public.
+Rangement : assets/musiques/<ambiance>/ (morceaux et fiche), assets/musiques/mixkit/ et
+assets/musiques/LICENCE.md. Jamais versionné (.gitignore) : les deux licences interdisent de partager
+les fichiers seuls, et le dépôt est public.
 
 Python 3.9+, bibliothèque standard seulement.
 """
@@ -28,7 +37,11 @@ import json
 import os
 import posixpath
 import re
+import shutil
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 import zipfile
 from pathlib import Path
 
@@ -69,6 +82,14 @@ SYNONYMES = {
 }
 
 ECOUTE_AVANT = 8.0   # chaque extrait de la page d'écoute démarre 8 s avant l'entrée de la batterie
+
+# Les 18 de Mixkit : leur fiche est versionnée (pas leurs fichiers), téléchargés chez le client.
+MIXKIT_FICHE = Path(__file__).with_name("musiques-mixkit.json")
+MIXKIT_DOSSIER = "mixkit"
+MIXKIT_LICENCE = "licence Mixkit Stock Music Free (pub permise, sans crédit)"
+# Le lien des 17 ne peut venir que de la plateforme de la formation : aucune autre adresse n'est suivie.
+LIEN_HOTES = {"app.lemondedumarketing.fr"}
+AGENT = "Publicitaire-IA (musiques de lancement)"
 
 
 class ErreurMusiques(Exception):
@@ -184,12 +205,86 @@ def sources_par_defaut(dossier: Path | None = None) -> list[Path]:
         raise ErreurMusiques(acces_refuse(d)) from e
 
 
+def _telecharger(url: str, cible: Path, ouvrir=None, delai: float = 120) -> None:
+    """Télécharge `url` dans `cible`, par un fichier provisoire renommé à la fin : un téléchargement
+    coupé ne laisse jamais un fichier tronqué à sa place. `ouvrir` remplace urlopen (tests)."""
+    requete = urllib.request.Request(url, headers={"User-Agent": AGENT})
+    cible.parent.mkdir(parents=True, exist_ok=True)
+    provisoire = cible.with_name(cible.name + ".part")
+    try:
+        with (ouvrir or urllib.request.urlopen)(requete, timeout=delai) as reponse, open(provisoire, "wb") as f:
+            shutil.copyfileobj(reponse, f, 1 << 20)
+        provisoire.replace(cible)
+    finally:
+        provisoire.unlink(missing_ok=True)
+
+
+def telecharger_pack(racine: Path, lien: str, ouvrir=None) -> Path:
+    """Le fichier des 17 musiques, par le lien personnel de la formation, rangé dans .cache/ (jamais
+    versionné). Lève ErreurMusiques avec la phrase à dire au client si le lien n'est pas bon."""
+    url = urllib.parse.urlsplit(lien.strip())
+    if url.scheme != "https" or url.hostname not in LIEN_HOTES:
+        raise ErreurMusiques("ce lien n'est pas celui de ta formation : recopie la phrase de la formation "
+                             "(module Musique), elle contient le bon")
+    cible = racine / ".cache" / "musiques" / "musiques-lancement.zip"
+    try:
+        _telecharger(url.geturl(), cible, ouvrir, delai=300)
+    except urllib.error.HTTPError as e:
+        if e.code in (401, 403, 404):
+            raise ErreurMusiques("le lien de tes musiques a expiré : recopie la phrase de ta formation "
+                                 "(module Musique), elle contient un lien neuf") from e
+        raise ErreurMusiques(f"téléchargement refusé (erreur {e.code}) : réessaie dans une minute") from e
+    except (urllib.error.URLError, OSError) as e:
+        raise ErreurMusiques(f"téléchargement impossible ({e}) : vérifie la connexion, puis réessaie") from e
+    return cible
+
+
+LIEN_NOTE = ".cache/musiques-lien.txt"
+
+
+def lien_note(racine: Path) -> str | None:
+    """Le lien des 17 noté au début de l'installation (INSTALL.md, étape 0) : il survit au redémarrage de
+    l'assistant, qui perd la phrase d'origine."""
+    try:
+        return (racine / LIEN_NOTE).read_text(encoding="utf-8").strip() or None
+    except OSError:
+        return None
+
+
+def mixkit() -> list[dict]:
+    """La fiche des 18 de Mixkit (versionnée avec le produit ; PIA_MIXKIT_FICHE la remplace dans les tests,
+    pour ne jamais rien télécharger)."""
+    try:
+        chemin = Path(os.environ.get("PIA_MIXKIT_FICHE") or MIXKIT_FICHE)
+        return json.loads(chemin.read_text(encoding="utf-8")).get("morceaux") or []
+    except (OSError, ValueError):
+        return []
+
+
+def installer_mixkit(racine: Path, ouvrir=None) -> dict:
+    """Télécharge depuis Mixkit celles des 18 qui manquent. Une musique qui ne vient pas n'arrête pas
+    les autres : elle est dans `erreurs`, et refaire la reprend."""
+    ecrits = identiques = 0
+    erreurs = []
+    for m in mixkit():
+        cible = racine / DOSSIER / m["fichier"]
+        if cible.is_file() and cible.stat().st_size > 0:
+            identiques += 1
+            continue
+        try:
+            _telecharger(m["url"], cible, ouvrir)
+            ecrits += 1
+        except (urllib.error.URLError, OSError) as e:
+            erreurs.append(f"{m['titre']} ({e})")
+    return {"ecrits": ecrits, "identiques": identiques, "erreurs": erreurs}
+
+
 def installer(racine: Path, sources: list[Path]) -> dict:
     """Range les ambiances trouvées dans les sources (archives ou dossiers). Un fichier identique
     n'est pas réécrit ; un morceau qui n'est plus dans la fiche de son ambiance est retiré."""
     if not sources:
-        raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : télécharge le "
-                             "fichier des 17 musiques dans ta formation (module Musique), puis redemande")
+        raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : recopie la phrase "
+                             "« Installe mes musiques de lancement » de ta formation (module Musique), elle contient leur lien")
     copies: dict[str, bytes] = {}
     erreurs = []
     for source in sources:
@@ -237,19 +332,26 @@ def fiche(racine: Path, ambiance: str) -> dict:
 
 
 def morceaux(racine: Path) -> list[dict]:
-    """Tous les morceaux installés, avec leur ambiance (clé) et leur chemin dans ce dossier."""
+    """Tous les morceaux installés (les 17 et ceux de Mixkit), avec leur ambiance (clé), leur chemin
+    dans ce dossier et leur licence."""
     liste = []
     for ambiance in AMBIANCES:
         for m in fiche(racine, ambiance).get("morceaux") or []:
             chemin = racine / DOSSIER / m["fichier"]
             if chemin.is_file():
                 liste.append({**m, "cle": ambiance, "nom_ambiance": AMBIANCES[ambiance], "chemin": chemin,
-                              "id": Path(m["fichier"]).stem})
+                              "id": Path(m["fichier"]).stem, "licence": f"licence dans {DOSSIER}/LICENCE.md du dossier"})
+    for m in mixkit():
+        chemin = racine / DOSSIER / m["fichier"]
+        if m.get("ambiance") in AMBIANCES and chemin.is_file() and chemin.stat().st_size > 0:
+            liste.append({**m, "cle": m["ambiance"], "nom_ambiance": AMBIANCES[m["ambiance"]], "chemin": chemin,
+                          "licence": f"Mixkit, {MIXKIT_LICENCE}"})
     return liste
 
 
 def etat(racine: Path) -> dict:
-    """Ce qui est installé, par ambiance, et ce qui manque."""
+    """Ce qui est installé : les 17 par ambiance (`ambiances`, `lancement`), celles de Mixkit (`mixkit`
+    sur `mixkit_attendus`), le total, et ce qui manque."""
     par_ambiance, manquants = {}, []
     for ambiance in AMBIANCES:
         decrits = fiche(racine, ambiance).get("morceaux") or []
@@ -257,7 +359,11 @@ def etat(racine: Path) -> dict:
         manquants += absents
         if decrits:
             par_ambiance[ambiance] = len(decrits) - len(absents)
-    return {"installe": bool(par_ambiance), "total": sum(par_ambiance.values()), "ambiances": par_ambiance,
+    attendus = mixkit()
+    presents = sum(1 for m in attendus if (racine / DOSSIER / m["fichier"]).is_file())
+    lancement = sum(par_ambiance.values())
+    return {"installe": bool(lancement or presents), "total": lancement + presents, "lancement": lancement,
+            "mixkit": presents, "mixkit_attendus": len(attendus), "ambiances": par_ambiance,
             "absentes": [AMBIANCES[a] for a in AMBIANCES if a not in par_ambiance], "manquants": manquants,
             "version": next((fiche(racine, a).get("version") for a in par_ambiance), None)}
 
@@ -324,12 +430,19 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
         # Recalé à 120, le morceau s'étire ou se resserre (au plus 10 %) : ses temps aussi.
         tempo = float(m.get("tempo_bpm") or 120)
         facteur = 120 / tempo if m.get("recale_a_120") and 0.9 <= 120 / tempo <= 1.1 else 1.0
-        entree = float(m.get("entree_franche_s") or 0) / facteur
         longueur = float(m.get("duree_s") or 0) / facteur
-        if longueur - entree < (duree - a) + 1.5:
-            continue   # trop court : la fin de la vidéo serait muette
+        if m.get("entree_franche_s") is None:
+            # Pas d'entrée franche (fréquent chez Mixkit) : son premier temps fort est calé au début de la
+            # vidéo. Il ne démarre jamais en retard, mais doit couvrir toute la vidéo.
+            if longueur < duree + 1.5:
+                continue
+            retard = 0.0
+        else:
+            entree = float(m["entree_franche_s"]) / facteur
+            if longueur - entree < (duree - a) + 1.5:
+                continue   # trop court : la fin de la vidéo serait muette
+            retard = max(0.0, a - entree)
         note = 100.0 - 30 * rang
-        retard = max(0.0, a - entree)
         note -= 6 * retard                                      # silence au début de la vidéo
         note += 8 if m.get("recale_a_120") else -8
         note -= 12 * utilises.get(m["id"], 0)
@@ -355,14 +468,17 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
 def ligne(m: dict) -> str:
     """Une ligne lisible par l'agent : le morceau, son style, son entrée et sa durée."""
     tempo = f"{m.get('tempo_bpm'):.0f} bpm" + (", recalé à 120" if m.get("recale_a_120") else ", garde son tempo")
-    return (f"{m['id']} · {' · '.join(m['raisons'])} · {m.get('style', '')} · batterie à "
-            f"{float(m.get('entree_franche_s') or 0):.1f} s · {float(m.get('duree_s') or 0):.0f} s · {tempo}")
+    entree = m.get("entree_franche_s")
+    batterie = "batterie dès le début" if entree is None else f"batterie à {float(entree):.1f} s"
+    return (f"{m['id']} · {' · '.join(m['raisons'])} · {m.get('style', '')} · {batterie} · "
+            f"{float(m.get('duree_s') or 0):.0f} s · {tempo}")
 
 
 def page(m: dict) -> dict:
     """L'entrée de la page d'écoute : l'extrait démarre juste avant l'entrée de la batterie."""
-    debut = max(0.0, float(m.get("entree_franche_s") or 0) - ECOUTE_AVANT)
-    return {"nom": f"{m['nom_ambiance']} · {m.get('style', '')}",
-            "detail": f"la batterie entre à {float(m.get('entree_franche_s') or 0):.0f} s ; "
-                      f"l'extrait démarre {ECOUTE_AVANT:.0f} s avant",
+    entree = m.get("entree_franche_s")
+    debut = max(0.0, float(entree or 0) - ECOUTE_AVANT)
+    detail = ("la batterie part dès le début" if entree is None else
+              f"la batterie entre à {float(entree):.0f} s ; l'extrait démarre {ECOUTE_AVANT:.0f} s avant")
+    return {"nom": f"{m['nom_ambiance']} · {m.get('style', '')}", "detail": detail,
             "url": m["chemin"].resolve().as_uri() + (f"#t={debut:.1f}" if debut else "")}

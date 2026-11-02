@@ -43,10 +43,10 @@ LinkedIn, X, YouTube).
 - Si l'app te propose ses propres skills (`hyperframes`, `launch-film`, `product-launch-video`),
   garde la méthode du skill `studio` : ils ne connaissent ni la fiche de l'offre ni la marque de cette vidéo.
 
-- **La musique** : texte à l'écran et musique par défaut ; la musique vient de ses 17 musiques de
-  lancement, offertes avec la formation (« installe mes musiques » → `python3
-  {{MAISON}}tools/studio_motion.py musiques installer` ; à chaque vidéo, `musiques choisir` : skill
-  `studio`, `references/son.md` ; aucune ne lui plaît : les 18 de Mixkit, même fichier). « Mets cette
+- **La musique** : texte à l'écran et musique par défaut ; la musique vient de ses 35 musiques de
+  lancement, installées avec le dossier (« installe mes musiques » → `python3
+  {{MAISON}}tools/studio_motion.py musiques installer`, avec `--lien` s'il en donne un ; à chaque
+  vidéo, `musiques choisir` : skill `studio`, `references/son.md`). « Mets cette
   musique dans ma vidéo » (sa musique) vaut pour la vidéo en cours ; elle ne devient sa musique de
   marque que s'il le demande (`references/son.md`). Une voix off se fait à sa demande seulement
   (`references/voix.md`).

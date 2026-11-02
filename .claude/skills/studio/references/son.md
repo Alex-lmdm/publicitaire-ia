@@ -17,14 +17,14 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   12/10/2026) ; peu nombreux et bien placés, ils restent mieux que le silence.
 - **Musique** : toute vidéo en a une, c'est elle qui la porte (sans voix, les bruitages seuls
   sonnent maigres). Dans cet ordre : le morceau qu'il a donné (un fichier glissé ici, ou `musique`
-  de `marque.json`, rangé dans `marque/`) ; sinon ses **musiques de lancement** (17 morceaux offerts
+  de `marque.json`, rangé dans `marque/`) ; sinon ses **musiques de lancement** (35 morceaux offerts
   avec la formation, dans `assets/musiques/` ; `python3 tools/studio_motion.py musiques` dit
   lesquelles sont installées), choisies comme dit plus bas. Dans l'app HyperFrames aussi : la
   commande `musiques`, jamais `find_music`.
-- Musiques pas installées : dis-le une fois, en une phrase : « Tes 17 musiques de lancement ne sont
-  pas encore installées : télécharge leur fichier dans ta formation (module Musique), puis
-  dis-moi « installe mes musiques ». » En attendant, sa musique ou la vidéo sans musique, en le
-  disant.
+- Moins de 35 installées : lance d'abord `musiques installer` depuis la racine (il reprend celles
+  de Mixkit). Il manque encore les 17 de la formation ? Dis-le une fois, en une phrase : « Il manque
+  une partie de tes musiques : colle-moi la phrase « Installe mes musiques de lancement » du module
+  Musique de ta formation. » En attendant, choisis parmi celles qui sont là.
 - La bibliothèque de musiques de HeyGen ne se propose plus : avec un compte gratuit, ses conditions
   interdisent l'usage commercial et publicitaire, et aucune licence claire n'est publiée pour les
   comptes payants. S'il la demande lui-même, préviens-le une fois de ce point, puis
@@ -59,20 +59,23 @@ les sons posés vont dans le projet de la vidéo (`assets/sons/`, fait par `sons
 
 ## Les musiques de lancement (offertes avec la formation)
 
-17 musiques faites pour les vidéos qui vendent, en cinq ambiances, chacune avec une vraie entrée
-de batterie, livrées en un fichier (`musiques-lancement.zip`). Le client les installe une fois, d'une phrase : « Installe mes 17 musiques de
-lancement depuis mon dossier Téléchargements » (ou toute demande d'installer ses musiques) :
+35 musiques faites pour les vidéos qui vendent, en cinq ambiances. Elles s'installent avec le dossier
+(INSTALL.md, étape 5) : 17 viennent de la formation, par le lien personnel de sa phrase ; 18 sont des
+musiques de Mixkit (fiche `tools/musiques-mixkit.json`), que l'outil télécharge depuis Mixkit sur son
+ordinateur, la licence de Mixkit interdisant qu'on lui en livre les fichiers. Pour le client, c'est
+une seule banque : ne lui parle pas de leur origine, sauf s'il le demande. Il colle « Installe mes
+musiques de lancement : <lien> » (ou toute demande d'installer ses musiques) :
 
 ```bash
-python3 tools/studio_motion.py musiques installer
+python3 tools/studio_motion.py musiques installer --lien "<lien>"
 ```
 
-Depuis la racine. Sans argument, il prend les `musiques-*.zip` du dossier Téléchargements (le
-fichier unique, ou les anciennes archives par ambiance) et les dossiers que Safari a décompressés
-tout seul ; une archive rangée ailleurs se donne en argument. Refaire ne change rien. Réponds en une
-ligne : combien sont installées ; s'il en manque, il retélécharge le fichier dans sa formation
-(module Musique). Elles ne sont jamais versionnées ni livrées : seul le morceau
-choisi va dans le projet de la vidéo.
+Depuis la racine. Sans `--lien`, il reprend le lien noté à l'installation, sinon il prend les
+`musiques-*.zip` de Téléchargements (et les dossiers que Safari a décompressés) ; une archive rangée
+ailleurs se donne en argument. Les 18 de Mixkit viennent à chaque fois, celles qui manquent seulement.
+Refaire ne change rien. Réponds en une ligne : combien sont installées ; lien expiré : il recolle la
+phrase du module Musique. Elles ne sont jamais versionnées ni livrées : seul le morceau choisi va dans
+le projet de la vidéo, avec sa licence dans `assets/audio/SOURCE.md`.
 
 ## Poser les sons
 
@@ -144,41 +147,8 @@ Ses demandes, à tout moment :
   source dans `assets/audio/SOURCE.md`, puis `musique <fichier>` l'analyse et la cale (« Le caler »,
   plus bas). Elle ne devient sa musique de marque, pour toutes ses vidéos (`marque regler --musique
   "<fichier>"`), que s'il le demande (« garde-la pour toutes mes vidéos »).
-- Aucune des 17 ne lui plaît : les 18 de Mixkit, ci-dessous.
-
-### Les 18 musiques de Mixkit (quand aucune des 17 ne lui plaît)
-
-Sa formation (module Musique) lui donne aussi 18 musiques gratuites de Mixkit, autorisées en pub et
-sans crédit à afficher. On ne les livre pas : la licence de Mixkit interdit d'en redistribuer les
-fichiers. Il les écoute et les télécharge lui-même. Quand il a entendu les 17 sans en garder une
-(« aucune », « autre chose », ou `musiques choisir --autres` n'a plus rien à proposer), propose-lui
-les trois de cette liste qui vont le mieux avec sa vidéo, chacune avec son lien, en une phrase :
-« Clique, ▶ pour écouter, la flèche pour télécharger, puis glisse le fichier ici. » Il le glisse :
-c'est « Mets ma musique » ci-dessus, et sa ligne dans `assets/audio/SOURCE.md` dit « Mixkit,
-licence Mixkit Stock Music Free (pub permise, sans crédit) ».
-
-| Musique | Son | Pour |
-|---|---|---|
-| [Can't Get You Off My Mind](https://mixkit.co/free-stock-music/discover/cant-get-you-off-my-mind/) | future bass positive | une nouveauté, la révélation de l'offre |
-| [Karma](https://mixkit.co/free-stock-music/discover/karma/) | EDM confiante | la révélation de l'offre |
-| [Take this Higher](https://mixkit.co/free-stock-music/discover/take-this-higher/) | pop électro confiante | le haut de page de vente, un lancement |
-| [Super Strong](https://mixkit.co/free-stock-music/discover/super-strong/) | EDM motivante | un avant / après |
-| [It's Now or Never](https://mixkit.co/free-stock-music/discover/its-now-or-never/) | synthpop puissante | une nouveauté, une ouverture |
-| [Friday Routine](https://mixkit.co/free-stock-music/discover/friday-routine/) | house entraînante | un Reel léger, une story |
-| [Flopper](https://mixkit.co/free-stock-music/discover/flopper/) | dubstep puissant | le prix qui tombe |
-| [No Warning](https://mixkit.co/free-stock-music/discover/no-warning/) | breakbeat déterminé | un teaser |
-| [Suffocation](https://mixkit.co/free-stock-music/discover/suffocation/) | électro intense | une accroche qui frappe |
-| [Games Music](https://mixkit.co/free-stock-music/discover/games-music/) | bande-annonce, breakbeat | un compte à rebours, des impacts |
-| [Trap Electro Vibes](https://mixkit.co/free-stock-music/discover/trap-electro-vibes/) | drum and bass nerveuse | une accroche, une pub courte |
-| [Protesting Robot](https://mixkit.co/free-stock-music/discover/protesting-robot/) | grime futuriste | un teaser sombre |
-| [Razor Edge](https://mixkit.co/free-stock-music/discover/razor-edge/) | EDM industrielle | la démo d'un outil, d'une IA |
-| [Minimal Techno 02](https://mixkit.co/free-stock-music/discover/minimal-techno-02/) | techno minimale | une interface, une explication |
-| [Bootleg](https://mixkit.co/free-stock-music/discover/bootleg/) | électro mécanique | une démo de produit |
-| [Dance 02](https://mixkit.co/free-stock-music/discover/dance-02/) | EDM futuriste | une fonctionnalité |
-| [Golem Dance](https://mixkit.co/free-stock-music/discover/golem-dance/) | house mécanique | une démo qui file |
-| [Anthem #01](https://mixkit.co/free-stock-music/discover/anthem-01/) | électro house | une vidéo de lancement longue |
-
-Chaque lien ouvre la recherche Mixkit du titre, où la musique sort en premier.
+- Aucune ne lui plaît : `musiques choisir --autres` jusqu'à ce qu'il n'y en ait plus ; puis sa propre
+  musique (« Mets ma musique »).
 
 Puis, depuis le projet :
 

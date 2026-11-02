@@ -227,7 +227,8 @@ class Telechargements(unittest.TestCase):
         shutil.copytree(RACINE / "tools", copie / "tools", ignore=shutil.ignore_patterns("__pycache__"))
         self.dl.chmod(0)
         try:
-            env = {**os.environ, "HOME": str(self.tmp), "USERPROFILE": str(self.tmp)}
+            env = {**os.environ, "HOME": str(self.tmp), "USERPROFILE": str(self.tmp),
+                   "PIA_MIXKIT_FICHE": str(self.tmp / "aucune-fiche.json")}
             for commande in (["pack-sfx", "installer"], ["musiques", "installer"]):
                 r = subprocess.run([sys.executable, str(copie / "tools" / "studio_motion.py"), *commande],
                                    cwd=copie, env=env, capture_output=True, text=True, encoding="utf-8")

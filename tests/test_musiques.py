@@ -52,6 +52,115 @@ BANQUE = {
 }
 
 
+def fausse_fiche_mixkit(dossier: Path, n: int = 2) -> Path:
+    """Une fiche Mixkit dont les adresses sont des fichiers locaux (file://) : rien ne part sur le réseau."""
+    dossier.mkdir(parents=True, exist_ok=True)
+    noms = ["un", "deux", "trois"][:n]
+    liste = []
+    for i, nom in enumerate(noms):
+        source = dossier / f"source-{nom}.mp3"
+        source.write_bytes(b"ID3" + nom.encode() * 100)
+        liste.append({"id": f"mixkit-{nom}", "titre": nom.title(), "fichier": f"mixkit/mixkit-{nom}.mp3",
+                      "url": source.resolve().as_uri(), "ambiance": ["tech-minimale", "court-percutant", "premium-calme"][i],
+                      "style": f"style {nom}", "usage_conseille": "test", "tempo_bpm": 120.0, "recale_a_120": True,
+                      "premier_temps_s": 0.0, "entree_franche_s": None if i == 0 else 4.0, "duree_s": 120.0})
+    fiche = dossier / "musiques-mixkit.json"
+    fiche.write_text(json.dumps({"morceaux": liste}), encoding="utf-8")
+    return fiche
+
+
+class Mixkit(unittest.TestCase):
+    """Les 18 de Mixkit : jamais livrées, téléchargées chez le client depuis Mixkit."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.racine = self.tmp / "produit"
+        self.racine.mkdir()
+        patcher = mock.patch.dict(os.environ, {"PIA_MIXKIT_FICHE": str(fausse_fiche_mixkit(self.tmp / "mk"))})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_la_vraie_fiche(self):
+        with mock.patch.dict(os.environ, {"PIA_MIXKIT_FICHE": ""}):
+            liste = musiques.mixkit()
+        self.assertEqual(len(liste), 18)
+        self.assertEqual(len({m["id"] for m in liste}), 18)
+        for m in liste:
+            self.assertIn(m["ambiance"], musiques.AMBIANCES, m["id"])
+            self.assertTrue(m["url"].startswith("https://assets.mixkit.co/music/"), m["id"])
+            self.assertEqual(m["fichier"], f"mixkit/{m['id']}.mp3")
+            self.assertGreater(m["duree_s"], 60, m["id"])
+
+    def test_telecharge_ce_qui_manque_puis_rien(self):
+        res = musiques.installer_mixkit(self.racine)
+        self.assertEqual((res["ecrits"], res["identiques"], res["erreurs"]), (2, 0, []))
+        res = musiques.installer_mixkit(self.racine)
+        self.assertEqual((res["ecrits"], res["identiques"]), (0, 2))
+        e = musiques.etat(self.racine)
+        self.assertEqual((e["total"], e["lancement"], e["mixkit"], e["mixkit_attendus"]), (2, 0, 2, 2))
+        self.assertTrue(e["installe"])
+
+    def test_une_absente_n_arrete_pas_les_autres(self):
+        (self.tmp / "mk" / "source-un.mp3").unlink()
+        res = musiques.installer_mixkit(self.racine)
+        self.assertEqual(res["ecrits"], 1)
+        self.assertEqual(len(res["erreurs"]), 1)
+        self.assertFalse((self.racine / "assets/musiques/mixkit/mixkit-un.mp3.part").exists())
+
+    def test_choisies_comme_les_autres_avec_leur_licence(self):
+        musiques.installer_mixkit(self.racine)
+        liste = {m["id"]: m for m in musiques.morceaux(self.racine)}
+        self.assertIn("Mixkit", liste["mixkit-un"]["licence"])
+        self.assertEqual(liste["mixkit-un"]["nom_ambiance"], "Tech minimale")
+        # Sans entrée franche, le premier temps est calé au début : jamais « démarre après le début ».
+        choix = musiques.choisir(self.racine, objectif="fonctionnalite", support="page", duree=30, a=8)
+        un = next(m for m in choix if m["id"] == "mixkit-un")
+        self.assertEqual(un["raisons"], ["Tech minimale"])
+        self.assertIn("batterie dès le début", musiques.ligne(un))
+        self.assertNotIn("#t=", musiques.page(un)["url"])
+        # Trop court pour toute la vidéo : écarté.
+        self.assertNotIn("mixkit-un", {m["id"] for m in musiques.choisir(self.racine, objectif="fonctionnalite", duree=125)})
+
+
+class LienDeLaFormation(unittest.TestCase):
+    """Les 17 par le lien personnel de la phrase de la formation."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.racine = Path(self._tmp.name)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_refuse_une_autre_adresse(self):
+        for lien in ("http://app.lemondedumarketing.fr/x", "https://exemple.com/musiques.zip", "file:///etc/passwd"):
+            with self.assertRaisesRegex(musiques.ErreurMusiques, "pas celui de ta formation"):
+                musiques.telecharger_pack(self.racine, lien, ouvrir=mock.Mock(side_effect=AssertionError("jamais appelé")))
+
+    def test_lien_expire(self):
+        import urllib.error
+        refus = urllib.error.HTTPError("https://app.lemondedumarketing.fr/x", 404, "Not Found", {}, None)
+        with self.assertRaisesRegex(musiques.ErreurMusiques, "expiré"):
+            musiques.telecharger_pack(self.racine, "https://app.lemondedumarketing.fr/api/formations/musiques-lancement/download?cle=x",
+                                      ouvrir=mock.Mock(side_effect=refus))
+        self.assertEqual(list((self.racine / ".cache" / "musiques").glob("*")), [])
+
+    def test_telecharge_puis_s_installe(self):
+        import io
+        zip_ = archive(self.racine / "source.zip", "premium-calme", BANQUE["premium-calme"])
+        reponse = mock.MagicMock()
+        reponse.__enter__.return_value = io.BytesIO(zip_.read_bytes())
+        ouvrir = mock.Mock(return_value=reponse)
+        cible = musiques.telecharger_pack(self.racine, "https://app.lemondedumarketing.fr/api/formations/musiques-lancement/download?cle=abc", ouvrir)
+        self.assertEqual(ouvrir.call_args[0][0].full_url, "https://app.lemondedumarketing.fr/api/formations/musiques-lancement/download?cle=abc")
+        res = musiques.installer(self.racine, [cible])
+        self.assertEqual(res["ambiances"], {"premium-calme": 2})
+
+
 class Installation(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -277,11 +386,15 @@ class Commande(unittest.TestCase):
             dl.mkdir(parents=True)
             for a in BANQUE:
                 archive(dl / f"musiques-{a}.zip", a, BANQUE[a])
-            env = {**os.environ, "HOME": str(tmp / "home"), "USERPROFILE": str(tmp / "home")}
+            fiche_mixkit = fausse_fiche_mixkit(tmp / "mixkit", n=1)
+            env = {**os.environ, "HOME": str(tmp / "home"), "USERPROFILE": str(tmp / "home"), "PIA_MIXKIT_FICHE": str(fiche_mixkit)}
             outil = [sys.executable, str(copie / "tools" / "studio_motion.py")]
             r = subprocess.run(outil + ["musiques", "installer"], cwd=copie, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
-            self.assertIn("8 musiques de lancement", r.stdout)
+            self.assertIn("9 musiques de lancement", r.stdout)
+            self.assertIn("8 de la formation", r.stdout)
+            self.assertIn("1/1 de Mixkit", r.stdout)
+            self.assertTrue((copie / "assets" / "musiques" / "mixkit" / "mixkit-un.mp3").is_file())
             r = subprocess.run(outil + ["nouvelle", "Test", "--objectif", "vente", "--videos", "reel,section"],
                                cwd=copie, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)

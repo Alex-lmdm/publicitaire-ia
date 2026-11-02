@@ -10,7 +10,7 @@ te pose quelques questions à choix (une seule fois sur ta marque et ce que tu v
 vidéo : le but et où tu vas la mettre), et fabrique la vidéo.
 
 **Du texte à l'écran et de la musique, par défaut.** Tu n'as rien à enregistrer : la musique vient
-de tes 17 musiques de lancement (offertes avec la formation, utilisables dans tes pubs). À chaque
+de tes 35 musiques de lancement (offertes avec la formation, utilisables dans tes pubs). À chaque
 vidéo, ton assistant prend celles qui vont avec son but, tu écoutes et tu choisis, et il cale
 l'entrée de la batterie au moment où ton offre apparaît. Une voix off s'ajoute quand tu veux, même
 sur une vidéo déjà faite : une voix IA gratuite de Google AI Studio, ou ta voix enregistrée au
@@ -66,10 +66,8 @@ https://github.com/Alex-lmdm/publicitaire-ia et suis les instructions d'installa
 INSTALL.md ». Détail : [INSTALL.md](INSTALL.md). Il faut Node 22.12 ou plus, Python 3.9 ou plus et
 ffmpeg (l'IA les installe avec ton accord) ; l'app HyperFrames est en option.
 
-**Les 17 musiques de lancement** (offertes avec la formation) s'installent d'une phrase, une fois
-leur fichier téléchargé : « Installe mes 17 musiques de lancement depuis mon dossier
-Téléchargements ». Aucune ne te plaît pour une vidéo ? Ton assistant te propose les 18 musiques
-gratuites de Mixkit de ta formation.
+**Les 35 musiques de lancement** (offertes avec la formation) s'installent avec le dossier : la
+phrase d'installation de ta formation contient leur lien. Rien à télécharger toi-même.
 
 **Le Pack SFX** (156 bruitages pro, vendu à part) s'ajoute d'une phrase : « Installe le Pack SFX
 depuis le fichier pack-sfx.zip de mon dossier Téléchargements », ou « Reprends le Pack SFX de mon
