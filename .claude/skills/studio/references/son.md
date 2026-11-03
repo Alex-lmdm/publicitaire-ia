@@ -8,10 +8,8 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
 - **Bruitages, dans cet ordre** : le **Pack SFX** s'il est installé dans ce dossier
   (`python3 tools/studio_motion.py pack-sfx` le dit ; 156 sons pro dans `assets/sfx/pack/`, la fiche
   de chacun dans `assets/sfx/catalog.json` : rôle, usage, gain calibré, instant d'impact, prises ;
-  la table « quel son pour quoi » dans `assets/sfx/sons-par-situation.md`) ; sinon les bruitages de
-  la bibliothèque HeyGen s'il est relié (`heygen bruitages "<description en anglais>"` depuis le
-  projet, puis `heygen prendre <n> --bruitage` : le son va dans `assets/sons/`, son instant d'impact
-  est affiché) ; ses propres MP3. Les 22 sons de démarrage du dossier
+  la table « quel son pour quoi » dans `assets/sfx/sons-par-situation.md`) ; sinon ses propres MP3.
+  Les 22 sons de démarrage du dossier
   (`assets/sfx/starter/`, index « à utiliser quand… » dans `sounds.md`, licence CC0) en dernier
   recours : dans une vidéo de motion design, ils sonnent bon marché (retour du créateur,
   12/10/2026) ; peu nombreux et bien placés, ils restent mieux que le silence.
@@ -25,10 +23,10 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   de Mixkit). Il manque encore les 17 de la formation ? Dis-le une fois, en une phrase : « Il manque
   une partie de tes musiques : colle-moi la phrase « Installe mes musiques de lancement » du module
   Musique de ta formation. » En attendant, choisis parmi celles qui sont là.
-- La bibliothèque de musiques de HeyGen ne se propose plus : avec un compte gratuit, ses conditions
-  interdisent l'usage commercial et publicitaire, et aucune licence claire n'est publiée pour les
-  comptes payants. S'il la demande lui-même, préviens-le une fois de ce point, puis
-  [heygen.md](heygen.md).
+- La bibliothèque de HeyGen (musiques et bruitages) ne se propose plus : avec un compte gratuit, ses
+  conditions interdisent l'usage commercial et publicitaire, et aucune licence claire n'est publiée
+  pour les comptes payants. S'il la demande lui-même, préviens-le une fois de ce point, puis
+  [heygen.md](heygen.md) (`heygen bruitages`, `heygen prendre <n> --bruitage`).
 - Ne télécharge jamais une musique d'un site au hasard : les droits ne sont pas garantis. Ne lance
   jamais une génération de musique payante.
 
@@ -112,8 +110,10 @@ la même page que les 8 styles (le style se choisit avec la musique, SKILL.md é
 python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --style <N conseillé> --ouvrir
 ```
 
-`--style` marque ton conseil parmi les 8 styles ; un style déjà connu (demandé d'emblée, ou gardé
-dans ses préférences) : `--sans-styles`, la page ne montre que les musiques.
+`--style` marque ton conseil parmi les 8 styles, et les trois musiques suivent son ambiance (section
+8 de sa fiche) ; un style déjà connu (demandé d'emblée, ou gardé dans ses préférences) :
+`--sans-styles` (avec `--style <N>` pour garder son ambiance), la page ne montre que les musiques.
+Sans musiques de lancement installées, ou si aucune ne couvre la vidéo, elle ne montre que les styles.
 
 L'outil prend l'ambiance qui va avec le but et le support, écarte les morceaux trop courts (de
 l'entrée de la batterie à la fin, ils doivent couvrir la vidéo après le pivot), préfère ceux dont

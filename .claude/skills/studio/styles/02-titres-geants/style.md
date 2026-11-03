@@ -132,6 +132,7 @@ Les fonds alternent par coupe franche : accent plein, sombre quadrillé, sombre 
 - **Original** : musique seule, sans voix ni bruitage marqué. Une nappe électronique aérienne, tempo estimé autour de 110 battements par minute ; une montée douce les 4 premières secondes (pendant la construction), l'énergie pleine dès la coupe sur le titre géant, une retombée d'une demi-seconde juste avant le logo final. Les coupes tombent sur les attaques de la musique (montées fortes mesurées à 4,3 s, 6,3 s, 7,9 s, 8,7 s, 10,1 s, 13,1 s, 14,5 s, 21,1 s, 21,9 s et 28,5 s).
 - **Chez le client** : une musique de lancement inspirante, 100 à 120 battements par minute, avec une entrée franche et un dernier temps fort à garder pour le bouton (`studio_motion.py musiques choisir`). Les coupes et les bascules de graisse se calent sur ses temps.
 - **Bruitages, légers** : un petit clic sur chaque cadre de sélection et sur le clic du curseur, un souffle bref sur les reculs de caméra et sur l'ouverture du faisceau, un impact grave sur le bouton qui se remplit. Rien sur les lettres tapées (trop de petits sons).
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 2`) : « Lancement énergique » puis « Montée cinématique », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

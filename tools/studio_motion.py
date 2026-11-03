@@ -475,7 +475,13 @@ def binaire(nom: str) -> str | None:
 
 
 def hyperframes_cli() -> list[str] | None:
-    """La CLI HyperFrames du dossier (version figée par package.json), sinon celle du système."""
+    """La CLI HyperFrames du dossier (version figée par package.json), sinon celle du système. Lancée
+    par Node quand c'est possible : sous Windows, `hyperframes.cmd` passe par cmd.exe, qui coupe une
+    adresse au premier « & » (un lien copié d'Instagram, `?utm_source=ig&…` ; revue du 03/11/2026)."""
+    entree = RACINE / "node_modules" / "hyperframes" / "bin" / "hyperframes.mjs"
+    node = shutil.which("node")
+    if entree.is_file() and node:
+        return [node, str(entree)]
     for nom in ("hyperframes.cmd", "hyperframes") if os.name == "nt" else ("hyperframes",):
         local = RACINE / "node_modules" / ".bin" / nom
         if local.exists():
@@ -1053,7 +1059,8 @@ def cmd_musiques(a) -> None:
             projet = _projet_ou_none(a.dans)
             if not projet:
                 sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>).")
-            if not banque.etat(r)["installe"]:
+            installees = banque.etat(r)["installe"]
+            if a.action == "prendre" and not installees:
                 sys.exit("ERREUR : les musiques de lancement ne sont pas installées : `musiques installer` depuis la "
                          "racine (les 17 de la formation viennent par le lien de sa phrase, module Musique).")
             liste_f = projet / "work" / "musiques.json"
@@ -1061,27 +1068,38 @@ def cmd_musiques(a) -> None:
             meta = meta_de(projet) or {}
             objectif, support = a.objectif or meta.get("objectif") or "vente", meta.get("support") or "reel"
             vitrine = _vitrine_styles(r, a)
-            if support in banque.MUETS:
-                print("• cette vidéo est une boucle muette de section de page : pas de musique.")
+            page_f = projet / "work" / "ecoute-musiques.html"
+
+            def styles_seuls(raison: str) -> None:
+                # Le style se choisit même sans musique de lancement (boucle muette, musiques absentes, vidéo
+                # plus longue que les morceaux, sa propre musique) : la page ne montre alors que les styles.
+                print(raison)
                 if vitrine:
-                    page = heygen.page_ecoute("Le style de ta vidéo", CONSIGNE_STYLE, [], projet / "work" / "ecoute-musiques.html",
-                                              styles=vitrine)
+                    page = heygen.page_ecoute("Le style de ta vidéo", CONSIGNE_STYLE, [], page_f, styles=vitrine)
                     ouverte = a.ouvrir and heygen.ouvrir(page)
                     print(f"• page des styles : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
-                    _dire_conseil(vitrine)
-                return
+                    _dire_conseil(vitrine, musique=False)
+
+            if support in banque.MUETS:
+                return styles_seuls("• cette vidéo est une boucle muette de section de page : pas de musique.")
+            if not installees:
+                return styles_seuls("• les musiques de lancement ne sont pas installées : `musiques installer` depuis la "
+                                    "racine (les 17 de la formation viennent par le lien de sa phrase, module Musique) ; "
+                                    "en attendant, sa propre musique (« Mets ma musique »).")
             duree = a.duree or _duree_projet(projet) or 30.0
             ambiance = banque.ambiance_demandee(a.ambiance) if a.ambiance else None
             if a.ambiance and not ambiance:
                 sys.exit(f"ERREUR : ambiance inconnue « {a.ambiance} ». Au choix : {', '.join(banque.AMBIANCES.values())}.")
             avant = json.loads(liste_f.read_text(encoding="utf-8")) if liste_f.is_file() else {}
             exclure = set(avant.get("deja_proposes") or []) if a.autres else set()
-            choix = banque.choisir(r, objectif, support, duree, a.a, ambiance, exclure, a.nombre, projet)
+            # Les musiques suivent le style conseillé (ou gardé) : section 8 « Le son » de sa fiche.
+            style_musique = getattr(a, "style", None) or catalogue_styles.garde(r)
+            preferees = None if ambiance else catalogue_styles.ambiances(style_musique)
+            choix = banque.choisir(r, objectif, support, duree, a.a, ambiance, exclure, a.nombre, projet, preferees)
             if not choix:
-                print("• aucun morceau ne convient" + (" (tous déjà proposés)" if exclure else
-                      f" : la vidéo ({duree:g} s) est plus longue que ce qu'ils couvrent après leur entrée")
-                      + ". Propose sa propre musique, ou une autre ambiance.")
-                return
+                return styles_seuls("• aucun morceau ne convient" + (" (tous déjà proposés)" if exclure else
+                                    f" : la vidéo ({duree:g} s) est plus longue que ce qu'ils couvrent après leur entrée")
+                                    + ". Propose sa propre musique, ou une autre ambiance.")
             liste_f.parent.mkdir(exist_ok=True)
             liste_f.write_text(json.dumps({"proposes": [m["id"] for m in choix],
                                            "deja_proposes": sorted(exclure | {m["id"] for m in choix}),
@@ -1089,6 +1107,9 @@ def cmd_musiques(a) -> None:
                                encoding="utf-8")
             for i, m in enumerate(choix, 1):
                 print(f"{i}. {banque.ligne(m)}")
+            if preferees:
+                print(f"• dans l'ambiance du style {style_musique} : "
+                      + ", ".join(banque.AMBIANCES[x] for x in preferees if x in banque.AMBIANCES) + ".")
             pistes = [{"numero": i, **banque.page(m)} for i, m in enumerate(choix, 1)]
             if vitrine:
                 titre, consigne = "Le style et la musique de ta vidéo", CONSIGNE_STYLE_MUSIQUE
@@ -1096,7 +1117,7 @@ def cmd_musiques(a) -> None:
                 titre, consigne = ("Les musiques pour cette vidéo",
                                    "Chaque extrait démarre quelques secondes avant l'entrée de la batterie. Dis le numéro de celle "
                                    "que tu préfères (ou « choisis » : je prends la 1, la plus juste pour ta vidéo).")
-            page = heygen.page_ecoute(titre, consigne, pistes, projet / "work" / "ecoute-musiques.html", styles=vitrine)
+            page = heygen.page_ecoute(titre, consigne, pistes, page_f, styles=vitrine)
             ouverte = a.ouvrir and heygen.ouvrir(page)
             print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
             _dire_conseil(vitrine)
@@ -1105,13 +1126,18 @@ def cmd_musiques(a) -> None:
         if a.action == "prendre":
             if not liste_f.is_file():
                 sys.exit("ERREUR : pas de proposition dans ce projet : `musiques choisir` d'abord.")
-            proposes = json.loads(liste_f.read_text(encoding="utf-8"))["proposes"]
+            liste = json.loads(liste_f.read_text(encoding="utf-8"))
+            proposes = liste["proposes"]
             if not a.valeurs or not a.valeurs[0].isdigit() or not 1 <= int(a.valeurs[0]) <= len(proposes):
                 sys.exit(f"ERREUR : donne le numéro choisi (1 à {len(proposes)}).")
             ident = proposes[int(a.valeurs[0]) - 1]
             m = next((x for x in banque.morceaux(r) if x["id"] == ident), None)
             if not m:
                 sys.exit(f"ERREUR : {ident} n'est plus dans les musiques installées : `musiques choisir` à nouveau.")
+            if a.a is not None:
+                # L'entrée de la batterie de CE morceau : `sons` la relit pour le creux sous une voix off.
+                liste.update(a=a.a, pris=ident)
+                liste_f.write_text(json.dumps(liste, ensure_ascii=False, indent=1), encoding="utf-8")
             dest = projet / "assets" / "audio" / m["chemin"].name
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(m["chemin"], dest)
@@ -1152,25 +1178,28 @@ CONSIGNE_STYLE_MUSIQUE = ("Regarde les styles, écoute les musiques (chaque extr
 
 def _vitrine_styles(r: Path, a) -> list[dict]:
     """Les 8 styles à montrer avec les musiques (SKILL.md, étape 4), ton conseil marqué ; aucun quand
-    son style est déjà connu (`--sans-styles`, ou un style gardé dans ses préférences)."""
+    son style est déjà connu (`--sans-styles`, ou un style gardé dans ses préférences : `--style`
+    rouvre alors la page, s'il en veut un autre)."""
     if getattr(a, "sans_styles", False):
         return []
-    garde = catalogue_styles.garde(r)
-    if garde:
-        print(f"• son style gardé : {garde} (préférences de studio.config.json) : la page ne le redemande pas.")
-        return []
     conseil = getattr(a, "style", None)
+    garde = catalogue_styles.garde(r)
+    if garde and not conseil:
+        print(f"• son style gardé : {garde} (préférences de studio.config.json) : la page ne le redemande pas "
+              "(`--style <N>` la rouvre s'il en veut un autre).")
+        return []
     vitrine = catalogue_styles.vitrine(r, conseil)
     if vitrine and conseil and not any(s["conseil"] for s in vitrine):
         sys.exit(f"ERREUR : il n'y a pas de style {conseil} : de 1 à {len(vitrine)}.")
     return vitrine
 
 
-def _dire_conseil(vitrine: list[dict]) -> None:
+def _dire_conseil(vitrine: list[dict], musique: bool = True) -> None:
     if vitrine:
         conseil = next((s for s in vitrine if s["conseil"]), None)
         print(f"  {len(vitrine)} styles sur la page" + (f", ton conseil : {conseil['numero']} « {conseil['nom']} »" if conseil
-              else " (`--style <N>` marque ton conseil)") + ". Sa réponse « 7, 1 » : le style, puis la musique.")
+              else " (`--style <N>` marque ton conseil)")
+              + (". Sa réponse « 7, 1 » : le style, puis la musique." if musique else ". Sa réponse : le numéro du style."))
 
 
 def _projet_ou_none(chemin: str | None) -> Path | None:
@@ -1534,7 +1563,8 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     plan = [f"# {OBJECTIFS[objectif]['nom']} : {sujet}\n\nCréé le {date}. Objectif : {OBJECTIFS[objectif]['quoi']}.\n",
             "## Brief\n\n(le lien de sa page, l'objectif précis, le public, les supports, ses réponses et préférences, ce que la vidéo doit faire faire)\n",
             "## Repérage\n\n(l'univers de sa page, les surfaces à montrer, les logos, la matière qui manque : references/reperage.md)\n",
-            "## Structure et angle retenus\n\n(à remplir après le choix du client)\n", "## Vidéos\n"]
+            "## Structure et angle retenus\n\n(à remplir après le choix du client)\n",
+            "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
         lo, hi = s["ideal"]
@@ -1989,7 +2019,7 @@ def ytdlp() -> str | None:
 
 def coupes_video(ffmpeg: str, video: Path, seuil: float = 0.2) -> list[float]:
     r = subprocess.run([ffmpeg, "-hide_banner", "-i", str(video), "-filter:v", f"select='gt(scene,{seuil})',showinfo",
-                        "-f", "null", "-"], capture_output=True, text=True)
+                        "-f", "null", "-"], capture_output=True, text=True, encoding="utf-8", errors="replace")
     return [round(float(t), 2) for t in re.findall(r"pts_time:([\d.]+)", r.stderr)]
 
 

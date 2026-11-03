@@ -2,7 +2,7 @@
 
 Publicitaire IA, par LeMondeDuMarketing. Le dossier s'appuie sur des outils, des polices, des sons et des idées
 open source : merci à leurs auteurs. Chaque élément livré a été vérifié à la source avant d'être
-redistribué (13 octobre 2026).
+redistribué (13 octobre 2026 ; les styles, le 3 novembre 2026).
 
 ## Installés par npm, jamais copiés dans ce dépôt
 
@@ -31,6 +31,7 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 | 8 sons Kenney « Interface Sounds » | `assets/sfx/starter/` | CC0 | https://kenney.nl/assets/interface-sounds |
 | Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
 | Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
+| Aperçus des 8 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |
 
 Aucun son du **Pack SFX** (produit vendu à part) n'est livré ici. Le client l'installe sur son
 ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monteur IA
@@ -62,6 +63,11 @@ ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monte
 
 Aucun code n'en est copié tel quel ; les règles ci-dessous ont été traduites, comparées entre
 elles (la plus stricte a été retenue) et adaptées au format vertical d'Instagram.
+
+Les 8 styles (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
+mouvements) de vidéos de lancement publiques : Firecrawl, Cyera (studio Motionimo), Polymarket,
+ElevenLabs, ClaudeDevs, Kimi, Zaro et Cursor, dont chaque fiche donne le lien. Aucun de leurs textes,
+logos, images, produits ni musiques n'est repris ; les scènes sont refaites par nous.
 
 - **brag**, © 2026 Shunit Haviv Hakimi, licence MIT : le parcours à portes de contrôle, l'ancrage
   des affirmations dans le projet, les données sensibles remplacées par des exemples, le temps de

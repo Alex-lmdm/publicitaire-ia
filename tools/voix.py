@@ -154,7 +154,7 @@ def respiration(projet: Path, instant: float, secondes: float = 1.5) -> dict:
     r = subprocess.run([sons.outil("ffmpeg"), "-v", "error", "-y", "-i", str(voix), "-filter_complex",
                         f"[0:a]atrim=0:{milieu},asetpts=PTS-STARTPTS[a];aevalsrc=0:d={ajout}:s=48000[s];"
                         f"[0:a]atrim={milieu},asetpts=PTS-STARTPTS[b];[a][s][b]concat=n=3:v=0:a=1[o]",
-                        "-map", "[o]", "-ar", "48000", "-c:a", "pcm_s16le", str(tmp)], capture_output=True, text=True)
+                        "-map", "[o]", "-ar", "48000", "-c:a", "pcm_s16le", str(tmp)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode != 0:
         raise Erreur(f"ffmpeg : {r.stderr.strip()[-300:]}")
     tmp.replace(voix)

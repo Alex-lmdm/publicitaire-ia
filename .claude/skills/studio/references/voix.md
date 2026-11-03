@@ -15,7 +15,8 @@ encore à l'écran**. Deux façons, à lui proposer en un seul message :
 >    le plus convaincant).
 > Dans les deux cas, je t'écris d'abord le texte et tu le valides.
 
-S'il a un compte HeyGen et le préfère, une voix HeyGen se génère d'ici (plus bas, C, payante).
+S'il a un compte HeyGen et le préfère, une voix HeyGen se génère d'ici (plus bas, C, payante ; ses
+conditions s'appliquent, [heygen.md](heygen.md), « Les droits »).
 S'il refuse tout, une voix de synthèse gratuite existe sur son ordinateur (D), moins naturelle :
 propose-la en dernier.
 

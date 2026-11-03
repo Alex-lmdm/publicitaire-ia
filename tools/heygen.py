@@ -229,7 +229,8 @@ def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path, style
             f'<small>{html.escape(str(s.get("detail", "")))}</small></div></div></li>')
     blocs = ""
     if cartes:
-        blocs += f'<h2>Le style</h2><ol class="styles">{"".join(cartes)}</ol>'
+        blocs += ('<h2>Le style</h2><p class="note">Aperçus aux couleurs de LMDM : ta vidéo garde le fond du style '
+                  f'et prend tes couleurs et tes polices.</p><ol class="styles">{"".join(cartes)}</ol>')
     if lignes:
         blocs += (f'<h2>La musique</h2>' if cartes else "") + f'<ol>{"".join(lignes)}</ol>'
     contenu = f"""<!doctype html>
@@ -248,6 +249,7 @@ li {{ display: flex; gap: 16px; align-items: center; background: #1b1c20; border
 li div {{ flex: 1; min-width: 0; display: grid; gap: 6px; }}
 small {{ color: #9a9aa0; }} audio {{ width: 100%; }}
 .styles {{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
+p.note {{ margin: -4px 0 14px; font-size: 14px; }}
 li.style {{ flex-direction: column; align-items: stretch; padding: 10px 10px 14px; }}
 li.style video {{ width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; background: #000; display: block; }}
 .legende {{ display: flex; gap: 12px; align-items: flex-start; }} .legende .n {{ width: 36px; height: 36px; font-size: 16px; }}

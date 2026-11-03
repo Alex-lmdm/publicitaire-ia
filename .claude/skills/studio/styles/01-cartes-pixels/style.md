@@ -133,6 +133,7 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 - **Musique de l'original** : électronique sèche et percussive, environ 92 battements par minute (mesuré), faite de clics, de bips et de grésillements numériques plus que de mélodie, avec de courts silences nets (vers 33 s, et juste avant le logo final). Sonie mesurée -12,6 LUFS : trop fort pour nous, on vise -16 LUFS (`mastering`).
 - **Chez toi** : l'ambiance « Tech minimale » des musiques de lancement (`musiques choisir --ambiance "Tech minimale"`), l'entrée de batterie calée sur l'arrivée de la fiche (le pivot).
 - **Bruitages**, tous légers et numériques, jamais d'impact grave : une rafale de clics secs pour la mosaïque, un bip court par cadre de repérage (pas un par pixel), quelques bips pour le chargeur, la frappe au clavier pour la question et le bouton, un « ding » léger quand le maillon s'allume, un souffle doux pour le chevron, un clic de souris et un petit « pop » pour le bouton final.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 1`) : « Tech minimale », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

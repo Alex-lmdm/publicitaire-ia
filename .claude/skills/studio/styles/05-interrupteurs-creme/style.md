@@ -121,6 +121,7 @@ Tous sont dans `compositions/`.
 
 - Original : une musique douce et régulière (environ 118 battements par minute, sans montée ni chute), des clics d'interface légers sur la cascade (quatre clics à 0,125 s), la musique se pose sur la signature.
 - Chez le client : une musique de lancement calme (`musiques choisir --ambiance "Premium et calme"`, ou « Tech minimale »), calée à 120. Bruitages petits et secs : un clic doux par interrupteur, un « pop » léger par disque, un frottement de crayon sur la boucle, un tintement discret sur la signature. Jamais de souffle (whoosh) ni d'impact : ils cassent le calme.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 5`) : « Premium et calme » puis « Tech minimale », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

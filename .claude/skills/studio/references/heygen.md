@@ -27,7 +27,8 @@ quel :
 > Pour ta voix de synthèse, il faut relier un compte HeyGen. Trois minutes, une seule fois :
 >
 > 1. Crée ton compte gratuit sur https://app.heygen.com/signup (avec Google, c'est le plus
->    rapide). Si HeyGen te propose un abonnement, passe : le compte gratuit suffit.
+>    rapide). Si HeyGen te propose un abonnement, passe : le compte gratuit suffit pour écouter les
+>    voix ; chaque voix générée se paie en crédits, avec ton accord.
 > 2. Ouvre https://app.heygen.com/settings?nav=API et copie ta clé (« API token »). HeyGen ne la
 >    remontre pas : si tu l'as perdue, il en crée une nouvelle.
 > 3. Colle-la ici.
@@ -61,6 +62,8 @@ messages et ne l'écris dans aucun fichier du dossier : l'outil la range dans
 ## Les droits
 
 Ce qui vient de HeyGen se prend avec le compte du client, pour ses vidéos, aux conditions de
-HeyGen (compte gratuit : pas d'usage commercial ni publicitaire). Note toujours la source (l'outil
+HeyGen (compte gratuit : pas d'usage commercial ni publicitaire). C'est pourquoi sa musique et ses
+bruitages ne se proposent plus (son.md) ; une voix générée suit les conditions de son offre HeyGen :
+avant une pub, dis-le-lui une fois. Note toujours la source (l'outil
 le fait dans `assets/audio/SOURCE.md`). Ne l'envoie à personne et ne le range jamais ailleurs que
 dans le projet de la vidéo.

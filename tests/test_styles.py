@@ -13,6 +13,7 @@ STYLES = RACINE / ".claude" / "skills" / "studio" / "styles"
 TITRE = re.compile(r"^# Style n°(\d+) · (.+?) · d'après (.+?) \((https?://\S+)\)$")
 sys.path.insert(0, str(RACINE / "tools"))
 
+import musiques  # noqa: E402
 import styles  # noqa: E402
 
 
@@ -58,6 +59,23 @@ class Catalogue(unittest.TestCase):
                 for scene in re.findall(r"`([^`]+)`", cellules[3]):
                     self.assertTrue((d / "compositions" / f"{scene.removesuffix('.html')}.html").is_file(),
                                     f"{d.name} : {scene} n'est pas dans le kit")
+
+    def test_chaque_fiche_nomme_l_ambiance_de_sa_musique(self):
+        """Les musiques proposées avec un style suivent sa fiche (section 8) : les deux disent la même chose."""
+        for d in kits():
+            son = (d / "style.md").read_text(encoding="utf-8").split("## 8. Le son", 1)[1].split("\n## 9.", 1)[0]
+            cles = styles.ambiances(int(d.name[:2]))
+            self.assertTrue(cles, d.name)
+            for cle in cles:
+                self.assertIn(f"« {musiques.AMBIANCES[cle]} »", son, d.name)
+
+    def test_les_scenes_portent_le_nom_du_style(self):
+        """L'IA copie et lit ces scènes : leur en-tête dit « style » et le nom actuel, jamais un ancien nom."""
+        for d in kits():
+            for s in (d / "compositions").glob("*.html"):
+                texte = s.read_text(encoding="utf-8")
+                for ancien in ("TEMPLATE N°", "Template n°", "DÉGRADÉS VIFS", "PAPIER PINCEAU", "FENÊTRES BARRES", "· Orbite ·"):
+                    self.assertNotIn(ancien, texte, f"{d.name}/{s.name}")
 
     def test_chaque_style_a_son_apercu(self):
         for d in kits():

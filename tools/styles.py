@@ -18,6 +18,12 @@ APERCUS = Path("assets") / "styles"
 # | N° | Style | Ce qu'on voit | D'après | Souvent utile pour | Dossier |
 LIGNE = re.compile(r"^\| (\d+) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| `([^`]+)` \|$")
 GARDE = re.compile(r"(?:style|template)\s*(?:n°\s*)?(\d+)", re.I)
+# La musique de chaque style (section 8 « Le son » de sa fiche, qui les nomme) : ces ambiances passent
+# devant celles du but de la vidéo, jamais devant une voix off sur une page (musiques.choisir).
+AMBIANCES = {1: ["tech-minimale"], 2: ["lancement-energique", "montee-cinematique"],
+             3: ["tech-minimale", "montee-cinematique"], 4: ["premium-calme", "montee-cinematique"],
+             5: ["premium-calme", "tech-minimale"], 6: ["montee-cinematique"], 7: ["lancement-energique"],
+             8: ["tech-minimale", "premium-calme"]}
 
 
 def catalogue(racine: Path) -> list[dict]:
@@ -48,6 +54,11 @@ def garde(racine: Path) -> int | None:
         if m:
             return int(m.group(1))
     return None
+
+
+def ambiances(n: int | None) -> list[str]:
+    """Les ambiances de musique du style n, de la plus juste à la moins juste ([] sans style)."""
+    return list(AMBIANCES.get(n or 0, []))
 
 
 def vitrine(racine: Path, conseil: int | None = None) -> list[dict]:

@@ -408,7 +408,7 @@ def deja_utilises(racine: Path, sauf: Path | None = None) -> dict[str, int]:
 
 def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree: float = 30.0,
             a: float | None = None, ambiance: str | None = None, exclure: set[str] | None = None,
-            nombre: int = 3, projet: Path | None = None) -> list[dict]:
+            nombre: int = 3, projet: Path | None = None, preferees: list[str] | None = None) -> list[dict]:
     """Les `nombre` meilleurs morceaux pour une vidéo, du plus juste au moins juste, avec la raison.
 
     - l'ambiance vient du but (et du support pour un format court), sauf si le client en impose une ;
@@ -419,6 +419,7 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
     - un morceau proche de 120 battements par minute se cale sur la grille des scènes ;
     - une entrée franche qui peut tomber sur le pivot (`a`) passe devant : la batterie entre là où la
       vidéo change, au lieu de jouer dès la première seconde ;
+    - le style choisi (`preferees`, section 8 de sa fiche) passe devant le but et le support ;
     - une vidéo de page avec voix off prend d'abord les ambiances feutrées (Tech minimale, Premium et calme) ;
     - à note égale, un morceau de la formation (fiche complète, conseils d'usage) passe devant Mixkit ;
     - un morceau déjà utilisé dans ses vidéos passe derrière, pour varier."""
@@ -432,6 +433,8 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
         if support in COURTS and objectif in ("vente", "inscription"):
             ordre.remove("court-percutant")
             ordre.insert(0, "court-percutant")
+        if preferees:
+            ordre = [x for x in preferees if x in AMBIANCES] + [x for x in ordre if x not in preferees]
         if support in PAGES and a_une_voix(projet):
             ordre = SOUS_VOIX_PAGE + [x for x in ordre if x not in SOUS_VOIX_PAGE]
     utilises = deja_utilises(racine, sauf=projet)

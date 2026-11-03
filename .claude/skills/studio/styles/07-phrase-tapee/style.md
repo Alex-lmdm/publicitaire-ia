@@ -218,6 +218,7 @@ nuage, la pastille, une vignette) : jamais en texte ni en trait fin, illisible a
   par lettre) sur chaque phrase tapée, petits pops pour les objets de la ligne et les objets
   éparpillés, clic sur envoyer, souffle quand la fenêtre arrive, grain numérique quand tout passe en
   points, souffle long sur le recul de la galaxie, un impact doux sur le logo.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 7`) : « Lancement énergique », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

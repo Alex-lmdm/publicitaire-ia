@@ -143,6 +143,7 @@ En pub (vue sur un téléphone, souvent sans le son) : rien à lire sous 28 px. 
 - **Original** : une voix off chaleureuse dit la phrase du problème, et chaque mot apparaît au moment où il est dit ; pendant les messages, la conversation est jouée à deux voix (la voix de synthèse de l'offre et celle du client) ; une musique douce derrière, tempo estimé autour de 104 battements par minute, sans montée forte.
 - **Chez le client** : texte et musique par défaut (une musique de lancement calme puis lumineuse, 95 à 110 battements par minute) ; les mots et les transitions en pixels se calent sur ses temps. Une voix off seulement à sa demande ([voix.md](../../references/voix.md)) : chaque mot de l'avant apparaît alors quand il est dit, et la conversation peut se jouer à deux voix.
 - **Bruitages** : un petit tic par objet qui surgit, un grésillement bref sur chaque transition en pixels, la vibration d'un téléphone sur les écrans, une nappe qui monte pendant le pivot et un impact doux quand l'orbe s'ouvre, une bulle douce par message, un clic sur le bouton.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 4`) : « Premium et calme » puis « Montée cinématique », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

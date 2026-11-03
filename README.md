@@ -79,13 +79,16 @@ dossier Monteur IA ».
 
 - `.claude/skills/studio/` : la méthode (bienvenue et marque, fiche de l'offre, repérage,
   structures par but, idées, écriture, supports, voix, rythme, style, kit, recettes, son, revue,
-  livraison). `.claude/skills/hyperframes-*` : le contrat de composition, les effets et les
+  livraison) et, dans `styles/`, les 8 styles de motion design (une fiche et des scènes chacun). `.claude/skills/hyperframes-*` : le contrat de composition, les effets et les
   commandes de HyperFrames (copies de la version 0.8.136, licence Apache 2.0).
 - `tools/studio_motion.py` : marque, création des vidéos par support et par format, vérification
   de la fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones,
   planche, rythme, calage de la musique, pose et émergence des sons, mastering, couverture,
-  export, livraison. `tools/heygen.py` : la bibliothèque de musiques et les voix de HeyGen, avec
-  le compte du client. `tools/marque.py` : lecture de la marque (page, images, vidéo, Monteur IA).
+  export, livraison. `tools/styles.py` : les 8 styles et leurs aperçus, pour la page des styles et
+  des musiques. `tools/voix.py` : la voix off calée mot à mot, ses respirations. `tools/heygen.py` :
+  les voix de HeyGen et la page d'écoute, avec le compte du client. `tools/telechargeur.py` : le
+  téléchargeur des vidéos de référence, installé à la demande. `tools/marque.py` : lecture de la
+  marque (page, images, vidéo, Monteur IA).
   `tools/pack_sfx.py` : installation du Pack SFX et recherche dans son catalogue.
   `tools/musiques.py` : installation des musiques de lancement et choix selon le but de la vidéo.
   `tools/sons.py` : écriture des sons dans la vidéo. Python 3.9+, sans dépendance.
@@ -93,7 +96,8 @@ dossier Monteur IA ».
   vidéo dans l'app HyperFrames).
 - `templates/` : le point de départ de chaque vidéo, le kit de briques de motion design, la
   vignette d'accueil et le modèle des instructions de l'assistant.
-- `assets/` : deux polices libres (Inter, Anton) et 22 sons de démarrage (CC0).
+- `assets/` : deux polices libres (Inter, Anton), 22 sons de démarrage (CC0) et les aperçus muets
+  des 8 styles (`assets/styles/`).
 - `tests/` : `python3 -m unittest discover -s tests` (Windows : `python`) et `npm test`.
 
 Ce qui t'appartient reste chez toi et n'est jamais remplacé par une mise à jour : `marque.json` et

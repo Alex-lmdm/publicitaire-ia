@@ -740,6 +740,17 @@ class Voix(unittest.TestCase):
         self.assertIn("-ar 48000", voix)
 
 
+class LancerHyperframes(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("node") and (RACINE / "node_modules" / "hyperframes" / "bin" / "hyperframes.mjs").is_file(),
+                         "npm ci pas lancé")
+    def test_par_node_jamais_par_cmd(self):
+        """Revue du 03/11/2026 : sous Windows, `hyperframes.cmd` passe par cmd.exe, qui coupe une adresse
+        au premier « & » (un lien copié d'Instagram) : la capture de sa page échouait."""
+        cli = sm.hyperframes_cli()
+        self.assertEqual(Path(cli[-1]).name, "hyperframes.mjs")
+        self.assertEqual(Path(cli[0]).stem.lower(), "node")
+
+
 class Consignes(unittest.TestCase):
     SKILL = RACINE / ".claude" / "skills" / "studio"
 
@@ -880,6 +891,7 @@ class Creation(unittest.TestCase):
             self.assertEqual(sorted(metas), ["linkedin", "reel", "story"])
             self.assertEqual((metas["linkedin"]["format"], metas["linkedin"]["objectif"]), ("4x5", "vente"))
             texte = (dossier / "PLAN.md").read_text(encoding="utf-8")
+            self.assertIn("## Style et musique", texte)   # une conversation reprise sait si l'étape 4 est faite
             self.assertIn("### LinkedIn (4x5", texte)
             self.assertLess(texte.index("### LinkedIn"), texte.index("## Livraison"))
             self.assertTrue((ajouts[0] / "assets" / "fonts" / "poppins.css").is_file())

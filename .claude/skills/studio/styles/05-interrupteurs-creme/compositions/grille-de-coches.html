@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    TEMPLATE N°5 « INTERRUPTEURS » · SCÈNE 3 : LA GRILLE DE COCHES (6,5 s)
+    STYLE N°5 « INTERRUPTEURS CRÈME » · SCÈNE 3 : LA GRILLE DE COCHES (6,5 s)
 
     Ce qu'elle montre : une grille de disques blancs cerclés d'un anneau (la fin de la scène 2).
     Chaque anneau se remplit comme un camembert, en vague de gauche à droite, et devient une
@@ -101,7 +101,7 @@
       var tl = gsap.timeline({ paused: true });
       function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
 
-      // --- Outils du look (communs aux scènes du template 5) ---------------------------------
+      // --- Outils du look (communs aux scènes du style 5) ---------------------------------
       function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
       function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
       function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }

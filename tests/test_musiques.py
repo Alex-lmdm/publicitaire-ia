@@ -363,6 +363,17 @@ class Choix(unittest.TestCase):
             sans_voix = self.ids(objectif="vente", support="page", duree=20, a=8, projet=Path(d) / "vide")[0]
             self.assertTrue(sans_voix.startswith("lancement-energique"), sans_voix)
 
+    def test_le_style_donne_son_ambiance(self):
+        """Revue du 03/11/2026 : la page des styles proposait « Dubstep puissant » avec le style 5, calme."""
+        premier = self.ids(objectif="vente", support="reel", duree=25, preferees=["premium-calme", "tech-minimale"])[0]
+        self.assertTrue(premier.startswith("premium-calme"), premier)
+        with tempfile.TemporaryDirectory() as d:   # une voix off sur une page passe toujours devant le style
+            projet = Path(d) / "Vente · Page de vente"
+            (projet / "work").mkdir(parents=True)
+            (projet / "work" / "voix.txt").write_text("Une voix.")
+            premier = self.ids(objectif="vente", support="page", duree=20, a=8, projet=projet, preferees=["lancement-energique"])[0]
+            self.assertTrue(premier.startswith(("tech-minimale", "premium-calme")), premier)
+
     def test_entree_franche_sur_le_pivot_passe_devant(self):
         """Essai du 03/11/2026 : à note égale, le tri par nom faisait passer Mixkit (batterie dès le
         début) devant les morceaux maison dont la batterie peut entrer sur le pivot."""
@@ -440,6 +451,10 @@ class Commande(unittest.TestCase):
             self.assertNotIn("<video ", page.read_text(encoding="utf-8"))
             r = subprocess.run(outil + ["musiques", "prendre", "2"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
+            r = subprocess.run(outil + ["musiques", "prendre", "2", "--a", "7.5"], cwd=reel, env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            liste = json.loads((reel / "work" / "musiques.json").read_text(encoding="utf-8"))
+            self.assertEqual((liste["a"], liste["pris"]), (7.5, "lancement-energique-01-test"))   # relu par `sons`
             source = (reel / "assets" / "audio" / "SOURCE.md").read_text(encoding="utf-8")
             self.assertIn("musiques de lancement, lancement-energique-01-test", source)
             self.assertTrue((reel / "assets" / "audio" / "lancement-energique-01-test.mp3").is_file())
@@ -452,6 +467,38 @@ class Commande(unittest.TestCase):
             r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertIn("son style gardé : 4", r.stdout)
             self.assertNotIn("<video ", page.read_text(encoding="utf-8"))
+            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--style", "2"], cwd=reel, env=env,
+                               capture_output=True, text=True)   # il en veut un autre : `--style` rouvre la page
+            self.assertIn("ton conseil : 2 « Titres géants »", r.stdout)
+            self.assertEqual(page.read_text(encoding="utf-8").count("<video "), 8)
+
+    def test_sans_musiques_la_page_montre_les_styles(self):
+        """Revue du 03/11/2026 : sans musiques installées, `musiques choisir` s'arrêtait sur une erreur et le
+        client ne voyait jamais les 8 styles."""
+        with tempfile.TemporaryDirectory() as t:
+            copie = Path(t) / "Publicitaire IA"
+            copie.mkdir()
+            for nom in ("produit.json", "VERSION", "tools", "templates", "assets", "hyperframes.json"):
+                src = RACINE / nom
+                if src.is_dir():
+                    shutil.copytree(src, copie / nom, ignore=shutil.ignore_patterns("musiques", "__pycache__"))
+                elif src.is_file():
+                    shutil.copy2(src, copie / nom)
+            index_styles = Path(".claude") / "skills" / "studio" / "styles" / "README.md"
+            (copie / index_styles).parent.mkdir(parents=True)
+            shutil.copy2(RACINE / index_styles, copie / index_styles)
+            env = {**os.environ, "HOME": str(Path(t) / "home"), "USERPROFILE": str(Path(t) / "home")}
+            outil = [sys.executable, str(copie / "tools" / "studio_motion.py")]
+            r = subprocess.run(outil + ["nouvelle", "Test", "--objectif", "vente", "--videos", "reel"], cwd=copie, env=env,
+                               capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            reel = next((copie / "videos").glob("*/* · Reel"))
+            r = subprocess.run(outil + ["musiques", "choisir", "--style", "7"], cwd=reel, env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("pas installées", r.stdout)
+            self.assertIn("Sa réponse : le numéro du style.", r.stdout)
+            page = (reel / "work" / "ecoute-musiques.html").read_text(encoding="utf-8")
+            self.assertEqual((page.count("<video "), page.count("<audio ")), (8, 0))
 
 
 if __name__ == "__main__":

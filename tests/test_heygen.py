@@ -110,6 +110,7 @@ class Musiques(unittest.TestCase):
             texte = heygen.page_ecoute("Le style et la musique", "Consigne", [{"numero": 1, "nom": "m", "url": "file:///m.mp3"}],
                                        Path(d) / "p.html", styles=styles).read_text()
         self.assertLess(texte.index("<h2>Le style</h2>"), texte.index("<h2>La musique</h2>"))
+        self.assertIn("Aperçus aux couleurs de LMDM", texte)   # ses couleurs à lui viendront dans sa vidéo
         self.assertEqual(texte.count("<video "), 2)
         self.assertEqual(texte.count("Mon conseil"), 1)
         self.assertIn("Cartes &lt;pixels&gt;", texte)

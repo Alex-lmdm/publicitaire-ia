@@ -328,7 +328,7 @@ def pixels_video(ffmpeg: str, fichier: Path, images: int = 12, cote: int = 64) -
 
 
 def duree_media(ffmpeg: str, fichier: Path) -> float | None:
-    r = subprocess.run([ffmpeg, "-hide_banner", "-i", str(fichier)], capture_output=True, text=True)
+    r = subprocess.run([ffmpeg, "-hide_banner", "-i", str(fichier)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     m = re.search(r"Duration:\s*(\d+):(\d+):([\d.]+)", r.stderr)
     return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else None
 
@@ -1124,7 +1124,7 @@ def capturer(hyperframes: list[str], url: str, dest: Path) -> Path | None:
     try:
         r = subprocess.run([*hyperframes, "capture", url, "-o", str(dest), "--skip-assets", "--skip-vision",
                             "--max-screenshots", "4", "--timeout", "60000", "--json"],
-                           capture_output=True, text=True, timeout=300)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=300)
     except (subprocess.TimeoutExpired, OSError):
         return None
     sans_consignes(dest)

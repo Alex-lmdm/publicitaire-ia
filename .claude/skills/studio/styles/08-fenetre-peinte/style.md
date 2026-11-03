@@ -124,6 +124,7 @@ Une vidéo de page de 45 à 90 s qui annonce, comme l'original, puis démontre :
 - **Musique de l'original** : électronique minimale et feutrée, environ 113 battements par minute, faite de pulsations graves douces et de petits clics, sans mélodie appuyée ; elle entre franchement à 3,2 s, après le logo, et se mixe très bas (-29 LUFS mesurés ; on vise -16 LUFS au mastering).
 - **Chez toi** : l'ambiance « Tech minimale » des musiques de lancement (`musiques choisir --ambiance "Tech minimale"`), ou « Premium et calme » pour une offre haut de gamme ; l'entrée de batterie sur la première phrase.
 - **Bruitages**, rares et doux : un clic de souris discret à chaque clic, une frappe de clavier très basse pendant que la phrase ou la demande s'écrit, une pulsation sourde sur chaque coupe vers une phrase. Pas de whoosh sur les gros plans, pas d'impact : le calme fait la marque de ce style.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 8`) : « Tech minimale » puis « Premium et calme », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

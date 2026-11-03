@@ -38,9 +38,9 @@ python3 tools/studio_motion.py marque regler --titres "Montserrat" --corps "Inte
 L'outil la télécharge depuis Google Fonts (polices libres). Dans le doute, garde celles de départ
 et dis-le.
 
-**c : le style.** La vidéo sert deux fois : ici pour la marque, puis à chaque vidéo pour le
-rythme et les procédés (`studio_motion.py reference`, étape 2 bis du skill). Note son lien dans
-`studio.config.json` (`reference_style`).
+**c : le style.** La vidéo sert deux fois : ici pour la marque, puis à l'étape 4 de chaque vidéo,
+proposée avec les 8 styles (s'il la reprend : `studio_motion.py reference`, section 4 de
+reperage.md). Note son lien dans `studio.config.json` (`reference_style`).
 
 **d : où est son dossier ?** S'il ne sait pas, cherche dans son dossier personnel (trois niveaux
 au plus) un dossier qui contient `templates/AGENT.md.tpl` et `brand.config.json`, et

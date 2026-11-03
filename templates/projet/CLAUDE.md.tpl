@@ -23,12 +23,13 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
   chargé par `index.html` : pars de lui (mode d'emploi : `references/kit.md` du skill), ne le
   réécris pas scène par scène. Logos des outils montrés : `studio_motion.py logos . claude openai`.
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
-  musiques (la musique : `musiques choisir --duree <durée> --ouvrir`, puis `musiques prendre <n> --a <pivot>
-  --duree <durée>`), musique,
+  musiques (le style et la musique : `musiques choisir --duree <durée> --style <N> --ouvrir`, puis
+  `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
   sons, planche, rythme, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
-  plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans plan, étape 3.
+  plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans idée retenue,
+  étape 3 ; idée retenue sans « Style et musique » dans le plan, étape 4 ; sinon, le plan puis la fabrication.
 - Retouche demandée : modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
 - **Dans l'app HyperFrames** (tes consignes disent alors que l'app fait le rendu) : fais la retouche

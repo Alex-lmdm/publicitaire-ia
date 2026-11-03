@@ -94,7 +94,13 @@ vont avec le but et le support ([son.md](references/son.md), « Choisir le morce
 « 7, 2 » (le style, puis la musique), décrit un autre style, colle le lien d'une vidéo dont il aime
 le style (`reference`, [reperage.md](references/reperage.md), section 4) ou écrit « choisis ». Un
 style déjà connu (donné à l'étape 1, ou `style N` dans ses préférences) ne se redemande pas :
-`--sans-styles`, et rappelle-le en une ligne. Il regarde et écoute pendant que tu écris le plan. La
+`--sans-styles`, et rappelle-le en une ligne ; il veut les revoir (« Montre-moi les 8 styles ») :
+`--style <N>` rouvre la page. Il a donné au premier usage une vidéo dont il aime le
+style (`reference_style` de `studio.config.json`) : propose-la avec les 8 (« celle que tu m'avais
+donnée, ou un des 8 ? »). Les trois musiques suivent l'ambiance du style conseillé ; s'il en choisit
+un autre qui n'y va pas (section 8 de sa fiche), `musiques choisir --style <son choix> --sans-styles`.
+Sans musiques de lancement, la page ne montre que les styles. Note le style et la musique dans
+`PLAN.md` (section « Style et musique »). Il regarde et écoute pendant que tu écris le plan. La
 musique se choisit avant d'animer : son tempo et son entrée franche guident le rythme des scènes.
 
 Lis [ecriture.md](references/ecriture.md), [supports.md](references/supports.md),
@@ -197,7 +203,8 @@ Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une a
   client en ait donné le chiffre ; s'il le demande sans prix réellement pratiqué, préviens-le une
   fois du risque (réduction trompeuse) et laisse-le décider.
 - Fabriquer l'interface d'un logiciel qu'il n'a pas, ou un écran que sa page ne montre pas.
-- Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés) : ce qui
+- Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés ; les gestes
+  d'un style du catalogue ne sont pas des décorations) : ce qui
   bouge vient de l'offre, de ses outils ou de son domaine.
 - Livrer une suite d'écrans de texte : si une image porte plus de 6 mots (hors interfaces),
   ou si le contrôle `rythme` ne répond pas « ok », la vidéo n'est pas finie.

@@ -208,6 +208,7 @@ sombre (bleu marine, bordeaux) qui colore un texte passe par `--t3-accent-texte`
   bouton), cliquetis de compteur sur le prix, éparpillement sur la dissolution, un souffle par
   carte. Coupe la musique 1 à 2 s avant l'adresse (`son` et `mastering` ensuite) et garde l'impact
   pour l'adresse seulement.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 3`) : « Tech minimale » puis « Montée cinématique », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 

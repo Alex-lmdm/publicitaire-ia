@@ -47,7 +47,8 @@ vraiment :
 - Vidéo de page : la première image est déjà forte et dit le sujet (c'est elle qu'on voit si la
   lecture automatique est bloquée).
 - Aucun écran ne porte plus de 6 mots (hors interfaces) ; la plupart en portent 1 à 4.
-- Les fonds alternent (sombre, clair, couleur pleine), aucun écran ne fait vide.
+- Les fonds alternent (sombre, clair, couleur pleine ; avec un style du catalogue, ceux de sa fiche),
+  aucun écran ne fait vide.
 - Les raccords : la dernière case d'une scène et la première de la suivante se ressemblent.
 - Boucle de section : la dernière image raccorde avec la première, sans saut.
 

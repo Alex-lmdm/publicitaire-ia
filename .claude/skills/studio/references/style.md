@@ -90,6 +90,10 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 | Des icônes génériques qui flottent dans toutes les scènes, des logos posés sur des tuiles | De vrais logos nus, dans leurs couleurs, 6 à 8 là où l'écran a des zones vides et un sujet relié à ces marques |
 | Fausse interface vague dans un faux navigateur | L'interface réelle, reconstruite d'après capture |
 | Fondus enchaînés entre deux écrans | Un objet qui devient le suivant, un flash, un volet |
+
+**Avec un style du catalogue, sa fiche prime sur ce tableau** et sur la revue : la phrase tapée du
+style 7, les dégradés du style 4 ou les fonds sans couleur pleine du style 8 sont ses gestes, pas des
+fautes (revue du 03/11/2026).
 | Le même enchaînement d'une vidéo à l'autre | Change l'angle, les interfaces, les motifs et au moins trois réglages (fonds, cadrages, transitions, tempo) d'un client à l'autre |
 
 Test final : si cette vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom,

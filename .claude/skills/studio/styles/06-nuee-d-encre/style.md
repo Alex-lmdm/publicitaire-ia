@@ -101,6 +101,7 @@ Tous sont dans `compositions/`.
   2. **Un morceau à l'intro courte** (il préfère une « Montée cinématique ») : la musique part à 0 et la batterie entre où elle entre, `musiques prendre <n> --a <instant de sa batterie> --duree <durée>` (l'instant que `musiques choisir` écrit après « batterie à »). La coupe vers la page vide garde alors son coup sourd (bruitage ci-dessous) pour frapper.
   Après le rendu, écoute le début ou mesure-le (`ffmpeg -i <mp4> -af silencedetect=n=-45dB:d=1 -f null -` ne doit signaler aucun silence qui commence à 0).
 - Bruitages : un frottement de pinceau sur le geste, un grésillement bref sur la numérisation, un souffle léger pendant la nuée, de petits clics de papier sur les salves de gravures, un coup sourd sur la coupe, rien sur le noir final.
+- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 6`) : « Montée cinématique », jamais imposée (une ambiance qu'il demande passe devant).
 
 ## 9. L'ouverture et la fin
 
