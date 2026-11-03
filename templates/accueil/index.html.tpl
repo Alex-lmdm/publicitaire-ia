@@ -24,7 +24,7 @@
       .police b { display: block; font-size: 150px; line-height: 1; color: var(--brand-text); }
       .police span { display: block; margin-top: 12px; font-size: 28px; color: var(--brand-muted); }
       #consigne { top: 1640px; font-size: 44px; line-height: 1.3; }
-      #consigne strong { background: var(--brand-accent); color: var(--brand-contrast); padding: 2px 14px; border-radius: 10px; }
+      #consigne strong { background: var(--brand-accent); color: var(--brand-contrast); padding: 2px 14px; border-radius: 10px; white-space: nowrap; }
     </style>
   </head>
   <body>

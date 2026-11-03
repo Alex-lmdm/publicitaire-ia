@@ -113,12 +113,14 @@ python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la v
 
 L'outil prend l'ambiance qui va avec le but et le support, écarte les morceaux trop courts (de
 l'entrée de la batterie à la fin, ils doivent couvrir la vidéo après le pivot), préfère ceux dont
-l'intro couvre le début de la vidéo et ceux qui se recalent à 120, fait passer derrière ceux déjà
-pris dans ses autres vidéos, et propose les trois meilleurs, le plus juste en premier :
+l'intro couvre le début de la vidéo, ceux dont l'entrée franche peut tomber sur le pivot et ceux qui
+se recalent à 120, fait passer derrière ceux déjà pris dans ses autres vidéos, et propose les trois
+meilleurs, le plus juste en premier :
 
 | But ou support | Ambiance |
 |---|---|
 | Lancement, vente sur une page | Lancement énergique |
+| Vente sur une page **avec voix off** | Tech minimale, Premium et calme (feutrées : la musique passe sous un argument qu'on écoute) |
 | Révélation, nouveauté | Montée cinématique |
 | Fonctionnalité, explication, démo sous une voix | Tech minimale |
 | Vente ou inscription en Reel, pub, story | Court et percutant, puis Lancement énergique |
@@ -184,6 +186,39 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   (un impact, un changement de fond), pas par la musique.
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : musique facultative ; si oui, la même que le Reel, plus discrète.
+
+### Sous une voix off
+
+Recherche du 03/11/2026 (normes de diffusion, tests d'écoute, studios d'explainer, plateformes) et
+essai de la vidéo de vente de Publicitaire IA. Oui, une musique sous toute voix off, mais une musique
+qui travaille **en dessous** :
+
+- **L'écart, réglé tout seul par `sons`.** Pendant que la voix parle, la musique se tient à **18 LU**
+  sous la voix sur une page de vente, YouTube ou LinkedIn, à **15 LU** dans un Reel, une pub, une
+  story ; quand la voix se tait, elle remonte à 8 LU (page) ou 6 LU (Reel) sous elle. L'outil mesure
+  le morceau (sa section la plus forte sous la voix) : plus de gain fixe, l'écart tient quel que soit
+  le morceau. Une version accessible (public âgé ou malentendant) : `"musique_ecart": 20` dans
+  `sons.json`. `"musique_db"` reste un réglage manuel, qui prime.
+- **Le ducking : une courbe calculée sur les pauses de la voix**, jamais un compresseur. Une pause de
+  moins de 1,5 s ne fait pas remonter la musique (elle pomperait) ; une respiration d'au moins 1,5 s,
+  le temps avant le premier mot (s'il arrive après 1,5 s) et la fin après le dernier mot la font
+  remonter. L'entrée franche du morceau (`musiques prendre --a`, ou `"musique_entree"` dans
+  `sons.json`) qui tombe dans une respiration est précédée d'un creux de 0,3 s : le temps fort sonne
+  plus fort par contraste. La pose l'écrit : « Musique sous la voix : … dB, 18 LU sous la voix… ».
+- **Une respiration au pivot.** Une voix de synthèse n'en laisse aucune : ouvre-la dans la voix
+  (`voix respiration`, voix.md) **avant** de caler la musique, pour que la batterie entre dans le
+  silence et pas sous le nom de l'offre (sur l'essai, elle tombait pile sous « grâce à Publicitaire
+  IA »).
+- **Le morceau.** Instrumental, sans voix chantée ni mélodie en avant sous les explications (pas de
+  sifflement, de piano ou de synthé solo), une pulsation stable, une humeur positive pour vendre. Un
+  seul morceau par vidéo. Évite les clichés : ukulélé et sifflement, crescendo orchestral, montée
+  électro prévisible, morceau de bande-annonce.
+- **La fin** : la musique remonte après le dernier mot et s'éteint en 2 s, en courbe douce.
+- **Le niveau final** : -16 LUFS comme toujours ; avec une voix, les crêtes sont plafonnées à -2 dB
+  (les plateformes réencodent le fichier).
+- **Un aperçu fait à la main** (un mélange ffmpeg pour faire écouter des musiques sous la voix) passe
+  la voix mono en stéréo par `pan=stereo|c0=c0|c1=c0`, jamais `aformat` : `aformat` la joue 3 dB plus
+  bas que le rendu et fausse l'écart (essai du 03/11/2026 : des aperçus à 10 LU, trop forts).
 
 ## Les bruitages
 

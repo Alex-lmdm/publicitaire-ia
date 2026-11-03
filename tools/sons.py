@@ -6,7 +6,7 @@ bouton Export de l'app HyperFrames (ou à `npm run render`) de sortir la vidéo 
 l'app d'afficher chaque son comme un clip de la timeline. « Reel » désigne ici le projet d'une vidéo.
 
     import sons
-    sons.poser(reel, evenements, musique=..., musique_db=-26.5, duree=..., ecraser=False)
+    sons.poser(reel, evenements, musique=..., voix_off=..., ecart=(18, 8), entree=None, ecraser=False)
 
 Un évènement est un dict : {"src": Path, "start": s, "vol": dB, "trim": (t0, t1) | None,
 "fondu_entree": s, "fondu_sortie": s, "af": filtre ffmpeg | None}. Ce que HyperFrames ne sait pas
@@ -33,6 +33,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import math
 import re
 import shutil
 import subprocess
@@ -172,6 +173,119 @@ def mesurer(pistes, total: float) -> float | None:
     return lire_lufs(r.stderr) if r.returncode == 0 else None
 
 
+# ---------------------------------------------------------------------------
+# La musique sous une voix off (recherche du 03/11/2026, references/son.md « La musique sous la
+# voix ») : pendant la parole, la musique se tient à un écart mesuré sous la voix (18 LU sur une
+# page de vente, 15 dans un Reel), quel que soit le morceau ; elle remonte seulement dans les vraies
+# respirations (1,5 s et plus), avant le premier mot et après le dernier, et finit en fondu doux.
+# Le ducking est une enveloppe calculée d'avance sur les pauses de la voix, jamais un compresseur
+# (celui de ffmpeg baisse selon le niveau de chaque mot et mange la première syllabe).
+# ---------------------------------------------------------------------------
+PAUSE_MIN = 1.45        # une pause plus courte ne fait pas remonter la musique (pompage)
+SEUIL_SILENCE = -45.0   # dB : sous ce niveau, la voix se tait (silencedetect)
+CREUX_DB = 10.0         # le creux juste avant l'entrée franche de la musique, dans une respiration
+FONDU_FIN_VOIX = 2.0    # s : le fondu final d'une vidéo avec voix (courbe douce, jamais linéaire)
+LIMITE_VOIX_DB = -2.0   # plafond des crêtes avec une voix : marge pour les plateformes qui réencodent
+
+
+def silences(src: Path, seuil: float = SEUIL_SILENCE, duree_min: float = 0.25) -> list[tuple[float, float]]:
+    """Les silences d'un fichier (début, fin), en secondes du fichier."""
+    r = subprocess.run([outil("ffmpeg"), "-nostats", "-hide_banner", "-i", str(src), "-af",
+                        f"silencedetect=n={seuil}dB:d={duree_min}", "-f", "null", "-"],
+                       capture_output=True, encoding="utf-8", errors="replace")
+    debuts = [float(x) for x in re.findall(r"silence_start: (-?[\d.]+)", r.stderr)]
+    fins = [float(x) for x in re.findall(r"silence_end: ([\d.]+)", r.stderr)]
+    return list(zip(debuts, fins + [duree(src)] * (len(debuts) - len(fins))))
+
+
+def blocs_de_parole(voix: Path, debut: float, total: float) -> tuple[list, list]:
+    """(blocs, trous) en temps de la vidéo : un bloc est une suite de mots dont les pauses font moins
+    de PAUSE_MIN ; un trou est une respiration d'au moins PAUSE_MIN entre deux blocs."""
+    longueur = duree(voix)
+    parle, t = [], 0.0
+    for a, b in silences(voix):
+        if a > t + 0.05:
+            parle.append((t, a))
+        t = max(t, b)
+    if t < longueur - 0.05:
+        parle.append((t, longueur))
+    if not parle:
+        return [], []
+    blocs = [list(parle[0])]
+    for a, b in parle[1:]:
+        if a - blocs[-1][1] < PAUSE_MIN:
+            blocs[-1][1] = b
+        else:
+            blocs.append([a, b])
+    blocs = [(round(min(a + debut, total), 3), round(min(b + debut, total), 3)) for a, b in blocs]
+    trous = [(blocs[i][1], blocs[i + 1][0]) for i in range(len(blocs) - 1)]
+    return blocs, trous
+
+
+def court_terme(src: Path) -> list[tuple[float, float]]:
+    """La sonie court terme (fenêtre de 3 s) toutes les 100 ms : [(t, LUFS)]."""
+    r = subprocess.run([outil("ffmpeg"), "-nostats", "-hide_banner", "-i", str(src), "-af", "ebur128", "-f", "null", "-"],
+                       capture_output=True, encoding="utf-8", errors="replace")
+    return [(float(t), float(s)) for t, s in re.findall(r"t:\s*([\d.]+).*?S:\s*(-?[\d.]+)", r.stderr)]
+
+
+def reference_musique(musique: Path, blocs) -> float | None:
+    """La sonie de référence du morceau sous la voix : le 90e centile de sa sonie court terme sur
+    les instants où la voix parle (sa section la plus forte sous la voix tient ainsi l'écart)."""
+    valeurs = sorted(s for t, s in court_terme(musique) if s > -70 and any(a + 1.5 <= t <= b for a, b in blocs))
+    if not valeurs:
+        valeurs = sorted(s for _t, s in court_terme(musique) if s > -70)
+    return valeurs[int(0.9 * (len(valeurs) - 1))] if valeurs else None
+
+
+def enveloppe_sous_voix(blocs, trous, total: float, v_sous: float, v_sans: float,
+                        entree: float | None = None) -> list[dict]:
+    """Les points de volume de la musique (linéaires), en secondes de la vidéo : basse sous la voix,
+    au niveau « sans voix » avant le premier mot (s'il arrive après 1,5 s), dans les respirations et
+    après le dernier mot. Une entrée franche de la musique qui tombe dans une respiration est
+    précédée d'un creux (le temps fort sonne plus fort par contraste)."""
+    pts = [(0.0, 0.0)]
+    if not blocs:
+        return [{"t": 0, "v": 0}, {"t": round(min(FONDU_MUSIQUE[0], total), 3), "v": v_sous}, {"t": round(total, 3), "v": v_sous}]
+    premier = blocs[0][0]
+    if premier >= 1.5:
+        pts += [(FONDU_MUSIQUE[0], v_sans), (premier - 0.3, v_sans), (premier, v_sous)]
+    else:
+        pts += [(min(FONDU_MUSIQUE[0], max(premier, 0.05)), v_sous)]
+    creux = v_sous * 10 ** (-CREUX_DB / 20)
+    for a, b in trous:
+        if entree is not None and a + 0.1 < entree < b - 0.4:
+            pts += [(a, v_sous), (a + 0.05, creux), (entree, creux), (entree + 0.05, v_sans), (b - 0.3, v_sans), (b, v_sous)]
+        elif b - a >= 2.5:
+            pts += [(a + 0.4, v_sous), (a + 1.2, v_sans), (b - 0.3, v_sans), (b, v_sous)]
+        else:
+            pts += [(a + 0.1, v_sous), (a + 0.35, v_sans), (b - 0.3, v_sans), (b, v_sous)]
+    fin_voix = blocs[-1][1]
+    remontee = fin_voix + 1.2                  # maintien 0,4 s après le dernier mot, remontée en 0,8 s
+    if remontee <= total - 0.8:                # place pour remonter, puis un fondu d'au moins 0,8 s
+        debut_fondu = max(total - FONDU_FIN_VOIX, remontee)
+        pts += [(fin_voix + 0.4, v_sous), (remontee, v_sans), (debut_fondu, v_sans)]
+        haut = v_sans
+    else:
+        debut_fondu = max(total - FONDU_FIN_VOIX, fin_voix + 0.4)
+        pts += [(debut_fondu, v_sous)]
+        haut = v_sous
+    d = max(total - debut_fondu, 0.05)
+    for k in (1, 2, 3, 4):                     # fondu final en quart de sinus (approché en 4 pas)
+        x = k / 4
+        pts.append((debut_fondu + d * x, haut * math.sin((1 - x) * math.pi / 2) ** 2))
+    propres, t_prec = [], -1.0
+    for t, v in pts:
+        t = round(min(max(t, 0.0), total), 3)
+        if t <= t_prec:
+            t = round(t_prec + 0.001, 3)
+        if t > total:
+            continue
+        propres.append({"t": t, "v": round(v, 4)})
+        t_prec = t
+    return propres
+
+
 def pistes_du_master(reel: Path, page: str) -> list[dict]:
     """Les pistes du master qui passent par le bus « mixage » hors du bloc SONS : la voix."""
     pistes = []
@@ -218,14 +332,18 @@ def _preparer_musique(musique: Path, dossier: Path, total: float, reel: Path) ->
     return f"assets/sons/{nom}"
 
 
-def lignes(reel: Path, evenements, musique: Path | None, musique_db: float, total: float,
+def lignes(reel: Path, evenements, musique: Path | None, musique_db: float | None, total: float,
            sfx_dir: Path | None = None, voix=(), rapport: dict | None = None,
-           voix_off: dict | None = None) -> list[str]:
+           voix_off: dict | None = None, ecart: tuple[float, float] = (18.0, 8.0),
+           entree: float | None = None) -> list[str]:
     """Les éléments du bloc SONS (copie ou prépare chaque son dans assets/sons/ du Reel).
     voix : les pistes du master hors bloc (pistes_du_master), mesurées avec les sons pour régler
     le niveau final ; sans voix audible, pas de gain. voix_off : {"src": Path, "start": s, "vol": dB},
     la voix off posée dans le bloc (Publicitaire IA), mesurée elle aussi comme une voix. rapport :
-    rempli avec le niveau mesuré et le gain posé."""
+    rempli avec le niveau mesuré et le gain posé.
+    Avec une voix off, la musique suit `enveloppe_sous_voix` : `ecart` = (écart sous la voix pendant
+    la parole, écart quand elle se tait), en LU ; son niveau se mesure sur le morceau, sauf
+    `musique_db` donné (réglage manuel, il prime). `entree` : l'instant de l'entrée franche."""
     dossier = reel / "assets" / "sons"
     dossier.mkdir(parents=True, exist_ok=True)
     out, voix = [], list(voix)
@@ -245,16 +363,31 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float, tota
         voix.append({"src": reel / chemin, "start": start, "duree": garde, "media_start": 0.0, "volume": v})
     pistes = list(voix)
     if musique:
-        v = lin(musique_db)
-        entree, sortie = min(FONDU_MUSIQUE[0], total / 4), min(FONDU_MUSIQUE[1], total / 3)
-        pts = [{"t": 0, "v": 0}, {"t": round(entree, 3), "v": v},
-               {"t": round(total - sortie, 3), "v": v}, {"t": round(total, 3), "v": 0}]
         chemin = _preparer_musique(musique, dossier, total, reel)
+        fe, fs = min(FONDU_MUSIQUE[0], total / 4), min(FONDU_MUSIQUE[1], total / 3)
+        if voix_off:
+            # sous une voix off : niveau mesuré sur le morceau, enveloppe calée sur les pauses
+            blocs, trous = blocs_de_parole(Path(voix_off["src"]), float(voix_off.get("start") or 0), total)
+            jouee = mesurer([voix[-1]], total) if voix else None     # la voix off, posée en dernier
+            ref = reference_musique(reel / chemin, blocs)
+            if musique_db is None:
+                musique_db = (jouee - ecart[0] - ref) if (jouee is not None and ref is not None) else -26.5
+            v = lin(musique_db)
+            v_sans = lin(musique_db + ecart[0] - ecart[1])
+            pts = enveloppe_sous_voix(blocs, trous, total, v, v_sans, entree)
+            fs = FONDU_FIN_VOIX
+            if rapport is not None:
+                rapport["musique"] = {"gain": round(musique_db, 1), "ecart": ecart[0], "respirations": len(trous),
+                                      "voix": jouee, "reference": ref}
+        else:
+            v = lin(-17 if musique_db is None else musique_db)
+            pts = [{"t": 0, "v": 0}, {"t": round(fe, 3), "v": v},
+                   {"t": round(total - fs, 3), "v": v}, {"t": round(total, 3), "v": 0}]
         out.append(f'<audio id="musique" src="{_src(chemin)}" '
                    f'data-start="0" data-duration="{round(total, 3)}" data-media-start="0" data-volume="{v}" '
                    f'data-track-index="19" data-audio-group="mixage" data-automation="{_enveloppe(pts)}"></audio>')
         pistes.append({"src": reel / chemin, "start": 0.0, "duree": total, "media_start": 0.0, "volume": v,
-                       "fondu_entree": entree, "fondu_sortie": sortie})
+                       "fondu_entree": fe, "fondu_sortie": fs})
     fins = []   # une piste par son qui se chevauche : deux clips sur la même piste, l'un disparaît
     for n, e in enumerate(sorted(evenements, key=lambda x: x["start"]), start=1):
         src = Path(e["src"])
@@ -303,16 +436,20 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float, tota
     gain = gain_final(niveau)
     if rapport is not None:
         rapport.update(niveau=niveau, gain=gain, cible=CIBLE_LUFS)
+    limite = LIMITE_VOIX_DB if voix_off else LIMITE_DB
+    if rapport is not None:
+        rapport["limite"] = limite
     chaine = {"version": 1, "nodes": [
         {"type": "gain", "id": "n0", "label": "Niveau final", "params": {"gain": gain}},
-        {"type": "limiter", "id": "n1", "label": "Plafond", "params": {"limit": LIMITE_DB}}]}
+        {"type": "limiter", "id": "n1", "label": "Plafond", "params": {"limit": limite}}]}
     return [f'<hf-audio-group id="mixage" data-label="Mixage" data-fx-chain="{_attr_json(chaine)}"></hf-audio-group>',
             *out]
 
 
-def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float = -26.5,
+def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float | None = None,
           total: float | None = None, sfx_dir: Path | None = None, ecraser: bool = False,
-          voix_off: dict | None = None) -> dict:
+          voix_off: dict | None = None, ecart: tuple[float, float] = (18.0, 8.0),
+          entree: float | None = None) -> dict:
     """Écrit le bloc SONS dans reel/index.html. Lève Erreur si le bloc a été retouché (sauf ecraser).
     Rend {"niveau": LUFS mesuré avant gain | None, "gain": dB, "cible": LUFS}."""
     index = reel / "index.html"
@@ -338,7 +475,7 @@ def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float
     rapport = {}
     contenu = "\n".join(indent + l for l in lignes(reel, evenements, musique, musique_db, total, sfx_dir,
                                                     voix=pistes_du_master(reel, page), rapport=rapport,
-                                                    voix_off=voix_off))
+                                                    voix_off=voix_off, ecart=ecart, entree=entree))
     bloc = (f"{indent}<!-- SONS:DEBUT genere par tools/sons.py, empreinte {empreinte(contenu)} -->\n"
             f"{contenu}\n{indent}<!-- SONS:FIN -->")
     page = (page[:existant.start()] + bloc + page[existant.end():]) if existant \
@@ -349,10 +486,13 @@ def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float
 
 def resume_niveau(rapport: dict) -> str:
     """Une ligne pour le récapitulatif de la pose."""
+    m = rapport.get("musique")
+    musique = (f"\n  Musique sous la voix : {m['gain']:+.1f} dB, {m['ecart']:.0f} LU sous la voix pendant qu'elle parle, "
+               f"remontée dans {m['respirations']} respiration(s), avant le premier mot et après le dernier.") if m else ""
     if rapport.get("niveau") is None:
-        return "Niveau final : non mesuré (pas de voix audible, ou mesure impossible), aucun gain posé."
+        return "Niveau final : non mesuré (pas de voix audible, ou mesure impossible), aucun gain posé." + musique
     return (f"Niveau final : mixage mesuré à {rapport['niveau']:.1f} LUFS, gain {rapport['gain']:+.1f} dB "
-            f"(visé {rapport['cible']:.0f} LUFS, crêtes plafonnées à {LIMITE_DB} dB).")
+            f"(visé {rapport['cible']:.0f} LUFS, crêtes plafonnées à {rapport.get('limite', LIMITE_DB)} dB)." + musique)
 
 
 if __name__ == "__main__":

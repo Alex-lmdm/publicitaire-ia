@@ -70,6 +70,15 @@ PAR_OBJECTIF = {
     "preuve": ["premium-calme", "tech-minimale", "montee-cinematique"],
 }
 COURTS = {"reel", "tiktok", "pub", "fil", "story"}
+# Une vidéo de page avec voix off : la musique passe sous un argument qu'on écoute ; les ambiances
+# feutrées d'abord (recherche du 03/11/2026, son.md), sauf ambiance imposée par le client.
+SOUS_VOIX_PAGE = ["tech-minimale", "premium-calme"]
+PAGES = {"page", "youtube", "linkedin"}
+
+
+def a_une_voix(projet: Path | None) -> bool:
+    """Le projet a une voix off (posée, ou son texte écrit)."""
+    return bool(projet) and ((projet / "assets" / "audio" / "voix.wav").is_file() or (projet / "work" / "voix.txt").is_file())
 MUETS = {"section"}   # la boucle d'une section de page : muette, sans musique
 
 # Les mots du client pour imposer une ambiance (« prends une musique tech minimale »).
@@ -408,6 +417,10 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
     - son intro doit couvrir le début de la vidéo (entrée franche à `a` ou après), sinon la musique
       démarrerait en retard ;
     - un morceau proche de 120 battements par minute se cale sur la grille des scènes ;
+    - une entrée franche qui peut tomber sur le pivot (`a`) passe devant : la batterie entre là où la
+      vidéo change, au lieu de jouer dès la première seconde ;
+    - une vidéo de page avec voix off prend d'abord les ambiances feutrées (Tech minimale, Premium et calme) ;
+    - à note égale, un morceau de la formation (fiche complète, conseils d'usage) passe devant Mixkit ;
     - un morceau déjà utilisé dans ses vidéos passe derrière, pour varier."""
     exclure = exclure or set()
     if a is None:
@@ -419,6 +432,8 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
         if support in COURTS and objectif in ("vente", "inscription"):
             ordre.remove("court-percutant")
             ordre.insert(0, "court-percutant")
+        if support in PAGES and a_une_voix(projet):
+            ordre = SOUS_VOIX_PAGE + [x for x in ordre if x not in SOUS_VOIX_PAGE]
     utilises = deja_utilises(racine, sauf=projet)
     notes = []
     for m in morceaux(racine):
@@ -446,6 +461,10 @@ def choisir(racine: Path, objectif: str = "vente", support: str = "reel", duree:
         note -= 6 * retard                                      # silence au début de la vidéo
         note += 8 if m.get("recale_a_120") else -8
         note -= 12 * utilises.get(m["id"], 0)
+        if m.get("entree_franche_s") is not None and retard == 0:
+            note += 10                                          # la batterie peut entrer sur le pivot
+        if not m["id"].startswith("mixkit-"):
+            note += 1                                           # à égalité, la fiche la plus complète
         raisons = [m["nom_ambiance"]]
         if retard > 0.5:
             raisons.append(f"démarre {retard:.1f} s après le début (intro courte)")

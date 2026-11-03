@@ -859,7 +859,9 @@ class Creation(unittest.TestCase):
             self.assertEqual(json.loads((page / "package.json").read_text(encoding="utf-8"))["scripts"]["render"],
                              "hyperframes render -o exports/page.mp4")
             fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
-            self.assertEqual((fiche["produit"], fiche["objectif"]), ("Ma formation", "vente"))
+            # le nom de l'offre se lit sur sa page (étape 2), pas dans le sujet de la vidéo (essai du 03/11/2026)
+            self.assertEqual((fiche["produit"], fiche["objectif"]), ("", "vente"))
+            self.assertIn("produit : le nom de ce qui est présenté manque.", sm.verifier_fiche(fiche))
             deuxieme = sm.creer(maison, "Ma formation", "vente", [sm.lire_video("reel")], "2026-10-12")
             self.assertEqual(deuxieme.name, "Ma formation · 2026-10-12 (2)")
 

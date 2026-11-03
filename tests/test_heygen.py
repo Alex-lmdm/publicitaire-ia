@@ -163,7 +163,8 @@ class VoixDansLeMixage(unittest.TestCase):
                 sm.main(["sons", str(projet), str(projet / "sons.json")])
             page = (projet / "index.html").read_text()
             self.assertIn('id="voix" src="assets/audio/voix.wav" data-start="0.500" data-duration="4.000"', page)
-            self.assertIn(f'data-volume="{sons.lin(-26.5)}"', page)              # la musique sous la voix
+            self.assertIn('id="musique"', page)
+            self.assertIn("sous la voix pendant qu'elle parle", sortie.getvalue())  # niveau mesuré, pas un gain fixe
             self.assertIn("la voix et la musique posés", sortie.getvalue())
             self.assertIn("gain", sortie.getvalue())                             # voix audible : niveau final réglé
 

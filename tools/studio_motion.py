@@ -35,6 +35,8 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py heygen [etat | connecter <clé> | musiques "<description>" | bruitages "<description>"
                                           | prendre <n> [--bruitage] | voix | parler <texte> --voix <id> [--confirme]]
     python3 tools/studio_motion.py musique <morceau.wav> [--sortie calee.wav --a 8 --duree 67]   # tempo, entrée, calage
+    python3 tools/studio_motion.py voix caler                       # depuis le projet : le texte juste sur les temps des mots
+    python3 tools/studio_motion.py voix respiration 9.5 [--secondes 1.5]   # ouvre une pause dans la voix, la suite recule
     python3 tools/studio_motion.py sons <projet> <sons.json> [--ecraser]   # pose musique et bruitages
     python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique
     python3 tools/studio_motion.py son <video.mp4> [--cible -16]
@@ -80,6 +82,7 @@ import marque as mq  # noqa: E402
 import musiques as banque  # noqa: E402
 import pack_sfx  # noqa: E402
 import telechargeur  # noqa: E402
+import voix as vx  # noqa: E402
 
 FPS = 30
 
@@ -1322,12 +1325,49 @@ def catalogue_sfx(sfx_dir: Path) -> list[dict]:
         return []
 
 
+def cmd_voix(a) -> None:
+    """La voix off, depuis le projet de la vidéo : `caler` remet le texte validé (work/voix.txt) sur
+    les temps de la transcription ; `respiration <instant>` ouvre une pause dans la voix (voix.md, E)."""
+    projet = _projet_ou_none(a.dans)
+    if not projet:
+        sys.exit("ERREUR : lance-le depuis le projet de la vidéo (ou --dans <projet>).")
+    try:
+        if a.action == "caler":
+            r = vx.caler_projet(projet)
+            print(f"• assets/audio/transcript.json : les {r['mots']} mots de work/voix.txt, calés sur la transcription "
+                  f"({r['concordants']} reconnus tels quels sur {r['reconnus']}, les autres placés entre leurs voisins).")
+            print("  la transcription brute reste dans assets/audio/transcript-brut.json.")
+            return
+        if a.action == "respiration":
+            if not a.valeurs:
+                sys.exit("ERREUR : donne l'instant de la voix où ouvrir la respiration (en secondes du fichier).")
+            r = vx.respiration(projet, float(a.valeurs[0].replace(",", ".")), a.secondes)
+            if not r["ajout"]:
+                print(f"• la pause {r['pause'][0]:.2f} → {r['pause'][1]:.2f} s dure déjà {a.secondes:g} s ou plus : rien à faire.")
+                return
+            print(f"• respiration de {a.secondes:g} s ouverte dans la pause {r['pause'][0]:.2f} → {r['pause'][1]:.2f} s "
+                  f"(+{r['ajout']:.2f} s) ; la voix dure maintenant {r['duree']:.2f} s, les mots suivants ont reculé d'autant.")
+            print("  l'ancienne voix reste dans assets/audio/voix-avant-respiration.wav ; décale les scènes d'après.")
+    except vx.Erreur as e:
+        sys.exit(f"ERREUR : {e}")
+
+
+# L'écart de la musique sous une voix off, par support (recherche du 03/11/2026, son.md) : pendant la
+# parole, puis quand la voix se tait. Page de vente : discrète (le visiteur écoute un argument) ;
+# Reel et pub : plus présente, la musique fait partie du format.
+ECARTS_VOIX = {"page": (18.0, 8.0), "youtube": (18.0, 8.0), "linkedin": (18.0, 8.0), "section": (18.0, 8.0),
+               "reel": (15.0, 6.0), "tiktok": (15.0, 6.0), "story": (15.0, 6.0), "pub": (15.0, 6.0),
+               "fil": (15.0, 6.0), "x": (15.0, 6.0)}
+
+
 def cmd_sons(a) -> None:
     """Pose la voix, la musique et les bruitages décrits dans un fichier JSON (chemins relatifs au
     projet) : {"voix": "assets/audio/voix.wav", "voix_debut": 0.5, "musique": "assets/audio/musique.wav",
     "musique_db": -17, "evenements": [{"src": …, "start": s, "vol": dB, "trim": [t0, t1],
     "fondu_entree": s, "fondu_sortie": s, "af": filtre}]}. Avec une voix, la musique passe par
-    défaut à -26,5 dB (sous la voix) et le mixage entier est amené à -16 LUFS. Un son du Pack SFX à
+    défaut à un écart mesuré sous la voix (18 LU page, 15 LU Reel), baissée sous la parole et remontée dans les
+    respirations ; « musique_entree » (sinon l'entrée de `musiques prendre`) cale le creux ; le mixage entier est
+    amené à -16 LUFS. Un son du Pack SFX à
     plusieurs prises doit porter le `trim` de l'une d'elles : sinon la pose est refusée."""
     import sons
     projet = Path(a.projet).resolve()
@@ -1351,11 +1391,24 @@ def cmd_sons(a) -> None:
     musique = chemin(liste["musique"]) if liste.get("musique") else None
     voix_off = ({"src": chemin(liste["voix"]), "start": float(liste.get("voix_debut") or 0),
                  "vol": float(liste.get("voix_db") or 0)} if liste.get("voix") else None)
-    musique_db = float(liste.get("musique_db", -26.5 if voix_off else -17))
+    # avec une voix off, le niveau de la musique se mesure (écart sous la voix selon le support) ;
+    # « musique_db » reste un réglage manuel qui prime ; « musique_ecart » : 20 pour une version accessible
+    musique_db = liste.get("musique_db")
+    musique_db = float(musique_db) if musique_db is not None else (None if voix_off else -17.0)
+    support = (meta_de(projet) or {}).get("support") or "reel"
+    ecart = ECARTS_VOIX.get(support, ECARTS_VOIX["reel"])
+    if liste.get("musique_ecart"):                      # une version accessible : 20 LU, puis 10
+        ecart = (float(liste["musique_ecart"]), float(liste["musique_ecart"]) - 10.0)
+    entree = liste.get("musique_entree")
+    if entree is None:
+        try:
+            entree = json.loads((projet / "work" / "musiques.json").read_text(encoding="utf-8")).get("a")
+        except (OSError, ValueError):
+            entree = None
     try:
         rapport = sons.poser(projet, evenements, musique=musique, musique_db=musique_db, ecraser=a.ecraser,
                              sfx_dir=RACINE / "assets" / "sfx",
-                             voix_off=voix_off)
+                             voix_off=voix_off, ecart=ecart, entree=float(entree) if entree is not None else None)
     except sons.Erreur as e:
         sys.exit(f"ERREUR : {e}")
     poses = ([f"{len(evenements)} bruitage(s)"] if evenements else []) + (["la voix"] if voix_off else []) \
@@ -1430,7 +1483,9 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
     for sous in ("sources", "livraison"):
         (dossier / sous).mkdir(parents=True, exist_ok=True)
     fiche = json.loads(json.dumps(FICHE_VIDE))
-    fiche.update(produit=sujet, objectif=objectif)
+    # le nom de l'offre vient de sa page (étape 2), jamais du sujet de la vidéo (« Publicitaire IA page
+    # de vente » devenait le nom du produit : essai du 03/11/2026)
+    fiche.update(objectif=objectif)
     marque = mq.lire(r) or {}
     if marque.get("mot_cle"):
         fiche["cta"].update(mot_cle=marque["mot_cle"], source="client")
@@ -3175,6 +3230,12 @@ def main(argv: list[str] | None = None) -> None:
     hg.add_argument("--confirme", action="store_true", help="Le client a accepté le coût annoncé (parler).")
     hg.add_argument("--bruitage", action="store_true", help="prendre : dans la dernière recherche de bruitages.")
     hg.set_defaults(f=cmd_heygen)
+    vo = s.add_parser("voix", help="La voix off : caler le texte juste sur les mots, ouvrir une respiration.")
+    vo.add_argument("action", choices=("caler", "respiration"))
+    vo.add_argument("valeurs", nargs="*", help="respiration : l'instant (s) du fichier de la voix.")
+    vo.add_argument("--secondes", type=float, default=1.5, help="respiration : sa durée totale (défaut 1,5 s).")
+    vo.add_argument("--dans", help="Le projet de la vidéo (défaut : le dossier courant).")
+    vo.set_defaults(f=cmd_voix)
     so_ = s.add_parser("sons", help="Pose la musique et les bruitages d'un fichier JSON dans index.html.")
     so_.add_argument("projet")
     so_.add_argument("fichier", help="JSON : musique, musique_db, evenements (chemins relatifs au projet).")

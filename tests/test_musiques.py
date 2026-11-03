@@ -352,6 +352,25 @@ class Choix(unittest.TestCase):
         finally:
             shutil.rmtree(self.racine / "videos")
 
+    def test_page_avec_voix_off_prend_les_ambiances_feutrees(self):
+        """Essai du 03/11/2026 : une vidéo de page avec voix off passe sous un argument qu'on écoute."""
+        with tempfile.TemporaryDirectory() as d:
+            projet = Path(d) / "Vente · Page de vente"
+            (projet / "work").mkdir(parents=True)
+            (projet / "work" / "voix.txt").write_text("Tu veux des vidéos qui vendent ton offre ?")
+            premier = self.ids(objectif="vente", support="page", duree=20, a=8, projet=projet)[0]
+            self.assertTrue(premier.startswith(("tech-minimale", "premium-calme")), premier)
+            sans_voix = self.ids(objectif="vente", support="page", duree=20, a=8, projet=Path(d) / "vide")[0]
+            self.assertTrue(sans_voix.startswith("lancement-energique"), sans_voix)
+
+    def test_entree_franche_sur_le_pivot_passe_devant(self):
+        """Essai du 03/11/2026 : à note égale, le tri par nom faisait passer Mixkit (batterie dès le
+        début) devant les morceaux maison dont la batterie peut entrer sur le pivot."""
+        choix = musiques.choisir(self.racine, ambiance="tech-minimale", duree=20, a=8)
+        calables = [m for m in choix if m.get("entree_franche_s") is not None and float(m["entree_franche_s"]) >= 8]
+        self.assertTrue(calables)
+        self.assertEqual(choix[0]["id"], calables[0]["id"])
+
     def test_jamais_plus_de_deux_d_une_ambiance_sur_trois(self):
         choix = musiques.choisir(self.racine, objectif="lancement", support="page", duree=30)
         self.assertLessEqual(sum(m["cle"] == "lancement-energique" for m in choix), 2)

@@ -58,6 +58,14 @@ produit dans la même fenêtre claire) → `t7-eparpille` → (une preuve) → `
 
 ## 3. Les fonds et les couleurs
 
+> Retour client (essai du 03/11/2026, marque LMDM : noir #202022, jaune #FFEE00) : les tons chauds
+> du look (noir brun, taupe, blanc cassé chaud) « ne sont pas mon style ». Si ses couleurs sont
+> neutres et qu'il le dit, passe les quatre fonds en neutres : la nuit devient son noir (#202022),
+> le taupe un gris neutre (#36363a, deuxième ligne en #b4b4b9), le clair un blanc neutre (#f4f4f5),
+> l'encre son noir ; les ombres en noir, plus en brun. Avec un accent jaune, le nuage est le jaune
+> plein de la marque, jamais mêlé de blanc (un jaune pâle ou transparent), et ses taches deviennent
+> des grappes de pixels sombres qui battent la mesure.
+
 | Dans l'original | Son rôle | Avec la marque du client |
 |---|---|---|
 | Noir chaud | l'ouverture, la galaxie | `--t7-nuit` : `#1f1513`, fixe, sur toutes les marques |
@@ -171,6 +179,9 @@ nuage, la pastille, une vignette) : jamais en texte ni en trait fin, illisible a
   silence net puis l'entrée franche sur le mot géant (5,0 s) ; une pulsation forte et régulière
   (chaque temps marqué) ; un passage plus calme pendant la recherche dans les fichiers ; fondu sur
   le logo.
+- **Avec une voix off sur une page** : ambiance Tech minimale ou Premium et calme, et la musique sous
+  la voix (son.md, « Sous une voix off ») ; la batterie entre dans une respiration ouverte dans la
+  voix avant le nom, jamais sous lui.
 - **Chez toi :** ambiance « Lancement énergique » ; entrée franche calée sur le mot géant
   (`musiques prendre … --a <instant du nuage>`), et un silence de la musique calé sur le noir que le
   kit laisse juste avant (4,7 → 4,85 s de `t7-accroche`). Bruitages, un par geste : frappe de clavier par groupe (pas une

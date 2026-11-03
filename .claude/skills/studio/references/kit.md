@@ -96,6 +96,11 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
   première image montrerait l'élément). Même chose pour la position de départ d'un curseur ou
   d'un disque (le kit le fait).
 - `K.arrivee` lit l'opacité donnée par `K.champ` : ne cache pas le champ avant de l'appeler.
+- **Décaler une scène déjà écrite** (elle démarre 0,5 s plus tard dans la vidéo) : jamais
+  `tl.shiftChildren(-0.5)`. GSAP recale les animations qui passeraient avant 0 et tout arrive
+  0,5 s trop tard (essai du 03/11/2026 : une fenêtre invisible pendant 1 s, des cartes en retard
+  sur la voix). Garde le départ de la scène et ajoute en tête ce qui doit tenir (la fin de la scène
+  d'avant, figée), ou réécris les temps.
 - `flouPres: 0` et `flouLoin: 0` valent bien zéro (logos nets) ; sans eux, le flou par défaut
   s'applique.
 - Le kit d'un projet est une copie : si le kit du dossier change pendant la fabrication,

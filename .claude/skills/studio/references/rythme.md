@@ -31,6 +31,12 @@ Pas forcément un nouveau plan : souvent un petit geste dans le même plan.
   s'allonge sous un chiffre tenu. Léger : le spectateur ne doit pas le remarquer, seulement ne
   pas s'ennuyer.
 
+Piège (essai du 03/11/2026) : un mot qui change seulement de couleur, une ligne qui se tape en
+petit dans une barre, une carte gris clair sur blanc ne comptent pas pour `rythme` (l'image change
+trop peu) ; le premier rendu tombait à 0,83 événement par seconde. Un **recadrage sec de la caméra**
+sur chaque mot que la voix dit, sur chaque geste (0,4 s, `expo.out`) y suffit, sans rien ajouter au
+décor : 1,28 événement par seconde ensuite.
+
 ## Lire sans s'ennuyer
 
 - Un écran porte **1 à 4 mots**, 6 au plus et rarement (`studio_motion.py lecture "<texte>"`
@@ -41,6 +47,10 @@ Pas forcément un nouveau plan : souvent un petit geste dans le même plan.
 - Deux graisses : la partie d'appui en léger et grise, le mot qui compte en gras (« Ton nouveau
   **monteur** »). Un mot clé peut être surligné à la couleur de la marque.
 - On ne déplace pas un texte pendant qu'on le lit. Il entre, se pose, reste, sort.
+- Le dernier mot d'une phrase reste au moins 0,6 s avant la coupe, et une phrase d'accroche reste
+  entière à l'écran au moins 1,5 s : retour du client du 03/11/2026 (« il réfléchit » coupé à peine
+  tapé, « qui vendent ton offre » arrivé trop tard). Avec une voix, un texte peut arriver un peu
+  avant son mot ; jamais partir avant que la voix ait fini la phrase.
 
 ## La grammaire du mouvement
 

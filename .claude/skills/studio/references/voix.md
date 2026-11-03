@@ -21,12 +21,17 @@ propose-la en dernier.
 
 ## 1. Le texte d'abord, toujours validé
 
-- Une nouvelle vidéo : écris le texte d'après `PLAN.md`, scène par scène.
+- Une nouvelle vidéo : écris le texte d'après `PLAN.md`, scène par scène. Pour une vidéo de page
+  qu'il veut avec voix off dès le départ, le texte peut venir **avant** le plan : il se valide, la
+  voix se génère, puis le plan se cale sur ses mots (essai du 03/11/2026 : plus naturel pour une
+  courte VSL, la voix porte la structure).
 - Une vidéo déjà faite : pars de ses scènes et de leurs durées (`PLAN.md` et `npx hyperframes
   timeline` dans son projet). La voix suit l'ordre des scènes ; une scène trop courte pour sa phrase
   s'allongera (étape 3), elle ne se bourre pas de mots.
-- Phrases de 12 mots au plus, une idée par phrase, des mots qu'il dirait vraiment, environ 2,5 mots
-  par seconde. L'écran ne recopie pas la voix mot pour mot : il garde le mot clé, le chiffre, le nom
+- Phrases de 12 mots au plus, une idée par phrase, des mots qu'il dirait vraiment. Durée : environ
+  2,5 mots par seconde pour sa voix, mais **3 mots par seconde pour une voix Google AI Studio**
+  (essai du 03/11/2026 : 131 mots en 41 s avec « rythme soutenu », au lieu des 52 s estimées) ;
+  pour une vidéo de page, le ton dit « rythme posé ». L'écran ne recopie pas la voix mot pour mot : il garde le mot clé, le chiffre, le nom
   de l'offre. Mêmes règles que `ecriture.md`, et rien qui ne soit dans `OFFRE.json`.
 - Range-le dans `work/voix.txt` (dans le projet de la vidéo), montre-le-lui en entier avec sa durée
   estimée, et **attends son accord**. Rien ne s'enregistre ni ne se génère avant.
@@ -40,7 +45,7 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
 
 1. Donne-lui, d'un bloc et prêts à copier : le **texte validé** (tu peux y poser des balises de
    pause, `<short pause>`, là où une respiration aide), la **consigne de ton** en une ligne
-   (« Voix off de pub, enthousiaste, rythme soutenu », adaptée au but de la vidéo), et **la voix
+   (« Voix off de pub, chaleureuse et assurée, rythme posé », adaptée au but de la vidéo), et **la voix
    conseillée** dans la catégorie « Commercial Voiceover » (Nika, Koda ou Tavi), avec le lien
    https://aistudio.google.com/generate-speech.
 2. Le geste, en une phrase : « Create new dialog, colle le texte, clique Speaker 1 et choisis la
@@ -52,6 +57,13 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    `assets/audio/voix.wav` et le temps de chaque mot (E, plus bas). Fais écouter avant de caler la
    vidéo.
 4. Une phrase qui sonne mal : corrige-la dans le texte, il ne régénère que ce bloc sur le site.
+5. Pour qu'il choisisse à l'oreille, propose **deux ou trois voix** générées avec le même texte et le
+   même ton (Nika, Koda, Tavi), rangées dans `assets/audio/prises/`, et vérifie chacune par la
+   transcription (E) avant de la lui faire écouter : sur l'essai du 03/11/2026, Koda collait
+   « Publicitaire IA » en « Publicitéria » et disait les questions comme des affirmations.
+   Si tu pilotes toi-même le navigateur intégré, il te faut sa connexion Google : il se connecte,
+   jamais toi. Le bouton Download y range le fichier dans ses Téléchargements sous le nom
+   « Generated Audio <date>.wav ».
 
 ### B. Sa voix, enregistrée sur son téléphone
 
@@ -134,8 +146,17 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    ```
 
    Il écrit `assets/audio/transcript.json`, à côté de la voix : chaque mot, son début et sa fin en
-   secondes (quelques secondes de calcul). Le texte juste reste `work/voix.txt` : les noms propres
-   sortent souvent déformés (« réel » pour Reel), seuls les temps comptent.
+   secondes (quelques secondes de calcul). Puis, **toujours**, remets le texte juste sur ces temps :
+
+   ```bash
+   python3 ../../../tools/studio_motion.py voix caler
+   ```
+
+   Il garde les mots de `work/voix.txt` et prend à la transcription le temps de chaque mot ; la
+   transcription brute reste dans `assets/audio/transcript-brut.json`. Piège vu le 03/11/2026 sur une
+   voix Google AI Studio en français (Nika) : Parakeet écrivait des mots en anglais (« It's » pour
+   « C'est », « And that video? ») et sautait des passages entiers (120 mots reconnus sur 131) ;
+   sans `voix caler`, des animations se calaient sur des mots absents.
 
    À la première voix off, il répond « Parakeet is not installed » : le modèle se télécharge une
    fois sur l'ordinateur. Annonce-le d'abord (« Pour caler la vidéo sur ta voix, je télécharge une
@@ -151,6 +172,19 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    processeur ARM) : cale la vidéo sur les pauses de la voix (`ffmpeg -i assets/audio/voix.wav -af
    silencedetect=n=-40dB:d=0.3 -f null -`, une phrase entre deux pauses) et sur `work/voix.txt`.
 
+3. **Les respirations.** Une voix de synthèse ne laisse presque aucune pause (aucune d'une seconde
+   sur l'essai du 03/11/2026). Ouvre-en une de 1,5 s juste avant la phrase du pivot (sur une page de
+   vente, 1 s en Reel), et une d'environ 1 s quand le résultat s'affiche : la musique entre dans ce
+   trou au lieu de couvrir le nom de l'offre (son.md, « Sous une voix off »).
+
+   ```bash
+   python3 ../../../tools/studio_motion.py voix respiration <instant de la pause, en s du fichier> [--secondes 1.5]
+   ```
+
+   Le silence s'allonge au milieu de la pause la plus proche, les mots suivants reculent d'autant
+   dans `transcript.json` ; l'ancienne voix reste dans `voix-avant-respiration.wav`. Fais-le avant
+   d'écrire le plan, sinon décale ensuite les scènes d'après.
+
 ## 3. Caler la vidéo sur la voix
 
 - Les animations se calent sur les mots (`assets/audio/transcript.json`, ou `work/voix-mots.json`
@@ -158,9 +192,12 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   commence avec la phrase qui la porte ; allonge ou raccourcis la scène (`data-duration` dans
   `index.html`, en gardant la grille de 0,5 s autant que possible) plutôt que de presser la voix.
 - Pose la voix avec les sons, dans `work/sons.json` : `"voix": "assets/audio/voix.wav"`,
-  `"voix_debut": 0.3` (son départ dans la vidéo). La musique passe d'elle-même sous la voix
-  (`musique_db` -26,5 par défaut) et le mélange entier est amené au niveau des Reels. Avec une voix,
-  moins de bruitages : seulement les gestes forts (clic, coche, impact sur le nom et le prix).
+  `"voix_debut": 0.3` (son départ dans la vidéo). La musique passe d'elle-même sous la voix, à un
+  écart mesuré sur le morceau, baissée pendant la parole et remontée dans les respirations (son.md,
+  « Sous une voix off ») ; le mélange entier est amené au niveau des Reels. Avec une voix,
+  moins de bruitages : les gestes forts (clic, coche, impact sur le nom et le prix), et une frappe
+  de clavier sur chaque phrase tapée importante, une prise différente à chaque fois (retour client
+  du 03/11/2026 : « un tout petit peu plus de SFX, sans en abuser »).
   Une vidéo déjà sonorisée : refais la liste complète et relance `sons` avec `--ecraser`.
 - Des sous-titres incrustés en plus si le support se regarde muet (story, pub dans le fil).
 - Puis rendu, revue et export comme toute vidéo ([revue.md](revue.md)).

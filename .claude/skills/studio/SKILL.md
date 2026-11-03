@@ -105,6 +105,8 @@ recette ; elle ne s'accélère pas et ne se remplit pas de texte.
 La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
 demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
 d'abord, validé ; puis une voix IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone).
+Une vidéo de page qu'il veut avec voix off : le texte de la voix peut passer **avant** le plan, la
+musique se choisit **après** la voix (sous elle) et le plan se cale sur ses mots (essai du 03/11/2026).
 
 Ne montre pas le plan par défaut : résume l'idée en une phrase et avance. S'il a demandé à
 valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui le texte des
