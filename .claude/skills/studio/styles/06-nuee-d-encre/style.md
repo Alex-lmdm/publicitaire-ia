@@ -1,4 +1,4 @@
-# Template n°6 · Nuée d'encre · d'après Kimi (https://x.com/Kimi_Moonshot/status/2081757327146045450)
+# Style n°6 · Nuée d'encre · d'après Kimi (https://x.com/Kimi_Moonshot/status/2081757327146045450)
 
 **Ce qu'on voit :** sur une page de papier gris chaud, un coup de pinceau à l'encre se défait en une nuée de points qui cherche sa forme (trois traits, trois colonnes filaires, trois disques en gros pixels, trois sphères hérissées, une lune au crayon), puis une rafale de planches de gravure remplit la page. Coupe sur la page vide : l'initiale qui change de forme, deux lignes « … Bientôt disponible. », le nom, le noir.
 **Souvent utile pour :** un teaser (ouverture des inscriptions, nouvelle version, « bientôt disponible »), quand on veut faire monter l'attente sans rien montrer du produit.
@@ -16,7 +16,29 @@
 - La musique (environ 116 battements par minute) marque un accent tous les quatre temps (2 s) ; elle se retient pendant la rafale de gravures, puis frappe sur la coupe vers la page vide : c'est le moment de la révélation.
 - Le contrôle `rythme` du studio compte les gros changements de lumière : des points fins sur du papier clair bougent peu. Le kit le fait passer en grossissant et en densifiant la nuée (3 400 points de 3 à 8 px), en changeant de forme toutes les 0,75 s, en donnant de petits coups de caméra (le point posé, la numérisation) et en faisant surgir les gravures par salves. Garde ces réglages.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
+
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| Le coup de pinceau | un cercle à l'encre sèche en un geste, le point posé, un petit choc de caméra | accroche, temps fort | `coup-de-pinceau` |
+| La numérisation | des colonnes de petits signes traversent l'encre, qui commence à se défaire | passage d'une idée à l'autre | `coup-de-pinceau` |
+| La nuée qui cherche sa forme | des milliers de points qui prennent des formes l'une après l'autre, toujours par trois | tension, les trois parties ou étapes de l'offre | `nuee-de-particules` |
+| La rafale de gravures | des planches au trait qui remplissent la page en salves sur le tempo | crescendo, l'univers de son sujet, ce qu'on reçoit | `gravures-en-rafale` |
+| Le sigle qui change de forme | coupe sur la page vide, l'initiale qui change de forme tous les quarts de seconde | révélation du nom | `bientot` |
+| Les deux lignes et le noir | le produit, puis « bientôt » ou la date réelle, le logotype, coupe au noir | offre, appel, fin | `bientot` |
+| Le cadre d'imprimerie | des légendes dans les coins, des nombres qui défilent : une planche d'étude | toutes les scènes sur le papier | `coup-de-pinceau`, `nuee-de-particules` |
+
+C'est un style de teaser, sans geste de démonstration : une interface s'y montre comme une
+planche, en noir et blanc sur le papier (`IMAGES` de la rafale), avec le cadre d'imprimerie.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre (c'est un teaser : il n'a pas de bloc « problème ») :
 
 | Rôle | Temps (original) | Ce qui s'y passe |
 |---|---|---|
@@ -26,7 +48,7 @@
 | Révélation | 12 à 13 s | Coupe franche sur la page vide : le nom de la version change de forme tous les quarts de seconde. |
 | Offre et appel | 13 à 15 s | Deux lignes posées au centre (le produit, puis « bientôt »), le logotype, coupe au noir. |
 
-Le kit suit le même ordre en quatre scènes de 4,5 s, 5 s, 2,8 s et 3,8 s (section « Les compositions du kit »). Pas de bloc « problème » : c'est un teaser.
+Le kit suit le même ordre en quatre scènes de 4,5 s, 5 s, 2,8 s et 3,8 s (section « Les compositions du kit »).
 
 ## 3. Les fonds et les couleurs
 

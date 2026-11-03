@@ -74,6 +74,11 @@ partout. Liste toujours les trois plus gros défauts, même si tout est à 8. Si
 une vidéo de référence, mets côte à côte une planche de chaque (même cadence) : le niveau se juge
 contre elle, pas contre la version précédente.
 
+Avec un style du catalogue, le garde-fou ([styles/README.md](../styles/README.md)) : la planche
+montre au moins trois de ses gestes signature (deux sous 15 s), et les scènes construites pour son
+cas portent les mêmes fonds, polices et mouvements que le kit. Sinon, « Le mouvement sert » et
+« Marque » sont à 6 au plus.
+
 Dernier test, le plus simple : à partir des seules vignettes, résume le message en une phrase.
 Si cette phrase n'est pas la promesse de la fiche, la vidéo ne dit pas ce qu'elle doit dire.
 

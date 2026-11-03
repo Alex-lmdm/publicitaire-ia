@@ -1,4 +1,4 @@
-# Template n°5 · Interrupteurs crème · d'après ClaudeDevs (https://x.com/ClaudeDevs/status/2091953609185657251)
+# Style n°5 · Interrupteurs crème · d'après ClaudeDevs (https://x.com/ClaudeDevs/status/2091953609185657251)
 
 **Ce qu'on voit :** sur un papier crème, un panneau de réglages vu de très près : une main clique, les interrupteurs s'allument en cascade. Puis des phrases calmes au centre, un trait à main levée qui entoure, souligne et relie, une grille de pastilles qui se cochent en vague, et la fenêtre de l'offre qui travaille avant la carte d'annonce.
 **Souvent utile pour :** annoncer une nouveauté (un module, un bonus, une fonction, une mise à jour), ou montrer qu'un seul réglage sert tout le monde.
@@ -17,9 +17,30 @@
 - Une couleur de marque claire (jaune, pastel) change peu la luminosité : le contrôle compte alors surtout les textes, le trait, la main et la caméra. Avec un accent foncé, la cascade et les coches comptent aussi.
 - Tenue d'un texte : 1 à 1,5 s, jamais plus sans un recadrage ou un geste autour.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
 
-L'original, scène par scène (c'est une annonce : il n'a pas de bloc « problème ») :
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| La cascade d'interrupteurs | un clic sur l'interrupteur maître, les autres rangs s'allument en cascade | accroche, ce qu'on reçoit (modules, fonctions) | `interrupteurs-cascade`, et le menu de `fenetre-annonce` |
+| Le trait à main levée | un seul trait qui entoure les mots clés, souligne le mot fort et voyage d'une phrase à l'autre | promesse, mot fort, tout temps fort | `interrupteurs-cascade`, `trait-qui-relie` |
+| Les filets qui relient | deux filets relient la phrase à ce qui l'entoure ; la phrase devient le nom de l'offre | solution, le nom de l'offre | `trait-qui-relie` |
+| La vague de coches | des anneaux qui se remplissent et se cochent en vague | preuve, résultat, « pour tous » | `grille-de-coches` |
+| La carte qui devient fenêtre | une carte s'ouvre en plein écran sur la vraie interface, où une demande se tape et des étapes s'écrivent | démonstration | `grille-de-coches` (fin), `fenetre-annonce` |
+| La pastille d'annonce et la signature | une petite pastille au-dessus d'un titre en deux lignes, puis le logo qui tourne et se pose | annonce, offre, fin | `fenetre-annonce` (fin) |
+| Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, la caméra s'en approche | toutes les phrases | toutes les scènes |
+
+Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur
+le même papier crème (recette 1 du studio, la corvée), avec le trait à main levée qui entoure ce
+qui coûte.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre (c'est une annonce : il n'a pas de bloc « problème ») :
 
 | Rôle | Temps | Ce qui s'y passe |
 |---|---|---|
@@ -33,7 +54,7 @@ L'original, scène par scène (c'est une annonce : il n'a pas de bloc « problè
 | Offre | 28,4 à 31,4 s | Carte d'annonce : une petite pastille (« bêta ») au-dessus d'un titre de deux lignes. |
 | Appel | 31,4 à 34 s | La signature : le logo tourne et se pose, le nom s'écrit. Ni bouton ni phrase d'appel. |
 
-Le kit regroupe ces temps en quatre scènes (section « Les compositions du kit ») : 1 + 2, puis 3 + 4, puis la preuve, puis la démonstration, l'offre et la signature. Pour une vidéo de vente, place avant la scène 1 une recette « problème » du studio (la corvée, recette 1) sur le même papier crème.
+Le kit regroupe ces temps en quatre scènes (section « Les compositions du kit ») : 1 + 2, puis 3 + 4, puis la preuve, puis la démonstration, l'offre et la signature.
 
 ## 3. Les fonds et les couleurs
 

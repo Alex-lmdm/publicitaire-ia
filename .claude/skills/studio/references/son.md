@@ -105,11 +105,15 @@ avec `id="musique"` : c'est ce que retrouve la version sans musique.
 
 ### Choisir le morceau
 
-Une proposition par vidéo, depuis son projet (le but et le support sont lus dans le projet) :
+Une proposition par vidéo, depuis son projet (le but et le support sont lus dans le projet), sur
+la même page que les 8 styles (le style se choisit avec la musique, SKILL.md étape 4) :
 
 ```bash
-python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --ouvrir
+python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --style <N conseillé> --ouvrir
 ```
+
+`--style` marque ton conseil parmi les 8 styles ; un style déjà connu (demandé d'emblée, ou gardé
+dans ses préférences) : `--sans-styles`, la page ne montre que les musiques.
 
 L'outil prend l'ambiance qui va avec le but et le support, écarte les morceaux trop courts (de
 l'entrée de la batterie à la fin, ils doivent couvrir la vidéo après le pivot), préfère ceux dont
@@ -128,13 +132,15 @@ meilleurs, le plus juste en premier :
 
 Le pivot (`--a`, l'instant où la solution apparaît) n'est pas encore fixé ? Laisse-le : l'outil le
 suppose vers 20 % de la vidéo, et l'entrée de batterie de chaque morceau, affichée, t'aide à le
-placer. Une boucle de section de page est muette : pas de musique.
+placer. Une boucle de section de page est muette : pas de musique, la page ne montre que les styles.
 
-La page d'écoute s'ouvre dans son navigateur (chaque extrait démarre quelques secondes avant
-l'entrée de la batterie). Dis-lui : « Je t'ai ouvert une page avec 3 musiques pour cette vidéo ;
-je te conseille la 1. Écoute et réponds par le numéro (ou « choisis » : je prends la 1). » S'il a
-dit une fois « choisis toujours pour moi » (préférence de `studio.config.json`), prends la première
-sans demander et dis laquelle.
+La page s'ouvre dans son navigateur : les 8 styles en vidéo, puis les 3 musiques (chaque extrait
+démarre quelques secondes avant l'entrée de la batterie). Dis-lui : « Je t'ai ouvert une page avec
+les 8 styles et 3 musiques pour cette vidéo ; je te conseille le style 7 et la musique 1. Réponds
+par exemple « 7, 1 » (ou « choisis » : je prends mes conseils). » Sans styles sur la page : « …
+3 musiques ; je te conseille la 1. Réponds par le numéro. » S'il a dit une fois « choisis toujours
+pour moi » (préférence de `studio.config.json`), prends la première musique sans demander et dis
+laquelle.
 
 Ses demandes, à tout moment :
 
@@ -142,7 +148,7 @@ Ses demandes, à tout moment :
   cinématique, Court et percutant, Premium et calme ; « plus calme », « plus énergique ») :
   `musiques choisir --ambiance "<ambiance>"`.
 - « Fais-moi écouter d'autres musiques », « aucune » : `musiques choisir --autres` (trois qu'il n'a
-  pas encore entendues pour cette vidéo).
+  pas encore entendues pour cette vidéo ; `--sans-styles` si son style est déjà choisi).
 - « Mets ma musique », « Mets cette musique dans ma vidéo » (un fichier glissé, ou le morceau le
   plus récent de ses Téléchargements) : elle passe avant les musiques de lancement. Dite pendant une
   vidéo, elle vaut **pour cette vidéo** : range-la dans `assets/audio/` de son projet, note sa

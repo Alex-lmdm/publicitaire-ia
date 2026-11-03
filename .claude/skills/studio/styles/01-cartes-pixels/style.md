@@ -1,4 +1,4 @@
-# Template n°1 · Cartes pixels · d'après Firecrawl (https://x.com/firecrawl/status/2057495269785358384)
+# Style n°1 · Cartes pixels · d'après Firecrawl (https://x.com/firecrawl/status/2057495269785358384)
 
 **Ce qu'on voit :** sur une grille claire à points, des cartes d'interface passent du désordre au net : un mur de cartes floues autour d'une discussion sombre, des blocs de pixels qui couvrent puis découvrent l'écran, des pixels de couleur qui deviennent une fiche blanche annotée de petits cadres. La preuve tombe en grand chiffre au milieu de glyphes (# + X =), les logos des outils se relient au logo de la marque, et un chevron en escalier blanchit l'écran pour le logo final.
 **Souvent utile pour :** montrer le passage du problème (trop d'infos, trop d'outils, trop de conseils) au résultat propre ; une méthode, un logiciel ou une formation qui « met de l'ordre ».
@@ -17,9 +17,29 @@
 - **Pas de texte à lire dans l'original.** Le kit en ajoute un minimum (un label mono et une étiquette de 2 à 4 mots par scène), parce qu'une vidéo de page démarre muette.
 - **Chez toi :** grille de 0,5 s du studio (120 battements par minute) ou celle de la musique ; les scènes du kit tiennent 1,4 à 1,6 événement par seconde. Le milieu (la carte annotée, les logos) est le plus calme : n'y ajoute pas de tenue.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
 
-L'original, scène par scène :
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| Le mur de bruit | la carte de discussion sombre, la question qui se tape, un mur de réponses grises et floues qui se lève autour | accroche, problème | `t01-bruit` |
+| La mosaïque de pixels | des blocs de pixels qui couvrent l'écran par à-coups, puis tombent rangée par rangée | raccord entre deux scènes, ouverture d'un chapitre | `t01-raccord-pixels` |
+| Les pixels qui deviennent l'interface | un amas de pixels à l'accent glisse et devient la fiche de l'offre, que des cadres de repérage annotent | solution, démonstration de son produit | `t01-carte-annotee` |
+| Le décodage | chaque texte arrive en glyphes qui se fixent de gauche à droite | tous les textes : labels, titres, nom | toutes les scènes |
+| Le grand chiffre dans les glyphes | un vrai chiffre qui compte au milieu d'un nuage de glyphes | preuve (seulement avec un vrai chiffre) | `t01-chiffre` |
+| Les logos reliés et le chevron | les logos de ses outils reliés à l'offre, le chevron en escalier, le nom en pixels, le bouton tapé et cliqué | outils, offre, appel | `t01-logos-fin` |
+
+**Pour montrer son produit** : en chapitres, chacun ouvert par son label mono « [ 03 · … ] » et
+une carte d'interface réelle (grille claire, cartes blanches ou sombres, décodage, cadres de
+repérage) ; une mosaïque de pixels entre deux chapitres, pas plus d'une fois sur deux.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre :
 
 | Temps | Rôle | Ce qui s'y passe |
 |---|---|---|
@@ -34,12 +54,16 @@ L'original, scène par scène :
 | 58,2 à 61,2 s | Intégrations | L'icône reliée aux logos des IA par un maillon ; le chevron en escalier part du bord droit. |
 | 61,2 à 66 s | Fin | Sur blanc, le logo et le nom se forment en pixels et se tiennent 4 s ; pas d'appel à l'action écrit. |
 
-Chez toi (vidéo de page de 60 à 90 s), dans cet ordre, avec les compositions du kit :
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
+
+Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème puis sa solution :
 
 1. **Problème** (5,5 s) : `t01-bruit`, la question du prospect, le mur de bruit, « Trop de bruit. ».
 2. Raccord : `t01-raccord-pixels` par-dessus la coupe.
 3. **Solution** (6,5 s) : `t01-carte-annotee`, les pixels deviennent la fiche de l'offre, annotée.
-4. **Démonstration** (20 à 40 s) : deux ou trois chapitres, chacun ouvert par son label mono « [ 03 · … ] » et une carte d'interface réelle (recettes du studio, au look de ce template : grille claire, cartes blanches ou sombres, décodage, cadres). Une mosaïque de pixels entre deux chapitres, pas plus d'une fois sur deux.
+4. **Démonstration** (20 à 40 s) : deux ou trois chapitres, chacun ouvert par son label mono « [ 03 · … ] » et une carte d'interface réelle (recettes du studio, au look de ce style : grille claire, cartes blanches ou sombres, décodage, cadres). Une mosaïque de pixels entre deux chapitres, pas plus d'une fois sur deux.
 5. **Preuve** (2,8 s) : `t01-chiffre`, seulement avec un vrai chiffre.
 6. **Outils, offre et appel** (6,8 s) : `t01-logos-fin`, les logos reliés, le chevron, le nom, le bouton.
 
@@ -59,7 +83,7 @@ Chez toi (vidéo de page de 60 à 90 s), dans cet ordre, avec les compositions d
 - **Accent clair** (jaune, vert pâle, luminance au-dessus de 0,28) : un jaune ne se lit pas sur le gris clair. Le kit le détecte seul et passe en classe `t01-accent-clair` : les cadres de repérage et le chiffre passent à l'encre (le chiffre souligné d'un trait de couleur), les teintes du chargeur deviennent des gris, l'accent reste en aplat (pixels, étiquettes, surlignage, chevron, bouton). Jamais d'accent clair transparent. Le chiffre, qui est un texte, passe à l'encre plus tôt : dès que l'accent ne s'y lit plus à 4,5:1 sur le gris clair (luminance au-dessus de 0,17).
 - **Sur n'importe quelle marque, claire ou sombre** : le gris clair, la grille, le blanc des cartes et de la fin restent ceux de l'original, fixes ; seuls l'accent et l'encre des cartes sombres viennent de la marque, et l'encre se choisit seule (son fond s'il est sombre, sinon son texte, sinon `#1d1d1f` : jamais une couleur claire). Le texte posé sur l'accent est en `var(--brand-contrast)` ; tout texte garde un contraste d'au moins 4,5:1.
 - Aucun dégradé, aucun néon ; les seules ombres sont douces et larges.
-- Les bascules de fond de l'original : clair presque partout, deux passages sombres (la mosaïque, l'écran de code) et le blanc pur de la fin. Le kit garde ce dosage : ce template ne fait pas alterner sombre, clair et couleur pleine comme le style par défaut du studio, c'est voulu.
+- Les bascules de fond de l'original : clair presque partout, deux passages sombres (la mosaïque, l'écran de code) et le blanc pur de la fin. Le kit garde ce dosage : ce style ne fait pas alterner sombre, clair et couleur pleine comme le style par défaut du studio, c'est voulu.
 
 ## 4. La typographie
 

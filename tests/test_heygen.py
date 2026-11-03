@@ -99,6 +99,21 @@ class Musiques(unittest.TestCase):
             texte = page.read_text()
         self.assertIn("&lt;b&gt;x&lt;/b&gt;", texte)
         self.assertIn('src="https://e.test/a.wav?x=1&amp;y=&quot;2&quot;"', texte)
+        self.assertNotIn("<h2>", texte)                                   # sans styles : la page d'avant
+
+    def test_page_avec_les_styles_puis_les_musiques(self):
+        styles = [{"numero": 1, "nom": "Cartes <pixels>", "detail": "grille", "video": "file:///a/01.mp4",
+                   "image": "file:///a/01.jpg", "conseil": False},
+                  {"numero": 7, "nom": "Phrase tapée", "detail": "curseur", "video": "file:///a/07.mp4",
+                   "image": "", "conseil": True}]
+        with tempfile.TemporaryDirectory() as d:
+            texte = heygen.page_ecoute("Le style et la musique", "Consigne", [{"numero": 1, "nom": "m", "url": "file:///m.mp3"}],
+                                       Path(d) / "p.html", styles=styles).read_text()
+        self.assertLess(texte.index("<h2>Le style</h2>"), texte.index("<h2>La musique</h2>"))
+        self.assertEqual(texte.count("<video "), 2)
+        self.assertEqual(texte.count("Mon conseil"), 1)
+        self.assertIn("Cartes &lt;pixels&gt;", texte)
+        self.assertIn('src="file:///a/07.mp4"', texte)
 
     def test_extension_d_un_lien_signe(self):
         self.assertEqual(heygen.extension("https://s3.test/v/abc.wav?X-Amz-Signature=1", ".mp3"), ".wav")

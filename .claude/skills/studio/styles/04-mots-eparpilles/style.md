@@ -1,4 +1,4 @@
-# Template n°4 · Mots éparpillés · d'après ElevenLabs (https://x.com/ElevenLabs/status/2100262886916358361)
+# Style n°4 · Mots éparpillés · d'après ElevenLabs (https://x.com/ElevenLabs/status/2100262886916358361)
 
 **Ce qu'on voit :** un avant / après en deux mondes. L'avant est un papier quadrillé où la phrase du problème arrive un mot à la fois, éparpillée sur la grille, entourée d'objets du quotidien posés sur des cases grises, coupé par des écrans tramés où un téléphone sonne, chaque bascule se faisant en carrés de pixels ; puis une phrase pivot sur un dégradé vif qui se resserre en orbe lumineux, s'allume, change de couleur et s'ouvre sur l'après : un dégradé vif où une conversation arrive en bulles de verre, avant une fin noire où un cadre au trait devient les cartes de l'offre, puis le nom.
 **Souvent utile pour :** un avant / après (la corvée d'avant, la vie avec l'offre), une offre qui répond, accompagne ou automatise (un assistant, un coaching, un logiciel), une vidéo de page ou une pub.
@@ -16,9 +16,30 @@
 - **Deux tempos.** L'avant est haché : un mot toutes les 0,3 à 0,4 s, un objet avec chaque mot, une transition en pixels toutes les 1,2 à 1,9 s (papier, écran, papier, écran, papier). L'après respire : une bulle toutes les 1,2 s, ses mots qui s'allument à 0,07 s d'écart, le fond qui tourne.
 - **Le pivot est la seule pause voulue** : la phrase pivot se lit sur la couleur (1 s), puis tout se resserre en orbe ; l'orbe tient 1,5 s en vivant (il tourne, s'allume, bat).
 - **L'original est calme** (1,19 événement par seconde, des textes minuscules, 5 s de noir à la fin) : le kit le resserre pour passer le contrôle `rythme` du studio (cinq transitions en pixels en 7,4 s, des points qui annoncent chaque réponse, le fond qui respire à chaque bulle, une carte de résultat, une lueur qui monte à chaque mot de l'appel).
-- **Le contrôle** : sur ce template, un mot seul ou une petite bulle ne compte pas comme un événement (trop petit à l'image) ; ce sont les objets qui surgissent, les carrés de pixels, les changements de fond et les recadrages qui font le rythme. Ne retire pas l'objet qui accompagne chaque mot.
+- **Le contrôle** : sur ce style, un mot seul ou une petite bulle ne compte pas comme un événement (trop petit à l'image) ; ce sont les objets qui surgissent, les carrés de pixels, les changements de fond et les recadrages qui font le rythme. Ne retire pas l'objet qui accompagne chaque mot.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
+
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| Les mots éparpillés et leurs objets | un mot à la fois sur le papier quadrillé, un objet du quotidien qui surgit avec chaque mot | accroche, problème (l'avant) | `mots-objets` |
+| La transition en pixels | des carrés qui basculent un à un et découvrent le plan suivant, sans fondu | raccord entre deux plans | `mots-objets` |
+| L'écran tramé et le téléphone | des taches de couleur vues à travers une trame, le téléphone qui vibre, la pastille de verre de ce qui arrive | le problème vécu, une notification | `mots-objets` |
+| Le pivot en orbe | la phrase pivot sur le dégradé chaud, qui se resserre en orbe et s'ouvre sur l'après | la bascule avant / après, le nom de l'offre | `orbe-pivot` |
+| Les messages de verre | une conversation en bulles de verre sur un dégradé vif, le résultat qui arrive et se coche | solution, démonstration, preuve (un vrai échange) | `messages-verre` |
+| Le cadre qui devient l'offre | le cadre et la phrase d'appel, les trois cartes de l'offre, le trait lumineux, le nom, le bouton cliqué | offre, appel | `fin-cadre` |
+
+Sans avant / après dans son plan, le pivot en orbe sert à révéler le nom de l'offre. Le motif
+papier / écran se répète une fois par besoin.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre :
 
 | Bloc | Rôle | Durée | Ce qui s'y passe |
 |---|---|---|---|
@@ -30,6 +51,10 @@
 | Le pivot | bascule | 4 s | La phrase pivot sur le dégradé chaud (« Ça, c'était avant. »), le dégradé devient un orbe dans ses anneaux, l'orbe change de couleur et s'ouvre (`orbe-pivot.html`) |
 | La conversation | solution, démonstration | 6 s | Les bulles de verre sur le dégradé de l'après ; l'offre répond, le résultat arrive et se coche (`messages-verre.html`) |
 | La fin | offre et appel | 6,5 s | Le cadre au trait, la phrase d'appel ; le cadre devient les trois cartes de l'offre, qui deviennent un trait, puis le nom et le bouton (`fin-cadre.html`) |
+
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
 
 L'original répète le motif papier / écran trois fois sur 13 s (trois besoins, trois téléphones) ; une vidéo de page de 45 à 60 s peut faire de même (une ligne de `PAPIERS` et d'`ECRANS` par besoin), puis allonger la conversation (deux échanges) avant la fin.
 
@@ -53,7 +78,18 @@ Le texte posé sur le noir est blanc ; la marque ne donne que les accents (la tr
 dérivés, le bouton). Tout texte garde un contraste d'au moins 4,5:1 : sur le dégradé chaud, la
 phrase pivot blanche porte une ombre douce ; les bulles et les cartes suivent `var(--brand-contrast)`.
 
-C'est le seul template qui sort d'une seule teinte : les dégradés tournent autour de l'accent (de 50 degrés de chaque côté). Une marque qui veut rester stricte règle `--t04-ecart` à 12 dans les quatre scènes. Avec un accent jaune : trame jaune-orangé sur presque noir, alerte rouge-orange, après citron, vert tendre et orangé.
+C'est le seul style qui sort d'une seule teinte : les dégradés tournent autour de l'accent (de 50 degrés de chaque côté). Une marque qui veut rester stricte règle `--t04-ecart` à 12 dans les quatre scènes. Avec un accent jaune : trame jaune-orangé sur presque noir, alerte rouge-orange, après citron, vert tendre et orangé.
+
+**Une marque qui refuse les teintes voisines** (« noir, jaune, blanc, gris », pub Monteur IA du
+03/11/2026) : `--t04-ecart` à 12 ne suffit pas. Le noir mêlé à l'accent donne de l'olive, presque
+brun (la trame, l'écran du téléphone), et les dégradés passent par un jaune pâle. Dans les cinq
+scènes : la trame sur `#0c0d10` pur, ses taches sombres en `#1c1d21` et la troisième en gris
+`#8f9096` ; l'écran du téléphone en `linear-gradient(165deg, #2a2b30, #0c0c0e 62%)` ; les dégradés
+chauds et de l'après en jaunes seuls (l'accent, puis `oklch(from var(--brand-accent) calc(l * 0.9
+à 0.95) c calc(h - 3 à 7))`) ; le post-it à l'accent ; le verre en blanc (`rgba(255, 255, 255, 0.94)`,
+bord blanc), sinon il vire au beige sur le jaune ; les cartes de la fin en accent plein ; la phrase
+pivot en `var(--brand-contrast)` (le blanc ne se lit pas sur le jaune) ; le papier neutre
+(`#f3f3f4`, cases `#e6e6e8`).
 
 ## 4. La typographie
 
@@ -75,6 +111,8 @@ C'est le seul template qui sort d'une seule teinte : les dégradés tournent aut
 | Bouton | 40 px dans une pilule de 96 px | 44 px dans une pilule de 104 px |
 
 L'original écrit beaucoup plus petit (des bulles de 22 px, une phrase d'appel de 24 px) : le kit agrandit pour la lecture sur un téléphone et pour le contrôle du rythme.
+
+En pub (vue sur un téléphone, souvent sans le son) : rien à lire sous 28 px. La pastille passe à 34 px, la notification du téléphone à 30 et 32 px, la carte du résultat à 38 et 28 px (essai du 03/11/2026).
 
 ## 5. Les mouvements signature
 
@@ -123,7 +161,7 @@ L'original écrit beaucoup plus petit (des bulles de 22 px, une phrase d'appel d
 
 ## Sur une autre offre
 
-Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait l'original (un standard téléphonique tenu par une IA) s'adapte :
+Le style est un look : il se monte sur n'importe quelle offre. Ce qui suivait l'original (un standard téléphonique tenu par une IA) s'adapte :
 
 - **Toujours** : le papier quadrillé, les mots éparpillés et leurs objets, les écrans tramés et les pastilles, les carrés de pixels, la phrase pivot, l'orbe, l'après en dégradé vif, une conversation en verre, le cadre qui devient l'offre.
 - **Une formation** : les objets du quotidien de l'élève (carnet, post-it, vidéos à regarder plus tard, le réveil) ; la pastille dit ce qu'il rate (« ENCORE REPORTÉ », « PAS COMMENCÉ ») ; la conversation est une vraie question d'élève et la vraie réponse du formateur ou de l'assistant de la formation ; la carte du résultat est le module terminé ou le vrai livrable ; les trois cartes, ses trois parties.
@@ -136,6 +174,7 @@ Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait
 - **Le papier en 9:16** (`mots-objets-vertical.html`) : les mots à 96 px, en deux ou trois rangées dans la bande du milieu (de 780 à 1 100 px dans le kit, 600 à 1 300 au plus), 8 lettres au plus par mot ; les objets dans les bandes du haut et du bas (cases de 200 à 300 px sur la grille de 100 px : x = 40, 140…, y = 60, 160…), quelques petites cases sur les bords : l'écran est rempli de haut en bas. Les carrés de pixels restent à 120 px (9 colonnes, 16 rangées). Sur les écrans, le téléphone plus grand (500 × 1 000 px, centré, même inclinaison) et la pastille centrée au-dessus de lui.
 - **L'orbe en 9:16** (`orbe-pivot-vertical.html`) : centré, un peu plus grand (disque de 320 px de rayon, orbe de 200 px), anneaux plus larges (460, 740 et 1 080 px) qui occupent la hauteur ; la phrase pivot passe à 64 px ; l'après a les mêmes taches que `messages-verre-vertical.html`.
 - **La conversation en 9:16** (`messages-verre-vertical.html`) : elle remplit l'écran comme sur un téléphone : colonne de 968 px, bulles de 44 px, le fil part du milieu et remonte de 560 px en tout, le recadrage est plus doux (×1,03).
+- **En pub 9:16** (zone sûre : y de 269 à 1 248, `zones pub`) : les versions verticales sont calées pour un Reel. Remonte la conversation (`BAS` à 880 au lieu de 1 020) et toute la fin de 100 px (une enveloppe `top: -100px` marquée `data-layout-allow-overflow`), les cartes à ±280 px ; la fin ne dessine pas de bouton : « Découvre-le » et une flèche vers le bas à sa place, sans curseur (structures.md, publicité). Essai du 03/11/2026.
 - **La fin en 9:16** (`fin-cadre-vertical.html`) : le cadre fait 960 × 700 px, la phrase d'appel à 58 px passe seule sur deux lignes, centrée ; les trois cartes (720 × 240 px) sortent au-dessus et au-dessous de la première, s'empilent en colonne, puis la colonne s'aplatit en un trait de 860 px ; le nom à 88 px au-dessus, le bouton (pilule de 104 px, texte de 44 px) dessous, vers le milieu de l'écran.
 - **4:5 et 1:1** : comme le 16:9 resserré ; 9 colonnes de carrés, les objets seulement sur les côtés, deux cartes au lieu de trois en 1:1 si le texte ne tient pas.
 - Les mots clés restent hors des 10 % du haut et des 20 % du bas en vertical (les commandes de l'application).

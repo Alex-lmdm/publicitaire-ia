@@ -1,4 +1,4 @@
-# Template n°8 · Fenêtre peinte · d'après Cursor (https://www.youtube.com/watch?v=An8IM-kPyms)
+# Style n°8 · Fenêtre peinte · d'après Cursor (https://www.youtube.com/watch?v=An8IM-kPyms)
 
 **Ce qu'on voit :** sur un blanc chaud presque nu, des phrases courtes centrées s'écrivent lettre à lettre et coupent net sur la démonstration : la fenêtre de l'application, posée sur un fond de bureau peint, filmée en gros plans rapides (flou de bougé) pendant que le curseur clique et tape. Une preuve en barres comparatives (la ligne de l'offre passe au noir) et un logo en cube qui roule ouvrent et ferment la vidéo, la fin sur fond sombre.
 **Souvent utile pour :** une preuve chiffrée posée calmement (avant / après, comparaison d'options), puis l'offre montrée dans son vrai outil, chapitre par chapitre ; lancement d'une nouvelle version, d'un logiciel, d'un espace de formation.
@@ -15,9 +15,27 @@
 - **Les coupes tombent sur les temps de la musique** (environ 113 battements par minute), jamais au milieu d'un geste.
 - **Chez toi** : le studio exige au moins un événement par seconde et aucune image tenue 1 s ou plus. Le kit garde le calme mais le resserre : phrases de 3 ou 4 mots tenues 0,7 à 0,9 s après la frappe, caméra qui avance de 6 % pendant la phrase, gros plans ajoutés sur le graphique, un geste toutes les 0,5 à 1 s dans la fenêtre. N'allonge jamais une phrase au-delà de ce que dit son en-tête : `rythme` la verrait figée.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
 
-L'original, scène par scène :
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| Le cube logo | un cube au logo qui roule et se pose, le nom qui sort de derrière lui | ouverture, le nom de l'offre | `t08-logo` (clair) |
+| La phrase tapée et la coupe nette | une phrase courte qui s'écrit à sa place, centrée, puis coupe sur un temps | promesse, titre de chapitre, annonce | `t08-phrase` |
+| Les barres comparatives | deux graphiques en barres, la ligne de l'offre qui passe au noir et compte sa valeur | preuve (chiffres vrais seulement) | `t08-barres` |
+| La fenêtre filmée sur fond peint | la vraie interface dans une fenêtre posée sur un fond peint, filmée en gros plans, le curseur qui clique, une demande qui se tape | démonstration | `t08-fenetre` |
+| La fin sombre | coupe sur l'encre, le cube en clair, le nom, la phrase d'appel qui s'écrit | appel, fin | `t08-logo` (sombre) |
+
+**Pour montrer son produit** : en chapitres, chacun annoncé par une phrase tapée qui nomme la
+partie, puis la fenêtre sur fond peint remplie de la vraie interface et du geste de cette partie.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre :
 
 | Temps | Rôle | Ce qui s'y passe |
 |---|---|---|
@@ -34,7 +52,11 @@ L'original, scène par scène :
 | 46 à 62 s | Démonstration | Le navigateur intégré, sélection d'un élément, la console. |
 | 62,3 à 64,4 s | Fin | Coupe sur fond presque noir, cube blanc qui roule, nom en capitales qui sort de derrière lui. |
 
-Chez toi (vidéo de page de 45 à 90 s), avec les compositions du kit :
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
+
+Une vidéo de page de 45 à 90 s qui annonce, comme l'original, puis démontre :
 
 1. **Ouverture** (2 s) : `t08-logo` en clair, le logo et le nom de l'offre.
 2. **Promesse** (1,4 à 1,6 s) : `t08-phrase`, ce que l'offre change, en 3 ou 4 mots.
@@ -86,7 +108,7 @@ Chez toi (vidéo de page de 45 à 90 s), avec les compositions du kit :
 
 ## 6. Les transitions
 
-- **La coupe nette** entre une phrase et une démonstration, sur un temps de la musique : c'est la ponctuation de ce template (et la bascule du blanc chaud au fond peint fait l'événement).
+- **La coupe nette** entre une phrase et une démonstration, sur un temps de la musique : c'est la ponctuation de ce style (et la bascule du blanc chaud au fond peint fait l'événement).
 - **Dans une démonstration, c'est la caméra qui enchaîne** : gros plan, recul, glissé, toujours avec le flou de bougé, jamais de fondu.
 - **La coupe sur le sombre** pour la fin, une seule fois.
 - Pas de mosaïque, pas de flash, pas de volet, pas de fondu enchaîné.
@@ -101,7 +123,7 @@ Chez toi (vidéo de page de 45 à 90 s), avec les compositions du kit :
 
 - **Musique de l'original** : électronique minimale et feutrée, environ 113 battements par minute, faite de pulsations graves douces et de petits clics, sans mélodie appuyée ; elle entre franchement à 3,2 s, après le logo, et se mixe très bas (-29 LUFS mesurés ; on vise -16 LUFS au mastering).
 - **Chez toi** : l'ambiance « Tech minimale » des musiques de lancement (`musiques choisir --ambiance "Tech minimale"`), ou « Premium et calme » pour une offre haut de gamme ; l'entrée de batterie sur la première phrase.
-- **Bruitages**, rares et doux : un clic de souris discret à chaque clic, une frappe de clavier très basse pendant que la phrase ou la demande s'écrit, une pulsation sourde sur chaque coupe vers une phrase. Pas de whoosh sur les gros plans, pas d'impact : le calme fait la marque de ce template.
+- **Bruitages**, rares et doux : un clic de souris discret à chaque clic, une frappe de clavier très basse pendant que la phrase ou la demande s'écrit, une pulsation sourde sur chaque coupe vers une phrase. Pas de whoosh sur les gros plans, pas d'impact : le calme fait la marque de ce style.
 
 ## 9. L'ouverture et la fin
 

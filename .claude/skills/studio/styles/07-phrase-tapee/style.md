@@ -1,4 +1,4 @@
-# Template n°7 · Phrase tapée · d'après Zaro (https://x.com/ZaroAI_/status/2070084796378747316)
+# Style n°7 · Phrase tapée · d'après Zaro (https://x.com/ZaroAI_/status/2070084796378747316)
 
 **Ce qu'on voit :** des phrases courtes qui se tapent sur deux lignes derrière un gros curseur de
 frappe à la couleur de la marque, en alternance avec des interfaces claires et nettes (une barre de
@@ -36,7 +36,33 @@ aucune image figée, `rythme` « ok » partout.
   bondissent un peu, les orbites tournent et les outils « se connectent » un par un, la poussière de
   pixels scintille) : l'essai a dû les ajouter pour ne laisser aucune image figée.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
+
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| La phrase et ses objets | une phrase mot à mot avec une vignette et une pastille glissées dans la ligne ; la suite s'allume mot à mot à l'accent | accroche, promesse | `t7-accroche` |
+| Le mot géant sur le nuage | un silence, un mot géant tapé sur un nuage de l'accent, puis le logo net et le nom sur fond clair | le nom de l'offre, temps fort | `t7-accroche` (fin) |
+| La phrase sur deux lignes | deux lignes tapées derrière le gros curseur de couleur, un clignement, coupe franche | toute phrase clé, titre de chapitre | `t7-phrase` (début) |
+| La demande envoyée | une demande tapée dans une barre, les logos empilés, le clic sur envoyer, la fenêtre du résultat qui se remplit | solution, démonstration de son interface | `t7-phrase` |
+| Le désordre réduit en points | une phrase retapée trois fois, des objets qui surgissent, tout qui passe en points et file au centre | le problème rangé, ce qu'on remplace | `t7-eparpille` |
+| L'orbite et la galaxie | la carte de l'offre au centre, ses outils en orbite, le recul sur la galaxie | promesse, outils et intégrations, ce qu'on reçoit | `t7-orbite` |
+| Le point d'encre | sur fond clair, un point qui devient le logo, le nom qui sort, la pastille d'appel | appel, fin | `t7-orbite` (fin) |
+
+**Pour montrer son produit** : la demande envoyée ouvre une fenêtre claire où sa vraie
+interface se construit (barre latérale, cartes qui tombent) ; une conversation se montre dans la
+même fenêtre, ses réponses tapées. Toute phrase clé se tape sur deux lignes derrière le gros
+curseur. Vidéo du haut de la page de Publicitaire IA (03/11/2026) : la phrase et ses objets, le mot
+géant, le désordre réduit en points, l'orbite et le point d'encre viennent du kit ; le dossier
+déposé sur Claude et la conversation dans Claude ont été construits pour son cas, dans ce style.
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre :
 
 | Scène de l'original (temps approximatifs) | Rôle | Ce qui s'y passe | Dans le kit |
 |---|---|---|---|
@@ -51,6 +77,10 @@ aucune image figée, `rythme` « ok » partout.
 | 44 → 59 s | démonstration | les fichiers, les connexions, une grande question tapée, la réponse, la liste des sources qui défile, le téléphone | non construit |
 | 59 → 65 s | promesse | la carte du produit DANS une phrase ; orbites en pointillés, outils qui tournent ; recul sur une galaxie de systèmes, conclusion tapée | `t7-orbite` |
 | 65 → 68,5 s | appel | coupe sur fond clair : un point d'encre se contracte et devient le logo ; pastille d'appel en capitales | `t7-orbite` |
+
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
 
 Pour une vidéo de page (60 à 90 s) : `t7-accroche` → `t7-phrase` → (une démonstration de ton
 produit dans la même fenêtre claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel :

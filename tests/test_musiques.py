@@ -401,6 +401,9 @@ class Commande(unittest.TestCase):
                     shutil.copytree(src, copie / nom, ignore=shutil.ignore_patterns("musiques", "__pycache__"))
                 elif src.is_file():
                     shutil.copy2(src, copie / nom)
+            index_styles = Path(".claude") / "skills" / "studio" / "styles" / "README.md"
+            (copie / index_styles).parent.mkdir(parents=True)
+            shutil.copy2(RACINE / index_styles, copie / index_styles)
             dl = tmp / "home" / "Downloads"
             dl.mkdir(parents=True)
             for a in BANQUE:
@@ -421,7 +424,20 @@ class Commande(unittest.TestCase):
             r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertTrue(r.stdout.startswith("1. court-percutant-01-test"), r.stdout)
-            self.assertTrue((reel / "work" / "ecoute-musiques.html").is_file())
+            page = reel / "work" / "ecoute-musiques.html"
+            self.assertEqual(page.read_text(encoding="utf-8").count("<video "), 8)          # le style se choisit ici
+            self.assertEqual(page.read_text(encoding="utf-8").count("<audio "), 3)
+            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--style", "3"], cwd=reel, env=env,
+                               capture_output=True, text=True)
+            self.assertIn("ton conseil : 3 « Verre sombre »", r.stdout)
+            self.assertEqual(page.read_text(encoding="utf-8").count("Mon conseil"), 1)
+            r = subprocess.run(outil + ["musiques", "choisir", "--style", "9"], cwd=reel, env=env, capture_output=True, text=True)
+            self.assertNotEqual(r.returncode, 0)
+            self.assertIn("pas de style 9", r.stderr)
+            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--sans-styles"], cwd=reel, env=env,
+                               capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertNotIn("<video ", page.read_text(encoding="utf-8"))
             r = subprocess.run(outil + ["musiques", "prendre", "2"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
             source = (reel / "assets" / "audio" / "SOURCE.md").read_text(encoding="utf-8")
@@ -430,6 +446,12 @@ class Commande(unittest.TestCase):
             section = next((copie / "videos").glob("*/* · Section de page"))
             r = subprocess.run(outil + ["musiques", "choisir"], cwd=section, env=env, capture_output=True, text=True)
             self.assertIn("muette", r.stdout)
+            styles_seuls = (section / "work" / "ecoute-musiques.html").read_text(encoding="utf-8")
+            self.assertEqual((styles_seuls.count("<video "), styles_seuls.count("<audio ")), (8, 0))
+            (copie / "studio.config.json").write_text(json.dumps({"preferences": ["style 4"]}), encoding="utf-8")
+            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30"], cwd=reel, env=env, capture_output=True, text=True)
+            self.assertIn("son style gardé : 4", r.stdout)
+            self.assertNotIn("<video ", page.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

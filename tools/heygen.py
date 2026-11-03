@@ -208,31 +208,53 @@ def telecharger(url: str, dest: Path) -> Path:
     return dest
 
 
-def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path) -> Path:
+def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path, styles: list[dict] | None = None) -> Path:
     """Une page à ouvrir dans le navigateur : un lecteur par piste, numérotée, pour que le client
-    écoute et réponde par un numéro. pistes = [{"numero", "nom", "detail", "url"}]."""
+    écoute et réponde par un numéro. pistes = [{"numero", "nom", "detail", "url"}]. Avec `styles`
+    ([{"numero", "nom", "detail", "video", "image", "conseil"}], `styles.vitrine`), la page montre
+    d'abord les styles en vidéo : il choisit le style et la musique au même endroit."""
     lignes = []
     for p in pistes:
         lignes.append(
             f'<li><span class="n">{int(p["numero"])}</span><div><b>{html.escape(str(p["nom"]))}</b>'
             f'<small>{html.escape(str(p.get("detail", "")))}</small>'
             f'<audio controls preload="none" src="{html.escape(str(p["url"]), quote=True)}"></audio></div></li>')
+    cartes = []
+    for s in styles or []:
+        video = (f'<video src="{html.escape(s["video"], quote=True)}" poster="{html.escape(s.get("image", ""), quote=True)}" '
+                 'autoplay muted loop playsinline preload="metadata"></video>' if s.get("video") else "")
+        cartes.append(
+            f'<li class="style">{video}<div class="legende"><span class="n">{int(s["numero"])}</span><div>'
+            f'<b>{html.escape(str(s["nom"]))}</b>{"<em>Mon conseil</em>" if s.get("conseil") else ""}'
+            f'<small>{html.escape(str(s.get("detail", "")))}</small></div></div></li>')
+    blocs = ""
+    if cartes:
+        blocs += f'<h2>Le style</h2><ol class="styles">{"".join(cartes)}</ol>'
+    if lignes:
+        blocs += (f'<h2>La musique</h2>' if cartes else "") + f'<ol>{"".join(lignes)}</ol>'
     contenu = f"""<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(titre)}</title>
 <style>
 :root {{ color-scheme: dark; }}
 body {{ margin: 0; background: #111214; color: #f2f2f2; font: 16px/1.45 -apple-system, "Segoe UI", Inter, sans-serif; }}
-main {{ max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }}
+main {{ max-width: {880 if cartes else 760}px; margin: 0 auto; padding: 32px 16px 64px; }}
 h1 {{ font-size: 26px; margin: 0 0 6px; }} p {{ color: #b8b8bd; margin: 0 0 24px; }}
+h2 {{ font-size: 19px; margin: 28px 0 12px; }}
 ol {{ list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }}
 li {{ display: flex; gap: 16px; align-items: center; background: #1b1c20; border-radius: 14px; padding: 14px 16px; }}
 .n {{ flex: none; width: 44px; height: 44px; border-radius: 50%; background: #FFEE00; color: #111;
       display: grid; place-items: center; font-weight: 800; font-size: 19px; }}
 li div {{ flex: 1; min-width: 0; display: grid; gap: 6px; }}
 small {{ color: #9a9aa0; }} audio {{ width: 100%; }}
+.styles {{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }}
+li.style {{ flex-direction: column; align-items: stretch; padding: 10px 10px 14px; }}
+li.style video {{ width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; background: #000; display: block; }}
+.legende {{ display: flex; gap: 12px; align-items: flex-start; }} .legende .n {{ width: 36px; height: 36px; font-size: 16px; }}
+em {{ font-style: normal; justify-self: start; background: #f2f2f2; color: #111; border-radius: 999px;
+      padding: 1px 10px; font-size: 12px; font-weight: 700; }}
 </style></head><body><main><h1>{html.escape(titre)}</h1><p>{html.escape(consigne)}</p>
-<ol>{"".join(lignes)}</ol></main></body></html>
+{blocs}</main></body></html>
 """
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(contenu, encoding="utf-8")

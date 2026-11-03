@@ -18,7 +18,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
     python3 tools/studio_motion.py pack-sfx [installer [<pack-sfx.zip ou dossier>] | reprendre <dossier Monteur IA> | chercher <mots>]
     python3 tools/studio_motion.py musiques [installer [--lien <url>] [<zip ou dossier>…]]   # les 35 musiques de lancement (bonus)
-    python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --ouvrir]   # depuis le projet
+    python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --style 7 | --sans-styles --ouvrir]   # depuis le projet : les 8 styles et 3 musiques
     python3 tools/studio_motion.py musiques prendre <n> [--a 8 --duree 30]   # la copie dans le projet, calée
     python3 tools/studio_motion.py supports                      # supports, formats, durées
     python3 tools/studio_motion.py nouvelle "<sujet>" --objectif vente --videos reel,page [--ouvrir]
@@ -81,6 +81,7 @@ import heygen  # noqa: E402
 import marque as mq  # noqa: E402
 import musiques as banque  # noqa: E402
 import pack_sfx  # noqa: E402
+import styles as catalogue_styles  # noqa: E402
 import telechargeur  # noqa: E402
 import voix as vx  # noqa: E402
 
@@ -1059,8 +1060,15 @@ def cmd_musiques(a) -> None:
         if a.action == "choisir":
             meta = meta_de(projet) or {}
             objectif, support = a.objectif or meta.get("objectif") or "vente", meta.get("support") or "reel"
+            vitrine = _vitrine_styles(r, a)
             if support in banque.MUETS:
                 print("• cette vidéo est une boucle muette de section de page : pas de musique.")
+                if vitrine:
+                    page = heygen.page_ecoute("Le style de ta vidéo", CONSIGNE_STYLE, [], projet / "work" / "ecoute-musiques.html",
+                                              styles=vitrine)
+                    ouverte = a.ouvrir and heygen.ouvrir(page)
+                    print(f"• page des styles : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
+                    _dire_conseil(vitrine)
                 return
             duree = a.duree or _duree_projet(projet) or 30.0
             ambiance = banque.ambiance_demandee(a.ambiance) if a.ambiance else None
@@ -1082,13 +1090,16 @@ def cmd_musiques(a) -> None:
             for i, m in enumerate(choix, 1):
                 print(f"{i}. {banque.ligne(m)}")
             pistes = [{"numero": i, **banque.page(m)} for i, m in enumerate(choix, 1)]
-            page = heygen.page_ecoute(
-                "Les musiques pour cette vidéo",
-                "Chaque extrait démarre quelques secondes avant l'entrée de la batterie. Dis le numéro de celle "
-                "que tu préfères (ou « choisis » : je prends la 1, la plus juste pour ta vidéo).",
-                pistes, projet / "work" / "ecoute-musiques.html")
+            if vitrine:
+                titre, consigne = "Le style et la musique de ta vidéo", CONSIGNE_STYLE_MUSIQUE
+            else:
+                titre, consigne = ("Les musiques pour cette vidéo",
+                                   "Chaque extrait démarre quelques secondes avant l'entrée de la batterie. Dis le numéro de celle "
+                                   "que tu préfères (ou « choisis » : je prends la 1, la plus juste pour ta vidéo).")
+            page = heygen.page_ecoute(titre, consigne, pistes, projet / "work" / "ecoute-musiques.html", styles=vitrine)
             ouverte = a.ouvrir and heygen.ouvrir(page)
             print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
+            _dire_conseil(vitrine)
             print(f"  puis `musiques prendre <numéro> --a <instant de l'entrée> --duree {duree:g}` depuis ce projet.")
             return
         if a.action == "prendre":
@@ -1130,6 +1141,36 @@ def cmd_musiques(a) -> None:
               + (f" ; {len(e['manquants'])} fichiers absents : réinstalle-les" if e["manquants"] else ""))
     except banque.ErreurMusiques as e:
         sys.exit(f"ERREUR : {e}")
+
+
+CONSIGNE_STYLE = ("Regarde les styles, puis réponds par le numéro de celui que tu veux. Un autre style ? Décris-le, "
+                  "ou colle le lien d'une vidéo dont tu aimes le style. « Choisis » : je prends mon conseil.")
+CONSIGNE_STYLE_MUSIQUE = ("Regarde les styles, écoute les musiques (chaque extrait démarre quelques secondes avant l'entrée "
+                          "de la batterie), puis réponds par exemple « 7, 1 » : le style, puis la musique. Un autre style ? "
+                          "Décris-le, ou colle le lien d'une vidéo dont tu aimes le style. « Choisis » : je prends mes conseils.")
+
+
+def _vitrine_styles(r: Path, a) -> list[dict]:
+    """Les 8 styles à montrer avec les musiques (SKILL.md, étape 4), ton conseil marqué ; aucun quand
+    son style est déjà connu (`--sans-styles`, ou un style gardé dans ses préférences)."""
+    if getattr(a, "sans_styles", False):
+        return []
+    garde = catalogue_styles.garde(r)
+    if garde:
+        print(f"• son style gardé : {garde} (préférences de studio.config.json) : la page ne le redemande pas.")
+        return []
+    conseil = getattr(a, "style", None)
+    vitrine = catalogue_styles.vitrine(r, conseil)
+    if vitrine and conseil and not any(s["conseil"] for s in vitrine):
+        sys.exit(f"ERREUR : il n'y a pas de style {conseil} : de 1 à {len(vitrine)}.")
+    return vitrine
+
+
+def _dire_conseil(vitrine: list[dict]) -> None:
+    if vitrine:
+        conseil = next((s for s in vitrine if s["conseil"]), None)
+        print(f"  {len(vitrine)} styles sur la page" + (f", ton conseil : {conseil['numero']} « {conseil['nom']} »" if conseil
+              else " (`--style <N>` marque ton conseil)") + ". Sa réponse « 7, 1 » : le style, puis la musique.")
 
 
 def _projet_ou_none(chemin: str | None) -> Path | None:
@@ -3213,6 +3254,8 @@ def main(argv: list[str] | None = None) -> None:
     mz.add_argument("--autres", action="store_true", help="choisir : d'autres morceaux que ceux déjà proposés.")
     mz.add_argument("--nombre", type=int, default=3, help="choisir : nombre de propositions (défaut 3).")
     mz.add_argument("--ouvrir", action="store_true", help="choisir : ouvre la page d'écoute dans le navigateur.")
+    mz.add_argument("--style", type=int, help="choisir : le style que tu conseilles, marqué parmi les 8 de la page.")
+    mz.add_argument("--sans-styles", action="store_true", help="choisir : son style est déjà connu, la page ne montre que les musiques.")
     mz.set_defaults(f=cmd_musiques)
     hg = s.add_parser("heygen", help="HeyGen : relier le compte, chercher et prendre une musique (gratuit), écouter et générer une voix (payant).")
     hg.add_argument("action", nargs="?", default="etat", choices=("etat", "connecter", "musiques", "bruitages", "prendre", "voix", "parler"))

@@ -54,12 +54,12 @@ action), demande-la **en un seul message à choix**, avec ta recommandation :
 > espace de formation] en action. Tu peux m'envoyer :
 > **a)** 2 ou 3 captures d'écran (ou le lien d'une page où on le voit) ;
 > **b)** une courte vidéo où tu l'utilises, même filmée au téléphone ;
-> **c)** une vidéo dont tu aimes le style (un lien suffit), pour que je vise ce niveau ;
-> **d)** rien : je fais avec ce que j'ai.
-> Je te conseille a et c. Réponds par lettres (« a c »).
+> **c)** rien : je fais avec ce que j'ai.
+> Je te conseille a. Réponds par lettres (« a b »).
 
-Sans réponse, ou « d », avance avec la matière disponible et dis dans la livraison ce qu'une
-capture aurait apporté.
+Sans réponse, ou « c », avance avec la matière disponible et dis dans la livraison ce qu'une
+capture aurait apporté. Le style de la vidéo ne se demande pas ici : il se choisit à l'étape 4,
+parmi les 8 styles ou d'après une vidéo qu'il aime (section 4).
 
 ## 4. La vidéo de référence (si le client en donne une)
 

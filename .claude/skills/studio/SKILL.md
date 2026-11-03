@@ -1,6 +1,6 @@
 ---
 name: studio
-description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là », or « fais-moi une vidéo dans le template 3 », or « mets à jour la livraison de ma vidéo », or « mets cette musique dans ma vidéo ». Pas pour monter un Reel ou une story face caméra.
+description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là », or « fais-moi une vidéo dans le style 3 » (or « le template 3 »), or « mets à jour la livraison de ma vidéo », or « mets cette musique dans ma vidéo ». Pas pour monter un Reel ou une story face caméra.
 ---
 
 # Publicitaire IA : des vidéos en motion design qui vendent
@@ -47,11 +47,11 @@ vidéo, **où elle sera mise** (un ou plusieurs supports, chacun aura son format
 présente** (le lien, ou deux phrases et des captures). Recommande toujours une combinaison.
 Saute ce que tu sais déjà.
 
-**Un template du catalogue** (« fais-moi une vidéo dans le template 3 », « dans le style Verre
-sombre », « comme celle de Polymarket ») : 8 looks de vidéos de lancement, refaits d'après de vraies
-vidéos et montrés dans sa formation (module « Templates »). Lis [styles/README.md](styles/README.md) :
-le template fixe le look, le brief garde le but, les supports et ce qu'on présente. Il dit
-« garde ce template pour mes prochaines vidéos » : ajoute `template N` à ses `preferences`
+**Un style du catalogue demandé d'emblée** (« fais-moi une vidéo dans le style 3 », « dans le style
+Verre sombre », « comme celle de Polymarket », « le template 3 ») : 8 styles de motion design, refaits
+d'après de vraies vidéos de lancement et montrés dans sa formation (module « Styles »). Note-le : il
+ne se redemande pas à l'étape 4. Le brief garde le but, les supports et ce qu'on présente. Il dit
+« garde ce style pour mes prochaines vidéos » : ajoute `style N` à ses `preferences`
 (`studio.config.json`).
 
 Crée le dossier : `python3 tools/studio_motion.py nouvelle "<sujet>" --objectif <objectif>
@@ -73,10 +73,8 @@ Lis [reperage.md](references/reperage.md). Relève l'univers de sa page, fais l'
 surfaces à montrer (son produit, les outils dont l'offre parle, ses résultats, ses preuves) et les
 objets du sujet, pose les logos des outils (`python3 tools/studio_motion.py logos <projet> claude
 openai …`). S'il manque une matière importante, **une seule question à choix** (captures, une
-vidéo où il l'utilise, une vidéo dont il aime le style). S'il donne une vidéo de référence :
-`python3 tools/studio_motion.py reference "<dossier>" "<lien>"`, puis remplis son analyse.
-Avec un template, sa fiche (`styles/<NN-nom>/style.md`) remplace cette analyse : fonds, typo,
-mouvements et transitions viennent d'elle, toujours aux couleurs et aux polices de sa marque.
+vidéo où il l'utilise). S'il donne une vidéo de référence (ici ou à l'étape 4, à la place d'un
+style) : `python3 tools/studio_motion.py reference "<dossier>" "<lien>"`, puis remplis son analyse.
 
 ### 3. La structure et trois idées
 
@@ -84,29 +82,36 @@ Lis [structures.md](references/structures.md) : l'objectif donne la structure (l
 l'ordre et leur part de la durée). Puis [angles.md](references/angles.md) : propose **trois
 idées réellement différentes** dans cette structure, recommande-en une. « Réponds 1, 2 ou 3, ou
 mélange. » **Attends son choix**, sauf s'il t'a dit de choisir. Pour une pub, propose de garder
-les trois comme accroches à tester.
+les trois comme accroches à tester. Le style ne change ni la structure ni les idées : il se choisit
+juste après, avec la musique.
 
-### 4. La musique, puis le texte et le plan
+### 4. Le style et la musique, puis le texte et le plan
 
-Dès qu'il a choisi l'idée, choisis la musique avec lui ([son.md](references/son.md), « Choisir le
-morceau ») : `musiques choisir` propose les trois musiques de lancement qui vont avec le but et le
-support de la vidéo, la page d'écoute s'ouvre, il écoute pendant que tu écris le plan. Elle se choisit
-avant d'animer : son tempo et son entrée franche guident le rythme des scènes.
+Dès qu'il a choisi l'idée, ses deux derniers choix tiennent sur une seule page :
+`musiques choisir --style <N> --ouvrir` lui montre les 8 styles en vidéo, ton conseil marqué
+([styles/README.md](styles/README.md), « Le bon style »), puis les trois musiques de lancement qui
+vont avec le but et le support ([son.md](references/son.md), « Choisir le morceau »). Il répond
+« 7, 2 » (le style, puis la musique), décrit un autre style, colle le lien d'une vidéo dont il aime
+le style (`reference`, [reperage.md](references/reperage.md), section 4) ou écrit « choisis ». Un
+style déjà connu (donné à l'étape 1, ou `style N` dans ses préférences) ne se redemande pas :
+`--sans-styles`, et rappelle-le en une ligne. Il regarde et écoute pendant que tu écris le plan. La
+musique se choisit avant d'animer : son tempo et son entrée franche guident le rythme des scènes.
 
 Lis [ecriture.md](references/ecriture.md), [supports.md](references/supports.md),
 [rythme.md](references/rythme.md) et [recettes.md](references/recettes.md). Écris dans `PLAN.md`,
-pour chaque vidéo, le tableau scène par scène : bloc de la structure, recette, ce qu'on **voit**
-(l'interface, l'objet, le geste), le texte exact à l'écran (1 à 4 mots), la clé de `OFFRE.json`
-qui le prouve, le raccord avec la scène suivante, le son. Pense sur une grille de 0,5 s : chaque
-demi-seconde a son événement. `python3 tools/studio_motion.py lecture "<texte>"` donne la tenue et
-refuse les écrans trop bavards. Une vidéo trop longue pour son support perd une fonction ou une
+pour chaque vidéo, le tableau scène par scène : bloc de la structure, recette (ou geste du
+style), ce qu'on **voit** (l'interface, l'objet, le geste), le texte exact à l'écran (1 à 4 mots),
+la clé de `OFFRE.json` qui le prouve, le raccord avec la scène suivante, le son. Pense sur une
+grille de 0,5 s : chaque demi-seconde a son événement.
+`python3 tools/studio_motion.py lecture "<texte>"` donne la tenue et refuse les écrans trop bavards. Une vidéo trop longue pour son support perd une fonction ou une
 recette ; elle ne s'accélère pas et ne se remplit pas de texte.
 
 La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
 demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
 d'abord, validé ; puis une voix IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone).
-Une vidéo de page qu'il veut avec voix off : le texte de la voix peut passer **avant** le plan, la
-musique se choisit **après** la voix (sous elle) et le plan se cale sur ses mots (essai du 03/11/2026).
+Une vidéo de page qu'il veut avec voix off : le texte de la voix peut passer **avant** le plan, le
+style et la musique se choisissent **après** la voix (la musique passe sous elle) et le plan se cale
+sur ses mots (essai du 03/11/2026).
 
 Ne montre pas le plan par défaut : résume l'idée en une phrase et avance. S'il a demandé à
 valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui le texte des
@@ -120,8 +125,9 @@ effet nouveau, `hyperframes-animation`. Travaille **dans le dossier de chaque vi
 **kit** (`kit/`, chargé par `index.html`) : fonds vivants, curseur, objets flottants, chapitres,
 fenêtres, téléphone, frappe, compteurs. Commence par le support principal ; les autres formats
 sont des **mises en page** de la même vidéo (on replace les éléments, on garde le rythme), jamais
-des recadrages. Avec un template, pars des scènes de son kit (`styles/<NN-nom>/compositions/`,
-copiées dans le projet) : remplace leurs textes par ceux du plan, garde leurs mouvements signature.
+des recadrages. Avec un style, lis sa fiche en entier : les scènes du plan qui reprennent un de
+ses gestes partent de son kit (`styles/<NN-nom>/compositions/`, copiées dans le projet), les autres
+se construisent dans sa grammaire ([styles/README.md](styles/README.md), « Appliquer un style »).
 
 Une scène = une sous-composition dans `compositions/`, montée dans `index.html`. Fabrique scène
 par scène : écris-la, ajoute-la à `index.html`, capture 6 à 9 images (`npx hyperframes snapshot

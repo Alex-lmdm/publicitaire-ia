@@ -177,15 +177,18 @@
           c.setAttribute("data-layout-ignore", "");
           var t = o[0], contenu = t.dessin ? DESSINS[t.dessin] : t.logo ? K.ic(t.logo) : '<img src="' + t.img + '" alt="">';
           var obj = K.el(c, "div", "t04-mots-objet", contenu);
-          gsap.set(c, { opacity: 0, scale: 0.55 });
-          tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, o[4]);
+          if (o[4] > 0) {   // à 0 : là dès la première image (une pub, une page : le sujet se lit tout de suite)
+            gsap.set(c, { opacity: 0, scale: 0.55 });
+            tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, o[4]);
+          }
           tl.fromTo(obj, { y: 6, rotation: -3 + (i % 3) * 3 }, { y: -8, rotation: (i % 3) * 2 - 2, duration: D - o[4], ease: "sine.inOut" }, o[4]);
         });
         p.mots.forEach(function (m) {
           var e = K.el(el, "div", "t04-mots-mot", null, "left:" + m[1] + "px; top:" + m[2] + "px;");
           // Les mots se frôlent exprès (zigzag serré) : leurs boîtes se touchent, pas leurs lettres.
           e.setAttribute("data-layout-allow-overlap", "");
-          K.taper(tl, e, m[0], m[3], m[3] + Math.min(0.2, 0.04 * m[0].length), D);
+          if (m[3] > 0) K.taper(tl, e, m[0], m[3], m[3] + Math.min(0.2, 0.04 * m[0].length), D);
+          else e.textContent = m[0];
         });
         if (p.glyphe) {
           var g = K.el(el, "div", "t04-mots-glyphe", K.ic(GLYPHE), "left:" + p.glyphe[0] + "px; top:" + p.glyphe[1] + "px;");

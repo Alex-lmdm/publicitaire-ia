@@ -743,7 +743,7 @@ class Voix(unittest.TestCase):
 class Consignes(unittest.TestCase):
     SKILL = RACINE / ".claude" / "skills" / "studio"
 
-    def test_le_skill_ne_cite_que_des_templates_du_catalogue(self):
+    def test_le_skill_ne_cite_que_des_styles_du_catalogue(self):
         catalogue = (self.SKILL / "styles" / "README.md").read_text(encoding="utf-8")
         noms = set(re.findall(r"^\| \d+ \| ([^|]+?) \|", catalogue, re.M))
         self.assertEqual(len(noms), 8)

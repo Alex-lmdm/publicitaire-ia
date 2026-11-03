@@ -1,4 +1,4 @@
-# Template n°3 · Verre sombre · d'après Polymarket (https://x.com/Polymarket/status/2095530373274816595)
+# Style n°3 · Verre sombre · d'après Polymarket (https://x.com/Polymarket/status/2095530373274816595)
 
 **Ce qu'on voit :** une vidéo de nuit, presque noire, éclairée par une lueur à la couleur de la
 marque ; de petites phrases nettes, un mot en couleur, et surtout une interface en verre sombre
@@ -35,7 +35,28 @@ total (surtout la fin : l'adresse et le logo tenus en silence). Musique à 93 ba
   (l'essai a ajouté un recadrage sec et une fin de phrase mot à mot pendant la tenue de l'accroche,
   là où l'original reste 2 s sur une phrase qui recule).
 
-## 2. La structure
+## 2. Les gestes signature et leur place
+
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| La mise au point et le recul | deux mots géants, flous et à l'accent, deviennent nets ; la caméra recule, la phrase finit petite avec sa fin en couleur | accroche, promesse | `t3-onglets` (début) |
+| La barre filée et la pastille fixe | une barre d'onglets défile sous une pastille lumineuse qui reste au centre et se pose sur l'offre | le choix (le problème), la solution qui ressort | `t3-onglets` |
+| La plongée et la trame de points | on plonge dans le bouton sur une trame de points ; un texte se forme en points puis devient net | passage, le nom de l'offre | `t3-onglets` (fin), `t3-cartes` |
+| Le verre piloté | une interface en verre sombre, inclinée en 3D, que la caméra descend par paliers pendant qu'un curseur la règle | démonstration de son interface, l'offre et son prix | `t3-commande` |
+| Le carrousel en gros plan | un mot seul, puis une carte inclinée toutes les 0,5 s | ce qu'on reçoit, preuves chiffrées | `t3-cartes` |
+| La fin en silence | le verbe seul dans le silence, la ligne complète, l'adresse qui brille, le logo et le nom | appel, fin | `t3-fin` |
+
+**Pour montrer une fonctionnalité** de son offre : le cycle interface, option, preuve, dans le
+même verre incliné (section « Des enchaînements qui marchent »).
+
+### L'original, pour mémoire
+
+Scène par scène, un exemple et pas un plan à suivre :
 
 | Scène de l'original | Rôle | Durée | Ce qui s'y passe | Dans le kit |
 |---|---|---|---|---|
@@ -49,6 +70,10 @@ total (surtout la fin : l'adresse et le logo tenus en silence). Musique à 93 ba
 | Le carrousel | offre | 2,6 s | un mot seul, puis une carte en gros plan toutes les 0,5 s | `t3-cartes` |
 | L'appel | appel | 2,5 s | coupe franche dans le silence : le verbe seul, puis la ligne complète | `t3-fin` |
 | L'adresse et le logo | appel | 6,5 s | l'adresse qui brille (un impact), puis le logo et le nom, tenus | `t3-fin` |
+
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
 
 Pour un Reel : `t3-onglets` (raccourci à la plongée) → `t3-commande` → `t3-fin`.
 

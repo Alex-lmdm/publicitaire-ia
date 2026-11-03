@@ -1,4 +1,4 @@
-# Template n°2 · Titres géants · d'après Cyera (https://x.com/motionimo/status/2103703350017433670)
+# Style n°2 · Titres géants · d'après Cyera (https://x.com/motionimo/status/2103703350017433670)
 
 **Ce qu'on voit :** une charte graphique qui prend vie. Des titres si grands qu'ils débordent du cadre sur la couleur de la marque, un spécimen typographique posé sur une grille avec ses étiquettes de maquette, des cartes à coins ronds remplies de paysages illustrés au crépuscule, une sphère de verre qui livre le produit dans un faisceau de lumière, une grille d'icônes au trait fin, et le slogan géant qui finit dans l'espace.
 **Souvent utile pour :** une vidéo de lancement ou d'accueil (la nouvelle offre, la nouvelle marque, l'ouverture d'un programme), en haut d'une page de vente ou en ouverture d'un webinaire.
@@ -20,9 +20,29 @@
 - **Une seule respiration** : juste avant le logo final, l'énergie retombe une demi-seconde, puis le dernier temps fort tombe sur le nom.
 - **Chez le client** : vise 1,5 événement par seconde au moins, une coupe franche toutes les 1 à 2 s, jamais une page tenue plus de 2,5 s, sauf l'écran final.
 
-## 2. La structure
+## 2. Les gestes signature et leur place
 
-L'original est un film de marque : il présente une identité, pas une offre. Pour une vidéo qui vend, on garde ses pages et leur ordre, et on leur donne un rôle :
+La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
+« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
+construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
+15 s) ; le détail de chaque mouvement est en section 5.
+
+| Geste | Ce qu'on voit | Il sert à | Dans le kit |
+|---|---|---|---|
+| Le titre qui déborde | trois lignes énormes sur l'accent plein écran, un mot qui change de graisse sur les temps | accroche, promesse, temps fort | `titre-geant` (plan A) |
+| Le spécimen tapé | la phrase tapée sur une grille, en deux voix, avec ses étiquettes de maquette ; un cadre de sélection attrape un mot | problème, promesse précisée, titre de chapitre | `titre-geant` (plan B) |
+| Les repères de maquette | traits, pointillés, points et cotes qui se tracent : le motif qui revient d'une scène à l'autre | toutes les scènes, celles construites pour son cas comprises | toutes les scènes |
+| La carte paysage et la mosaïque | une carte qui se remplit d'un paysage, puis la caméra recule sur six cartes avec de vrais morceaux de son produit | solution, démonstration de son produit | `carte-paysage` |
+| La sphère et le faisceau | une sphère au trait prend sa couleur, monte et dépose l'offre (un cube) dans un faisceau de lumière | révélation, le nom de l'offre | `sphere-faisceau` |
+| La grille d'icônes | une icône au trait par élément réel de l'offre, l'élément phare sélectionné | ce qu'on reçoit | `grille-final` (plan A) |
+| Le slogan dans l'espace et le bouton | deux lignes géantes, la sphère passe derrière, puis devient le bouton que le curseur clique | promesse finale, appel | `grille-final` (plans B et C) |
+
+Les déclinaisons de l'original (le nom sur trois paysages) deviennent les trois parties réelles
+de l'offre, sur trois cartes, avec leurs vrais noms.
+
+### L'original, pour mémoire
+
+L'original est un film de marque : il présente une identité, pas une offre. Ses pages, dans l'ordre, avec le rôle que chacune peut tenir :
 
 | Bloc | Rôle | Durée | Ce qui s'y passe |
 |---|---|---|---|
@@ -35,6 +55,10 @@ L'original est un film de marque : il présente une identité, pas une offre. Po
 | Les déclinaisons (facultatif) | preuve ou contenu | 1,5 à 2 s | Dans l'original, le nom décliné sur trois paysages qui changent toutes les 0,6 s ; chez le client, les parties de l'offre (modules, bonus, communauté) sur trois cartes, avec leurs vrais noms |
 | Le slogan dans l'espace | promesse finale | 2 s | Deux lignes blanches géantes, la sphère passe derrière les lettres, des cubes dérivent (`grille-final.html`, plan B) |
 | Le nom et le bouton | appel | 3,6 s | Le nom et ses repères, la sphère se pose et devient le bouton, le curseur le clique (`grille-final.html`, plan C) |
+
+### Des enchaînements qui marchent
+
+Des points de départ quand le plan s'y prête, jamais une obligation.
 
 Une vidéo de page de 60 s double les pages du milieu (deux cartes paysage, deux sphères ou une sphère et une mosaïque de captures, les déclinaisons) ; un Reel de 25 s garde titre, carte, sphère, final.
 
@@ -127,7 +151,7 @@ Les fonds alternent par coupe franche : accent plein, sombre quadrillé, sombre 
 
 ## Sur une autre offre
 
-Le template est un look : il se monte sur n'importe quelle offre. Ce qui suivait l'original (une plateforme de sécurité) s'adapte :
+Le style est un look : il se monte sur n'importe quelle offre. Ce qui suivait l'original (une plateforme de sécurité) s'adapte :
 
 - **Toujours** : le titre géant qui déborde, le spécimen sur sa grille, les repères de maquette, les cartes paysage, la sphère qui livre le cube, la grille d'icônes au trait, le slogan dans l'espace, les coupes sur les temps.
 - **Une formation** : la mosaïque montre l'espace de formation et la liste des vrais modules qui se coche ; le cube est la formation ; une icône par module ou bonus ; le bouton « Je commence » ou le libellé de la page.
