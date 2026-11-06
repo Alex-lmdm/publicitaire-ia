@@ -1,14 +1,14 @@
 # Style n°5 · Interrupteurs crème · d'après ClaudeDevs (https://x.com/ClaudeDevs/status/2091953609185657251)
 
-**Ce qu'on voit :** sur un papier crème, un panneau de réglages vu de très près : une main clique, les interrupteurs s'allument en cascade. Puis des phrases calmes au centre, un trait à main levée qui entoure, souligne et relie, une grille de pastilles qui se cochent en vague, et la fenêtre de l'offre qui travaille avant la carte d'annonce.
+**Ce qu'on voit :** sur un papier clair (le blanc et les gris de la marque), un panneau de réglages vu de très près : une main clique, les interrupteurs s'allument en cascade. Puis des phrases calmes au centre, un trait à main levée qui entoure, souligne et relie, une grille de pastilles qui se cochent en vague, et la fenêtre de l'offre qui travaille avant la carte d'annonce.
 **Souvent utile pour :** annoncer une nouveauté (un module, un bonus, une fonction, une mise à jour), ou montrer qu'un seul réglage sert tout le monde.
 **D'après :** X · ClaudeDevs, « Authorize once » · 34 s · 16:9 (1920 × 1080, 24 images par seconde).
 **Mesures de l'original (`studio_motion.py reference`) :** 0,62 événement par seconde, écart médian 0,50 s entre deux, 8,5 s d'image figée en tout, aucune coupe franche.
-**Mesures du kit monté (les 4 scènes bout à bout, 28,5 s, marque de test) :** `rythme` répond « ok » : 1,16 événement par seconde, écart médian 0,80 s, aucune image figée.
+**Mesures du kit monté (les 4 scènes bout à bout, 28,5 s, marque LMDM, essai du 06/11/2026) :** `rythme` répond « ok » : 1,16 événement par seconde en 16:9 et 1,08 en 9:16, écart médian 0,80 s, aucune image figée ; `palette` répond « ok ».
 
 > On reprend la grammaire de la vidéo, jamais son contenu : ni ses textes, ni l'interface et les
-> logos de Claude, ni les logos de ses partenaires, ni sa musique. L'interface du kit est neutre et
-> prend les couleurs du client.
+> logos de Claude, ni les logos de ses partenaires, ni ses couleurs, ni sa musique. L'interface du
+> kit est neutre et ne prend que les couleurs du client : ses neutres et son accent plein.
 
 ## 1. Le rythme
 
@@ -35,7 +35,7 @@ construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vi
 | Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, la caméra s'en approche | toutes les phrases | toutes les scènes |
 
 Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur
-le même papier crème (recette 1 du studio, la corvée), avec le trait à main levée qui entoure ce
+le même papier clair (recette 1 du studio, la corvée), avec le trait à main levée qui entoure ce
 qui coûte.
 
 ### L'original, pour mémoire
@@ -58,20 +58,32 @@ Le kit regroupe ces temps en quatre scènes (section « Les compositions du kit 
 
 ## 3. Les fonds et les couleurs
 
+Ses couleurs, rien d'autre ([../../references/style.md](../../references/style.md), « La palette ») :
+les neutres de sa marque (son clair, ses gris, sa couleur sombre) et son accent posé plein. Les
+variables `--t05-*` en tête du style de chaque scène ne font que nommer ces jetons.
+
 | Rôle | Original | Chez le client |
 |---|---|---|
-| Papier, le fond de tout | crème #EFEFE5 | gardé, c'est le look : `--t05-papier`. Un crème plus chaud ou plus froid se règle là ; jamais le fond sombre de la marque. |
-| Panneau, disques, cartes, fenêtre | blanc cassé #F9FAF5 | `--t05-carte` |
-| Onglet, rails éteints | #DDDDD1 | `--t05-pli` |
-| Textes | encre presque noire | `--t05-encre` |
-| Interrupteurs allumés | bleu d'interface #3588D6 | l'accent de la marque (`--t05-allume`) ; la bille reste blanche avec une ombre |
-| Trait à main levée, pastilles cochées | terracotta #D26E57, la couleur de la marque d'origine | l'accent de la marque. S'il est trop clair sur le crème (contraste sous 2 : un jaune, un pastel), le trait et les anneaux passent **tout seuls** à l'encre ; la pastille reste à l'accent, avec une coche de la couleur lisible dessus (`--brand-contrast`) |
-| Icônes des membres | lavande #8276B8 | gris neutre `--t05-gris` |
+| Papier, le fond de tout | crème #EFEFE5 | un gris très clair tiré de ses neutres : `--t05-papier` (son clair mêlé à `--brand-gris-4`). Jamais une teinte crème inventée, jamais le fond sombre de la marque |
+| Panneau, disques, cartes, fenêtre | blanc cassé #F9FAF5 | son clair, `--t05-carte` (`var(--brand-clair)`) |
+| Onglet, rails éteints, bulle, bouton inactif | #DDDDD1 | un gris clair de ses neutres, `--t05-pli` (la bulle, `--t05-bulle`, un cran plus clair) |
+| Textes | encre presque noire | sa couleur sombre, `--t05-encre` (`var(--brand-sombre)`) ; le texte gris d'un champ, `--t05-gris-texte` (`var(--brand-gris-2)`) |
+| Interrupteurs allumés | bleu d'interface #3588D6 | l'accent plein (`--t05-allume`) ; la bille reste blanche, avec une ombre noire transparente |
+| Trait à main levée, pastilles cochées | terracotta #D26E57, la couleur de la marque d'origine | l'accent de la marque. S'il est trop clair sur le papier (contraste sous 2 avec son clair : un jaune, un pastel), le trait et les anneaux passent **tout seuls** à l'encre ; la pastille reste à l'accent, avec une coche de la couleur lisible dessus (`--brand-contrast`) |
+| Icônes des membres | lavande #8276B8 | son gris, `--t05-gris` (`var(--brand-gris-3)`) |
 | Icônes des rangs et des étapes | les vrais logos des outils | une icône du kit sur une tuile à l'accent, ou les vrais logos si l'offre branche des outils |
+| Ombres | ombres chaudes, teintées | du noir en transparence, neutre |
 
-**Sur n'importe quelle marque, claire ou sombre** : le papier crème, le blanc cassé, l'encre et les gris restent ceux de l'original, fixes (`--t05-*`), jamais `var(--brand-bg)` ni `var(--brand-text)` ; la marque ne donne que l'accent (interrupteurs, trait, pastilles, tuiles), et ce qui est écrit sur l'accent passe en `var(--brand-contrast)`. Tout texte garde un contraste d'au moins 4,5:1 (l'encre `#1d1d1b` sur le crème : 15:1).
+**Sur n'importe quelle marque, claire ou sombre** : le papier, les cartes, l'encre et les gris
+viennent de sa palette (`--brand-clair`, `--brand-gris-2` à `--brand-gris-4`, `--brand-sombre`) ;
+sur une marque sombre comme sur une claire, le look reste clair (jamais `var(--brand-bg)` quand
+c'est sa nuit). La marque donne aussi l'accent, toujours plein (interrupteurs, trait, pastilles,
+tuiles, bouton d'envoi actif), et ce qui est écrit dessus passe en `var(--brand-contrast)`. Un
+bouton inactif est gris, jamais l'accent en transparence ; un anneau de lisibilité se pose autour
+de l'accent, jamais par-dessus. Tout texte garde un contraste d'au moins 4,5:1 (sa couleur sombre
+sur le papier : 13:1 chez LMDM).
 
-Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du papier crème à la fenêtre blanc cassé (scène 3 vers scène 4). N'ajoute ni fond sombre ni plein écran de couleur au milieu : le look s'effondre. Seule exception possible : la signature finale sur la couleur de la marque.
+Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du papier gris clair à la fenêtre de son clair (scène 3 vers scène 4). N'ajoute ni fond sombre ni plein écran de couleur au milieu : le look s'effondre. Seule exception possible : la signature finale sur la couleur de la marque.
 
 ## 4. La typographie
 
@@ -86,7 +98,7 @@ Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du p
 | Phrase de deux lignes | 72 px, interligne 1,16 | 84 px |
 | Mot fort, seul | 112 px | scène en 16:9 seulement |
 | Nom de l'offre entre les filets | 92 px, graisse 600 | scène en 16:9 seulement |
-| Salut de la fenêtre | 64 px | 55 px (fenêtre à 86 %) |
+| Salut de la fenêtre | 64 px | 55 px (fenêtre à 86 %) ; un salut long se réduit seul (840 px de la fenêtre au plus, son point compris) |
 | Titre de la carte d'annonce | 72 px | 72 px, réduit si trop large |
 | Pastille (« Nouveau ») | 30 px, capitales, espacement 0,14 em, contour 2 px | 30 px |
 | Signature | 112 px, graisse 600 | réduite à la largeur |
@@ -114,7 +126,8 @@ Tous sont dans `compositions/`.
 ## 7. Le produit à l'écran
 
 - L'original montre le produit par ses réglages (un panneau de connecteurs), ses utilisateurs (des disques), l'espace de chacun (des cartes) et le produit qui travaille (la fenêtre, avec les logos des outils dans les étapes).
-- Chez le client : le panneau, ce sont les parties de son offre (modules, bonus, fonctions) ; les disques, ses membres (élèves, clients) ; les cartes, l'espace de chacun ; la fenêtre, son produit en action : un champ de demande si l'offre est un outil d'IA, sinon son espace de formation ou son logiciel reconstruit d'après capture. Jamais l'interface de Claude.
+- Chez le client : le panneau, ce sont les parties de son offre (modules, bonus, fonctions) ; les disques, ses membres (élèves, clients) ; les cartes, l'espace de chacun ; la fenêtre, son produit en action. Jamais l'interface de Claude.
+- **La fenêtre par défaut de `fenetre-annonce`** (un champ de demande, une demande tapée, des étapes qui s'écrivent) ne vaut que si son offre a vraiment ce champ : un outil d'IA, un assistant qu'on pilote en écrivant (Publicitaire IA, qui vit dans Claude ou ChatGPT, en a un). Sinon, ce serait une interface inventée : la fenêtre montre son espace de formation ou son logiciel en vraie capture (ou reconstruit d'après capture), ou la scène commence à la carte d'annonce.
 - Interfaces neutres et propres : coins arrondis (24 px), filets fins, ombres douces, interrupteurs à bille. Jamais de faux navigateur.
 
 ## 8. Le son
@@ -126,12 +139,13 @@ Tous sont dans `compositions/`.
 ## 9. L'ouverture et la fin
 
 - **Ouverture :** la première image est déjà le gros plan du panneau (rien de vide), la main entre tout de suite, le clic tombe vers 1 s.
-- **Fin :** la carte d'annonce (pastille + titre, 1,5 s), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite et tient 1,2 s (2,5 s au moins pour une vidéo de page). L'original n'a pas de bouton ; pour une vidéo de vente, la signature peut céder la place à la fin du studio (recette 21, le bouton), sur le même crème.
+- **Fin :** la carte d'annonce (pastille + titre, 1,5 s), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite et tient 1,2 s (2,5 s au moins pour une vidéo de page). L'original n'a pas de bouton ; pour une vidéo de vente, la signature peut céder la place à la fin du studio (recette 21, le bouton), sur le même papier clair.
 
 ## Ce qui ne se fera pas à l'identique
 
 - La serif de l'original (dessin propriétaire) : la police de la marque, ou Source Serif 4.
-- Le bleu, le terracotta et la lavande : l'accent de la marque partout ; le trait passe à l'encre si l'accent est trop clair sur le crème.
+- Le papier crème et le blanc cassé : les neutres de la marque (un papier gris très clair tiré de son clair et de son gris le plus clair, des cartes de son clair) ; aucune teinte crème inventée. Le nom du style reste pour l'instant « Interrupteurs crème ».
+- Le bleu, le terracotta et la lavande : l'accent de la marque partout, plein ; le trait passe à l'encre si l'accent est trop clair sur le papier.
 - Les logos des outils dans les rangs : des icônes du kit sur une tuile à l'accent (ou les vrais logos des outils de l'offre).
 - La main : un pointeur redessiné.
 - Le logo du partenaire entre les filets : le nom de l'offre (ou le logo de l'outil qui fait le lien chez le client).
@@ -145,18 +159,18 @@ Tous sont dans `compositions/`.
 - **Formation :** rangs = modules et bonus ; membres = élèves ; fenêtre = l'espace de formation où le module annoncé s'ouvre (d'après capture), ou l'assistant si la formation en a un. Mot fort : « Une fois. », « Inclus. ».
 - **Coaching :** rangs = séances, groupe, ressources ; membres = les coachés ; cartes = leur espace ; fenêtre = l'agenda ou l'espace membre. Mot fort : « Pour tous. ».
 - **Logiciel :** rangs = les fonctions ou les intégrations, avec leurs vrais logos (`studio_motion.py logos`) ; membres = l'équipe ou les clients ; fenêtre = le logiciel d'après capture ; le nom entre les filets = l'outil branché.
-- **Toujours :** la cascade, le trait qui entoure et relie, la vague de coches, la carte qui devient fenêtre, la pastille d'annonce, le papier crème.
+- **Toujours :** la cascade, le trait qui entoure et relie, la vague de coches, la carte qui devient fenêtre, la pastille d'annonce, le papier clair.
 
 ## En vertical et en carré
 
 - **Scènes 1 et 3 :** elles se remettent en page seules en 9:16 (change `data-width` et `data-height` de leur racine en 1080 et 1920) : panneau en haut, phrase au milieu (84 px), membres sur deux rangées en bas ; la grille passe à 5 colonnes et sa rangée du milieu se vide pour la phrase. Essayées en 1080 × 1920.
-- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %). C'est la scène la plus calme du kit : seule, `rythme` la trouve sous 1 événement par seconde (en 16:9 comme en 9:16). Bout à bout en 9:16, les quatre scènes passent sur une marque claire (1,12 sur Dupliq.me) mais tombent à 0,96 avec un accent jaune (LMDM), qui se voit peu sur le crème : avec un accent clair, garde-lui un geste à l'encre de plus (une étape de plus, la main qui revient cliquer) ou raccourcis-la.
+- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %). C'est la scène la plus calme du kit : seule, `rythme` la trouve sous 1 événement par seconde (en 16:9 comme en 9:16). Bout à bout en 9:16, les quatre scènes passent sur LMDM (essai du 06/11/2026 : 1,08 événement par seconde, écart médian 0,80 s), mais tout juste : un accent jaune se voit peu sur le papier clair. Avec un accent clair, garde-lui un geste à l'encre de plus (une étape de plus, la main qui revient cliquer) ou raccourcis-la. En 9:16, la caméra du menu garde le « + » presque à sa place et un salut long se réduit seul : le salut reste entier dans les gros plans.
 - **Scène 2 (testée, `trait-qui-relie-vertical.html`) :** sa propre mise en page 9:16, à monter à la place de `trait-qui-relie.html`. Le panneau reste en haut et les membres sur deux rangées en bas, exactement là où la scène 1 en 9:16 les laisse ; le mot fort (128 px), la phrase (84 px) et le nom (104 px) se posent au centre, entre les deux ; le trait descend par la droite du panneau pour souligner, puis passe sous lui et devient deux filets verticaux (du panneau à la phrase, de la phrase aux membres). À la fin, la caméra glisse vers le bas et la grille d'anneaux (5 colonnes, la cinquième arrive avec la vague) tombe pile sur la première image de la scène 3 en 9:16. Essayée bout à bout avec les quatre scènes en 1080 × 1920, sur une marque claire et sur LMDM.
 - **Carré et 4:5 :** même logique que le vertical ; le panneau se coupe plus tôt (seule la colonne des interrupteurs reste), la phrase descend à 64 px.
 
 ## Les compositions du kit
 
-Montées bout à bout dans cet ordre, elles raccordent image pour image (28,5 s) ; chacune vit aussi seule. Les couleurs et la police se règlent par les variables `--t05-*` en tête du style de chaque scène.
+Montées bout à bout dans cet ordre, elles raccordent image pour image (28,5 s) ; chacune vit aussi seule. Essai du 06/11/2026 sur la marque LMDM, avec les vrais faits de Publicitaire IA, en 16:9 et en 9:16 : `check` sans erreur ni avertissement, `palette` « ok », `rythme` « ok ». La police se règle par `--t05-titres` et `--t05-texte` ; les couleurs `--t05-*` en tête du style de chaque scène ne font que nommer les jetons de sa marque : ne les remplace jamais par une couleur écrite en dur.
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace |
 |---|---|---|---|
@@ -164,4 +178,4 @@ Montées bout à bout dans cet ordre, elles raccordent image pour image (28,5 s)
 | `compositions/trait-qui-relie.html` | 6,5 s | le mot fort souligné, la phrase reliée par deux filets, le nom de l'offre, les membres qui deviennent des anneaux, le glissement vers la grille | MOT, PHRASE, NOM (ou un logo), les RANGS identiques à la scène 1 |
 | `compositions/trait-qui-relie-vertical.html` | 6,5 s | la même scène remise en page en 9:16 : panneau en haut, textes au centre, filets verticaux, membres en bas, glissement vers le bas jusqu'à la grille | comme la version 16:9 |
 | `compositions/grille-de-coches.html` | 6,5 s | la vague de coches, le zoom et la phrase, les cartes des membres, la plongée | TEXTE, SALUTS, ACCUEIL |
-| `compositions/fenetre-annonce.html` | 9 s | la fenêtre, le menu « + » en cascade, la demande, les étapes, la pastille et le titre, la signature | SALUT, ACCUEIL, MENU, DEMANDE, ETAPES, PASTILLE, TITRE, NOM, LOGO |
+| `compositions/fenetre-annonce.html` | 9 s | la fenêtre, le menu « + » en cascade, la demande, les étapes, la pastille et le titre, la signature | SALUT, ACCUEIL, MENU, DEMANDE et ETAPES (seulement si son offre a vraiment un champ de demande, section 7), PASTILLE, TITRE, NOM, LOGO |

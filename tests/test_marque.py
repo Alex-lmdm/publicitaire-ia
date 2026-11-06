@@ -89,6 +89,20 @@ GOOGLE = """/* cyrillic */
 
 
 class Couleurs(unittest.TestCase):
+    def test_palette_des_styles(self):
+        """La nuit, le jour et les gris d'un style viennent de la marque, jamais de son accent dérivé
+        (story refusée du 06/11/2026 : un jaune assombri en brun)."""
+        sombre = mq.resoudre({"couleurs": {"fond": "#202022", "texte": "#ffffff", "accent": "#ffee00"}})
+        self.assertEqual((sombre["sombre"], sombre["clair"], sombre["accent_lisible"]), ("#202022", "#ffffff", "#ffee00"))
+        clair = mq.resoudre({"couleurs": {"fond": "#f4f2f0", "texte": "#121212", "accent": "#1b2a6b"}})
+        self.assertEqual((clair["sombre"], clair["clair"]), ("#121212", "#f4f2f0"))
+        self.assertEqual(clair["accent_lisible"], "#f4f2f0")  # un bleu marine ne se lit pas sur la nuit
+        gris = [sombre[f"gris_{i}"] for i in range(1, 5)]
+        self.assertEqual(gris, sorted(gris, key=mq.luminance))
+        for g in gris:
+            r, v, b = mq.rgb(g)
+            self.assertLessEqual(max(r, v, b) - min(r, v, b), 3)
+
     def test_lecture_des_couleurs(self):
         self.assertEqual(mq.hex_norme("#FE0"), "#ffee00")
         self.assertEqual(mq.hex_norme("#202022ff"), "#202022")

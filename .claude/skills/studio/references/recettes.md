@@ -7,8 +7,10 @@ fonctions sont décrites dans `kit.md`. Les recettes du skill `hyperframes-anima
 crochets, livré dans ce dossier) donnent d'autres techniques : lis-les avant de coder un effet
 nouveau.
 
-Une story = une ou deux recettes. Un Reel = trois ou quatre. Une vidéo de page = huit à dix,
-reliées par des raccords d'objet.
+Une story courte (un rappel, un teaser) = une ou deux recettes ; une story de lancement = une
+recette courte par bloc du script (cinq à sept). Un Reel = trois ou quatre. Une vidéo de page =
+huit à dix, reliées par des raccords d'objet. Chaque recette porte une phrase du script : elle la
+montre pendant qu'on la lit.
 
 ## Ouvrir : le problème qu'on vit
 

@@ -10,7 +10,22 @@
   var K = (window.K = window.K || {});
   var NS = "http://www.w3.org/2000/svg";
 
-  K.ic = function (nom) { return (window.K_ICONES || {})[nom] || ""; };
+  // Chaque appel rend ses propres identifiants (dégradés, masques d'un logo) : le même logo posé deux
+  // fois ne partage plus ses `id`, sinon la seconde copie disparaît (essai du 06/11/2026, style 7).
+  var copiesIc = 0;
+  K.ic = function (nom) {
+    var svg = (window.K_ICONES || {})[nom] || "";
+    if (svg.indexOf('id="') < 0) return svg;
+    var n = ++copiesIc, ids = [];
+    svg.replace(/\sid="([^"]+)"/g, function (m, id) { ids.push(id); return m; });
+    ids.forEach(function (id) {
+      var neuf = id + "-k" + n;
+      svg = svg.split('id="' + id + '"').join('id="' + neuf + '"')
+        .split("url(#" + id + ")").join("url(#" + neuf + ")")
+        .split('href="#' + id + '"').join('href="#' + neuf + '"');
+    });
+    return svg;
+  };
   // Cache dès la construction (première image comprise) ; un tween ou un set les montre ensuite.
   K.cacher = function (cible, vars) { gsap.set(cible, Object.assign({ opacity: 0 }, vars || {})); };
 

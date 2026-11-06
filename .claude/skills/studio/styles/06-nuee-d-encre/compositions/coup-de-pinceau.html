@@ -5,11 +5,12 @@
   <!--
     STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 1 : LE COUP DE PINCEAU QUI SE DÉFAIT (4,5 s)
 
-    Ce qu'elle montre : une page de papier (fibres, petites légendes dans les coins, chiffres qui
-    défilent en bas). Un pinceau trace un grand cercle d'encre d'un seul geste (appui, poils qui
-    sèchent, queue qui s'effiloche), puis pose un point. Le tracé se « numérise » (des colonnes de
-    petits signes le traversent), puis se défait en une nuée de points qui s'envole et se pose en
-    une bande au centre : la scène 2 (« nuee-de-particules ») part de cette bande.
+    Ce qu'elle montre : une page claire, un aplat de la couleur claire de la marque (petites
+    légendes dans les coins, chiffres qui défilent en bas : le cadre d'imprimerie). Un pinceau
+    trace un grand cercle à l'encre de la marque d'un seul geste (appui, poils qui sèchent, queue
+    qui s'effiloche), puis pose un point. Le tracé se « numérise » (des colonnes de petits signes le
+    traversent), puis se défait en une nuée de points qui s'envole et se pose en une bande au
+    centre : la scène 2 (« nuee-de-particules ») part de cette bande. Ni texture de papier, ni image.
     Rôle : l'accroche d'un teaser (ouverture des inscriptions, bientôt disponible). Rien n'est dit,
     on donne envie de voir la suite.
 
@@ -23,9 +24,9 @@
          vente, une date ou une promesse inventés.
       3. GESTES : un cercle et un point par défaut. Un autre tracé se décrit par ses points (x, y
          de 0 à 1 dans le cadre), son épaisseur, son départ et sa durée.
-      4. Couleurs : --t06-papier (le papier gris chaud du look) en tête du style. L'encre est la
-         couleur sombre de la marque si elle en a une (sinon un noir d'encre) ; un geste marqué
-         accent: true prend la couleur de la marque.
+      4. Couleurs : celles de la marque, rien d'autre. La page est var(--brand-clair) (un aplat,
+         avec un dégradé neutre à peine visible vers les bords), l'encre var(--brand-sombre) ; un
+         geste marqué accent: true prend l'accent, posé plein (jamais en transparence).
     Ne pas toucher : PARTICULES, GRAINE et la fonction bande() (la scène 2 reprend la même nuée).
   -->
 </head>
@@ -33,10 +34,13 @@
 <template>
   <style>
     #t06-pinceau {
-      --t06-papier: #e3e4de;    /* le papier gris chaud du look */
+      --t06-papier: var(--brand-clair);   /* la page : un aplat de la couleur claire de la marque */
+      --t06-encre: var(--brand-sombre);   /* l'encre : sa couleur la plus sombre */
       --t06-texte: var(--brand-font-body);
-      background: var(--t06-papier);
+      background: var(--t06-papier); color: var(--t06-encre);
     }
+    /* la page respire à peine : un dégradé neutre vers les bords, jamais une texture */
+    #t06-pinceau .t06-page { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.045) 100%); }
     #t06-pinceau canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
     #t06-pinceau .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
     #t06-pinceau .t06-legende { position: absolute; font: 400 11px/1.4 var(--t06-texte); letter-spacing: 0.02em; white-space: nowrap; }
@@ -50,7 +54,7 @@
   <div data-composition-id="t06-pinceau" data-width="1920" data-height="1080" data-duration="4.5" style="position:absolute; inset:0;">
     <div id="t06-pinceau" class="k-scene">
       <div class="t06-cam" id="t06-pinceau-cam" data-layout-allow-overflow>
-        <canvas id="t06-pinceau-papier"></canvas>
+        <div class="t06-page"></div>
         <canvas id="t06-pinceau-encre"></canvas>
         <canvas id="t06-pinceau-nuee"></canvas>
       </div>
@@ -63,7 +67,7 @@
       var ID = "t06-pinceau", D = 4.5;
       // Les légendes d'imprimerie des coins (le mot en gras en capitales).
       var LEGENDES = {
-        hautDroite: ["<b>N° 01</b> ESQUISSE", "encre sur papier", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
+        hautDroite: ["<b>N° 01</b> ESQUISSE", "à l'encre", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
         basGauche: ["<b>PROJET 01.</b> TON OFFRE", "bientôt", '<span class="t06-petit">ce qui arrive, page après page</span>'],
         basDroite: ["<b>P. 03</b>"]
       };
@@ -83,29 +87,18 @@
       // --- Outils du look (communs aux scènes du style 6) ---------------------------------
       function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
       function toile(c) { c.width = L; c.height = H; return c.getContext("2d"); }
-      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
-      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
-      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE;
-      var PAPIER = cs.getPropertyValue("--t06-papier").trim();
-      function papier(ctx, graine) {
-        var r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
-        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
-        ctx.lineCap = "round";
-        for (var f = 0; f < 260; f++) {
-          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
-          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
-        }
-      }
+      // Les couleurs de la marque, lues sur la scène (le canevas veut des valeurs, pas des var()) :
+      // l'encre est sa couleur la plus sombre, la page sa plus claire, l'accent se pose plein.
+      var cs = getComputedStyle(racine), ENCRE = cs.color, PAPIER = cs.backgroundColor;
+      var ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE;
       function cadreImprimerie(hote, t0) {
         var m = vertical ? 54 : 68, blocs = [];
         var lignes = function (l, filetAvant) { return l.map(function (x, i) { return (i === filetAvant ? '<i class="t06-filet"></i>' : "") + "<div>" + x + "</div>"; }).join(""); };
         blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.hautDroite, LEGENDES.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
         blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(LEGENDES.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
         blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
-        blocs.forEach(function (b) { b.style.color = ENCRE; });
         var xs = vertical ? [0.12, 0.3, 0.7, 0.88] : [0.14, 0.205, 0.275, 0.45, 0.86, 0.92], chiffres = [];
-        xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px; color:" + ENCRE + ";")); });
+        xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px;")); });
         var tous = blocs.concat(chiffres);
         gsap.set(tous, { opacity: 0 });
         tous.forEach(function (b, i) { tl.to(b, { opacity: 1, duration: 0.12, ease: "none" }, t0 + i * 0.04); });
@@ -148,20 +141,21 @@
         for (var p = 0; p < 150; p++) { var k = (p / 149) * 2 - 1; poils.push({ k: k + (r() - 0.5) * 0.02, w: (1.2 + r() * 2.6) * E, a: 0.55 + r() * 0.45, ph: r() * 100, f: 9 + r() * 22, bord: Math.abs(k) }); }
         var points = [];
         for (var q = 0; q < 900; q++) { var u = r(), idx = Math.min(n - 1, Math.floor(u * (n - 1))), kk = (r() * 2 - 1) * 0.48 * larg(u); if (r() < sec(u) * 0.8) continue; points.push([pts[idx][0] + nx[idx] * kk, pts[idx][1] + ny[idx] * kk]); }
-        function dessiner(ctx, avance, couleur) {
+        // plein : un geste à l'accent se pose sans transparence (l'accent n'est jamais dilué)
+        function dessiner(ctx, avance, couleur, plein) {
           if (avance <= 0) return;
           var fin = Math.max(1, Math.floor(avance * (n - 1)));
           ctx.strokeStyle = couleur; ctx.fillStyle = couleur; ctx.lineCap = "round"; ctx.lineJoin = "round";
           // un voile d'encre sous les poils, plus dense au départ
-          ctx.globalAlpha = 0.5; ctx.beginPath();
+          ctx.globalAlpha = plein ? 1 : 0.5; ctx.beginPath();
           for (var i = 0; i <= fin; i++) { var w = larg(i / (n - 1)) * 0.36 * (1 - sec(i / (n - 1)) * 0.6); ctx.lineTo(pts[i][0] + nx[i] * w, pts[i][1] + ny[i] * w); }
           for (var j = fin; j >= 0; j--) { var w2 = larg(j / (n - 1)) * 0.36 * (1 - sec(j / (n - 1)) * 0.6); ctx.lineTo(pts[j][0] - nx[j] * w2, pts[j][1] - ny[j] * w2); }
           ctx.closePath(); ctx.fill();
           // la tête du geste : arrondie, là où le pinceau s'est posé
-          ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], larg(0.004) * 0.36, 0, 6.2832); ctx.fill();
+          ctx.globalAlpha = plein ? 1 : 0.7; ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], larg(0.004) * 0.36, 0, 6.2832); ctx.fill();
           // les poils : chaque poil laisse une strie ; il saute là où il n'a plus d'encre
           poils.forEach(function (po) {
-            ctx.globalAlpha = po.a; ctx.lineWidth = po.w; ctx.beginPath(); var trace = false;
+            ctx.globalAlpha = plein ? 1 : po.a; ctx.lineWidth = po.w; ctx.beginPath(); var trace = false;
             for (var i = 0; i <= fin; i++) {
               var u = i / (n - 1), seuil = sec(u) + po.bord * 0.25;
               if (bruit(u * po.f + po.ph) < seuil) { trace = false; continue; }
@@ -176,7 +170,6 @@
       }
 
       // --- Construction ---------------------------------------------------------------------
-      papier(toile($("papier")), 17);
       var ctxE = toile($("encre")), ctxN = toile($("nuee"));
       var traits = GESTES.map(pinceau);
       var chiffres = cadreImprimerie($("cadre"), 0.05);
@@ -196,8 +189,8 @@
         var fondu = 1 - prog(t, 2.4, 2.95);
         if (fondu > 0) {
           // le premier geste se trace en deux élans (le pinceau accélère, ralentit, repart)
-          traits.forEach(function (tr, k) { var g = GESTES[k], a = k === 0 ? 0.52 * prog(t, g.debut, g.debut + g.duree * 0.42, "power2.out") + 0.48 * prog(t, g.debut + g.duree * 0.45, g.debut + g.duree, "power2.inOut") : prog(t, g.debut, g.debut + g.duree, "power2.out"); tr.dessiner(ctxE, a, g.accent ? ACCENT : ENCRE); });
-          // la numérisation : des colonnes de petits signes, couleur du papier, traversent l'encre
+          traits.forEach(function (tr, k) { var g = GESTES[k], a = k === 0 ? 0.52 * prog(t, g.debut, g.debut + g.duree * 0.42, "power2.out") + 0.48 * prog(t, g.debut + g.duree * 0.45, g.debut + g.duree, "power2.inOut") : prog(t, g.debut, g.debut + g.duree, "power2.out"); tr.dessiner(ctxE, a, g.accent ? ACCENT : ENCRE, !!g.accent); });
+          // la numérisation : des colonnes de petits signes, couleur de la page, traversent l'encre
           var nb = prog(t, 1.8, 2.45, "none");
           if (nb > 0) {
             ctxE.save(); ctxE.globalCompositeOperation = "source-atop"; ctxE.fillStyle = PAPIER; ctxE.font = "700 " + Math.round(16 * E) + "px ui-monospace, monospace";

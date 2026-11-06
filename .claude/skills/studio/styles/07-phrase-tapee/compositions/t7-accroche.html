@@ -5,33 +5,34 @@
 <template>
 <!--
   Style n°7 · Phrase tapée · scène « L'ouverture » (accroche et nom).
-  Ce qu'elle montre : sur un fond très sombre semé de poussière de pixels, une phrase se pose mot
-  à mot avec deux petits objets glissés DANS la ligne (une vignette qui change toutes les
-  0,45 s, une pastille avec son petit curseur) ; coupe sur la suite de la phrase, dont les mots
+  Ce qu'elle montre : sur la nuit de ta marque semée de poussière de pixels, une phrase se pose mot
+  à mot avec deux petits objets glissés DANS la ligne (une vignette qui change toutes les 0,45 s,
+  une pastille avec son petit curseur) ; coupe sur la suite de la phrase, dont les mots
   s'allument tour à tour à la couleur de ta marque ; un temps de silence ; un mot géant tapé sur
-  un nuage de ta couleur ; coupe sur fond clair : ton logo devient net et ton nom sort de lui.
+  l'aplat de ta couleur, des grappes de pixels qui battent la mesure ; coupe sur fond clair : ton
+  logo devient net et ton nom sort de lui.
   Durée : 7,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
   sur deux lignes, tout est centré).
   À remplacer (objet R en tête du script) : les morceaux de la phrase (ce que contient ton offre),
-  les icônes des vignettes, le mot de la pastille, la suite de la phrase, le mot géant, ton logo
-  (brand/logo.svg ; "" sans logo) et le nom de l'offre.
-  Couleurs : le noir chaud, le clair et l'encre sont ceux du look (fixes, quelle que soit la
-  marque) ; la marque donne l'accent (éclairci en --t7-accent-texte quand il colore un texte).
-  Sur fond clair, l'accent ne sert qu'en aplat (jamais en texte fin).
+  ce que montre la vignette (ses vraies images : miniatures de ses vidéos, captures de ses
+  pages ; sans image, des mots), les mots de la pastille, la suite de la phrase, le mot géant, ton
+  logo (brand/logo.svg ou brand/logo.png ; "" sans logo) et le nom de l'offre.
+  Couleurs : seulement celles de ta marque (brand/tokens.css) : sa nuit, l'aplat de son accent,
+  son clair, des gris et du blanc en transparence. L'accent se pose plein, jamais éclairci ni en
+  transparence ; sur fond clair, il ne sert qu'en aplat. Aucune image inventée : la vignette
+  montre ses vraies images, ou des mots.
   Identifiant : t7a (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7a {
-    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
-       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
-       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
-       var(--brand-text) ici. */
-    --t7-nuit: #1f1513;
-    --t7-clair: #edece5;
-    --t7-encre: #1d1917;
-    --t7-texte: #f3f0eb;
-    --t7-gris: #b4ada8;
-    --t7-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
+    /* Les fonds du look viennent de la marque : la nuit (sa couleur la plus sombre), l'aplat de
+       son accent, son clair. Le texte posé sur la nuit est son clair. */
+    --t7-nuit: var(--brand-sombre);
+    --t7-clair: var(--brand-clair);
+    --t7-encre: var(--brand-sombre);
+    --t7-texte: var(--brand-clair);
+    --t7-gris: var(--brand-gris-3);
+    --t7-accent-texte: var(--brand-accent-lisible);
     --t7-police: var(--brand-font-display);
     background: var(--t7-nuit); font-family: var(--t7-police); color: var(--t7-texte);
   }
@@ -42,22 +43,29 @@
     column-gap: 30px; row-gap: 10px; padding: 0 80px; font-size: 104px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.1; white-space: nowrap; }
   #t7a .t7a-m { display: inline-block; }
   #t7a .t7a-g { color: var(--t7-gris); }
-  #t7a .t7a-carte { position: relative; width: 84px; height: 118px; border-radius: 12px; background: #fff; padding: 7px; box-shadow: 0 10px 26px rgba(0,0,0,.35); flex: none; }
-  #t7a .t7a-vignette { position: absolute; left: 7px; right: 7px; top: 7px; height: 70px; border-radius: 7px; display: grid; place-items: center; color: var(--brand-contrast); }
-  #t7a .t7a-vignette svg { width: 34px; height: 34px; }
-  #t7a .t7a-trait { position: absolute; left: 9px; height: 6px; border-radius: 3px; background: #d8d6d0; }
+  /* La vignette : un petit cadre clair dans la ligne ; dedans, ses vraies images ou des mots. */
+  #t7a .t7a-carte { position: relative; width: 88px; height: 122px; border-radius: 14px; background: var(--t7-clair); flex: none;
+    box-shadow: 0 10px 26px rgba(0,0,0,.35); }
+  #t7a .t7a-vignette { position: absolute; inset: 5px; border-radius: 10px; overflow: hidden; display: grid; place-items: center;
+    font-family: var(--brand-font-body); font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+  #t7a .t7a-vignette img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #t7a .t7a-vignette.t7a-sur-accent { background: var(--brand-accent); color: var(--brand-contrast); }
+  #t7a .t7a-vignette.t7a-sur-nuit { background: var(--t7-encre); color: var(--t7-clair); }
   #t7a .t7a-pastille { position: relative; height: 46px; padding: 0 18px; border-radius: 12px; display: grid; place-items: center; flex: none;
-    font-size: 22px; font-weight: 600; letter-spacing: 0; color: var(--brand-contrast); background: var(--brand-accent); }
-  #t7a .t7a-pastille svg { position: absolute; right: -16px; bottom: -18px; width: 22px; height: 22px; }
+    font-family: var(--brand-font-body); font-size: 22px; font-weight: 600; letter-spacing: 0; color: var(--brand-contrast); background: var(--brand-accent); }
+  /* Le petit curseur en pixels de la pastille. */
+  #t7a .t7a-pastille svg { position: absolute; right: -18px; bottom: -20px; width: 24px; height: 24px; }
+  #t7a .t7a-pastille svg .t7a-pointe { fill: var(--t7-clair); stroke: var(--t7-encre); stroke-width: 1; paint-order: stroke; }
   #t7a .t7a-suite { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; white-space: nowrap;
     font-size: 116px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.1; }
   #t7a .t7a-suite span { display: inline-block; }
-  /* Un mot de la suite s'allume à l'accent : GSAP anime --t7m de 0 à 1 (une var() ne se tweene pas). */
-  #t7a .t7a-s { color: color-mix(in oklab, var(--t7-accent-texte) calc(var(--t7m, 0) * 100%), var(--t7-texte)); }
-  #t7a .t7a-nuage { background: color-mix(in oklab, var(--brand-accent) 40%, #fff); overflow: hidden; }
-  #t7a .t7a-tache { position: absolute; border-radius: 50%; filter: blur(70px); background: var(--brand-accent); }
+  /* Un mot de la suite s'allume d'un coup à l'accent (jamais un mélange de l'accent et du blanc). */
+  #t7a .t7a-s[data-on="1"] { color: var(--t7-accent-texte); }
+  #t7a .t7a-aplat { background: var(--brand-accent); overflow: hidden; }
+  #t7a .t7a-grappes { position: absolute; inset: 0; }
+  #t7a .t7a-grappes rect { fill: var(--brand-contrast); }
   #t7a .t7a-geant { position: absolute; left: 0; right: 0; top: 50%; height: 300px; margin-top: -150px; text-align: center; white-space: nowrap;
-    font-size: 270px; font-weight: 700; letter-spacing: -0.05em; line-height: 300px; color: var(--brand-contrast); opacity: .78; }
+    font-size: 270px; font-weight: 700; letter-spacing: -0.05em; line-height: 300px; color: var(--brand-contrast); }
   #t7a .t7a-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.06em; background: currentColor; }
   #t7a .t7a-clair { background: var(--t7-clair); }
   #t7a .t7a-signe { position: absolute; left: 0; right: 0; top: 50%; height: 200px; margin-top: -100px; display: flex; align-items: center; justify-content: center; gap: 34px; color: var(--t7-encre); }
@@ -74,10 +82,8 @@
       <div class="t7a-ligne" id="t7a-ligne"></div>
       <div class="t7a-suite" id="t7a-suite"></div>
     </div>
-    <div class="t7a-plan t7a-nuage" id="t7a-p2">
-      <div class="t7a-tache" style="left:-8%; top:-30%; width:62%; height:90%"></div>
-      <div class="t7a-tache" style="left:58%; top:40%; width:60%; height:95%"></div>
-      <div class="t7a-tache" style="left:30%; top:20%; width:40%; height:60%; opacity:.7"></div>
+    <div class="t7a-plan t7a-aplat" id="t7a-p2">
+      <svg class="t7a-grappes" id="t7a-grappes" aria-hidden="true" data-layout-allow-overflow></svg>
       <div class="t7a-geant" id="t7a-geant"><span id="t7a-geant-texte"></span><span class="t7a-caret" id="t7a-caret-geant"></span></div>
     </div>
     <div class="t7a-plan t7a-clair" id="t7a-p3">
@@ -92,7 +98,9 @@
   var R = {
     phrase: ["Des vidéos", "[carte]", "et des", "[pastille]", "modèles"],  // « et des » en gris
     gris: ["et des"],
-    vignettes: ["play", "image", "file-text"],      // icônes du kit qui défilent dans la vignette
+    // Ce que montre la vignette, qui change toutes les 0,45 s : ses vraies images
+    // ("assets/images/miniature-1.jpg"…), sinon des mots courts. Jamais une icône ni une image inventée.
+    vignettes: ["Reel", "Pub", "Story"],
     pastille: ["Prêt", "Publié", "Envoyé"],         // le mot de la pastille, qui change
     suite: ["en", "une", "seule", "offre."],         // les mots s'allument tour à tour
     geant: "Voici",
@@ -102,38 +110,53 @@
   // -------------------------------------------------------------------------------------------
   var D = 7.2;
   var $ = function (id) { return document.getElementById(id); };
-  var cadre = K.cadre($("t7a")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
-  var css = getComputedStyle($("t7a"));
-  var C = function (n, d) { return (css.getPropertyValue(n) || "").trim() || d; };
+  var racine = $("t7a"), q = function (s) { return racine.querySelectorAll(s); };
+  var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var NS = "http://www.w3.org/2000/svg", r = K.rng(7);
 
-  // La poussière de pixels : des grappes de petits carrés, toujours les mêmes (graine).
-  var svg = $("t7a-poussiere"), NS = "http://www.w3.org/2000/svg", r = K.rng(7), grappes = [];
+  // La poussière de pixels sur la nuit : des grappes de petits carrés blancs à peine visibles (graine).
+  var svg = $("t7a-poussiere"), grappes = [];
   svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
   for (var g = 0; g < 16; g++) {
     var gx = r() * L, gy = r() * H, grp = document.createElementNS(NS, "g");
     for (var k = 0; k < 22; k++) {
-      var q = document.createElementNS(NS, "rect"), c = 7 + Math.round(r() * 3);
-      q.setAttribute("x", Math.round((gx + (r() - 0.5) * 220) / 14) * 14); q.setAttribute("y", Math.round((gy + (r() - 0.5) * 160) / 14) * 14);
-      q.setAttribute("width", c); q.setAttribute("height", c); q.setAttribute("fill", "rgba(255,255,255," + (0.05 + r() * 0.11).toFixed(3) + ")");
-      grp.appendChild(q);
+      var c = document.createElementNS(NS, "rect"), cote = 7 + Math.round(r() * 3);
+      c.setAttribute("x", Math.round((gx + (r() - 0.5) * 220) / 14) * 14); c.setAttribute("y", Math.round((gy + (r() - 0.5) * 160) / 14) * 14);
+      c.setAttribute("width", cote); c.setAttribute("height", cote); c.setAttribute("fill", "rgba(255,255,255," + (0.05 + r() * 0.11).toFixed(3) + ")");
+      grp.appendChild(c);
     }
     svg.appendChild(grp); grappes.push(grp);
   }
+  // Sur l'aplat : des grappes de pixels pleins, à la couleur du texte posé sur l'accent, dans les coins.
+  var svg2 = $("t7a-grappes"), grappesAplat = [];
+  svg2.setAttribute("viewBox", "0 0 " + L + " " + H); svg2.setAttribute("width", L); svg2.setAttribute("height", H);
+  var coins = vertical ? [[0.2, 0.16], [0.8, 0.24], [0.16, 0.8], [0.82, 0.86]] : [[0.12, 0.2], [0.86, 0.17], [0.1, 0.8], [0.88, 0.78]];
+  coins.forEach(function (cn) {
+    var grp = document.createElementNS(NS, "g");
+    for (var k = 0; k < 14; k++) {
+      var c = document.createElementNS(NS, "rect"), cote = 8 + Math.round(r() * 3);
+      c.setAttribute("x", Math.round((cn[0] * L + (r() - 0.5) * 170) / 15) * 15); c.setAttribute("y", Math.round((cn[1] * H + (r() - 0.5) * 120) / 15) * 15);
+      c.setAttribute("width", cote); c.setAttribute("height", cote);
+      grp.appendChild(c);
+    }
+    svg2.appendChild(grp); grappesAplat.push(grp);
+  });
+
   // La phrase, avec ses objets dans la ligne
-  var ligne = $("t7a-ligne"), mots = [], carte, pastille;
+  var ligne = $("t7a-ligne"), mots = [], carte, pastille, vignettes = [];
   R.phrase.forEach(function (m) {
     if (m === "[carte]") {
       carte = K.el(ligne, "div", "t7a-carte");
-      R.vignettes.forEach(function (ic, i) {
-        var v = K.el(carte, "div", "t7a-vignette", K.ic(ic) || K.ic("play"));
-        v.style.background = ["var(--brand-accent)", "color-mix(in oklab, var(--brand-accent) 55%, #fff)", "color-mix(in oklab, var(--brand-accent) 70%, var(--t7-nuit))"][i % 3];
-        v.classList.add("t7a-v" + i);
+      R.vignettes.forEach(function (v, i) {
+        var image = /\.(png|jpe?g|webp|svg)$/i.test(v);
+        var e = K.el(carte, "div", "t7a-vignette" + (image ? "" : i % 2 ? " t7a-sur-nuit" : " t7a-sur-accent"), image ? null : v);
+        if (image) { var img = K.el(e, "img"); img.alt = ""; img.src = v; }
+        vignettes.push(e);
       });
-      K.el(carte, "div", "t7a-trait", null, "top:86px; width:46px");
-      K.el(carte, "div", "t7a-trait", null, "top:98px; width:30px");
       mots.push(carte);
     } else if (m === "[pastille]") {
-      pastille = K.el(ligne, "div", "t7a-pastille", '<span id="t7a-pastille-mot"></span><svg viewBox="0 0 8 8"><path d="M0 0h2v1h1v1h1v1h1v1h1v1h-3v1h-1v1h-1v-1h-1z" fill="var(--brand-accent)" shape-rendering="crispEdges"/></svg>');
+      pastille = K.el(ligne, "div", "t7a-pastille", '<span id="t7a-pastille-mot"></span><svg viewBox="-1 -1 9 10" shape-rendering="crispEdges">' +
+        '<path class="t7a-pointe" d="M0 0h2v1h1v1h1v1h1v1h1v1h-3v1h-1v1h-1v-1h-1z"/></svg>');
       mots.push(pastille);
     } else {
       mots.push(K.el(ligne, "span", "t7a-m" + (R.gris.indexOf(m) >= 0 ? " t7a-g" : ""), m));
@@ -148,7 +171,8 @@
 
   // États de départ
   K.cacher(mots); K.cacher(["#t7a-suite", "#t7a-p2", "#t7a-p3"]);
-  gsap.set(".t7a-vignette", { opacity: 0 }); gsap.set(".t7a-v0", { opacity: 1 });
+  if (vignettes.length) { gsap.set(vignettes, { opacity: 0 }); gsap.set(vignettes[0], { opacity: 1 }); }
+  gsap.set(grappesAplat, { opacity: 0 });
   var tl = gsap.timeline({ paused: true });
 
   // 1. La phrase et ses objets (0 → 2,45 s)
@@ -157,39 +181,48 @@
     if (objet) tl.fromTo(m, { opacity: 0, scale: 0.3, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2.2)" }, t);
     else tl.fromTo(m, { opacity: 0, y: 26, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t);
   });
-  for (var s = 1; s < 4; s++) {                       // la vignette et la pastille changent
-    var tv = 0.75 + s * 0.45, iv = s % R.vignettes.length, ip = (s - 1) % R.vignettes.length;
-    tl.set(".t7a-v" + ip, { opacity: 0 }, tv); tl.set(".t7a-v" + iv, { opacity: 1 }, tv);
-    tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, tv);
+  if (carte && vignettes.length > 1) {
+    for (var s = 1; s < 4; s++) {                     // la vignette change, d'un coup, avec un petit rebond
+      var tv = 0.75 + s * 0.45, iv = s % vignettes.length, ip = (s - 1) % vignettes.length;
+      tl.set(vignettes[ip], { opacity: 0 }, tv); tl.set(vignettes[iv], { opacity: 1 }, tv);
+      tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, tv);
+    }
   }
-  K.texteSelon(tl, $("t7a-pastille-mot"), D, function (t) { return R.pastille[Math.max(0, Math.min(R.pastille.length - 1, Math.floor((t - 1.0) / 0.5)))]; });
-  tl.fromTo(pastille, { x: 0 }, { x: 8, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 3, immediateRender: false }, 1.0);
+  if (pastille) {
+    K.texteSelon(tl, $("t7a-pastille-mot"), D, function (t) { return R.pastille[Math.max(0, Math.min(R.pastille.length - 1, Math.floor((t - 1.0) / 0.5)))]; });
+    tl.fromTo(pastille, { x: 0 }, { x: 8, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 3, immediateRender: false }, 1.0);
+  }
   tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 0.2);
   tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 2.5);
   tl.fromTo("#t7a-poussiere", { x: 0, y: 0 }, { x: -40, y: -18, duration: 4.6, ease: "sine.inOut" }, 0);
   tl.to("#t7a-ligne", { opacity: 0, duration: 0.05 }, 2.45);
 
-  // 2. La suite, mot à mot à la couleur de la marque (2,45 → 4,55 s)
-  var sm = document.querySelectorAll("#t7a .t7a-s");
+  // 2. La suite : ses mots s'allument tour à tour à la couleur de la marque (2,45 → 4,45 s)
+  var sm = q(".t7a-s");
   tl.set("#t7a-suite", { opacity: 1 }, 2.45);
   tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, 2.45);
-  gsap.set(sm, { "--t7m": 0 });
   sm.forEach(function (m, i) {
     var t = 2.95 + i * 0.32;
-    tl.to(m, { "--t7m": 1, duration: 0.12, ease: "none" }, t);
+    tl.set(m, { attr: { "data-on": "1" } }, t);
     tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
-    tl.to(m, { "--t7m": 0, duration: 0.3, ease: "power1.out" }, t + 0.38);
+    tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
   tl.fromTo("#t7a-suite", { scale: 0.97 }, { scale: 1.04, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.45);
-  tl.to(sm, { "--t7m": 1, duration: 0.15, ease: "none", stagger: 0.05 }, 4.15);
-  tl.to("#t7a-suite", { opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power2.in" }, 4.45);
+  sm.forEach(function (m, i) { tl.set(m, { attr: { "data-on": "1" } }, 4.15 + i * 0.05); });
+  // coupe franche sur le silence : la nuit seule, sa poussière (4,45 → 4,85 s)
+  tl.set("#t7a-suite", { opacity: 0 }, 4.45);
 
-  // 3. Un temps, puis le mot géant tapé sur le nuage de couleur (4,85 → 6,0 s)
+  // 3. Le mot géant tapé sur l'aplat de la couleur de la marque (4,85 → 6,0 s)
   tl.set("#t7a-p2", { opacity: 1 }, 4.85);
   tl.set("#t7a-p1", { opacity: 0 }, 4.85);
-  tl.fromTo(".t7a-tache", { xPercent: 0, yPercent: 0, scale: 1 }, { xPercent: 8, yPercent: -6, scale: 1.12, duration: 1.2, ease: "sine.inOut", stagger: 0.1 }, 4.85);
   K.taper(tl, $("t7a-geant-texte"), R.geant, 4.95, 5.45, D);
   tl.to("#t7a-caret-geant", { opacity: 0, duration: 0.01 }, 5.6); tl.to("#t7a-caret-geant", { opacity: 1, duration: 0.01 }, 5.8);
+  tl.fromTo("#t7a-geant", { scale: 1 }, { scale: 1.04, duration: 1.15, ease: "sine.out" }, 4.85);
+  // les grappes s'allument d'un coup, sur les temps, puis s'éteignent tour à tour
+  grappesAplat.forEach(function (grp, i) {
+    tl.set(grp, { opacity: 1 }, 4.95 + i * 0.12);
+    tl.set(grp, { opacity: 0 }, 5.55 + ((i + 2) % 4) * 0.1);
+  });
 
   // 4. Le logo devient net, le nom sort de lui (6,0 → 7,2 s)
   tl.set("#t7a-p3", { opacity: 1 }, 6.0);
@@ -199,7 +232,7 @@
   // avec un logo, le nom sort de derrière lui ; sans logo, il monte du flou
   tl.fromTo("#t7a-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
     { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, aLogo ? 6.35 : 6.05);
-  tl.fromTo(".t7a-signe", { scale: 1 }, { scale: 1.035, duration: 1.2, ease: "sine.out" }, 6.0);
+  tl.fromTo("#t7a .t7a-signe", { scale: 1 }, { scale: 1.035, duration: 1.2, ease: "sine.out" }, 6.0);
   window.__timelines["t7a"] = tl;
 })();
 </script>

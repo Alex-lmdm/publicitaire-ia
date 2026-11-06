@@ -94,6 +94,41 @@ class Catalogue(unittest.TestCase):
         self.assertNotIn("—", index)
 
 
+
+
+class Palette(unittest.TestCase):
+    """Les scènes des styles ne peignent qu'avec la marque : ses jetons, du noir, du blanc et des
+    gris. Né de la story refusée du 06/11/2026 (paysages bruns tirés du jaune, « nuit » teintée)."""
+    HEX = re.compile(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b")
+    RGBA = re.compile(r"rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)")
+    OUTIL = "couleur d'outil"   # une vraie interface tierce garde ses couleurs, et le dit
+
+    @staticmethod
+    def neutre(r: int, g: int, b: int) -> bool:
+        return max(r, g, b) - min(r, g, b) <= 6
+
+    def lignes(self):
+        for d in kits():
+            for scene in sorted((d / "compositions").glob("*.html")):
+                for n, ligne in enumerate(scene.read_text(encoding="utf-8").splitlines(), 1):
+                    yield f"{d.name}/{scene.name}:{n}", ligne
+
+    def test_aucune_couleur_tiree_de_l_accent(self):
+        for lieu, ligne in self.lignes():
+            self.assertNotIn("oklch(from", ligne, lieu)
+            self.assertNotRegex(ligne, r"color-mix\([^;]*--brand-accent", lieu)
+
+    def test_aucune_couleur_en_dur_hors_des_neutres(self):
+        for lieu, ligne in self.lignes():
+            if self.OUTIL in ligne:
+                continue
+            for h in self.HEX.findall(ligne):
+                h = "".join(c * 2 for c in h) if len(h) == 3 else h
+                rgb = tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+                self.assertTrue(self.neutre(*rgb), f"{lieu} : #{h}")
+            for r, g, b in self.RGBA.findall(ligne):
+                self.assertTrue(self.neutre(int(r), int(g), int(b)), f"{lieu} : rgba({r}, {g}, {b})")
+
 class Outil(unittest.TestCase):
     def test_catalogue_lu_dans_l_index(self):
         cat = styles.catalogue(RACINE)

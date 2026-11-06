@@ -9,21 +9,36 @@ Les pourcentages sont la part de la durée. Adapte la durée au support (`suppor
 structure se raccourcit en retirant des blocs facultatifs, jamais en accélérant les tenues de
 lecture. Chaque bloc pointe vers les clés de `OFFRE.json` qu'il affiche.
 
-Trois lois communes à toutes les structures :
+Quatre lois communes à toutes les structures :
 
-1. **Le pivot d'abord.** Dans les premières secondes, le spectateur doit savoir ce qu'il gagne à
-   rester (le résultat, le fait nouveau, le problème qu'on règle). Plus l'audience connaît déjà le
-   créateur, plus ce pivot arrive tôt et sans détour.
-2. **Pourquoi, puis quoi, puis comment.** Le problème et le désir portent la vidéo ; le résultat
-   la fait monter ; le « comment » se montre vite, il ne s'explique pas en long. Une fonctionnalité
-   ne se présente jamais seule : toujours le problème qu'elle supprime et ce qu'on obtient.
-3. **Montrer, puis dire.** La démonstration (le produit en action, le résultat à l'écran) vient
-   avant l'argument. Le spectateur tire la conclusion lui-même.
+1. **Le spectateur ne sait rien.** Il n'a vu ni le teaser, ni la page, ni les vidéos d'avant : la
+   plupart ne verront que celle-ci. Chaque vidéo se comprend seule, y compris une story au milieu
+   d'un lancement et une audience « qui connaît le créateur » : connaître la personne n'est pas
+   connaître le produit. À la fin, un inconnu doit savoir ce que c'est, pour qui, quel problème ça
+   règle, comment ça marche (en une phrase), pourquoi le croire, et quoi faire maintenant (le
+   test du spectateur froid, [ecriture.md](ecriture.md)). Une story d'ouverture qui enchaîne
+   « C'est ouvert », un chiffre et un prix sans dire ce qui ouvre est un échec (essai du
+   06/11/2026, refusé par le créateur : « on n'a rien compris »).
+2. **Le contexte d'abord, puis le pivot.** Dans les premières secondes, le spectateur sait de quoi
+   on parle, pour qui, et ce qu'il gagne à rester (le problème qu'on règle, le résultat, le fait
+   nouveau). Une annonce (« C'est ouvert ») peut ouvrir, à condition que l'écran suivant dise ce
+   qui ouvre et pour qui.
+3. **Pourquoi, puis quoi, puis comment.** Le problème et le désir portent la vidéo ; le résultat
+   la fait monter ; le « comment » se montre en deux ou trois gestes, avec une phrase qui dit ce
+   qu'on voit. Une fonctionnalité ne se présente jamais seule : toujours le problème qu'elle
+   supprime et ce qu'on obtient.
+4. **Montrer et dire.** Sans voix (le cas par défaut), c'est le texte qui raconte : l'image prouve
+   ce que dit la phrase, elle ne la remplace pas. La démonstration vient avant l'argument, et une
+   phrase courte dit ce qu'elle montre.
+
+Chaque bloc ci-dessous devient au moins une phrase du script ([ecriture.md](ecriture.md), « Le
+script ») : on écrit le script, le client le valide, puis on fabrique les scènes.
 
 ## 1. Vendre l'offre : vidéo de page de vente (60 à 120 s, `page`)
 
 C'est une VSL courte en motion design : elle tourne souvent en lecture automatique muette en haut
-de la page, donc **chaque idée se comprend à l'image**, voix ou pas, avec 1 à 4 mots par écran.
+de la page, donc **chaque idée se lit à l'écran**, voix ou pas : une phrase courte par écran
+(sans voix), ou les mots clés de la voix et ses sous-titres (avec voix).
 Chaque bloc est une ou deux recettes de `recettes.md`, reliées par des raccords d'objet ; le
 motif des chapitres annonce chaque fonction.
 
@@ -49,11 +64,12 @@ final. L'appel à l'action est le bouton de la page, juste sous la vidéo : la f
 
 | Part | Bloc | Rôle |
 |---|---|---|
-| 0–10 % | **Accroche** | Le résultat ou le mécanisme, sans contexte, compris en une seconde |
-| 10–30 % | **Le problème** | Une image du problème, pas un paragraphe |
-| 30–65 % | **La démonstration** | Ce que l'offre fait, à l'écran |
-| 65–85 % | **Une preuve** | Un seul chiffre ou un seul témoignage |
-| 85–100 % | **Appel à l'action** | « Commente MOT », tenu au moins 2,5 s |
+| 0–10 % | **Accroche** | Pour qui et ce qu'il gagne, compris en deux secondes (le résultat, ou le problème nommé) |
+| 10–25 % | **Le problème** | Une image du problème et sa phrase (l'outil d'avant, son coût) |
+| 25–35 % | **Ce que c'est** | Le nom de l'offre et ce qu'elle fait, en une phrase |
+| 35–65 % | **La démonstration** | Ce que l'offre fait, à l'écran, en deux ou trois gestes, chacun avec sa phrase |
+| 65–85 % | **Une preuve** | Un seul chiffre ou un seul témoignage, avec son contexte (quoi, pour qui) |
+| 85–100 % | **Appel à l'action** | « Commente MOT », tenu au moins 3 s |
 
 Une seule idée par Reel. La vente arrive à la fin seulement : un Reel qui vend dès la première
 seconde perd sa portée.
@@ -64,7 +80,7 @@ seconde perd sa portée.
 |---|---|---|
 | 0–60 % | **Pourquoi** | La situation de l'audience, en image, avec la question qu'elle se pose. Exemple : « Pourquoi la plupart des [cible] galèrent à [X] » |
 | 60–90 % | **Quoi** | Le résultat, et « ce que tu peux faire » |
-| 90–100 % | **Comment, suggéré** | Le nom de l'offre, le geste à faire (« En savoir plus ») |
+| 90–100 % | **Comment, suggéré** | Le nom de l'offre et ce qu'elle est en une phrase, le geste à faire (« En savoir plus ») |
 
 Par défaut, pas de prix dans la pub : il fait baisser les clics. Si le client le veut (une
 offre d'entrée à petit prix, qui trie les clics), il vient à la fin, **sans prix barré ni
@@ -109,19 +125,56 @@ image doit raccorder avec la première (la boucle ne doit pas sauter).
 
 ## 6. Lancement : la campagne (`reel` + `story:*`)
 
-Une suite de publications, un angle par jour, la story étant la version de 30 s du message du
-jour.
+Une suite de publications, un angle par jour. **Chaque publication présente l'offre à quelqu'un
+qui ne la connaît pas** (loi 1) : le jour, l'angle et l'urgence changent, le contexte reste. Une
+story a le temps : un segment de story dure jusqu'à 60 s, on n'écrit pas une story de lancement en
+10 s.
 
-- **Teaser** (veille, 5 à 15 s) : ce qui arrive, ce qu'on va voir, sans tout montrer ; la date
-  et la raison si elles sont réelles. Pas de prix.
+### La story d'ouverture (jour J, 35 à 50 s, 60 au plus)
+
+C'est la vidéo qui présente le produit le jour où il sort : un vrai script de vente, lu sans le son.
+Le format « C'est ouvert → le deal → la fenêtre » ne marche qu'après plusieurs jours de
+prélancement qui ont déjà posé le problème, l'histoire et les preuves : seul, il ne dit rien (la
+story refusée du 06/11/2026 le reprenait). **Par défaut, l'audience est froide** ; la version
+chaude se prend seulement si le client a fait un prélancement, ou pour ses clients existants.
+
+**Audience froide (par défaut, 35 à 50 s) : le diagnostic.** Assez long pour poser le contexte,
+assez dense pour qu'on ne passe pas à la story suivante : la moitié des gens tapent pour avancer
+dès qu'une intro traîne, d'où une première phrase qui dit tout de suite de quoi on parle.
+
+| Part | Bloc | Ce que le spectateur se dit | Fiche |
+|---|---|---|---|
+| 0–10 % | **La scène vécue** | « C'est moi. » Ce qu'il vit, en une question qui suppose déjà le problème (jamais une question à laquelle il répond « non »), ou une situation qu'il reconnaît | `probleme`, `public` |
+| 10–20 % | **Ce que ça coûte** | « Ça me coûte. » Ses options d'aujourd'hui et leur vrai coût (se filmer, payer quelqu'un, y passer un week-end) | `alternatives`, `probleme` |
+| 20–35 % | **La vraie cause** | « Ah, c'est donc ça. » Pourquoi ça bloque (une vidéo qui vend demande deux métiers), puis « il y a une autre option » | `mecanisme` |
+| 35–60 % | **Ce que c'est, et comment ça marche** | « Je vois, c'est simple. » Le nom et ce qu'il fait en une phrase, puis deux ou trois étapes montrées dans la vraie interface, chacune avec sa phrase | `promesse`, `mecanisme`, `recoit` |
+| 60–75 % | **La preuve mesurée** | « Ça a vraiment marché. » Le repère d'abord (une pub, son budget), puis le résultat, son contexte (quelle offre, quand) et sa traduction simple | `preuves` |
+| 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » C'est ouvert ; ce qu'on reçoit et quand on y accède ; le prix, la vraie échéance et le prix d'après | `nouveaute`, `recoit`, `bonus`, `prix`, `dates`, `echeances` |
+| 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » « Touche le lien. » et ce qui attend derrière, au-dessus de la bande du sticker | `cta` |
+
+**Audience chaude (après un prélancement, ou ses clients ; 30 à 45 s).** « C'est ouvert » et le
+résultat en une phrase (0–10 %) → le rappel du problème, de la solution et du mécanisme, en trois
+ou quatre phrases (10–40 %) → la preuve (40–55 %) → ce qu'on reçoit et quand, la garantie s'il y en
+a une (55–75 %) → le prix, la date, le prix d'après et le geste (75–100 %). Même chaude, elle redit
+ce que c'est : on ne saute jamais le rappel.
+
+Une douzaine à une quinzaine de phrases à l'écran, une par écran, tenues le temps de les lire
+([rythme.md](rythme.md)). Elles peuvent se poser sur une vraie matière qui dure (sa capture, son
+interface, sa pub qui tourne) : c'est souvent ce que font les stories d'un créateur, quatre à huit
+écrans de texte sur une capture.
+
+### Les autres publications
+
+- **Teaser** (veille, 10 à 20 s) : ce qui arrive, pour qui, et le problème que ça va régler ; la
+  date et la raison si elles sont réelles ; ce qu'on va voir, sans tout montrer. Pas de prix.
 - **Reel d'ouverture** (jour J, 20 à 45 s) : structure 2, avec la date de fin si elle existe.
-- **Story d'ouverture** (jour J, 8 à 20 s) : C'est ouvert → le deal (quoi, prix, fenêtre) → ce
-  qu'il y a dedans → la garantie → la fenêtre et le lien.
-- **Relance** (milieu, 8 à 20 s) : un seul angle (une objection levée, une preuve du lancement,
-  « on a oublié de te dire »).
-- **Dernier jour** (8 à 20 s) : « Ferme ce soir » → récap express (ce qu'on obtient, prix,
-  garantie) → une preuve du lancement si elle existe → close sans regret → la vraie échéance et
-  le lien. Seulement si `dates.fermeture` existe.
+- **Relance** (milieu, 25 à 45 s) : un seul angle (une objection levée, une preuve du lancement,
+  « on a oublié de te dire »), mais toujours ce que c'est en une phrase, pour qui, le prix,
+  l'échéance et le lien.
+- **Dernier jour** (25 à 45 s) : « Ferme ce soir » → ce que c'est et pour qui, en deux phrases →
+  ce qu'on obtient, le prix, la garantie → une preuve du lancement si elle existe → close sans
+  regret → la vraie échéance et le lien. Seulement si `dates.fermeture` existe.
+- **Rappel** (15 à 30 s) : ce que c'est en une phrase, l'échéance, le lien.
 
 ## 7. Faire s'inscrire (15 à 45 s, `reel`, `story`, `page` de capture)
 

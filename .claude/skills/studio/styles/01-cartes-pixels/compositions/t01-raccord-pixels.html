@@ -16,14 +16,15 @@
     À REMPLACER : l'id « t01-raccord-pixels » (racine, constante ID, préfixe CSS) par un id unique
     par raccord (t01-raccord-1, t01-raccord-2…) : deux raccords identiques dans un même index.html
     se marcheraient dessus. GRAINE : change-la d'un raccord à l'autre (motif différent).
-    Couleurs : les tons sombres viennent de l'encre de la marque (son fond s'il est sombre, sinon son
-    texte), les tons clairs sont des gris du look. Aucune couleur d'accent : c'est voulu.
+    Couleurs : celles de sa marque, rien d'autre : les tons sombres sont sa nuit (var(--brand-sombre),
+    nue ou sous un blanc à 5 %) et son premier gris, les tons clairs ses gris clairs
+    (var(--brand-gris-3), var(--brand-gris-4)). Aucune couleur d'accent : c'est voulu.
   -->
 </head>
 <body>
 <template>
 <style>
-  #t01-raccord-pixels { --t01-encre: #1d1d1f; background: transparent; }
+  #t01-raccord-pixels { background: transparent; }
   #t01-raccord-pixels .t01-mosaique { position: absolute; inset: 0; transform-origin: 50% 50%; }
   #t01-raccord-pixels .t01-px { position: absolute; }
   #t01-raccord-pixels .t01-bloc { position: absolute; box-shadow: inset 0 0 0 1px rgba(255,255,255,.10); pointer-events: none; }
@@ -42,18 +43,9 @@
     var racine = document.getElementById(ID);
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
 
-    var rgb = function (css) {
-      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
-      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
-    };
-    var lum = function (c) {
-      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
-      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
-    };
-    var encre = lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)" : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f";
-    // Tons : trois sombres (l'encre, un peu éclaircie) et deux gris clairs.
-    var TONS = [encre, "color-mix(in srgb, " + encre + " 94%, #ffffff)", "color-mix(in srgb, " + encre + " 88%, #ffffff)",
-      "color-mix(in srgb, " + encre + " 22%, #ffffff)", "color-mix(in srgb, " + encre + " 36%, #ffffff)"];
+    // Tons : trois sombres (sa nuit, sa nuit sous un blanc à 5 %, son premier gris) et deux gris clairs.
+    var TONS = ["var(--brand-sombre)", "linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), var(--brand-sombre)",
+      "var(--brand-gris-1)", "var(--brand-gris-4)", "var(--brand-gris-3)"];
 
     var r = K.rng(GRAINE), BLOC = 240, P = BLOC / 2;
     var nc = Math.ceil(L / BLOC), nl = Math.ceil(H / BLOC);

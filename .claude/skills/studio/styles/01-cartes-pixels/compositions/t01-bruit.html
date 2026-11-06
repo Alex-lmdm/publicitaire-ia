@@ -21,26 +21,29 @@
         avec 1 ou 2 mots en <b> (ils ressortent plus foncés). Rien de vrai à prouver : c'est le décor.
      5. Les textes de l'étiquette : ETIQUETTE (« [ 01 · LE PROBLÈME ] ») et TITRE (2 à 4 mots ;
         le dernier mot porte le surlignage à la couleur de la marque).
-    Couleurs : la grille claire et les gris sont ceux du look ; l'accent est var(--brand-accent) ;
-    l'encre (la carte sombre) est la couleur sombre de la marque (son fond s'il est sombre, sinon son
-    texte). Un accent clair (jaune...) est détecté : les traits passent à l'encre, l'accent reste en aplat.
+    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée
+    (noir à 3 %), la grille et les cases des noirs en transparence ; la carte sombre est sa nuit
+    (var(--brand-sombre)), ses bulles et son champ des blancs en transparence posés dessus ; l'accent
+    est var(--brand-accent), toujours plein. Un accent clair (jaune...) est détecté : les traits
+    passent à l'encre, l'accent reste en aplat.
   -->
 </head>
 <body>
 <template>
 <style>
-  #t01-bruit { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f;
+  #t01-bruit { --t01-papier: var(--brand-clair); --t01-trait: rgba(0, 0, 0, 0.07); --t01-encre: var(--brand-sombre);
     --t01-mono: ui-monospace, "SF Mono", Menlo, Consolas, var(--brand-font-mono);
     background: var(--t01-papier); }
   #t01-bruit .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
     background-image:
-      radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
+      radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.085) 0 4px, transparent 4.6px),
       linear-gradient(var(--t01-trait) 0 2px, transparent 2px),
-      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
-    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
-  #t01-bruit .t01-case { position: absolute; width: 178px; height: 178px; background: #f0f0f0; }
+      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.028));
+    background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
+  #t01-bruit .t01-case { position: absolute; width: 178px; height: 178px; background: rgba(0, 0, 0, 0.032); }
   #t01-bruit .t01-sol { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; overflow: hidden;
-    font: 400 15px/18px var(--t01-mono); color: #d9d9d9; white-space: pre; letter-spacing: 3px; }
+    font: 400 15px/18px var(--t01-mono); color: rgba(0, 0, 0, 0.13); white-space: pre; letter-spacing: 3px; }
   /* Le mur de bruit, derrière la carte. */
   #t01-bruit .t01-mur { position: absolute; left: 0; top: 0; }
   #t01-bruit .t01-bruit { position: absolute; width: 430px; height: 168px; border-radius: 20px; padding: 22px 26px; overflow: hidden;
@@ -52,24 +55,23 @@
     border-radius: 26px; background: var(--t01-encre); box-shadow: 0 40px 80px rgba(0,0,0,.22), 0 10px 24px rgba(0,0,0,.18);
     font-family: "Inter", var(--brand-font-body); color: #fff; overflow: hidden; }
   #t01-bruit .t01-bulle { position: absolute; top: 28px; right: 28px; max-width: 470px; padding: 15px 20px; border-radius: 16px;
-    background: color-mix(in srgb, var(--t01-encre) 78%, #ffffff); font: 500 22px/1.3 "Inter", var(--brand-font-body); color: #fff; white-space: nowrap; }
+    background: rgba(255, 255, 255, 0.22); font: 500 22px/1.3 "Inter", var(--brand-font-body); color: #fff; white-space: nowrap; }
   #t01-bruit .t01-qui { position: absolute; left: 30px; top: 112px; display: flex; align-items: center; gap: 10px;
-    font: 600 18px/1 "Inter", var(--brand-font-body); color: color-mix(in srgb, #ffffff 62%, var(--t01-encre)); }
+    font: 600 18px/1 "Inter", var(--brand-font-body); color: rgba(255, 255, 255, 0.62); }
   #t01-bruit .t01-pix { width: 16px; height: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
   #t01-bruit .t01-pix i { display: block; background: var(--brand-accent); }
-  #t01-bruit .t01-pix i:nth-child(2), #t01-bruit .t01-pix i:nth-child(3) { opacity: .45; }
   #t01-bruit .t01-points { position: absolute; left: 32px; top: 152px; display: flex; gap: 7px; }
-  #t01-bruit .t01-points i { width: 9px; height: 9px; border-radius: 50%; background: #8d8d92; display: block; }
+  #t01-bruit .t01-points i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); display: block; }
   #t01-bruit .t01-rep { position: absolute; left: 30px; right: 30px; top: 146px; padding: 16px 18px; border-radius: 14px;
-    background: color-mix(in srgb, var(--t01-encre) 90%, #ffffff); font: 400 21px/31px "Inter", var(--brand-font-body); color: #ececec; }
+    background: rgba(255, 255, 255, 0.1); font: 400 21px/31px "Inter", var(--brand-font-body); color: #ececec; }
   #t01-bruit .t01-rep div { height: 31px; white-space: nowrap; }
   #t01-bruit .t01-champ { position: absolute; left: 20px; right: 20px; bottom: 20px; height: 62px; border-radius: 16px;
-    background: color-mix(in srgb, var(--t01-encre) 86%, #ffffff); display: flex; align-items: center; padding: 0 20px;
+    background: rgba(255, 255, 255, 0.14); display: flex; align-items: center; padding: 0 20px;
     font: 400 21px/1 "Inter", var(--brand-font-body); color: #fff; }
-  #t01-bruit .t01-place { position: absolute; left: 20px; top: 21px; color: #b0b0b5; }
+  #t01-bruit .t01-place { position: absolute; left: 20px; top: 21px; color: rgba(255, 255, 255, 0.66); }
   #t01-bruit .t01-tape { position: relative; white-space: nowrap; }
   #t01-bruit .t01-envoi { position: absolute; right: 12px; top: 12px; width: 38px; height: 38px; border-radius: 50%;
-    background: color-mix(in srgb, var(--t01-encre) 60%, #ffffff); color: var(--t01-encre); padding: 9px; }
+    background: rgba(255, 255, 255, 0.4); color: var(--t01-encre); padding: 9px; }
   /* L'étiquette du problème, en haut à gauche, sur la grille. */
   #t01-bruit .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
     letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
@@ -140,7 +142,7 @@
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
     if (vertical) racine.classList.add("t01-vertical");
 
-    // Palette : l'encre suit la couleur sombre de la marque ; un accent clair passe en aplat seul.
+    // Palette : l'encre est sa nuit (var(--brand-sombre), en CSS) ; un accent clair passe en aplat seul.
     var rgb = function (css) {
       var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
       var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
@@ -150,8 +152,6 @@
       return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
     };
     racine.classList.toggle("t01-accent-clair", lum(rgb("var(--brand-accent)")) > 0.28);
-    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
-      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
 
     // Décodage : les lettres arrivent en glyphes (# % @ X = +) puis se fixent, de gauche à droite.
     var GLYPHES = "#%@X=+:*/<>";

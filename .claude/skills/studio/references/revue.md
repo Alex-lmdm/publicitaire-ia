@@ -46,7 +46,16 @@ vraiment :
 - Chaque texte de la planche correspond à une clé de `OFFRE.json`, ou c'est du ton.
 - Vidéo de page : la première image est déjà forte et dit le sujet (c'est elle qu'on voit si la
   lecture automatique est bloquée).
-- Aucun écran ne porte plus de 6 mots (hors interfaces) ; la plupart en portent 1 à 4.
+- Chaque écran porte une phrase entière, qui se comprend seule ; aucun n'en porte plus de 12
+  mots (hors interfaces), ni deux phrases à lire en même temps.
+- Le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
+  l'ordre, on sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le
+  croire, combien et quoi faire. Une réponse manque : la vidéo n'est pas finie.
+- Les couleurs : uniquement celles de la marque, du noir, du blanc et des gris neutres ; ni brun,
+  ni olive, ni orangé tirés de l'accent ; aucune image inventée (paysage, illustration). Seules les
+  vraies captures du client et les logos de ses outils gardent leurs couleurs. `studio_motion.py
+  palette exports/<vidéo>.mp4` liste les instants hors palette : chacun est une vraie capture, ou
+  se corrige.
 - Les fonds alternent (sombre, clair, couleur pleine ; avec un style du catalogue, ceux de sa fiche),
   aucun écran ne fait vide.
 - Les raccords : la dernière case d'une scène et la première de la suivante se ressemblent.
@@ -55,20 +64,27 @@ vraiment :
 ## Porte 3 : la revue critique
 
 Change de rôle : tu es un directeur artistique exigeant qui n'a pas fait la vidéo. Note de 1 à
-10, avec une phrase de justification, sur ces huit critères :
+10, avec une phrase de justification, sur ces neuf critères :
 
-1. **Accroche** : on comprend ce qu'on gagne à rester avant 3 s, sans le son.
-2. **Structure** : chaque bloc de la structure choisie remplit son rôle, dans l'ordre ; le
-   problème vient avant le produit.
-3. **Rythme** : il se passe quelque chose toutes les demi-secondes ; on ne s'ennuie jamais, et
-   chaque texte reste pourtant le temps de le lire.
-4. **Montré, pas écrit** : des interfaces, des objets, des résultats ; 1 à 4 mots par écran ;
-   des fonds qui alternent, rien de vide. Si on dirait des slides, c'est 3 au plus.
-5. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources.
-6. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
+1. **Compréhension** : un inconnu, sans le son, sait à la fin ce que c'est, pour qui, comment ça
+   marche et quoi faire (le test du spectateur froid). Un « on n'a rien compris », c'est 3 au plus,
+   quel que soit le reste.
+2. **Accroche** : on comprend de quoi on parle, pour qui, et ce qu'on gagne à rester avant 3 s.
+3. **Structure** : chaque bloc de la structure choisie remplit son rôle, dans l'ordre ; le
+   problème vient avant le produit ; le comment est montré.
+4. **Rythme** : il se passe quelque chose toutes les demi-secondes autour du texte ; chaque phrase
+   reste le temps de la lire à voix haute, sans se presser. Trop rapide pour être lu, c'est 4 au plus.
+5. **Montré et dit** : une phrase courte par écran, et pendant qu'on la lit, ce qu'elle dit se voit
+   (des interfaces, des résultats, des preuves) ; des fonds qui alternent, rien de vide. Si on
+   dirait des slides, c'est 3 au plus.
+6. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources ; chaque
+   chiffre avec son contexte.
+7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
    suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
-7. **Marque** : ses couleurs, ses polices, une seule couleur d'accent.
-8. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
+8. **Marque** : ses couleurs et seulement elles (plus noir, blanc, gris), ses polices, une seule
+   couleur d'accent ; aucune image inventée. Une teinte dérivée (un brun, un orangé tirés de son
+   jaune), c'est 4 au plus.
+9. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
 
 Tout critère à 7 ou moins se corrige, puis on refait le rendu et la planche, jusqu'à 8 ou plus
 partout. Liste toujours les trois plus gros défauts, même si tout est à 8. Si le client a donné
@@ -76,12 +92,13 @@ une vidéo de référence, mets côte à côte une planche de chaque (même cade
 contre elle, pas contre la version précédente.
 
 Avec un style du catalogue, le garde-fou ([styles/README.md](../styles/README.md)) : la planche
-montre au moins trois de ses gestes signature (deux sous 15 s), et les scènes construites pour son
-cas portent les mêmes fonds, polices et mouvements que le kit. Sinon, « Le mouvement sert » et
-« Marque » sont à 6 au plus.
+montre au moins trois de ses gestes signature (deux sous 15 s) dans sa grammaire (typographie,
+mise en page, mouvements, transitions), aux couleurs de la marque et avec la seule vraie matière du
+client. Un style ne justifie jamais une image inventée ni une couleur hors palette.
 
 Dernier test, le plus simple : à partir des seules vignettes, résume le message en une phrase.
-Si cette phrase n'est pas la promesse de la fiche, la vidéo ne dit pas ce qu'elle doit dire.
+Si cette phrase n'est pas la promesse de la fiche, ou si tu as besoin de la fiche pour la
+comprendre, la vidéo ne dit pas ce qu'elle doit dire.
 
 ## Porte 4 : le son
 

@@ -34,11 +34,15 @@
 <template>
   <style>
     #t05-trait {
-      --t05-papier: #efefe5;
-      --t05-carte: #f9f9f4;
-      --t05-pli: #e4e4d8;
-      --t05-encre: #1d1d1b;
-      --t05-gris: #8a8a82;
+      /* La palette du style : les neutres de la marque et son accent plein, rien d'autre. Le papier
+         est un gris très clair (son clair mêlé à son gris le plus clair), les cartes son clair,
+         l'encre sa couleur sombre ; jamais une teinte crème inventée, jamais l'accent en transparence. */
+      --t05-papier: color-mix(in srgb, var(--brand-clair) 58%, var(--brand-gris-4));
+      --t05-carte: var(--brand-clair);
+      --t05-pli: color-mix(in srgb, var(--brand-clair) 25%, var(--brand-gris-4));
+      --t05-encre: var(--brand-sombre);
+      --t05-gris: var(--brand-gris-3);
+      --t05-gris-texte: var(--brand-gris-2);
       --t05-allume: var(--brand-accent);
       --t05-titres: var(--brand-font-display);
       --t05-texte: var(--brand-font-body);
@@ -47,7 +51,7 @@
     #t05-trait .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
     #t05-trait .t05-panneau {
       position: absolute; width: 632px; height: 743px; border-radius: 24px; background: var(--t05-carte);
-      box-shadow: inset 0 0 0 1.5px rgba(40, 40, 20, 0.08), 0 22px 50px rgba(60, 60, 30, 0.10), 0 3px 10px rgba(60, 60, 30, 0.05);
+      box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.07), 0 22px 50px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.04);
     }
     #t05-trait .t05-rang {
       position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
@@ -55,15 +59,15 @@
       font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
     }
     #t05-trait .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
-    #t05-trait .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(30, 30, 20, 0.14); }
+    #t05-trait .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(0, 0, 0, 0.12); }
     #t05-trait .t05-ico { width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--brand-accent); color: var(--brand-contrast); }
     #t05-trait .t05-ico svg { width: 21px; height: 21px; }
-    #t05-trait .t05-inter { position: absolute; right: 0; top: 12px; width: 62px; height: 36px; border-radius: 18px; background: var(--t05-allume); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07); }
+    #t05-trait .t05-inter { position: absolute; right: 0; top: 12px; width: 62px; height: 36px; border-radius: 18px; background: var(--t05-allume); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07); }
     #t05-trait .t05-bille { position: absolute; left: 29px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12); }
     #t05-trait .t05-membre {
       position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
       background: var(--t05-carte); color: var(--t05-gris);
-      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     #t05-trait .t05-membre .t05-ic { position: absolute; left: 25%; top: 25%; width: 50%; height: 50%; }
     #t05-trait .t05-membre .t05-anneau { position: absolute; left: 24%; top: 24%; width: 52%; height: 52%; overflow: visible; }
@@ -125,7 +129,7 @@
       function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
       function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
       function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
-      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--t05-papier"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
+      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--brand-clair"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
       function chemin(p, n) { var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1); for (var i = 0; i < Math.min(p.length - 1, n == null ? 1e9 : n); i++) { var a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c; d += " C" + (b[0] + (c[0] - a[0]) / 6).toFixed(1) + " " + (b[1] + (c[1] - a[1]) / 6).toFixed(1) + " " + (c[0] - (e[0] - b[0]) / 6).toFixed(1) + " " + (c[1] - (e[1] - b[1]) / 6).toFixed(1) + " " + c[0].toFixed(1) + " " + c[1].toFixed(1); } return d; }
       function longueur(p, n) { var t = document.createElementNS("http://www.w3.org/2000/svg", "path"); t.setAttribute("d", chemin(p, n)); svg.appendChild(t); var l = t.getTotalLength(); svg.removeChild(t); return l; }
       function morceau(path) { var Lp = path.getTotalLength(); return function (a, b) { var d = Math.max(0, b - a); path.style.strokeDasharray = d.toFixed(1) + " " + (Lp + 20).toFixed(0); path.style.strokeDashoffset = (-a).toFixed(1); path.style.opacity = d > 0.5 ? "1" : "0"; }; }

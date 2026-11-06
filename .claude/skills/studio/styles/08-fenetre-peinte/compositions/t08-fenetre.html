@@ -3,78 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE PEINTE » · SCÈNE : LA FENÊTRE SUR FOND PEINT (la démonstration) · 7 s
-    Ce que la scène montre : la fenêtre de l'application de l'offre, posée sur un fond de bureau peint
-    au pinceau. La caméra filme l'écran comme un enregistrement : vue entière, puis gros plans rapides
-    (flou de bougé) sur un détail, le curseur clique (onglet, élément de la barre latérale), le contenu
-    change, une demande se tape dans le champ du bas et part, la réponse arrive, la caméra recule.
+    STYLE N°8 « FENÊTRE PEINTE » · SCÈNE : LA FENÊTRE FILMÉE (la démonstration) · 7 s
+    Ce que la scène montre : la fenêtre de l'application de l'offre, posée sur un bureau aux
+    couleurs de la marque, avec SA vraie interface dedans (ses captures). La caméra filme l'écran
+    comme un enregistrement : vue entière, puis gros plans rapides (flou de bougé) sur un détail ;
+    le curseur clique et l'écran change d'un coup (la capture suivante) ; une demande peut se taper
+    dans le vrai champ de sa capture ; la caméra recule.
+    Sans capture, la fenêtre reste vide, à ses couleurs, avec son seul titre : jamais une
+    interface inventée (garde alors la scène courte, 3 s au plus, ou montre plutôt sa page).
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
-    la fenêtre garde son dessin, réduite au milieu du fond peint ; les gros plans remplissent l'écran.
+    la fenêtre garde son dessin, réduite au milieu du bureau ; les gros plans remplissent l'écran.
 
-    À REMPLACER (seulement par la vraie interface de l'offre : une capture ou une reconstruction fidèle,
-    jamais une fonction qu'elle n'a pas) :
+    À REMPLACER (seulement par la vraie matière de l'offre, jamais une fonction qu'elle n'a pas) :
      1. L'id « t08-fenetre » (racine, constante ID, préfixe CSS) par l'id de la scène.
-     2. APP : le nom dans la barre de titre, les deux onglets, les rubriques et éléments de la barre
-        latérale, la leçon ouverte (titre, détail, liste), le texte d'aide du champ, la demande tapée,
-        la réponse. Pour un logiciel : remplace .t08-contenu par sa capture
-        (<img src="assets/images/ecran.png">) et garde le cadre, le curseur et la caméra.
-     3. PLANS : les gros plans [instant, x, y, zoom] en coordonnées de la fenêtre (1760 × 980).
-     4. Le fond peint : PALETTE (couleurs de peinture, neutres) et GRAINE ; ou une image à toi en
-        fond (FOND_IMAGE = "assets/images/fond.jpg").
-    Couleurs : l'interface garde ses propres couleurs (celles de l'offre) ; l'accent de la marque ne
-    sert qu'à quelques touches du fond peint et au bouton d'envoi.
+     2. TITRE : le nom dans la barre de titre (son produit, sa page).
+     3. CAPTURES : ses vraies captures, dans l'ordre (sa page, son espace de formation, son
+        logiciel : "assets/images/ecran-1.png" ; au mieux 1760 × 928, sinon du 16:9, cadré par le
+        haut). La première s'affiche d'abord ; chaque clic de CLICS montre la suivante, d'un coup.
+     4. CLICS : [instant, x, y] en coordonnées de la fenêtre (1760 × 980, barre de titre comprise) :
+        là où le curseur clique sur sa capture (un onglet, un bouton, un champ). Sans capture, aucun.
+     5. DEMANDE : une demande qui se tape dans le vrai champ de sa capture (texte, instants, place,
+        taille, couleur du texte de ce champ) ; texte "" : aucune.
+     6. PLANS : les gros plans [instant, x, y, zoom] en coordonnées de la fenêtre ; zoom 1 = vue
+        entière. Vise ce qui fait vendre dans sa capture ; au-delà de 1,8, une capture en image
+        devient floue.
+     7. Le bureau : FOND = "accent" (l'aplat de sa couleur, le défaut : la fenêtre y prend un trait fin
+        de sa nuit au lieu d'une ombre), "gris" (un dégradé entre ses gris et l'ombre douce de la
+        fenêtre : plus calme) ou "sombre" (sa nuit, pour une capture claire) ; ou FOND_IMAGE =
+        "assets/images/bureau.jpg", une vraie photo à lui.
+        FENETRE = "claire" ou "sombre" : la barre de titre et le fond de la fenêtre, à accorder à sa
+        capture.
+    Couleurs : seulement celles de ta marque (brand/tokens.css) : ses gris, sa nuit, son clair,
+    son accent en aplat plein ; des noirs et des blancs en transparence pour les ombres et les
+    traits. Ses captures gardent leurs vraies couleurs.
   -->
 </head>
 <body>
 <template>
 <style>
-  #t08-fenetre { --t08-encre: #1d1c19; background: #5d6f73; font-family: "Inter", var(--brand-font-body); }
+  #t08-fenetre { --t08-bureau: radial-gradient(ellipse 60% 55% at 50% 45%, var(--brand-gris-2), var(--brand-gris-1));
+    --t08-cadre: var(--brand-clair); --t08-barre: var(--brand-clair); --t08-filet: rgba(0,0,0,.08); --t08-feu: rgba(0,0,0,.16);
+    --t08-titre: var(--brand-gris-2); --t08-texte: var(--brand-sombre);
+    --t08-ombre: 0 0 0 1px rgba(0,0,0,.18), 0 36px 90px rgba(0,0,0,.38);
+    background: var(--brand-gris-1); font-family: "Inter", var(--brand-font-body); }
+  #t08-fenetre.t08-bureau-sombre { --t08-bureau: var(--brand-sombre); background: var(--brand-sombre); }
+  #t08-fenetre.t08-bureau-accent { --t08-bureau: var(--brand-accent); --t08-ombre: 0 0 0 2px var(--brand-sombre); background: var(--brand-accent); }
+  #t08-fenetre.t08-fenetre-sombre { --t08-cadre: var(--brand-sombre); --t08-barre: var(--brand-sombre); --t08-filet: rgba(255,255,255,.08);
+    --t08-feu: rgba(255,255,255,.2); --t08-titre: var(--brand-gris-3); --t08-texte: var(--brand-clair); }
   #t08-fenetre .t08-bureau { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
-  #t08-fenetre .t08-toile { position: absolute; left: 0; top: 0; }
+  /* Le fond du bureau déborde largement du cadre : un gros plan près d'un bord ne montre jamais sa limite. */
+  #t08-fenetre .t08-toile { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; background: var(--t08-bureau); }
+  #t08-fenetre .t08-toile.t08-photo { background-position: center; background-size: cover; }
   #t08-fenetre .t08-fenetre { position: absolute; left: 0; top: 0; width: 1760px; height: 980px; border-radius: 14px; overflow: hidden;
-    background: #fbfbfa; box-shadow: 0 0 0 1px rgba(0,0,0,.18), 0 36px 90px rgba(0,0,0,.38); transform-origin: 0 0; color: #262624; }
-  #t08-fenetre .t08-a { position: absolute; white-space: nowrap; }
-  #t08-fenetre .t08-barre-titre { left: 0; top: 0; width: 1760px; height: 52px; background: #f2f2f0; border-bottom: 1px solid #e2e2df; }
-  #t08-fenetre .t08-feu { width: 13px; height: 13px; border-radius: 50%; top: 20px; }
-  #t08-fenetre .t08-segments { left: 104px; top: 11px; width: 236px; height: 31px; border-radius: 8px; background: #e3e3e0; }
-  #t08-fenetre .t08-segment-sel { left: 2px; top: 2px; width: 115px; height: 27px; border-radius: 6px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
-  #t08-fenetre .t08-seg { top: 0; width: 118px; line-height: 31px; text-align: center; font-size: 15px; font-weight: 500; color: #3d3d3a; }
-  #t08-fenetre .t08-titre-fen { left: 0; right: 0; top: 17px; text-align: center; font-size: 14px; color: #6e6e6a; }
-  #t08-fenetre .t08-laterale { left: 0; top: 53px; width: 300px; height: 927px; background: #f5f5f3; border-right: 1px solid #e5e5e2; }
-  #t08-fenetre .t08-bouton-lat { left: 20px; top: 72px; width: 260px; height: 40px; border-radius: 8px; background: #fff; box-shadow: inset 0 0 0 1px #dcdcd8;
-    font-size: 15px; line-height: 40px; text-align: center; color: #3a3a37; }
-  #t08-fenetre .t08-rub { left: 24px; font-size: 12px; font-weight: 600; letter-spacing: .06em; color: #6e6e6a; }
-  #t08-fenetre .t08-el { left: 12px; width: 276px; height: 34px; padding: 0 12px; border-radius: 7px; font-size: 15px; line-height: 34px; color: #3a3a37; }
-  #t08-fenetre .t08-el i { position: absolute; right: 12px; font-style: normal; font-size: 13px; color: #5c5c58; }
-  #t08-fenetre .t08-el-sel { left: 12px; width: 276px; height: 34px; border-radius: 7px; background: #e7e7e3; }
-  #t08-fenetre .t08-vide { left: 300px; top: 53px; width: 1460px; height: 760px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
-  #t08-fenetre .t08-vide img { width: 92px; height: 92px; object-fit: contain; filter: grayscale(1); opacity: .22; }
-  #t08-fenetre .t08-raccourcis { display: grid; grid-template-columns: 210px 70px; row-gap: 10px; font-size: 14px; color: #6f6f6b; }
-  #t08-fenetre .t08-raccourcis b { font-weight: 400; text-align: right; color: #6f6f6b; letter-spacing: .1em; }
-  #t08-fenetre .t08-lecon-titre { left: 360px; top: 88px; font-size: 26px; font-weight: 600; color: #1f1f1d; letter-spacing: -0.01em; }
-  #t08-fenetre .t08-lecon-detail { left: 360px; top: 126px; font-size: 15px; color: #6d6d69; }
-  #t08-fenetre .t08-video { left: 360px; top: 168px; width: 820px; height: 462px; border-radius: 12px; background: var(--t08-encre); overflow: hidden; }
-  #t08-fenetre .t08-lire { left: 362px; top: 183px; width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,.94); padding: 30px 26px 30px 34px; color: #1d1c19; }
-  #t08-fenetre .t08-progres { left: 30px; right: 30px; bottom: 26px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.2); }
-  #t08-fenetre .t08-progres i { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; border-radius: 2px; background: #fff; transform-origin: 0 50%; }
-  #t08-fenetre .t08-liste-titre { left: 1230px; top: 172px; font-size: 16px; font-weight: 600; color: #2a2a28; }
-  #t08-fenetre .t08-item { left: 1230px; font-size: 16px; color: #4a4a47; padding-left: 34px; line-height: 22px; }
-  #t08-fenetre .t08-case { position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 6px; box-shadow: inset 0 0 0 1.5px #c9c9c5; }
-  #t08-fenetre .t08-case-ok { position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 6px; background: #2f2f2c; color: #fff; padding: 4px; }
-  #t08-fenetre .t08-champ { left: 360px; top: 818px; width: 1340px; height: 112px; border-radius: 14px; background: #fff; box-shadow: inset 0 0 0 1px #dfdfdb, 0 2px 8px rgba(0,0,0,.04); }
-  #t08-fenetre .t08-aide { left: 24px; top: 20px; font-size: 17px; color: #73736f; }
-  #t08-fenetre .t08-tape { left: 24px; top: 20px; font-size: 17px; color: #262624; }
-  #t08-fenetre .t08-puce { top: 66px; height: 28px; padding: 0 12px; border-radius: 7px; background: #f0f0ed; font-size: 14px; line-height: 28px; color: #5a5a56; }
-  #t08-fenetre .t08-envoi { right: 18px; top: 64px; width: 32px; height: 32px; border-radius: 50%; background: var(--brand-accent); color: var(--brand-contrast); padding: 7px; }
-  #t08-fenetre .t08-reponse { left: 360px; top: 650px; width: 820px; padding: 18px 22px; border-radius: 12px; background: #f3f3f0; font-size: 16px; line-height: 24px; color: #3a3a37; white-space: normal; }
-  #t08-fenetre .t08-reponse b { display: block; font-weight: 600; color: #222220; margin-bottom: 4px; }
+    background: var(--t08-cadre); box-shadow: var(--t08-ombre); transform-origin: 0 0; color: var(--t08-texte); }
+  #t08-fenetre .t08-barre-titre { position: absolute; left: 0; top: 0; width: 1760px; height: 52px; background: var(--t08-barre); border-bottom: 1px solid var(--t08-filet); z-index: 2; }
+  #t08-fenetre .t08-feu { position: absolute; top: 20px; width: 13px; height: 13px; border-radius: 50%; background: var(--t08-feu); }
+  #t08-fenetre .t08-titre-fen { position: absolute; left: 0; right: 0; top: 16px; text-align: center; font-size: 15px; font-weight: 500; color: var(--t08-titre); white-space: nowrap; }
+  #t08-fenetre .t08-contenu { position: absolute; left: 0; top: 52px; width: 1760px; height: 928px; overflow: hidden; }
+  #t08-fenetre .t08-capture { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  #t08-fenetre .t08-vide { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 120px;
+    font-family: var(--brand-font-display); font-size: 104px; font-weight: 600; letter-spacing: -0.035em; line-height: 1.05; color: var(--t08-texte); }
+  #t08-fenetre .t08-demande { position: absolute; white-space: nowrap; }
 </style>
 
 <div data-composition-id="t08-fenetre" data-width="1920" data-height="1080" data-duration="7" style="position:absolute; inset:0;">
   <div id="t08-fenetre" class="k-scene">
-    <div class="t08-bureau" id="t08-fenetre-bureau">
-      <canvas class="t08-toile" id="t08-fenetre-toile" data-layout-ignore></canvas>
-      <div class="t08-fenetre" id="t08-fenetre-fen"><div id="t08-fenetre-contenu" class="t08-contenu"></div></div>
+    <div class="t08-bureau" id="t08-fenetre-bureau" data-layout-allow-overflow>
+      <div class="t08-toile" id="t08-fenetre-toile" data-layout-allow-overflow></div>
+      <div class="t08-fenetre" id="t08-fenetre-fen">
+        <div class="t08-barre-titre" id="t08-fenetre-barre"></div>
+        <div class="t08-contenu" id="t08-fenetre-contenu"></div>
+      </div>
       <div id="t08-fenetre-curseur-hote" style="position:absolute; inset:0; z-index:20;"></div>
     </div>
   </div>
@@ -84,127 +83,79 @@
   (function () {
     var ID = "t08-fenetre", D = 7;
     // ---- À remplacer -------------------------------------------------------------------------
-    var APP = {
-      titre: "Ton offre", onglets: ["Accueil", "Ressources"], bouton: "+  Nouvelle question",
-      laterale: [["EN COURS", [["Module 2 · Les bases", "12 min"]]], ["À SUIVRE", [["Module 3 · Passer à l'action", "18 min"], ["Module 4 · Aller plus loin", "15 min"]]],
-        ["BONUS", [["Modèles prêts à l'emploi", ""], ["Questions-réponses", ""]]]],
-      raccourcis: [["Nouvelle question", "⇧⌘N"], ["Leçon suivante", "⌘→"], ["Mes notes", "⌘J"], ["Rechercher", "⌘K"]],
-      lecon: "Module 2 · Les bases", detail: "Leçon 3 sur 6 · 12 min",
-      liste: ["Regarder la vidéo", "Télécharger le modèle", "Faire l'exercice", "Poser ta question"],
-      aide: "Pose ta question sur cette leçon…", puces: ["Leçon 2.3  ⌄", "Réponse courte  ⌄"],
-      demande: "Comment je fais l'exercice ?", reponse: ["Réponse prête", "Commence par le modèle de la leçon : il est déjà rempli pour toi."]
-    };
+    var TITRE = "Ton offre";
+    var CAPTURES = [];              // ses vraies captures, dans l'ordre : ["assets/images/ecran-1.png", …]
+    // Les clics : [instant, x, y] dans la fenêtre (1760 × 980) ; chaque clic montre la capture suivante.
+    var CLICS = [[1.12, 156, 20], [2.12, 112, 176], [3.25, 1233, 219]];
+    // Une demande tapée dans le vrai champ de sa capture (texte "" : aucune).
+    var DEMANDE = { texte: "", debut: 4.15, fin: 4.7, x: 384, y: 838, taille: 17, couleur: "var(--brand-sombre)" };
     // Les gros plans : [instant, x, y, zoom] dans la fenêtre (1760 × 980) ; zoom 1 = vue entière.
-    var PLANS = [[0.55, 230, 170, 2.5], [1.55, 160, 230, 1.9], [2.7, 900, 420, 1.3], [3.55, 760, 860, 1.7], [4.7, 1390, 870, 1.7], [5.3, 880, 490, 1], [6.1, 790, 690, 1.25]];
-    var PALETTE = ["#5a7fa8", "#7fa3c4", "#a9c3d6", "#3f7f7a", "#6f9a58", "#9bb36b", "#c9a24f", "#d8bd7a", "#c98a6c", "#e8dcc0"];
-    var GRAINE = 7, FOND_IMAGE = "";
+    var PLANS = [[0.55, 880, 26, 1.8], [1.55, 520, 360, 1.6], [2.7, 900, 420, 1.3], [3.55, 760, 700, 1.6], [4.7, 1300, 600, 1.5], [5.3, 880, 490, 1], [6.1, 880, 520, 1.2]];
+    var FOND = "accent", FOND_IMAGE = "", FENETRE = "claire";
     // -------------------------------------------------------------------------------------------
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
-    var rgb = function (css) {
-      var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
-      var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
-    };
-    var lum = function (c) {
-      var a = c.slice(0, 3).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
-      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
-    };
-    racine.style.setProperty("--t08-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
-      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1c19");
+    if (FOND === "sombre" || FOND === "accent") racine.classList.add("t08-bureau-" + FOND);
+    if (FENETRE === "sombre") racine.classList.add("t08-fenetre-sombre");
 
-    // ---- Le fond peint : des milliers de touches de pinceau, à graine (le même à chaque image) ----
-    // La toile déborde largement du cadre (30 % de chaque côté) : un gros plan près d'un bord ne montre jamais sa limite.
-    var bureau = q("#t08-fenetre-bureau"), toile = q("#t08-fenetre-toile"), TL = Math.round(L * 1.6), TH = Math.round(H * 1.6);
+    // ---- Le bureau : un fond de la marque (ou sa vraie photo), plus grand que le cadre ----------
+    var bureau = q("#" + ID + "-bureau"), toile = q("#" + ID + "-toile");
     bureau.style.width = L + "px"; bureau.style.height = H + "px";
-    toile.width = TL; toile.height = TH; toile.style.width = TL + "px"; toile.style.height = TH + "px";
-    toile.style.left = -Math.round(L * 0.3) + "px"; toile.style.top = -Math.round(H * 0.3) + "px";
-    if (FOND_IMAGE) { toile.style.background = "url(" + FOND_IMAGE + ") center / cover"; }
-    else {
-      var c = toile.getContext("2d"), r = K.rng(GRAINE), accent = "rgb(" + rgb("var(--brand-accent)").slice(0, 3).join(",") + ")";
-      var ciel = c.createLinearGradient(0, 0, 0, TH);
-      ciel.addColorStop(0, PALETTE[1]); ciel.addColorStop(0.45, PALETTE[2]); ciel.addColorStop(0.55, PALETTE[7]); ciel.addColorStop(1, PALETTE[4]);
-      c.fillStyle = ciel; c.fillRect(0, 0, TL, TH);
-      var n = Math.round(TL * TH / 230);
-      for (var i = 0; i < n; i++) {
-        var x = r() * TL, y = r() * TH, h = y / TH;
-        var base = h < 0.42 ? [0, 1, 2, 9] : h < 0.6 ? [7, 6, 8, 2, 9] : [3, 4, 5, 6, 7];
-        c.strokeStyle = r() < 0.025 ? accent : PALETTE[base[Math.floor(r() * base.length)]];
-        c.globalAlpha = 0.55 + r() * 0.4; c.lineWidth = 3 + r() * 6; c.lineCap = "round";
-        var a = (h < 0.5 ? 0 : 0.5) + (r() - 0.5) * 1.1, l = 10 + r() * 26;
-        c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(a) * l * 0.5, y + Math.sin(a) * l * 0.5 - 3, x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke();
-      }
-      c.globalAlpha = 1;
-    }
+    if (FOND_IMAGE) { toile.classList.add("t08-photo"); toile.style.backgroundImage = "url(" + FOND_IMAGE + ")"; }
 
-    // ---- La fenêtre et son interface --------------------------------------------------------
-    var fen = q("#t08-fenetre-fen"), C = q("#t08-fenetre-contenu");
-    // La fenêtre (dessinée en 1760 × 980) se réduit pour tenir dans tout format, centrée sur le fond peint.
+    // ---- La fenêtre : sa barre de titre, puis SES captures (ou son seul titre) -----------------
+    var fen = q("#" + ID + "-fen"), barre = q("#" + ID + "-barre"), C = q("#" + ID + "-contenu");
+    // La fenêtre (dessinée en 1760 × 980) se réduit pour tenir dans tout format, centrée sur le bureau.
     var k = Math.min(1, (L - 60) / 1760, (H - 60) / 980), fx = (L - 1760 * k) / 2, fy = (H - 980 * k) / 2;
     fen.style.left = fx + "px"; fen.style.top = fy + "px"; if (k < 1) fen.style.transform = "scale(" + k + ")";
-    var a = function (parent, classe, x, y, html, style) {
-      var e = K.el(parent, "div", "t08-a " + (classe || ""), html == null ? null : html, style || "");
-      if (x != null) e.style.left = x + "px"; if (y != null) e.style.top = y + "px"; return e;
-    };
-    a(C, "t08-barre-titre");
-    ["#ff5f57", "#febc2e", "#28c840"].forEach(function (col, i) { a(C, "t08-feu", 20 + i * 22, null, null, "background:" + col + ";"); });
-    var seg = a(C, "t08-segments"), segSel = a(seg, "t08-segment-sel", 119);
-    APP.onglets.forEach(function (o, i) { a(seg, "t08-seg", i * 118, null, o); });
-    a(C, "t08-titre-fen", null, null, APP.titre);
-    a(C, "t08-laterale");
-    a(C, "t08-bouton-lat", null, null, APP.bouton);
-    var y = 140, elements = [];
-    APP.laterale.forEach(function (rub) {
-      a(C, "t08-rub", null, y, rub[0]); y += 24;
-      rub[1].forEach(function (it) { elements.push([a(C, "t08-el", null, y, it[0] + "<i>" + it[1] + "</i>"), y]); y += 36; });
-      y += 28;
-    });
-    var elSel = a(C, "t08-el-sel", null, elements[0][1]); C.insertBefore(elSel, elements[0][0]);
-    var vide = a(C, "t08-vide"), logo = K.el(vide, "img"); logo.alt = ""; logo.src = "brand/logo.svg"; logo.onerror = function () { logo.remove(); };
-    var rac = K.el(vide, "div", "t08-raccourcis");
-    APP.raccourcis.forEach(function (rc) { K.el(rac, "span", null, rc[0]); K.el(rac, "b", null, rc[1]); });
-    var lecon = a(C, null, 0, 0, null, "position:absolute; inset:0;");
-    a(lecon, "t08-lecon-titre", null, null, APP.lecon); a(lecon, "t08-lecon-detail", null, null, APP.detail);
-    var video = a(lecon, "t08-video"); a(video, "t08-lire", null, null, K.ic("play")); var prog = a(video, "t08-progres", null, null, "<i></i>");
-    a(lecon, "t08-liste-titre", null, null, "Dans cette leçon");
-    var cases = APP.liste.map(function (txt, i) { var it = a(lecon, "t08-item", null, 214 + i * 42, txt); a(it, "t08-case"); return it; });
-    var ok = K.el(cases[0], "span", "t08-case-ok", K.ic("check"));
-    var champ = a(C, "t08-champ"), aide = a(champ, "t08-aide", null, null, APP.aide), tape = a(champ, "t08-tape");
-    APP.puces.forEach(function (p, i) { a(champ, "t08-puce", 22 + i * 150, null, p); });
-    a(champ, "t08-envoi", null, null, K.ic("arrow-up"));
-    var rep = a(C, "t08-reponse", null, null, "<b>" + APP.reponse[0] + "</b>" + APP.reponse[1]);
+    [0, 1, 2].forEach(function (i) { K.el(barre, "div", "t08-feu", null, "left:" + (20 + i * 22) + "px;"); });   // trois points gris
+    K.el(barre, "div", "t08-titre-fen", TITRE);
+    var ecrans = CAPTURES.map(function (src) { var im = K.el(C, "img", "t08-capture"); im.alt = ""; im.src = src; return im; });
+    if (!ecrans.length) K.el(C, "div", "t08-vide", TITRE);
+    var champ = null;
+    if (DEMANDE.texte && ecrans.length) {
+      champ = K.el(fen, "div", "t08-demande", null, "left:" + DEMANDE.x + "px; top:" + DEMANDE.y + "px; font-size:" + DEMANDE.taille + "px; color:" + DEMANDE.couleur + "; z-index:3;");
+    }
 
     // ---- Le geste : caméra, curseur, clics, frappe ---------------------------------------------
     var P = function (wx, wy) { return [fx + wx * k, fy + wy * k]; };
-    // Un gros plan : le point (wx, wy) de la fenêtre vient au centre de l'écran, au zoom s (même cadrage en 9:16).
+    // Un gros plan : le point (wx, wy) de la fenêtre vient au centre de l'écran, au zoom s. En 9:16, la
+    // fenêtre est plus petite dans l'image : ses gros plans serrent davantage (×1,4) pour remplir l'écran.
+    var SERRE = vertical ? 1.4 : 1;
     var viser = function (t, wx, wy, s, duree) {
-      var plan = s <= 1.01, p = plan ? [L / 2, H / 2] : P(wx, wy), sc = plan ? 1 : s * (L / 1920) / k;
+      var plan = s <= 1.01, p = plan ? [L / 2, H / 2] : P(wx, wy), sc = plan ? 1 : s * SERRE * (L / 1920) / k;
       tl.to(bureau, { x: -(p[0] - L / 2) * sc, y: -(p[1] - H / 2) * sc, scale: sc, duration: duree, ease: "expo.inOut" }, t);
       tl.to(bureau, { filter: "blur(7px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);
     };
     gsap.set(bureau, { x: 0, y: 0, scale: 1, filter: "blur(0px)" });
     tl.to(bureau, { scale: 1.03, duration: 0.5, ease: "sine.out" }, 0);
-    PLANS.forEach(function (pl) { viser(pl[0], pl[1], pl[2], pl[3], 0.5); });
-    tl.to(bureau, { scale: "+=0.03", duration: D - 6.65, ease: "none" }, 6.65);
-    var cur = K.curseur(q("#t08-fenetre-curseur-hote"), ID + "-cur", false);
-    var pc = function (wx, wy) { var p = P(wx, wy); return [p[0], p[1]]; };
-    var c0 = pc(1100, 640), c1 = pc(156, 20), c2 = pc(112, 176), c3 = pc(1233, 219), c4 = pc(700, 846), c5 = pc(1657, 888);
-    K.trajet(tl, cur, [[0, c0[0], c0[1]], [0.3, c1[0], c1[1], 0.75, "power3.inOut"], [1.5, c2[0], c2[1], 0.6, "power3.inOut"],
-      [2.45, c3[0], c3[1], 0.75, "power3.inOut"], [3.45, c4[0], c4[1], 0.55, "power3.inOut"], [4.75, c5[0], c5[1], 0.4, "power3.out"]]);
-    // Clic sur l'onglet de gauche : la sélection glisse.
-    K.clic(tl, cur, 1.12); tl.to(segSel, { x: -117, duration: 0.25, ease: "power3.out" }, 1.15);
-    // Clic sur l'élément de la barre latérale : l'écran vide laisse place à la leçon.
-    K.clic(tl, cur, 2.12); gsap.set(elSel, { opacity: 0.4 }); tl.to(elSel, { opacity: 1, duration: 0.1 }, 2.15);
-    K.cacher(lecon); tl.set(vide, { opacity: 0 }, 2.2).set(lecon, { opacity: 1 }, 2.2);
-    tl.fromTo(prog.querySelector("i"), { scaleX: 0.08 }, { scaleX: 0.35, duration: 4.5, ease: "none" }, 2.2);
-    // La première case se coche.
-    K.clic(tl, cur, 3.25); K.cacher(ok, { scale: 0.4 }); tl.to(ok, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 3.27);
-    // La demande se tape dans le champ, puis part.
-    K.clic(tl, cur, 4.05); tl.set(aide, { opacity: 0 }, 4.12);
-    K.taper(tl, tape, APP.demande, 4.15, 4.7, D);
-    K.clic(tl, cur, 5.18); tl.set(tape, { opacity: 0 }, 5.25).set(aide, { opacity: 1 }, 5.25);
-    K.cacher(rep, { y: 30 }); tl.to(rep, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 5.55);
+    // Sans capture, la caméra ne cherche aucun détail : elle va et vient sur le seul titre.
+    var plans = ecrans.length ? PLANS : [[0.6, 880, 516, 1.3], [1.6, 880, 516, 1], [2.4, 880, 516, 1.2]];
+    plans.forEach(function (pl) { viser(pl[0], pl[1], pl[2], pl[3], 0.5); });
+    var dernier = plans.length ? plans[plans.length - 1][0] + 0.55 : 0.5;
+    if (dernier < D) tl.to(bureau, { scale: "+=0.03", duration: D - dernier, ease: "none" }, dernier);
+
+    // Les captures : la première d'abord, puis la suivante à chaque clic, d'un coup (sans animation).
+    if (ecrans.length) {
+      K.cacher(ecrans.slice(1));
+      var clics = CLICS;
+      var cur = K.curseur(q("#" + ID + "-curseur-hote"), ID + "-cur", false);
+      var depart = P(1100, 640), trajet = [[0, depart[0], depart[1]]];
+      clics.forEach(function (c) { var p = P(c[1], c[2]); trajet.push([Math.max(0.05, c[0] - 0.7), p[0], p[1], 0.6, "power3.inOut"]); });
+      K.trajet(tl, cur, trajet);
+      clics.forEach(function (c, i) {
+        K.clic(tl, cur, c[0]);
+        if (i + 1 < ecrans.length) { tl.set(ecrans[i], { opacity: 0 }, c[0] + 0.06); tl.set(ecrans[i + 1], { opacity: 1 }, c[0] + 0.06); }
+      });
+      if (champ) {
+        // La demande se tape dans son champ, puis part au clic suivant (la capture d'après montre la réponse).
+        K.taper(tl, champ, DEMANDE.texte, DEMANDE.debut, DEMANDE.fin, D);
+        var envoi = clics.filter(function (c) { return c[0] > DEMANDE.fin; })[0];
+        if (envoi) tl.set(champ, { opacity: 0 }, envoi[0] + 0.06);
+      }
+    }
 
     window.__timelines[ID] = tl;
   })();

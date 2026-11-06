@@ -5,7 +5,7 @@
   <!--
     STYLE N°5 « INTERRUPTEURS CRÈME » · SCÈNE 1 : LES INTERRUPTEURS EN CASCADE (6,5 s)
 
-    Ce qu'elle montre : un panneau de réglages de l'offre, vu de très près sur un papier crème. Une
+    Ce qu'elle montre : un panneau de réglages de l'offre, vu de très près sur un papier clair. Une
     main clique l'interrupteur maître, les sept interrupteurs s'allument en cascade. La caméra
     recule et glisse : le panneau part au bord gauche, la phrase s'écrit au centre, un trait à main
     levée entoure les mots clés, puis les disques des membres apparaissent à droite. Le trait
@@ -26,9 +26,11 @@
          logos (studio_motion.py logos), comme l'original.
       4. La phrase (les deux span.t05-ligne du HTML, 6 mots au plus) et les mots que le trait
          entoure (le span.t05-cle) : ce que la vidéo annonce, tiré de OFFRE.json.
-      5. Les couleurs du look, en tête du style : --t05-papier (le crème), --t05-carte, --t05-encre.
-         L'interrupteur allumé et les icônes prennent l'accent de la marque ; le trait aussi, sauf si
-         l'accent est trop pâle sur le crème (jaune, pastel) : il passe alors à l'encre, tout seul.
+      5. Les couleurs : celles de la marque, rien d'autre (variables en tête du style) : le papier
+         (--t05-papier, un gris très clair tiré de son clair et de son gris le plus clair), les
+         cartes (son clair), l'encre (sa couleur sombre), ses gris. L'interrupteur allumé et les
+         icônes prennent l'accent plein ; le trait aussi, sauf si l'accent est trop pâle sur le clair
+         (jaune, pastel) : il passe alors à l'encre, tout seul. Jamais l'accent en transparence.
       Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
       du look (Source Serif 4), mode d'emploi dans style.md, section 4.
     Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2).
@@ -38,11 +40,15 @@
 <template>
   <style>
     #t05-cascade {
-      --t05-papier: #efefe5;   /* le fond crème du look */
-      --t05-carte: #f9f9f4;    /* panneau, disques */
-      --t05-pli: #e4e4d8;      /* onglet, rails éteints */
-      --t05-encre: #1d1d1b;    /* textes sur le papier */
-      --t05-gris: #8a8a82;     /* icônes des membres, filets */
+      /* La palette du style : les neutres de la marque et son accent plein, rien d'autre. Le papier
+         est un gris très clair (son clair mêlé à son gris le plus clair), les cartes son clair,
+         l'encre sa couleur sombre ; jamais une teinte crème inventée, jamais l'accent en transparence. */
+      --t05-papier: color-mix(in srgb, var(--brand-clair) 58%, var(--brand-gris-4));
+      --t05-carte: var(--brand-clair);
+      --t05-pli: color-mix(in srgb, var(--brand-clair) 25%, var(--brand-gris-4));
+      --t05-encre: var(--brand-sombre);
+      --t05-gris: var(--brand-gris-3);
+      --t05-gris-texte: var(--brand-gris-2);
       --t05-allume: var(--brand-accent);
       --t05-titres: var(--brand-font-display);
       --t05-texte: var(--brand-font-body);
@@ -57,7 +63,7 @@
     #t05-cascade .t05-onglet svg { width: 34px; height: 34px; }
     #t05-cascade .t05-panneau {
       position: absolute; width: 632px; height: 743px; border-radius: 24px; background: var(--t05-carte);
-      box-shadow: inset 0 0 0 1.5px rgba(40, 40, 20, 0.08), 0 22px 50px rgba(60, 60, 30, 0.10), 0 3px 10px rgba(60, 60, 30, 0.05);
+      box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.07), 0 22px 50px rgba(0, 0, 0, 0.08), 0 3px 10px rgba(0, 0, 0, 0.04);
     }
     #t05-cascade .t05-rang {
       position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
@@ -65,7 +71,7 @@
       font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
     }
     #t05-cascade .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
-    #t05-cascade .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(30, 30, 20, 0.14); }
+    #t05-cascade .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(0, 0, 0, 0.12); }
     #t05-cascade .t05-ico {
       width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center;
       background: var(--brand-accent); color: var(--brand-contrast);
@@ -77,7 +83,7 @@
     }
     #t05-cascade .t05-plein {
       position: absolute; inset: 0; border-radius: 18px; background: var(--t05-allume);
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);
     }
     #t05-cascade .t05-bille {
       position: absolute; left: 3px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff;
@@ -86,7 +92,7 @@
     #t05-cascade .t05-membre {
       position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
       background: var(--t05-carte); color: var(--t05-gris); display: grid; place-items: center;
-      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     #t05-cascade .t05-membre svg { width: 50%; height: 50%; }
     #t05-cascade .t05-titre {
@@ -151,11 +157,11 @@
       var tl = gsap.timeline({ paused: true });
 
       // --- Outils du look (communs aux scènes du style 5) ---------------------------------
-      // La couleur du trait : l'accent s'il se voit sur le papier (contraste 2 ou plus), sinon l'encre.
+      // La couleur du trait : l'accent s'il se voit sur le clair (contraste 2 ou plus), sinon l'encre.
       function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
       function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
       function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
-      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--t05-papier"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
+      function couleurTrait() { var cs = getComputedStyle(racine), a = cs.getPropertyValue("--brand-accent"), p = cs.getPropertyValue("--brand-clair"); return contraste(a, p) >= 2 ? a.trim() : cs.getPropertyValue("--t05-encre").trim(); }
       // Courbe lisse passant par des points (Catmull-Rom vers Bézier).
       function chemin(p, n) { var d = "M" + p[0][0].toFixed(1) + " " + p[0][1].toFixed(1); for (var i = 0; i < Math.min(p.length - 1, n == null ? 1e9 : n); i++) { var a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c; d += " C" + (b[0] + (c[0] - a[0]) / 6).toFixed(1) + " " + (b[1] + (c[1] - a[1]) / 6).toFixed(1) + " " + (c[0] - (e[0] - b[0]) / 6).toFixed(1) + " " + (c[1] - (e[1] - b[1]) / 6).toFixed(1) + " " + c[0].toFixed(1) + " " + c[1].toFixed(1); } return d; }
       // Longueur du même chemin jusqu'au point n (mêmes points de contrôle que le chemin entier).

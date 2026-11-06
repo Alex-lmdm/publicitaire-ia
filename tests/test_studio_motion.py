@@ -74,8 +74,8 @@ class Videos(unittest.TestCase):
             self.assertIn(s["format"], sm.FORMATS)
 
     def test_bornes_demandees(self):
-        # Story idéalement sous 30 s, Reel sous 45 s, page de vente sous 2 min.
-        self.assertLessEqual(sm.SUPPORTS["story"]["ideal"][1], 30)
+        # Une story tient dans un segment (60 s), Reel sous 45 s, page de vente sous 2 min.
+        self.assertLessEqual(sm.SUPPORTS["story"]["ideal"][1], 60)
         self.assertLessEqual(sm.SUPPORTS["reel"]["ideal"][1], 45)
         self.assertLessEqual(sm.SUPPORTS["page"]["ideal"][1], 120)
 
@@ -132,21 +132,60 @@ class Installation(unittest.TestCase):
 
 class Lecture(unittest.TestCase):
     def test_plancher(self):
-        self.assertEqual(sm.lecture("Nouveau"), 0.8)
+        self.assertEqual(sm.lecture("Nouveau"), 1.5)
 
     def test_par_mot(self):
-        self.assertEqual(sm.lecture("Ton nouveau monteur"), 1.3)
-        self.assertEqual(sm.lecture("Tes Reels montés par ton IA"), 2.0)
+        self.assertEqual(sm.lecture("Ton offre est bonne."), 2.0)
+        self.assertEqual(sm.lecture("Tu donnes le lien de ta page de vente."), 3.5)
 
-    def test_ecran_court(self):
-        # Un écran porte 1 à 4 mots ; au-delà de 6, l'outil prévient.
-        self.assertEqual((sm.MOTS_CONSEILLES, sm.MOTS_MAX), (4, 6))
+    def test_ecran_phrase(self):
+        # Sans voix, une phrase complète par écran : 8 mots conseillés, au-delà de 12 l'outil prévient.
+        self.assertEqual((sm.MOTS_CONSEILLES, sm.MOTS_MAX), (8, 12))
 
     def test_ecran_final(self):
-        self.assertEqual(sm.lecture("Commente MONTEUR", final=True), 2.5)
+        self.assertEqual(sm.lecture("Commente MONTEUR", final=True), 3.0)
+
+    def test_durees_d_une_campagne(self):
+        # Une story de lancement présente l'offre : l'ouverture vise 45 s, jamais 10 (essai du 06/11/2026).
+        duree = lambda spec: sm.duree_cible(sm.lire_video(spec))
+        self.assertEqual(duree("story:ouverture"), 45)
+        self.assertEqual(duree("story:teaser"), 15)
+        self.assertGreaterEqual(duree("story:dernier-jour"), 25)
 
     def test_ponctuation_seule(self):
         self.assertEqual(sm.lecture(" — ! "), 0.0)
+
+
+class Palette(unittest.TestCase):
+    """La story refusée du 06/11/2026 : des bruns tirés du jaune passaient tous les contrôles."""
+    MARQUE = ["#202022", "#ffffff", "#ffee00", "#3b3b3d", "#9b9b9c"]
+
+    def image(self, *couleurs):
+        # Une image de 100 pixels, chaque couleur (hex, nombre de pixels) à la suite.
+        octets = bytearray()
+        for hexa, n in couleurs:
+            octets += bytes(int(hexa[i:i + 2], 16) for i in (1, 3, 5)) * n
+        return bytes(octets)
+
+    def test_jaune_noir_blanc_et_gris_passent(self):
+        img = self.image(("#ffee00", 40), ("#202022", 30), ("#ffffff", 20), ("#808080", 10))
+        self.assertEqual(sm.verdict_palette([img] * 4, self.MARQUE)["plages"], [])
+
+    def test_un_brun_tire_du_jaune_est_signale(self):
+        brun = self.image(("#6c440c", 60), ("#202022", 40))
+        v = sm.verdict_palette([self.image(("#ffee00", 100))] * 2 + [brun] * 3, self.MARQUE, fps=2)
+        self.assertEqual(len(v["plages"]), 1)
+        self.assertEqual((v["plages"][0]["debut"], v["plages"][0]["fin"]), (1.0, 2.5))
+        self.assertIn("brun", " ".join(v["plages"][0]["couleurs"]))
+
+    def test_un_lissage_de_bord_ne_suffit_pas(self):
+        # Quelques pixels de bord (jaune à demi sur noir) restent sous le seuil.
+        img = self.image(("#ffee00", 49), ("#202022", 49), ("#807710", 2))
+        self.assertEqual(sm.verdict_palette([img], self.MARQUE)["plages"], [])
+
+    def test_couleurs_lues_dans_les_jetons(self):
+        css = "--brand-bg: #202022;\n--brand-accent: #ffee00;\n--brand-text: #FFFFFF;\n--brand-sombre: #202022;"
+        self.assertEqual(sm.couleurs_marque(css), ["#202022", "#ffffff", "#ffee00"])
 
 
 class Zones(unittest.TestCase):
@@ -677,6 +716,8 @@ class Export(unittest.TestCase):
         pb, _ = sm.verdict_export(self.info(duree="75"), "story")
         self.assertTrue(any("durée" in p for p in pb))
         pb, avis = sm.verdict_export(self.info(duree="40"), "story")
+        self.assertEqual((pb, [a for a in avis if "visées" in a]), ([], []))  # une story a le temps d'un vrai script
+        pb, avis = sm.verdict_export(self.info(duree="60"), "reel")
         self.assertEqual(pb, [])
         self.assertTrue(any("visées" in a for a in avis))
 
@@ -892,6 +933,7 @@ class Creation(unittest.TestCase):
             self.assertEqual((metas["linkedin"]["format"], metas["linkedin"]["objectif"]), ("4x5", "vente"))
             texte = (dossier / "PLAN.md").read_text(encoding="utf-8")
             self.assertIn("## Style et musique", texte)   # une conversation reprise sait si l'étape 4 est faite
+            self.assertLess(texte.index("## Script"), texte.index("## Style et musique"))   # le script se valide avant
             self.assertIn("### LinkedIn (4x5", texte)
             self.assertLess(texte.index("### LinkedIn"), texte.index("## Livraison"))
             self.assertTrue((ajouts[0] / "assets" / "fonts" / "poppins.css").is_file())

@@ -23,24 +23,29 @@
      3. LOGO : brand/logo.svg ou brand/logo.png (sans logo : "" et l'initiale du nom s'affiche).
      4. NOM : le nom de l'offre ; TITRE_LIEN : 2 à 4 mots, le dernier surligné ; BOUTON : l'appel
         du support en 2 ou 3 mots (page : « Je découvre », pub : « J'en profite »).
-    Couleurs : maillon, fil, point, chevron, bouton et surlignage suivent var(--brand-accent).
+    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée,
+    l'encre sa nuit (var(--brand-sombre)), les pixels de la case sa nuit et son premier gris ;
+    maillon, fil, point, chevron, bouton et surlignage suivent var(--brand-accent), toujours plein.
   -->
 </head>
 <body>
 <template>
 <style>
-  #t01-logos-fin { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f; background: var(--t01-papier); }
+  #t01-logos-fin { --t01-papier: var(--brand-clair); --t01-trait: rgba(0, 0, 0, 0.07); --t01-encre: var(--brand-sombre); background: var(--t01-papier); }
   #t01-logos-fin .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
-    background-image: radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
-      linear-gradient(var(--t01-trait) 0 2px, transparent 2px), linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
-    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.085) 0 4px, transparent 4.6px),
+      linear-gradient(var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.028));
+    background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
   #t01-logos-fin .t01-case { position: absolute; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 24px 60px rgba(0,0,0,.06); }
   #t01-logos-fin .t01-rond { position: absolute; border-radius: 50%; background: #fff; display: grid; place-items: center;
     box-shadow: 0 0 0 20px rgba(0,0,0,.022), 0 0 0 21px rgba(0,0,0,.035), 0 22px 44px rgba(0,0,0,.10); }
   #t01-logos-fin .t01-rond img, #t01-logos-fin .t01-rond svg { width: 48%; height: 48%; object-fit: contain; }
   #t01-logos-fin .t01-initiale { font: 700 72px/1 var(--brand-font-display); color: var(--t01-encre); letter-spacing: -0.04em; }
   #t01-logos-fin .t01-onde { position: absolute; border-radius: 50%; box-shadow: inset 0 0 0 4px var(--brand-accent); }
-  #t01-logos-fin.t01-accent-clair .t01-onde { box-shadow: inset 0 0 0 4px var(--brand-accent), 0 0 0 1.5px color-mix(in srgb, var(--t01-encre) 25%, transparent); }
+  #t01-logos-fin.t01-accent-clair .t01-onde { box-shadow: inset 0 0 0 4px var(--brand-accent), 0 0 0 1.5px rgba(0, 0, 0, 0.25); }
   #t01-logos-fin .t01-tuile { position: absolute; border-radius: 26%; background: #fff; display: grid; place-items: center;
     box-shadow: 0 0 0 1px #ededed, 0 14px 30px rgba(0,0,0,.09); color: var(--t01-encre); }
   #t01-logos-fin .t01-tuile svg { width: 56%; height: 56%; }
@@ -110,8 +115,6 @@
       return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
     };
     racine.classList.toggle("t01-accent-clair", lum(rgb("var(--brand-accent)")) > 0.28);
-    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
-      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
     var GLYPHES = "#%@X=+:*/<>";
     var decoder = function (el, texte, debut, duree) {
       K.texteSelon(tl, el, D, function (t) {
@@ -147,12 +150,13 @@
       t.dataset.i = String(i); t.dataset.dx = String(-pl[0]); t.dataset.dy = String(-pl[1]); tuiles.push(t);
     });
     if (!APRES_CHIFFRE) tl.fromTo(caseHub, { opacity: 0, scale: 2.2 }, { opacity: 1, scale: 1, duration: 0.55, ease: "expo.out" }, 0);
-    // Des pixels sombres couvrent la case puis tombent un à un : le logo est dessous.
+    // Des pixels sombres (sa nuit, son premier gris, un sur cinq de sa couleur) couvrent la case puis
+    // tombent un à un : le logo est dessous.
     var rpx = K.rng(41), cotePx = HUB / 5;
     for (var py = 0; py < 5; py++) for (var pxx = 0; pxx < 5; pxx++) {
       var bloc = K.el(cam, "div", null, null, "position:absolute; left:" + (cx - HUB / 2 + pxx * cotePx) + "px; top:" + (cy - HUB / 2 + py * cotePx) +
         "px; width:" + (cotePx + 0.5) + "px; height:" + (cotePx + 0.5) + "px; z-index:5; background:" +
-        (rpx() < 0.2 ? "var(--brand-accent)" : "color-mix(in srgb, var(--t01-encre) " + (88 + Math.floor(rpx() * 12)) + "%, #ffffff)") + ";");
+        (rpx() < 0.2 ? "var(--brand-accent)" : rpx() < 0.7 ? "var(--brand-sombre)" : "var(--brand-gris-1)") + ";");
       K.cacher(bloc);
       tl.set(bloc, { opacity: 1 }, 0.02 + rpx() * 0.12).set(bloc, { opacity: 0 }, 0.22 + rpx() * 0.3);
     }

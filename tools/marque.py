@@ -782,8 +782,16 @@ def resoudre(marque: dict | None) -> dict:
         texte = lisible_sur(fond)
     accent = hex_norme(c.get("accent")) or (DEFAUT["accent"] if not marque else texte)
     surface = hex_norme(c.get("surface")) or melange(fond, lisible_sur(fond), 0.08)
+    # La palette des styles : sa couleur la plus sombre et la plus claire (son fond et son texte), et
+    # des gris entre les deux. Un style ne tire jamais d'autres couleurs de l'accent (un jaune
+    # assombri devient brun : essai refusé du 06/11/2026).
+    sombre, clair = sorted((fond, texte), key=luminance)
     return {
         "fond": fond, "texte": texte, "accent": accent, "surface": surface,
+        "sombre": sombre, "clair": clair,
+        # L'accent posé sur la nuit : lui-même s'il s'y lit, sinon la couleur claire (jamais éclairci).
+        "accent_lisible": accent if contraste(accent, sombre) >= 4.5 else clair,
+        **{f"gris_{i}": melange(sombre, clair, t) for i, t in enumerate((0.12, 0.3, 0.55, 0.8), 1)},
         "secondaire": hex_norme(c.get("secondaire")) or accent,
         "attenue": melange(texte, fond, 0.42),
         # Sur l'accent : une couleur de la marque si elle s'y lit bien, sinon la plus lisible.
@@ -814,6 +822,15 @@ TOKENS = """/* Style de la marque : FICHIER GÉNÉRÉ depuis marque.json par `st
   --brand-stroke: {contour};          /* contour de lisibilité */
   --brand-surface-contrast: {surface_contraste}; /* surface qui tranche (rare) */
   --brand-negative: #ff5050;        /* croix, erreur (hors marque) */
+
+  /* La palette d'un style : rien d'autre que ces couleurs, l'accent et les vraies captures. */
+  --brand-sombre: {sombre};           /* sa couleur la plus sombre : les fonds de nuit */
+  --brand-clair: {clair};            /* sa couleur la plus claire : les fonds clairs, le texte sur la nuit */
+  --brand-accent-lisible: {accent_lisible};   /* l'accent d'un texte posé sur la nuit (lui-même, ou le clair) */
+  --brand-gris-1: {gris_1};           /* gris, du plus sombre au plus clair */
+  --brand-gris-2: {gris_2};
+  --brand-gris-3: {gris_3};
+  --brand-gris-4: {gris_4};
 
   --brand-font-display: "{titres}", "Arial Narrow", Impact, sans-serif;
   --brand-font-body: "{corps}", "Avenir Next", Arial, system-ui, sans-serif;

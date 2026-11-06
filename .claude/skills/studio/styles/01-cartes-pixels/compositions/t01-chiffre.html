@@ -17,24 +17,29 @@
         n'utilise pas cette scène : jamais un chiffre inventé. FORMAT : ajoute « + » ou « k » au besoin.
      3. LIBELLE : ce que le chiffre compte (« élèves », « clients accompagnés », « ventes »), 1 à 3 mots.
      4. ETIQUETTE : le label du haut (« [ 03 · LA PREUVE ] »).
-    Couleurs : le chiffre, les glyphes, l'étoile et les points suivent var(--brand-accent). Accent
-    clair (jaune…) : chiffre et glyphes passent à l'encre, un trait de couleur souligne le chiffre.
+    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée,
+    l'encre sa nuit (var(--brand-sombre)) ; le chiffre, les glyphes et les points suivent
+    var(--brand-accent), toujours plein. Accent clair (jaune…) : chiffre et glyphes passent à
+    l'encre, un trait plein de sa couleur souligne le chiffre.
   -->
 </head>
 <body>
 <template>
 <style>
-  #t01-chiffre { --t01-papier: #f8f8f8; --t01-trait: #e7e7e7; --t01-encre: #1d1d1f;
+  #t01-chiffre { --t01-papier: var(--brand-clair); --t01-trait: rgba(0, 0, 0, 0.07); --t01-encre: var(--brand-sombre);
     --t01-mono: ui-monospace, "SF Mono", Menlo, Consolas, var(--brand-font-mono);
     --t01-chiffre: var(--brand-accent); --t01-glyphe: var(--brand-accent); background: var(--t01-papier); }
   #t01-chiffre.t01-accent-clair { --t01-chiffre: var(--t01-encre); --t01-glyphe: var(--t01-encre); }
   #t01-chiffre .t01-papier { position: absolute; inset: -2px; background-color: var(--t01-papier);
-    background-image: radial-gradient(circle at 50% 50%, #e3e3e3 0 4px, transparent 4.6px),
-      linear-gradient(var(--t01-trait) 0 2px, transparent 2px), linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px);
-    background-size: 180px 180px; background-position: 60px 30px, 60px 30px, 60px 30px; }
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.085) 0 4px, transparent 4.6px),
+      linear-gradient(var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px),
+      linear-gradient(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.028));
+    background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
   #t01-chiffre .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
     letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
-  #t01-chiffre .t01-hachures { position: absolute; background-image: linear-gradient(90deg, #e4e4e4 0 2px, transparent 2px); background-size: 16px 100%; }
+  #t01-chiffre .t01-hachures { position: absolute; background-image: linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 2px, transparent 2px); background-size: 16px 100%; }
   #t01-chiffre .t01-panneau { position: absolute; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 24px 60px rgba(0,0,0,.06); }
   #t01-chiffre .t01-separe { position: absolute; height: 2px; background: #efefef; }
   #t01-chiffre .t01-chiffre { position: absolute; left: 0; right: 0; text-align: center; white-space: pre;
@@ -46,9 +51,6 @@
     box-shadow: 0 0 0 1px #ececec, 0 10px 24px rgba(0,0,0,.08); font: 500 26px/1 var(--t01-mono); color: var(--t01-encre); white-space: pre; }
   #t01-chiffre .t01-point { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--brand-accent); }
   #t01-chiffre.t01-accent-clair .t01-point { box-shadow: 0 0 0 1.5px var(--t01-encre); }
-  #t01-chiffre .t01-etoile { position: absolute; width: 30px; height: 30px; }
-  #t01-chiffre .t01-etoile path { fill: var(--brand-accent); }
-  #t01-chiffre.t01-accent-clair .t01-etoile path { stroke: var(--t01-encre); stroke-width: 1.2; }
   #t01-chiffre.t01-vertical .t01-label { left: 100px; top: 314px; font-size: 24px; }
 </style>
 
@@ -84,8 +86,6 @@
     // clair (luminance de 0,17 au plus) ; sinon il passe à l'encre, souligné d'un trait de couleur.
     var clair = lum(rgb("var(--brand-accent)")) > 0.17;
     racine.classList.toggle("t01-accent-clair", clair);
-    racine.style.setProperty("--t01-encre", lum(rgb("var(--brand-bg)")) < 0.08 ? "var(--brand-bg)"
-      : lum(rgb("var(--brand-text)")) < 0.08 ? "var(--brand-text)" : "#1d1d1f");
     var GLYPHES = "#%@X=+:*/<>";
     var decoder = function (el, texte, debut, duree) {
       K.texteSelon(tl, el, D, function (t) {
@@ -114,8 +114,6 @@
     var glyphes = K.el(contenu, "div", "t01-glyphes"); poser(glyphes, px + 20, py + 14, PL - 40, PH - 24); glyphes.setAttribute("data-layout-ignore", "");
     var rangee = K.el(contenu, "div", "t01-rangee"); rangee.style.top = (py + PH + (RH - 56) / 2) + "px";
     var pastille = K.el(rangee, "div", "t01-pastille", LIBELLE);
-    var etoile = K.el(contenu, "div", "t01-etoile", '<svg viewBox="0 0 24 24"><path d="M12 0 C12.9 7.6 16.4 11.1 24 12 C16.4 12.9 12.9 16.4 12 24 C11.1 16.4 7.6 12.9 0 12 C7.6 11.1 11.1 7.6 12 0 Z"/></svg>');
-    poser(etoile, px - 15, py - 15);
     var points = [];
     for (var i = 0; i < 6; i++) {
       var cote = i < 3 ? -1 : 1, rang = i < 3 ? 3 - i : i - 2;
@@ -160,8 +158,6 @@
     tl.to(pastille, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 0.75);
     K.cacher(points, { scale: 0 });
     points.forEach(function (p, i) { tl.to(p, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(3)" }, 0.95 + (i < 3 ? 2 - i : i - 3) * 0.1); });
-    K.cacher(etoile, { scale: 0, rotation: -90 });
-    tl.to(etoile, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 0.35);
     decoder(q("#t01-chiffre-label"), ETIQUETTE, 0.1, 0.55);
     tl.fromTo(cam, { scale: 1 }, { scale: 1.04, duration: 1.8, ease: "sine.inOut" }, 0.2);
 

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    STYLE N°2 · TITRES GÉANTS · SCÈNE « LE DISQUE QUI POSE LE NOM » (la révélation), 5,0 s, 16:9
+
+    Ce qu'elle montre : sur le clair de la marque, un cercle se dessine au trait avec ses repères de
+    construction (son carré, ses deux diamètres), puis se remplit de l'accent en gonflant ; coupe
+    franche sur la nuit de la marque, quadrillée fin : le disque flotte, un cadre de sélection à
+    poignées l'attrape, la caméra lève les yeux avec lui pendant qu'il monte ; un trait de marque
+    tombe de lui jusqu'au sol, deux traits de construction s'ouvrent en cône ; le disque redescend
+    le long du trait, la caméra le suit, l'horizon se trace, il se pose au point de fuite : les
+    rayons de perspective partent de lui (ils deviennent l'étoile de la scène suivante) et le nom
+    de l'offre s'écrit au-dessus, lettre par lettre.
+
+    Couleurs : celles de la marque, rien d'autre. Le clair (--brand-clair) et son trait sombre au
+    début, la nuit (--brand-sombre) ensuite ; le disque est l'accent plein ; les repères et les
+    rayons, du blanc en transparence (des gris). Aucun paysage, aucune sphère, aucun faisceau de
+    lumière, aucune teinte dérivée de l'accent.
+
+    À remplacer :
+      1. L'identifiant « t02-revele » partout (racine, scène, préfixe des ids, clé de la timeline).
+      2. NOM : le nom de l'offre (ou de sa marque), 1 à 3 mots ; il se réduit seul s'il est long.
+      3. LOGO : facultatif, le chemin d'un logo rond de sa marque (assets/images/… ou brand/logo.*),
+         posé dans le disque dès la coupe ; vide, le disque reste l'accent plein.
+      4. Les instants (MOMENTS) : la couleur, la coupe, la chute du trait et la pose sur les temps
+         forts de la musique ; garde l'ordre.
+  -->
+</head>
+<body>
+<template>
+  <style>
+    #t02-revele {
+      --t02-nuit: var(--brand-sombre);
+      --t02-texte: var(--brand-clair);
+      --t02-accent-texte: var(--brand-accent-lisible);
+      background: var(--t02-nuit);
+    }
+    /* Le monde : la grille de la nuit, le papier du début, le disque, ses traits ; la caméra le
+       fait glisser en hauteur. */
+    #t02-revele .t02-revele-monde { position: absolute; left: 0; top: 0; width: 1920px; height: 1720px; transform-origin: 960px 1160px; }
+    #t02-revele .t02-revele-grille {
+      position: absolute; left: -200px; right: -200px; top: 0; bottom: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+      background-size: 80px 80px; background-position: 0 -1px, -1px 0;
+    }
+    #t02-revele .t02-revele-papier { position: absolute; left: 0; top: 620px; width: 1920px; height: 1080px; background: var(--brand-clair); }
+    #t02-revele .t02-revele-pv { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed rgba(0, 0, 0, 0.18); transform-origin: 50% 50%; }
+    #t02-revele .t02-revele-ph { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed rgba(0, 0, 0, 0.18); transform-origin: 50% 50%; }
+    #t02-revele .t02-revele-cote { position: absolute; font-family: var(--brand-font-body); font-weight: 500; font-size: 22px; line-height: 1.3; color: var(--brand-sombre); white-space: nowrap; }
+    #t02-revele .t02-revele-disque { position: absolute; left: 0; top: 0; width: 400px; height: 400px; margin: -200px 0 0 -200px; z-index: 6; }
+    #t02-revele .t02-revele-disque svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    #t02-revele .t02-revele-logo { position: absolute; left: 20px; top: 20px; width: 360px; height: 360px; border-radius: 50%; object-fit: cover; }
+    #t02-revele .t02-revele-sel { position: absolute; left: 4px; top: 4px; width: 392px; height: 392px; border: 3px solid var(--t02-accent-texte); }
+    #t02-revele .t02-revele-poignee { position: absolute; width: 20px; height: 20px; margin: -11px 0 0 -11px; background: var(--t02-nuit); border: 3px solid var(--t02-accent-texte); }
+    /* L'étiquette de la couleur, à droite du disque sur la nuit (elle garde sa taille quand il rapetisse). */
+    #t02-revele .t02-revele-etq { position: absolute; left: 432px; top: 186px; font-family: var(--brand-font-body); font-weight: 500; font-size: 24px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; transform-origin: 0 50%; }
+    #t02-revele .t02-revele-fil-hote { position: absolute; left: 958px; width: 4px; transform-origin: 50% 100%; z-index: 4; }
+    #t02-revele .t02-revele-fil { position: absolute; inset: 0; background: var(--t02-accent-texte); transform-origin: 50% 0; }
+    #t02-revele .t02-revele-cone { position: absolute; left: 959px; width: 2px; background: rgba(255, 255, 255, 0.34); transform-origin: 50% 0; z-index: 3; }
+    #t02-revele .t02-revele-horizon { position: absolute; left: -100px; right: -100px; height: 2px; background: rgba(255, 255, 255, 0.55); transform-origin: 50% 50%; z-index: 3; }
+    #t02-revele .t02-revele-rayons { position: absolute; left: 960px; width: 0; height: 0; z-index: 3; }
+    #t02-revele .t02-revele-rayon { position: absolute; left: 0; top: -1px; width: 1500px; height: 2px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.12)); transform-origin: 0 50%; }
+    #t02-revele .t02-revele-axe { position: absolute; left: -1px; top: 0; width: 0; height: 460px; border-left: 2px dashed rgba(255, 255, 255, 0.5); transform-origin: 50% 0; }
+    #t02-revele .t02-revele-nom {
+      position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; z-index: 7;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 120px; line-height: 1;
+      letter-spacing: -0.04em; color: var(--t02-texte);
+    }
+  </style>
+
+  <div data-composition-id="t02-revele" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
+    <div id="t02-revele" class="k-scene">
+      <div class="t02-revele-monde" id="t02-revele-monde" data-layout-allow-overflow>
+        <div class="t02-revele-grille" id="t02-revele-grille"></div>
+        <div class="t02-revele-papier" id="t02-revele-papier"></div>
+        <div class="t02-revele-cone" id="t02-revele-cone-g"></div>
+        <div class="t02-revele-cone" id="t02-revele-cone-d"></div>
+        <div class="t02-revele-horizon" id="t02-revele-horizon" style="top:1299px;"></div>
+        <div class="t02-revele-rayons" id="t02-revele-rayons" style="top:1300px;"></div>
+        <div class="t02-revele-fil-hote" id="t02-revele-fil-hote"><div class="t02-revele-fil" id="t02-revele-fil"></div></div>
+        <div class="t02-revele-disque" id="t02-revele-disque" style="left:960px; top:1160px;"></div>
+        <div class="t02-revele-nom" id="t02-revele-nom" style="top:1012px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var D = 5.0, ID = "t02-revele", tl = gsap.timeline({ paused: true });
+      var $ = function (s) { return document.getElementById(ID + "-" + s); };
+
+      // ---------- Ce qu'on remplace ----------
+      var NOM = "Ton offre";
+      var LOGO = "";   // ex. "brand/logo.png" (un logo rond) ; vide : le disque reste l'accent plein
+      var MOMENTS = { couleur: 0.62, nuit: 0.95, trait: 2.15, descente: 2.55, sol: 3.5, pose: 4.25 };
+
+      // Le monde (1920 × 1720) : le disque y vit en (960, 1160) ; l'horizon est à 1300.
+      // Plan A, monde à y -620 : le disque au centre de l'image. Il monte de 730 px en rapetissant
+      // (×0,62) pendant que la caméra lève les yeux (monde à -100), puis redescend se poser sur
+      // l'horizon (×0,33, son bas sur la ligne) quand la caméra revient (monde à -620).
+      var X = 960, Y = 1160, HORIZON = 1300, MONTE = 730, S_HAUT = 0.62, S_POSE = 0.333;
+      var monde = $("monde"), disque = $("disque"), papier = $("papier");
+      var R = 180, HAUT = Y - MONTE, POSE = HORIZON - R * S_POSE;
+
+      // ---------- Le disque, dessiné au trait (SVG 400 × 400) ----------
+      disque.innerHTML = '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle class="d-fond" cx="200" cy="200" r="180" style="fill:var(--brand-accent)"/>' +
+        '<g fill="none" style="stroke:var(--brand-sombre)" stroke-width="3.2" stroke-linecap="round">' +
+        '<circle class="d-t" cx="200" cy="200" r="180"/>' +
+        '<line class="d-t d-repere" x1="20" y1="200" x2="380" y2="200"/>' +
+        '<line class="d-t d-repere" x1="200" y1="20" x2="200" y2="380"/></g>' +
+        '<circle class="d-repere d-centre" cx="200" cy="200" r="7" style="fill:var(--brand-sombre)"/></svg>';
+      var fondD = disque.querySelector(".d-fond"), reperes = disque.querySelectorAll(".d-repere");
+      var logo = null;
+      if (LOGO) { logo = K.el(disque, "img", "t02-revele-logo"); logo.src = LOGO; logo.alt = ""; K.cacher(logo); }
+      // Le cadre de sélection à poignées qui attrape le disque sur la nuit, et l'étiquette de sa couleur.
+      var sel = K.el(disque, "div", "t02-revele-sel");
+      var etq = K.el(disque, "div", "t02-revele-etq");
+      etq.textContent = "Accent · " + getComputedStyle(document.getElementById(ID)).getPropertyValue("--brand-accent").trim().toUpperCase();
+      [[0, 0], [100, 0], [0, 100], [100, 100]].forEach(function (p) { K.el(sel, "i", "t02-revele-poignee", null, "left:" + p[0] + "%; top:" + p[1] + "%;"); });
+
+      // ---------- Plan A : le dessin au trait sur le clair ----------
+      // Le carré de construction du cercle (tangent à lui) et sa cote, en pixels du monde.
+      var pv = [X - R, X + R].map(function (x) { return K.el(papier, "i", "t02-revele-pv", null, "left:" + x + "px"); });
+      var ph = [540 - R, 540 + R].map(function (y) { return K.el(papier, "i", "t02-revele-ph", null, "top:" + y + "px"); });
+      var cote = K.el(papier, "div", "t02-revele-cote", "Ø " + (2 * R) + " px", "left:" + (X + R + 24) + "px; top:" + (540 - R - 44) + "px;");
+      gsap.set(pv, { scaleY: 0 }); gsap.set(ph, { scaleX: 0 }); K.cacher(cote, { y: 8 });
+      tl.to(pv, { scaleY: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.0);
+      tl.to(ph, { scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.05);
+      tl.to(cote, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 0.2);
+      var traits = disque.querySelectorAll(".d-t");
+      traits.forEach(function (t) {
+        var L = Math.ceil(t.getTotalLength ? t.getTotalLength() : 1200) + 2;
+        t.style.strokeDasharray = L + " " + L;
+        gsap.set(t, { strokeDashoffset: L });
+      });
+      tl.to(traits, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", stagger: 0.06 }, 0.04);
+      K.cacher([fondD, disque.querySelector(".d-centre")]);
+      tl.to(disque.querySelector(".d-centre"), { opacity: 1, duration: 0.1 }, 0.3);
+      // La couleur : le disque se remplit d'un coup en gonflant ; ses repères s'effacent.
+      gsap.set(disque, { x: 0, y: 0, scale: 0.86 });
+      tl.set(fondD, { opacity: 1 }, MOMENTS.couleur);
+      tl.set(reperes, { opacity: 0 }, MOMENTS.couleur);
+      tl.to(disque, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, MOMENTS.couleur);
+      tl.to(pv, { scaleY: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
+      tl.to(ph, { scaleX: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
+      tl.to(cote, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.couleur);
+
+      // ---------- Plan B : coupe franche sur la nuit, le disque monte ----------
+      gsap.set(monde, { y: -620 });
+      tl.set(papier, { opacity: 0 }, MOMENTS.nuit);
+      if (logo) tl.set(logo, { opacity: 1 }, MOMENTS.nuit);
+      tl.to(monde, { y: -100, duration: 1.3, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
+      tl.to(disque, { y: -MONTE, scale: S_HAUT, duration: 1.3, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
+      // Le cadre de sélection l'attrape pendant la montée, puis le lâche.
+      K.cacher(sel, { scale: 1.08 });
+      tl.to(sel, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, MOMENTS.nuit + 0.55);
+      tl.to(sel, { opacity: 0, scale: 1.06, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
+      // L'étiquette se pose avec le cadre et garde sa taille pendant que le disque rapetisse.
+      K.cacher(etq, { x: -12 });
+      tl.to(etq, { opacity: 0.82, x: 0, duration: 0.35, ease: "expo.out" }, MOMENTS.nuit + 0.65);
+      tl.fromTo(etq, { scale: 1 }, { scale: 1 / S_HAUT, duration: 1.3, ease: "power2.inOut", immediateRender: false }, MOMENTS.nuit + 0.1);
+      tl.to(etq, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
+
+      // ---------- Le trait de marque tombe, le cône de construction s'ouvre ----------
+      var filHote = $("fil-hote"), fil = $("fil");
+      filHote.style.top = HAUT + "px"; filHote.style.height = (HORIZON - HAUT) + "px";
+      gsap.set(fil, { scaleY: 0 });
+      tl.to(fil, { scaleY: 1, duration: 0.3, ease: "power3.in" }, MOMENTS.trait);
+      var dx = 260, longueur = Math.hypot(dx, HORIZON - HAUT), angle = Math.atan2(dx, HORIZON - HAUT) * 180 / Math.PI;
+      var cones = [$("cone-g"), $("cone-d")];
+      cones.forEach(function (c, i) {
+        c.style.top = HAUT + "px"; c.style.height = longueur.toFixed(0) + "px";
+        gsap.set(c, { rotation: 0, scaleY: 0 });
+        tl.to(c, { scaleY: 1, rotation: i ? -angle : angle, duration: 0.5, ease: "expo.out" }, MOMENTS.trait + 0.26);
+        tl.to(c, { scaleY: 0, duration: 0.4, ease: "power2.in" }, MOMENTS.sol);
+      });
+
+      // ---------- Le disque redescend le long du trait et se pose ----------
+      // Le trait se rétracte derrière lui (son haut suit le centre du disque).
+      var descente = MOMENTS.pose - MOMENTS.descente;
+      tl.to(disque, { y: POSE - Y, scale: S_POSE, duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
+      tl.to(filHote, { scaleY: (HORIZON - POSE) / (HORIZON - HAUT), duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
+      tl.to(fil, { opacity: 0, duration: 0.15 }, MOMENTS.pose - 0.05);
+      // La caméra redescend avec lui ; l'horizon se trace depuis le centre.
+      tl.to(monde, { y: -620, duration: 0.85, ease: "power2.inOut" }, MOMENTS.sol);
+      var horizon = $("horizon");
+      gsap.set(horizon, { scaleX: 0 });
+      tl.to(horizon, { scaleX: 1, duration: 0.6, ease: "expo.out" }, MOMENTS.sol + 0.2);
+
+      // ---------- Les rayons de perspective, depuis le point de pose ----------
+      var rayons = $("rayons"), ANGLES = [8, 22, 40, 62, 90, 118, 140, 158, 172];
+      var lignes = ANGLES.map(function (a) {
+        var r = K.el(rayons, "i", "t02-revele-rayon");
+        r.style.transform = "rotate(" + a + "deg)";
+        return r;
+      });
+      var axe = K.el(rayons, "i", "t02-revele-axe");
+      gsap.set(lignes, { scaleX: 0 }); gsap.set(axe, { scaleY: 0 });
+      tl.to(lignes, { scaleX: 1, duration: 0.55, ease: "expo.out", stagger: 0.018 }, MOMENTS.pose);
+      tl.to(axe, { scaleY: 1, duration: 0.5, ease: "expo.out" }, MOMENTS.pose + 0.08);
+      tl.fromTo(disque.querySelector("svg"), { scaleY: 1 }, { scaleY: 0.9, duration: 0.08, ease: "power2.out", yoyo: true, repeat: 1, transformOrigin: "50% 95%" }, MOMENTS.pose - 0.02);
+      tl.to(monde, { scale: 1.03, duration: D - MOMENTS.pose, ease: "none" }, MOMENTS.pose);
+
+      // ---------- Le nom, lettre par lettre, au-dessus du point de pose ----------
+      var nom = $("nom");
+      nom.innerHTML = NOM.split("").map(function (l) { return '<span class="k-mot">' + (l === " " ? "&nbsp;" : l) + "</span>"; }).join("");
+      K.cacher(nom.querySelectorAll(".k-mot"));
+      var cs = getComputedStyle(nom);
+      document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
+      function finir() {
+        if (nom.scrollWidth > 1500) nom.style.fontSize = (120 * 1500 / nom.scrollWidth).toFixed(1) + "px";
+        K.entreeMots(tl, nom.querySelectorAll(".k-mot"), MOMENTS.pose + 0.06, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
+        window.__timelines[ID] = tl;
+      }
+    })();
+  </script>
+</template>
+</body>
+</html>

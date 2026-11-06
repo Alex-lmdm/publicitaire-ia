@@ -11,7 +11,7 @@ rythme. Fabrique d'abord la version du support principal, puis décline.
 |---|---|---|---|---|
 | `reel` Reel Instagram, Facebook | 9:16 | 20–45 s (7–90) | avec son, compréhensible sans | « Commente MOT », lien en bio |
 | `tiktok` TikTok, YouTube Shorts | 9:16 | 20–35 s (7–180) | avec son | lien en bio, mot-clé en commentaire |
-| `story` Story | 9:16 | 8–30 s (4–60) | souvent muette | sticker lien posé par le client, « réponds MOT » |
+| `story` Story | 9:16 | 15–60 s (4–60) ; ouverture d'un lancement 35–50 s | souvent muette : le texte raconte | sticker lien posé par le client, « réponds MOT » |
 | `pub` Pub plein écran | 9:16 | 15–30 s (6–60) | avec son, compréhensible sans | bouton de la pub |
 | `fil` Post ou pub dans le fil | 4:5 | 15–30 s (6–60) | souvent muet | bouton sous la vidéo, légende |
 | `page` Haut de page de vente | 16:9 (`@1x1` ou `@4x5` pour le téléphone) | 60–120 s (20–300) | lecture auto **muette** | le bouton sous la vidéo |
@@ -21,8 +21,10 @@ rythme. Fabrique d'abord la version du support principal, puis décline.
 | `youtube` YouTube, présentation | 16:9 | 60–180 s (20–900) | avec son | dans la vidéo et la description |
 
 Les bornes sont dures : l'export refuse une vidéo hors bornes et prévient au-delà de la durée
-visée. Une story s'arrête bien avant 30 s si tout est dit ; un Reel reste sous 45 s ; une vidéo de
-page reste sous 2 minutes sauf si l'offre le demande vraiment.
+visée. La durée vient du script validé (la somme des tenues de ses phrases), pas d'une envie de
+faire court : une story de lancement qui présente l'offre prend 35 à 50 s (un segment de story
+dure jusqu'à 60 s ; au-delà, Instagram la coupe en plusieurs) ; un Reel reste sous 45 s ; une vidéo de page reste sous 2 minutes sauf si
+l'offre le demande vraiment.
 
 ## Les zones de sécurité
 
@@ -44,8 +46,10 @@ Un client qui publie la même vidéo en Reel ET sur TikTok : compose dans la zon
 stricte), et centre le texte un peu à gauche.
 
 **Sticker lien d'une story** (ouverture, relance, dernier jour, ou toute story qui renvoie vers
-un lien) : réserve la bande `x 190 → 890, y 1180 → 1420`, fond calme, rien d'important dedans, et
-une phrase courte juste au-dessus (« Le lien est ici ↓ »). Dis au client où le poser.
+un lien) : réserve la bande `x 190 → 890, y 1180 → 1420`, fond calme, rien d'important dedans
+**pendant toute la story** (le sticker reste affiché du début à la fin, pas seulement sur l'écran
+final : essai du 06/11/2026, une ligne de chiffres et un prix passaient dessous), et une phrase
+courte juste au-dessus à la fin (« Touche le lien. »). Dis au client où le poser.
 
 ## Ce qui change selon le support
 
@@ -62,8 +66,10 @@ une phrase courte juste au-dessus (« Le lien est ici ↓ »). Dis au client où
   chiffré pèsent plus qu'une ambiance. Le texte du post porte l'appel à l'action.
 - **Reel, TikTok** : la vente arrive à la fin seulement. Le mot-clé de l'écran final est celui
   de la légende.
-- **Story** : un message par story ; une série se pense écran par écran (5 à 15 s chacun),
-  chacun compréhensible seul.
+- **Story** : souvent regardée sans le son et quittée d'un geste : la première phrase dit tout de
+  suite de quoi on parle et pour qui, chaque phrase se lit entière, et chaque story se comprend
+  seule (le spectateur n'a pas vu les autres). Une story de lancement est un vrai script
+  ([structures.md](structures.md), section 6), pas une suite de mots.
 
 ## Sous-titres et texte (quand il y a une voix)
 

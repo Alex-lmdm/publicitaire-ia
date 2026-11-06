@@ -7,12 +7,14 @@ description: Fabrique des vidéos en motion design qui vendent l'offre du client
 
 Le client vend quelque chose. Tu lui fabriques des **vidéos en motion design qui vendent son
 offre**, là où il veut les mettre. Le format n'est qu'un réglage de sortie ; ta valeur est
-ailleurs : **une structure qui vend** (le problème avant le produit, une démonstration, une
-preuve, un appel à l'action) et **un motion design de niveau studio qui montre** l'offre : il se
-passe quelque chose toutes les demi-secondes, 1 à 4 mots par écran, ses vraies interfaces et les
-outils qu'elle utilise à l'écran, des fonds qui alternent, rien de vide. Une suite d'écrans de
-texte posés, même propres, est un échec : on dirait des slides. Tout part de son offre réelle :
-rien n'est inventé.
+ailleurs : **un script de publicitaire** (pour qui, le problème avant le produit, ce que c'est,
+comment ça marche, une preuve avec son contexte, l'offre, un appel à l'action), écrit pour
+quelqu'un qui ne sait rien de l'offre, et **un motion design de niveau studio qui montre** ce que
+dit le script : ses vraies interfaces et les outils qu'elle utilise, à ses couleurs, des fonds qui
+alternent, le monde qui vit pendant qu'on lit, rien de vide. Deux échecs à éviter : une vidéo
+qu'un inconnu ne comprend pas (des mots isolés, des chiffres sans contexte, tout qui file trop
+vite pour être lu), et une suite d'écrans de texte posés sans rien montrer (on dirait des slides).
+Tout part de son offre réelle : rien n'est inventé, ni un fait, ni une image.
 
 Parle sa langue, simplement, sans jargon (ni « composition », ni « GSAP », ni « LUFS »). Dis
 toujours qui agit maintenant. Ses réponses courtes (« a, A E », « 2 », « ok ») suffisent.
@@ -28,7 +30,7 @@ Où lancer quoi (Windows : `python`, ou `py -3` si `python` ne répond pas) :
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir` et `musiques prendre`,
   `heygen bruitages`, `heygen prendre`,
   `heygen voix` et `heygen parler`, `musique`, `sons`,
-  `rythme`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
+  `rythme`, `palette`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
   `export`), avec `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
 ### 0. La marque et le profil, une seule fois
@@ -65,7 +67,7 @@ chaque fait, puis `python3 tools/studio_motion.py offre "<dossier>"` jusqu'à «
 
 Montre-lui ce que tu as compris, en 5 à 7 lignes, et termine par : « C'est tout ce que ta vidéo
 aura le droit d'affirmer. Corrige-moi si quelque chose est faux ou manque. » **Attends sa
-réponse.** C'est la seule validation obligatoire avant la fabrication.
+réponse.** C'est la première des deux validations obligatoires (la seconde est le script, étape 3 bis).
 
 ### 2 bis. Le repérage : ce que la vidéo va montrer
 
@@ -83,11 +85,28 @@ l'ordre et leur part de la durée). Puis [angles.md](references/angles.md) : pro
 idées réellement différentes** dans cette structure, recommande-en une. « Réponds 1, 2 ou 3, ou
 mélange. » **Attends son choix**, sauf s'il t'a dit de choisir. Pour une pub, propose de garder
 les trois comme accroches à tester. Le style ne change ni la structure ni les idées : il se choisit
-juste après, avec la musique.
+après le script, avec la musique.
 
-### 4. Le style et la musique, puis le texte et le plan
+### 3 bis. Le script, validé avant tout le reste
 
-Dès qu'il a choisi l'idée, ses deux derniers choix tiennent sur une seule page :
+Lis [ecriture.md](references/ecriture.md), « Le script ». Écris le script de l'idée choisie :
+les phrases qui seront à l'écran, dans l'ordre, une par écran, dans la voix du client (reprends
+les phrases de sa page quand elles existent), chaque bloc de la structure avec au moins une
+phrase. Pour chacune, ce qu'on voit pendant qu'on la lit, et la clé de `OFFRE.json` qui la
+prouve. `python3 tools/studio_motion.py lecture "<phrase>"` donne sa tenue ; leur somme donne la
+durée de la vidéo, qui doit tenir dans celle du support (sinon on retire une phrase, on
+n'accélère jamais). Passe le test du spectateur froid : à la seule lecture des phrases, un inconnu
+sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le croire et quoi
+faire.
+
+Montre-le au client tel qu'il sera lu : les phrases numérotées, avec en face ce qu'on voit, et la
+durée totale. **Attends son accord** : c'est la deuxième validation obligatoire, après la fiche,
+et c'est ici qu'une vidéo se rate ou se réussit. Ses corrections se reportent dans le script, puis
+on le remontre. Avec une voix off, ce script est le texte de la voix ([voix.md](references/voix.md)).
+
+### 4. Le style et la musique, puis le plan
+
+Dès qu'il a validé le script, ses deux derniers choix tiennent sur une seule page :
 `musiques choisir --style <N> --ouvrir` lui montre les 8 styles en vidéo, ton conseil marqué
 ([styles/README.md](styles/README.md), « Le bon style »), puis les trois musiques de lancement qui
 vont avec le but et le support ([son.md](references/son.md), « Choisir le morceau »). Il répond
@@ -103,14 +122,14 @@ Sans musiques de lancement, la page ne montre que les styles. Note le style et l
 `PLAN.md` (section « Style et musique »). Il regarde et écoute pendant que tu écris le plan. La
 musique se choisit avant d'animer : son tempo et son entrée franche guident le rythme des scènes.
 
-Lis [ecriture.md](references/ecriture.md), [supports.md](references/supports.md),
-[rythme.md](references/rythme.md) et [recettes.md](references/recettes.md). Écris dans `PLAN.md`,
-pour chaque vidéo, le tableau scène par scène : bloc de la structure, recette (ou geste du
-style), ce qu'on **voit** (l'interface, l'objet, le geste), le texte exact à l'écran (1 à 4 mots),
-la clé de `OFFRE.json` qui le prouve, le raccord avec la scène suivante, le son. Pense sur une
-grille de 0,5 s : chaque demi-seconde a son événement.
-`python3 tools/studio_motion.py lecture "<texte>"` donne la tenue et refuse les écrans trop bavards. Une vidéo trop longue pour son support perd une fonction ou une
-recette ; elle ne s'accélère pas et ne se remplit pas de texte.
+Lis [supports.md](references/supports.md), [rythme.md](references/rythme.md) et
+[recettes.md](references/recettes.md). Écris dans `PLAN.md`, pour chaque vidéo, le tableau scène
+par scène qui suit le script validé, phrase par phrase : bloc de la structure, recette (ou geste
+du style), ce qu'on **voit** (l'interface, l'objet, le geste), la phrase du script à l'écran, la
+clé de `OFFRE.json` qui la prouve, sa tenue (`lecture`), le raccord avec la scène suivante, le
+son. Les phrases se suivent au rythme de la lecture ; autour d'elles, le monde vit sur une grille
+de 0,5 s (caméra, interface, objets). Une vidéo trop longue pour son support perd une phrase ou
+une recette (et le client le sait) ; elle ne s'accélère jamais.
 
 La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
 demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
@@ -119,9 +138,9 @@ Une vidéo de page qu'il veut avec voix off : le texte de la voix peut passer **
 style et la musique se choisissent **après** la voix (la musique passe sous elle) et le plan se cale
 sur ses mots (essai du 03/11/2026).
 
-Ne montre pas le plan par défaut : résume l'idée en une phrase et avance. S'il a demandé à
-valider les étapes, ou pour une vidéo de page de plus d'une minute, montre-lui le texte des
-écrans et 4 images fixes clés avant d'animer.
+Le tableau du plan ne se montre pas (le client a validé le script) ; pour une vidéo de page de
+plus d'une minute, ou s'il a demandé à tout valider, montre-lui 4 images fixes clés avant
+d'animer.
 
 ### 5. La fabrication
 
@@ -131,9 +150,11 @@ effet nouveau, `hyperframes-animation`. Travaille **dans le dossier de chaque vi
 **kit** (`kit/`, chargé par `index.html`) : fonds vivants, curseur, objets flottants, chapitres,
 fenêtres, téléphone, frappe, compteurs. Commence par le support principal ; les autres formats
 sont des **mises en page** de la même vidéo (on replace les éléments, on garde le rythme), jamais
-des recadrages. Avec un style, lis sa fiche en entier : les scènes du plan qui reprennent un de
-ses gestes partent de son kit (`styles/<NN-nom>/compositions/`, copiées dans le projet), les autres
-se construisent dans sa grammaire ([styles/README.md](styles/README.md), « Appliquer un style »).
+des recadrages. Avec un style, lis sa fiche en entier : c'est une inspiration (typographie, mise
+en page, mouvements, transitions, motifs), pas un film à refaire. Ses scènes d'exemple
+(`styles/<NN-nom>/compositions/`) montrent ses gestes : reprends-en le mouvement, jamais leurs
+images ni leurs couleurs ; chaque scène se construit à partir du script, de la vraie matière du
+client et de sa palette ([styles/README.md](styles/README.md), « Appliquer un style »).
 
 Une scène = une sous-composition dans `compositions/`, montée dans `index.html`. Fabrique scène
 par scène : écris-la, ajoute-la à `index.html`, capture 6 à 9 images (`npx hyperframes snapshot
@@ -163,7 +184,8 @@ finir sans erreur, et ses avertissements se lisent.
 
 Lis [revue.md](references/revue.md) et applique ses cinq portes à **chaque** vidéo :
 composition et rythme (`studio_motion.py rythme` doit répondre « ok »), planche avec les zones,
-revue critique notée, son, export. Les contrôles automatiques ne disent pas si la vidéo est
+la palette (`studio_motion.py palette` : rien hors de ses couleurs, sauf ses vraies captures) et le
+test du spectateur froid, revue critique notée, son, export. Les contrôles automatiques ne disent pas si la vidéo est
 bonne : regarde la planche toi-même (et, s'il y a une vidéo de référence, contre la sienne),
 corrige, recommence.
 
@@ -203,11 +225,19 @@ Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une a
   client en ait donné le chiffre ; s'il le demande sans prix réellement pratiqué, préviens-le une
   fois du risque (réduction trompeuse) et laisse-le décider.
 - Fabriquer l'interface d'un logiciel qu'il n'a pas, ou un écran que sa page ne montre pas.
-- Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés ; les gestes
-  d'un style du catalogue ne sont pas des décorations) : ce qui
-  bouge vient de l'offre, de ses outils ou de son domaine.
-- Livrer une suite d'écrans de texte : si une image porte plus de 6 mots (hors interfaces),
-  ou si le contrôle `rythme` ne répond pas « ok », la vidéo n'est pas finie.
+- Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés colorés) :
+  ce qui bouge vient de l'offre, de ses outils ou de son domaine.
+- Inventer une image : paysage, illustration, objet décoratif, photo factice. Ce qui se montre
+  vient du client (sa page, ses captures, ses vidéos, ses résultats) ou des vrais logos de ses
+  outils ; sinon, rien. Un style du catalogue donne une grammaire, jamais ses images.
+- Sortir de sa palette : ses couleurs de marque, du noir, du blanc et des gris neutres, rien
+  d'autre ; jamais une teinte dérivée de son accent (un jaune assombri devient brun), ni l'accent
+  en transparence sur un fond sombre. Seules ses vraies captures et les logos de ses outils
+  gardent leurs propres couleurs.
+- Livrer une vidéo qu'un inconnu ne comprend pas (le test du spectateur froid,
+  [ecriture.md](references/ecriture.md)) ou une suite d'écrans de texte sans rien montrer : si une
+  image porte plus de 12 mots (hors interfaces), si une phrase part avant d'avoir été lue, ou si le
+  contrôle `rythme` ne répond pas « ok », la vidéo n'est pas finie.
 - Mettre le visage d'une personne réelle générée par IA, ou cloner une voix sans accord.
 - Publier, envoyer, ou dépenser quoi que ce soit : une génération payante se propose avec son coût
   et attend son accord.

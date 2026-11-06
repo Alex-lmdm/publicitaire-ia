@@ -1,9 +1,13 @@
 # Trois idées, une décision simple
 
 La structure (`structures.md`) dit dans quel ordre on avance ; l'**angle** dit avec quelle idée
-on le fait. Le client voit trois idées de vidéo, pas une liste de techniques : un titre court,
-ce qu'on voit, et pourquoi ça sert **son** objectif. Trois idées réellement différentes, pas trois
-formulations du même film. Recommande-en une avec la raison, puis attends.
+on le fait. L'angle change l'accroche, le fil qui relie les blocs et ce qu'on met en avant ; il ne
+supprime aucun bloc : même « la preuve en grand » dit d'abord pour qui, le problème et ce qu'est
+l'offre (une preuve sans contexte ne prouve rien à qui ne connaît pas l'offre). Le client voit
+trois idées de vidéo, pas une liste de techniques : un titre court, ses deux ou trois premières
+phrases à l'écran (il juge l'écriture, pas un résumé), le fil en une ligne, et pourquoi ça sert
+**son** objectif. Trois idées réellement différentes, pas trois formulations du même film.
+Recommande-en une avec la raison, puis attends.
 
 ## Les familles d'angles
 
@@ -32,9 +36,10 @@ formulations du même film. Recommande-en une avec la raison, puis attends.
 
 > Trois idées pour la vidéo de ta page de vente :
 >
-> **1. Avant / après.** Le même rush : à gauche brut, à droite monté par ton IA. Puis ce que
-> contient Monteur IA et le prix. Le problème et la solution se comprennent en trois secondes,
-> même sans le son.
+> **1. Avant / après.** « 3 heures sur CapCut pour un seul Reel ? » · « Et si ton IA le montait
+> à ta place ? » Puis le même rush, brut à gauche, monté par ton IA à droite, ce que contient
+> Monteur IA et le prix. Le problème et la solution se comprennent en trois secondes, même sans
+> le son.
 >
 > **2. La preuve en grand.** « 3,3 millions de vues » se compte à l'écran, puis la méthode
 > derrière. Ta page a ce chiffre : il porte.

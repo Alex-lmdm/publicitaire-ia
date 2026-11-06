@@ -6,26 +6,32 @@
 <!--
   Style n°7 · Phrase tapée · scène « Le désordre éparpillé » (le problème qu'on range).
   Ce qu'elle montre : sur fond clair, une grande phrase se tape, s'efface et se retape (trois fins
-  successives) ; à chaque fin, de nouveaux objets surgissent autour d'elle en profondeur : notes
-  et pense-bêtes, fichiers et dossiers, puis les icônes des outils. Puis tout se change en points,
-  se resserre vers le centre et s'éteint, et la conclusion apparaît en écriture de points.
+  successives) ; à chaque fin, un groupe d'objets surgit autour d'elle en profondeur : SA vraie
+  matière (ses captures, les logos de ses outils) et des mots en pilule, quelques formes pleines à
+  ses couleurs. Puis tout se change en points, se resserre vers le centre et s'éteint, et la
+  conclusion apparaît en écriture de points.
   Durée : 5,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe à
   la ligne, les objets se répartissent au-dessus et au-dessous).
-  À remplacer (objet R en tête du script) : le début de la phrase et ses trois fins, les textes
-  des notes et des fichiers (ceux de ton sujet), les logos des outils (posés par
-  `studio_motion.py logos` : ceux de ton offre, 6 à 8), la conclusion en points.
-  Couleurs : le clair et l'encre sont ceux du look (fixes, quelle que soit la marque) ; sur ce
-  fond clair, l'accent de la marque ne colore que des aplats.
+  À remplacer (objet R en tête du script) : le début de la phrase et ses trois fins, ce qui
+  surgit à chaque fin (groupes : 7, 6 et 8 objets au plus), la conclusion en points. Un groupe
+  mêle, dans l'ordre voulu :
+    - "logo-capcut" : le logo d'un de ses outils, posé par `studio_motion.py logos` (un logo absent
+      est retiré, jamais remplacé par une icône) ;
+    - { img: "assets/images/capture.png", format: "16:9" } : une de ses vraies captures (sa page,
+      un post, une miniature, un fichier réel) ;
+    - "Montage" : un mot de son sujet, en pilule (claire, ou sombre si le mot commence par « / ») ;
+    - "●" : un disque plein de l'accent ; "▬" : une pilule pleine de sa nuit (des formes, rien
+      d'autre).
+  Jamais de faux document, de faux dossier ni de fausse note : sans vraie matière, des mots.
+  Couleurs : seulement celles de ta marque (brand/tokens.css) : son clair en fond, sa nuit pour
+  l'encre et les pilules sombres, l'accent plein pour les disques. Captures et logos gardent leurs
+  vraies couleurs ; ombres et traits en noir transparent.
   Identifiant : t7e (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t7e {
-    /* Les quatre fonds du look restent ceux de l'original quelle que soit la marque, claire ou
-       sombre (noir chaud, taupe, blanc cassé chaud, encre) ; le texte posé sur le noir et le
-       taupe est clair. La marque ne donne que les accents. Jamais var(--brand-bg) ni
-       var(--brand-text) ici. */
-    --t7-clair: #edece5;
-    --t7-encre: #1d1917;
+    --t7-clair: var(--brand-clair);
+    --t7-encre: var(--brand-sombre);
     --t7-police: var(--brand-font-display);
     background: var(--t7-clair); font-family: var(--t7-police); color: var(--t7-encre);
   }
@@ -34,31 +40,26 @@
     font-size: 136px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; white-space: nowrap; }
   #t7e .t7e-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.07em; background: var(--t7-encre); }
   #t7e .t7e-obj { position: absolute; will-change: transform, filter; }
+  /* Au moment de se défaire, chaque objet passe à travers une trame de points. */
   #t7e .t7e-obj[data-pix="1"] { -webkit-mask-image: radial-gradient(circle, #000 58%, transparent 64%); -webkit-mask-size: 10px 10px;
     mask-image: radial-gradient(circle, #000 58%, transparent 64%); mask-size: 10px 10px; }
-  #t7e .t7e-tuile { width: 100%; height: 100%; border-radius: 24%; background: #fff; display: grid; place-items: center;
-    box-shadow: 0 14px 34px rgba(30,25,20,.12), inset 0 0 0 1.5px rgba(0,0,0,.05); }
+  #t7e .t7e-tuile { width: 100%; height: 100%; border-radius: 24%; background: var(--t7-clair); display: grid; place-items: center; color: var(--t7-encre);
+    box-shadow: 0 14px 34px rgba(0,0,0,.12), inset 0 0 0 1.5px rgba(0,0,0,.06); }
   #t7e .t7e-tuile svg { width: 56%; height: 56%; }
-  #t7e .t7e-note { width: 100%; height: 100%; padding: 20px; border-radius: 6px; font-family: var(--brand-font-body); font-size: 22px; line-height: 1.3; font-weight: 500;
-    background: color-mix(in oklab, var(--brand-accent) 42%, #fff); color: var(--t7-encre); box-shadow: 0 10px 24px rgba(30,25,20,.12); }
-  #t7e .t7e-doc { width: 100%; height: 100%; border-radius: 14px; background: #fff; padding: 18px; box-shadow: 0 16px 40px rgba(30,25,20,.12); font-family: var(--brand-font-body); }
-  #t7e .t7e-doc h4 { font-size: 15px; font-weight: 600; letter-spacing: .08em; color: rgba(0,0,0,.45); margin-bottom: 14px; }
-  #t7e .t7e-doc i { display: block; height: 7px; border-radius: 4px; background: rgba(0,0,0,.1); margin-bottom: 10px; }
-  #t7e .t7e-doc .t7e-ver { position: absolute; right: 16px; bottom: 10px; font-size: 26px; font-weight: 500; color: rgba(0,0,0,.18); }
-  #t7e .t7e-puce { height: 100%; display: inline-flex; align-items: center; gap: 12px; padding: 0 22px; border-radius: 14px; background: #fff; white-space: nowrap;
-    font-family: var(--brand-font-body); font-size: 26px; font-weight: 500; box-shadow: 0 8px 22px rgba(30,25,20,.10); }
-  #t7e .t7e-puce svg { width: 26px; height: 26px; opacity: .6; }
-  #t7e .t7e-liste { width: 100%; height: 100%; border-radius: 14px; background: #fff; padding: 14px 18px; box-shadow: 0 16px 40px rgba(30,25,20,.12); font-family: var(--brand-font-body); }
-  #t7e .t7e-liste div { display: flex; align-items: center; gap: 12px; height: 44px; font-size: 21px; font-weight: 500; color: rgba(0,0,0,.7); border-bottom: 1px solid rgba(0,0,0,.05); }
-  #t7e .t7e-liste div span { margin-left: auto; color: rgba(0,0,0,.35); font-size: 14px; }
-  #t7e .t7e-liste svg { width: 18px; height: 18px; opacity: .5; }
-  #t7e .t7e-dossier { width: 100%; height: 100%; border-radius: 14px; display: grid; place-items: center; background: #fff; box-shadow: 0 12px 30px rgba(30,25,20,.10); color: color-mix(in oklab, var(--brand-accent) 55%, #3b82f6); }
-  #t7e .t7e-dossier svg { width: 58%; height: 58%; }
+  #t7e .t7e-image { width: 100%; height: 100%; border-radius: 14px; overflow: hidden; background: rgba(0,0,0,.04);
+    box-shadow: 0 16px 40px rgba(0,0,0,.14), inset 0 0 0 1.5px rgba(0,0,0,.06); }
+  #t7e .t7e-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #t7e .t7e-mot { height: 100%; display: inline-flex; align-items: center; padding: 0 0.85em; border-radius: 0.6em; white-space: nowrap;
+    background: var(--t7-clair); color: var(--t7-encre); font-family: var(--brand-font-body); font-weight: 500; letter-spacing: -0.01em;
+    box-shadow: 0 8px 22px rgba(0,0,0,.10), inset 0 0 0 1.5px rgba(0,0,0,.07); }
+  #t7e .t7e-mot.t7e-sombre { background: var(--t7-encre); color: var(--t7-clair); box-shadow: 0 8px 22px rgba(0,0,0,.18); }
+  #t7e .t7e-disque { width: 100%; height: 100%; border-radius: 50%; background: var(--brand-accent); }
+  #t7e .t7e-barrette { width: 100%; height: 100%; border-radius: 999px; background: var(--t7-encre); }
   #t7e .t7e-points { position: absolute; left: 0; right: 0; top: 50%; height: 360px; margin-top: -180px; text-align: center; z-index: 21; }
   #t7e .t7e-points-texte { display: inline-block; margin-top: 108px; font-size: 150px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; white-space: nowrap;
-    color: color-mix(in oklab, var(--t7-encre) 40%, var(--t7-clair));
+    color: var(--t7-encre);
     -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 60%); -webkit-mask-size: 9px 9px; mask-image: radial-gradient(circle, #000 52%, transparent 60%); mask-size: 9px 9px; }
-  #t7e .t7e-cadre { position: absolute; width: 12px; height: 12px; background: color-mix(in oklab, var(--t7-encre) 40%, var(--t7-clair)); }
+  #t7e .t7e-cadre { position: absolute; width: 12px; height: 12px; background: var(--t7-encre); }
 </style>
 
 <div data-composition-id="t7e" data-width="1920" data-height="1080" data-duration="5.2" style="position:absolute; inset:0;">
@@ -76,42 +77,81 @@
   var R = {
     debut: "Rassemble tes",
     fins: ["idées.", "fichiers.", "outils."],
-    notes: ["À faire :\nscript, miniature", "Idée de vidéo", "Relancer lundi"],
-    puces: [["file-text", "idées.txt"], ["message-square", "Réunion lundi"], ["folder", "232 fichiers"], ["mail", "Re: ta question"]],
-    fichiers: [["plan.pdf", "4,2 Mo"], ["budget.xlsx", "120 Ko"], ["script.docx", "38 Ko"], ["photos.zip", "1,1 Go"]],
-    logos: ["logo-claude", "logo-openai", "logo-instagram", "logo-tiktok", "logo-youtube", "logo-linkedin", "logo-x", "logo-facebook"],
+    // Ce qui surgit à chaque fin (voir l'en-tête) : ses logos, ses captures, des mots, des formes.
+    groupes: [
+      ["Script", "●", "/Idée de vidéo", "Miniature", "Relancer lundi", "●"],
+      ["Montage", "/Sous-titres", "●", "Musique", "▬", "/Formats"],
+      ["logo-claude", "logo-chatgpt", "logo-instagram", "logo-tiktok", "logo-youtube", "logo-linkedin", "logo-capcut", "logo-facebook"]
+    ],
     fin: "Tout devient clair."
   };
   // -------------------------------------------------------------------------------------------
   var D = 5.2;
   var $ = function (id) { return document.getElementById(id); };
-  var cadre = K.cadre($("t7e")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var racine = $("t7e");
+  var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L, echelle = vertical ? 0.78 : 1;
   var hote = $("t7e-objets"), groupes = [[], [], []], tous = [];
-  // objet : groupe, x, y (centre, en fraction du cadre), largeur, hauteur, flou, rotation, html
-  function objet(g, fx, fy, w, h, flou, rot, html) {
-    if (vertical) { var t = fx; fx = 0.08 + fy * 0.84; fy = t < 0.5 ? 0.06 + t * 0.62 : 0.94 - (1 - t) * 0.62; w *= 0.78; h *= 0.78; }
-    var e = K.el(hote, "div", "t7e-obj", html, "left:" + (fx * L - w / 2) + "px; top:" + (fy * H - h / 2) + "px; width:" + w + "px; height:" + h + "px;");
-    e.setAttribute("data-pix", "0"); e.dataset.flou = flou; e.dataset.rot = rot;
-    groupes[g].push(e); tous.push(e); return e;
+  // Les places de chaque groupe : [x, y] (centre, en fraction du cadre 16:9), taille (px), flou, rotation.
+  var PLACES = [
+    [[0.085, 0.25, 200, 0, -6], [0.88, 0.19, 190, 0, 5], [0.95, 0.85, 170, 4, -4], [0.15, 0.80, 230, 0, 3], [0.33, 0.19, 160, 0, 0], [0.70, 0.84, 170, 0, 0], [0.52, 0.08, 120, 3, 0]],
+    [[0.64, 0.17, 220, 0, 4], [0.43, 0.85, 150, 0, 0], [0.975, 0.47, 160, 6, 0], [0.045, 0.53, 160, 5, 0], [0.56, 0.90, 180, 0, -3], [0.27, 0.06, 130, 3, 0]],
+    [[0.22, 0.12, 150, 0, 0], [0.42, 0.18, 118, 0, 0], [0.80, 0.34, 165, 0, 0], [0.86, 0.68, 145, 0, 0], [0.70, 0.66, 104, 0, 0], [0.30, 0.84, 128, 0, 0], [0.035, 0.10, 210, 8, 0], [0.74, 0.06, 104, 3, 0]]
+  ];
+  // Un logo posé ici et dans une autre scène : ses identifiants internes (découpes, dégradés)
+  // deviennent propres à chaque copie, sinon il renvoie à la copie cachée et disparaît.
+  var copies = 0, logo = function (n) { copies++; return K.ic(n).replace(/(id="|url\(#|href="#)([^")]+)/g, "$1$2-t7e" + copies); };
+  // Un objet : son contenu et sa boîte (largeur, hauteur) pour une taille donnée.
+  function fabriquer(o, taille) {
+    if (typeof o === "object" && o.img) {
+      var f = (o.format || "16:9").split(":").map(Number), ratio = f[0] / f[1];
+      var w = ratio >= 1 ? taille * 1.45 : taille * 1.45 * ratio, h = ratio >= 1 ? taille * 1.45 / ratio : taille * 1.45;
+      return { html: '<div class="t7e-image"><img alt="" src="' + o.img + '"></div>', w: w, h: h };
+    }
+    if (/^logo-/.test(o)) return K.ic(o) ? { html: '<div class="t7e-tuile">' + logo(o) + "</div>", w: taille, h: taille } : null;
+    if (o === "●") return { html: '<div class="t7e-disque"></div>', w: taille * 0.4, h: taille * 0.4 };
+    if (o === "▬") return { html: '<div class="t7e-barrette"></div>', w: taille * 0.9, h: taille * 0.26 };
+    var sombre = o.charAt(0) === "/", mot = sombre ? o.slice(1) : o, corps = Math.round(16 + taille * 0.12);
+    return { html: '<div class="t7e-mot' + (sombre ? " t7e-sombre" : "") + '" style="font-size:' + corps + 'px">' + mot + "</div>", w: null, h: corps * 2.2,
+      estime: corps * (0.6 * mot.length + 1.7), texte: true };
   }
-  // 1. les idées : pense-bêtes, un document, des puces
-  objet(0, 0.075, 0.26, 190, 190, 0, -6, '<div class="t7e-note">' + R.notes[0].replace("\n", "<br>") + "</div>");
-  objet(0, 0.87, 0.18, 175, 175, 0, 5, '<div class="t7e-note">' + R.notes[1] + "</div>");
-  objet(0, 0.95, 0.86, 170, 170, 4, -4, '<div class="t7e-note">' + R.notes[2] + "</div>");
-  objet(0, 0.14, 0.80, 270, 330, 0, 0, '<div class="t7e-doc" style="position:relative"><h4>NOTES</h4><i style="width:90%"></i><i style="width:75%"></i><i style="width:85%"></i><i style="width:60%"></i><i style="width:80%"></i><i style="width:70%"></i><div class="t7e-ver">V12</div></div>');
-  objet(0, 0.31, 0.21, 250, 64, 0, 0, '<div class="t7e-puce">' + K.ic(R.puces[0][0]) + R.puces[0][1] + "</div>");
-  objet(0, 0.71, 0.84, 290, 64, 0, 0, '<div class="t7e-puce">' + K.ic(R.puces[1][0]) + R.puces[1][1] + "</div>");
-  objet(0, 0.50, 0.08, 300, 64, 3, 0, '<div class="t7e-puce">' + K.ic("mail") + R.puces[3][1] + "</div>");
-  // 2. les fichiers : une liste, des dossiers
-  objet(1, 0.63, 0.18, 420, 210, 0, 0, '<div class="t7e-liste">' + R.fichiers.map(function (f) { return "<div>" + K.ic("file-text") + f[0] + "<span>" + f[1] + "</span></div>"; }).join("") + "</div>");
-  objet(1, 0.43, 0.85, 140, 122, 0, 0, '<div class="t7e-dossier">' + K.ic("folder") + "</div>");
-  objet(1, 0.975, 0.47, 160, 140, 6, 0, '<div class="t7e-dossier">' + K.ic("folder") + "</div>");
-  objet(1, 0.05, 0.53, 260, 64, 5, 0, '<div class="t7e-puce">' + K.ic(R.puces[2][0]) + R.puces[2][1] + "</div>");
-  objet(1, 0.55, 0.87, 230, 160, 0, 0, '<div class="t7e-doc" style="background:#1d1d20; position:relative"><h4 style="color:rgba(255,255,255,.4)">● ● ●</h4><i style="width:80%; background:rgba(255,255,255,.18)"></i><i style="width:55%; background:color-mix(in oklab, var(--brand-accent) 70%, transparent)"></i><i style="width:70%; background:rgba(255,255,255,.18)"></i></div>');
-  // 3. les outils : leurs icônes d'appli, à plusieurs profondeurs
-  var places = [[0.22, 0.12, 150, 0], [0.42, 0.18, 118, 0], [0.80, 0.34, 165, 0], [0.86, 0.68, 145, 0], [0.70, 0.66, 104, 0], [0.30, 0.84, 128, 0], [0.035, 0.10, 210, 8], [0.74, 0.06, 104, 3]];
-  R.logos.forEach(function (n, i) { var p = places[i % places.length]; objet(2, p[0], p[1], p[2], p[2], p[3], 0, '<div class="t7e-tuile">' + (K.ic(n) || K.ic("sparkles")) + "</div>"); });
-  tous.forEach(function (e) { gsap.set(e, { filter: "blur(" + e.dataset.flou + "px)", rotation: +e.dataset.rot }); });
+  // Le placement : chaque objet prend sa place prévue, sinon la plus proche (en spirale) qui ne couvre
+  // ni la phrase ni un mot déjà posé (et, pour un mot, aucun objet) ; un mot reste entier dans
+  // l'image. Rien d'aléatoire : le même placement à chaque image, en 16:9 comme en 9:16.
+  var placees = [], bord = 24;
+  var libre = vertical ? { x0: 0, x1: L, y0: 0.37 * H, y1: 0.63 * H } : { x0: 0.13 * L, x1: 0.87 * L, y0: 0.36 * H, y1: 0.64 * H };
+  var chevauche = function (a, b, m) { return a.x0 < b.x1 + m && a.x1 > b.x0 - m && a.y0 < b.y1 + m && a.y1 > b.y0 - m; };
+  function placer(cx, cy, w, h, texte, flou) {
+    var d = 10 + flou * 5;                         // sa dérive (plus bas) : il lui faut cette place de chaque côté
+    for (var rayon = 0; rayon <= 560; rayon += 40) {
+      for (var k = 0, n = rayon ? 12 : 1; k < n; k++) {
+        var a = (k / n) * Math.PI * 2, x = cx + Math.cos(a) * rayon, y = cy + Math.sin(a) * rayon * 0.7;
+        if (texte) { x = Math.max(bord + w / 2, Math.min(L - bord - w / 2, x)); y = Math.max(bord + h / 2, Math.min(H - bord - h / 2, y)); }
+        var b = { x0: x - w / 2 - d, x1: x + w / 2 + d, y0: y - h / 2, y1: y + h / 2, texte: texte };
+        if (chevauche(b, libre, 0)) continue;
+        if (placees.some(function (p) { return (p.texte || texte) && chevauche(b, p, 14); })) continue;
+        placees.push(b); return [x, y];
+      }
+    }
+    placees.push({ x0: cx - w / 2, x1: cx + w / 2, y0: cy - h / 2, y1: cy + h / 2, texte: texte });
+    return [cx, cy];
+  }
+  R.groupes.forEach(function (liste, g) {
+    var places = PLACES[g % PLACES.length], k = 0;
+    liste.forEach(function (o) {
+      if (k >= places.length) return;
+      var p = places[k], fx = p[0], fy = p[1];
+      var b = fabriquer(o, p[2] * echelle);
+      if (!b) return;                               // un logo absent : l'objet est retiré
+      k++;
+      if (vertical) { var t = fx; fx = 0.08 + fy * 0.84; fy = t < 0.5 ? 0.06 + t * 0.62 : 0.94 - (1 - t) * 0.62; }
+      var xy = placer(fx * L, fy * H, b.w || b.estime, b.h, !!b.texte, +p[3]);
+      var e = K.el(hote, "div", "t7e-obj", b.html, "left:" + xy[0] + "px; top:" + xy[1] + "px; width:" + (b.w ? b.w + "px" : "max-content") + "; height:" + b.h + "px;");
+      e.setAttribute("data-pix", "0"); e.dataset.flou = p[3]; e.dataset.rot = p[4]; e.dataset.cx = xy[0]; e.dataset.cy = xy[1];
+      groupes[g].push(e); tous.push(e);
+    });
+  });
+  // Chaque objet est placé par son centre.
+  tous.forEach(function (e) { gsap.set(e, { xPercent: -50, yPercent: -50, filter: "blur(" + e.dataset.flou + "px)", rotation: +e.dataset.rot }); });
   $("t7e-points-texte").textContent = R.fin;
   if (vertical) { $("t7e-phrase").style.whiteSpace = "normal"; $("t7e-phrase").style.fontSize = "112px"; $("t7e-phrase").style.padding = "0 60px"; $("t7e-points-texte").style.fontSize = "96px"; $("t7e-points-texte").style.whiteSpace = "normal"; }
   // le cadre de points autour de la conclusion
@@ -153,8 +193,7 @@
 
   // 2. Tout passe en points et se resserre vers le centre (3,4 → 4,3 s)
   tous.forEach(function (e, i) {
-    var cx = parseFloat(e.style.left) + parseFloat(e.style.width) / 2, cy = parseFloat(e.style.top) + parseFloat(e.style.height) / 2;
-    var t = 3.35 + (i % 6) * 0.04;
+    var cx = +e.dataset.cx, cy = +e.dataset.cy, t = 3.35 + (i % 6) * 0.04;
     tl.set(e, { attr: { "data-pix": "1" } }, t);
     tl.to(e, { x: (L / 2 - cx) * 0.75, y: (H / 2 - cy) * 0.75, scale: 0.25, opacity: 0, duration: 0.7, ease: "power3.in" }, t + 0.1);
   });
@@ -162,7 +201,7 @@
 
   // 3. La conclusion en points (4,05 → 5,2 s)
   tl.fromTo("#t7e-points", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 4.05);
-  tl.fromTo(".t7e-cadre", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.04 }, 4.15);
+  tl.fromTo("#t7e .t7e-cadre", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.04 }, 4.15);
   tl.fromTo("#t7e-points-texte", { scaleX: 1.06 }, { scaleX: 1, duration: 1.0, ease: "expo.out" }, 4.05);
   window.__timelines["t7e"] = tl;
 })();

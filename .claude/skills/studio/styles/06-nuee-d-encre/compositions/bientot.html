@@ -9,10 +9,11 @@
     L'initiale de l'offre change de forme à chaque quart de seconde (fine, grasse, en contour),
     trois points arrivent à côté d'elle ; coupe : deux lignes posées au centre (« Ton offre. »
     puis « Bientôt disponible. ») ; coupe : le nom de l'offre en capitales ; coupe au noir.
-    Rôle : l'offre et l'appel d'un teaser (ce qui arrive, quand, où le suivre).
+    Rôle : l'offre et l'appel d'un teaser (ce qui arrive, quand, où le suivre). Une page aplat, de
+    l'encre, un seul point à l'accent : ni texture, ni image.
 
     Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : tout est
-    centré, les tailles se réduisent à la largeur.
+    centré, les tailles se réduisent à la largeur (74 % en 9:16, la zone de texte d'un Reel).
 
     À REMPLACER :
       1. L'id « t06-bientot » partout (rechercher-remplacer) par l'id de la scène dans index.html.
@@ -20,8 +21,8 @@
          nom puis la promesse, « Bientôt disponible. », « Ouverture le 3 novembre. » seulement
          avec une vraie date de OFFRE.json) et LOGO (chemin d'un logo du projet ; vide = le nom en
          capitales).
-      3. Couleurs : l'encre est la couleur sombre de la marque si elle en a une ; les trois points
-         prennent l'accent de la marque. --t06-papier en tête du style.
+      3. Couleurs : celles de la marque. La page est var(--brand-clair) (un aplat), l'encre et le
+         noir final var(--brand-sombre) ; le troisième point prend l'accent, plein.
       Police des titres : celle de la marque (--t06-titres). Marque sans police imposée : la serif
       du look (Source Serif 4, graisse 600), mode d'emploi dans style.md, section 4.
   -->
@@ -30,11 +31,12 @@
 <template>
   <style>
     #t06-bientot {
-      --t06-papier: #e3e4de;
+      --t06-papier: var(--brand-clair);   /* la page : un aplat de la couleur claire de la marque */
+      --t06-encre: var(--brand-sombre);   /* l'encre et le noir final : sa couleur la plus sombre */
       --t06-titres: var(--brand-font-display);
-      background: var(--t06-papier);
+      background: var(--t06-papier); color: var(--t06-encre);
     }
-    #t06-bientot canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-bientot .t06-page { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.045) 100%); }
     #t06-bientot .t06-plan { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
     #t06-bientot .t06-sigle { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.12em; font: 400 150px/1 var(--t06-titres); letter-spacing: -0.02em; white-space: nowrap; }
     #t06-bientot .t06-points { display: flex; gap: 0.1em; align-items: center; height: 0.7em; }
@@ -45,12 +47,12 @@
     #t06-bientot .t06-lignes div { display: block; }
     #t06-bientot .t06-nom { font: 700 104px/1 var(--brand-font-display); letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
     #t06-bientot .t06-nom img { height: 120px; width: auto; display: block; }
-    #t06-bientot .t06-noir { position: absolute; inset: 0; }
+    #t06-bientot .t06-noir { position: absolute; inset: 0; background: var(--t06-encre); }
   </style>
 
   <div data-composition-id="t06-bientot" data-width="1920" data-height="1080" data-duration="3.8" style="position:absolute; inset:0;">
     <div id="t06-bientot" class="k-scene">
-      <canvas id="t06-bientot-papier"></canvas>
+      <div class="t06-page"></div>
       <div class="t06-plan" id="t06-bientot-p1"></div>
       <div class="t06-plan" id="t06-bientot-p2"><div class="t06-lignes" id="t06-bientot-lignes"></div></div>
       <div class="t06-plan" id="t06-bientot-p3"><div class="t06-nom" id="t06-bientot-nom"></div></div>
@@ -69,23 +71,9 @@
       var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
       var tl = gsap.timeline({ paused: true });
 
-      function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-      function lum(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r, g, b; if (v[0] === "#") { r = parseInt(v.substr(1, 2), 16); g = parseInt(v.substr(3, 2), 16); b = parseInt(v.substr(5, 2), 16); } else { var m = v.match(/[\d.]+/g); r = +m[0]; g = +m[1]; b = +m[2]; } return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255; }
-      var cs = getComputedStyle(racine), FOND = cs.getPropertyValue("--brand-bg").trim();
-      var ENCRE = lum(FOND) < 0.25 ? FOND : "#141414", ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE, PAPIER = cs.getPropertyValue("--t06-papier").trim();
-      function papier(c, graine) {
-        c.width = L; c.height = H; var ctx = c.getContext("2d"), r = rng(graine); ctx.fillStyle = PAPIER; ctx.fillRect(0, 0, L, H);
-        for (var i = 0; i < 9000; i++) { ctx.fillStyle = r() < 0.5 ? "rgba(0,0,0,0.035)" : "rgba(255,255,255,0.08)"; ctx.fillRect(r() * L, r() * H, 1.4, 1.4); }
-        ctx.lineCap = "round";
-        for (var f = 0; f < 260; f++) {
-          var x = r() * L, y = r() * H, a = r() * 6.28, l = 8 + r() * 26, cbe = (r() - 0.5) * 0.9;
-          ctx.strokeStyle = r() < 0.6 ? "rgba(90,85,70,0.16)" : "rgba(255,255,255,0.35)"; ctx.lineWidth = 0.6 + r() * 0.5;
-          ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + Math.cos(a + cbe) * l * 0.6, y + Math.sin(a + cbe) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); ctx.stroke();
-        }
-      }
-      papier($("papier"), 23);
-      racine.style.color = ENCRE;
-      $("noir").style.background = ENCRE;
+      // Les couleurs de la marque : l'encre (sa couleur la plus sombre) vient du CSS de la scène ;
+      // l'accent ne colore qu'un détail, plein (le troisième point).
+      var ENCRE = "var(--t06-encre)", ACCENT = "var(--brand-accent)";
 
       // 1. Le sigle qui change de forme : l'initiale, puis des barres, puis trois points.
       var I = NOM.trim().charAt(0).toUpperCase(), p1 = $("p1");
@@ -134,7 +122,7 @@
       var csL = getComputedStyle(lignes);
       document.fonts.load(csL.fontWeight + " " + csL.fontSize + " " + csL.fontFamily).then(poser, poser);
       function poser() {
-        var maxL = L * 0.8;
+        var maxL = L * (H > L ? 0.74 : 0.8);   // en 9:16, la zone de texte d'un Reel (830 px sur 1 080)
         if (lignes.offsetWidth > maxL) lignes.style.fontSize = (76 * maxL / lignes.offsetWidth).toFixed(1) + "px";
         if (nom.offsetWidth > maxL) nom.style.fontSize = (104 * maxL / nom.offsetWidth).toFixed(1) + "px";
         window.__timelines[ID] = tl;

@@ -4,9 +4,9 @@
 **Souvent utile pour :** montrer le passage du problème (trop d'infos, trop d'outils, trop de conseils) au résultat propre ; une méthode, un logiciel ou une formation qui « met de l'ordre ».
 **D'après :** post X de Firecrawl, « From web noise to working UI » · 66 s · 16:9 (1920 × 1080, 24 images/s) · musique électronique, sans voix, presque sans texte.
 **Mesures (`studio_motion.py reference`) :** 1,82 événement par seconde, écart médian 0,30 s, 10 coupes franches détectées en 66 s (vers 6,6, 10,8, 20,8, 26,1, 31,2, 32,0, 36,7 et 40,0 s), 4,0 s d'image tenue (le logo final). Par tranche de 6 s : de 1,0 à 2,7 événements par seconde. Tempo de la musique : environ 92 battements par minute.
-**Essai du kit (marque LMDM, 21,6 s) :** 1,56 événement par seconde en 16:9 (écart médian 0,30 s), 1,44 en 9:16 (0,40 s), aucune image figée, `rythme` « ok » dans les deux formats.
+**Essai du kit (marque LMDM, 21,6 s, 06/11/2026, avec une vraie capture dans l'aperçu) :** 1,44 événement par seconde en 16:9 (écart médian 0,50 s), 1,39 en 9:16 (0,50 s), aucune image figée, `rythme` et `palette` « ok » dans les deux formats.
 
-> On reprend la grammaire de la vidéo (grille, cartes, pixels, glyphes, cadres de repérage, chevron), jamais son contenu : ni ses textes, ni son logo, ni ses images (veste, fauteuils, pages web), ni son produit, ni sa musique. L'orange de Firecrawl devient la couleur de la marque du client.
+> On reprend la grammaire de la vidéo (grille, cartes, pixels, glyphes, cadres de repérage, chevron), jamais son contenu : ni ses textes, ni son logo, ni ses images (veste, fauteuils, pages web), ni son produit, ni sa musique, ni ses couleurs. L'orange de Firecrawl devient la couleur de la marque du client, posée pleine ; ses images ne se redessinent pas : l'aperçu de la fiche montre la vraie capture du client, ou rien.
 
 ## 1. Le rythme
 
@@ -15,7 +15,7 @@
 - **La caméra ne s'arrête jamais** : poussée lente pendant qu'on lit (4 à 6 % sur 2 à 3 s, `sine.inOut`), puis recadrage net à chaque nouvelle intention (0,3 à 0,85 s, `expo.out` ou `expo.inOut`) vers la partie qui compte.
 - **Les rafales** : les pixels et les cartes arrivent en cascade (0,02 à 0,1 s d'écart), jamais un par un à intervalle lent.
 - **Pas de texte à lire dans l'original.** Le kit en ajoute un minimum (un label mono et une étiquette de 2 à 4 mots par scène), parce qu'une vidéo de page démarre muette.
-- **Chez toi :** grille de 0,5 s du studio (120 battements par minute) ou celle de la musique ; les scènes du kit tiennent 1,4 à 1,6 événement par seconde. Le milieu (la carte annotée, les logos) est le plus calme : n'y ajoute pas de tenue.
+- **Chez toi :** grille de 0,5 s du studio (120 battements par minute) ou celle de la musique ; les scènes du kit tiennent environ 1,4 événement par seconde. Le milieu (la carte annotée, les logos) est le plus calme : n'y ajoute pas de tenue.
 
 ## 2. Les gestes signature et leur place
 
@@ -28,7 +28,7 @@ construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vi
 |---|---|---|---|
 | Le mur de bruit | la carte de discussion sombre, la question qui se tape, un mur de réponses grises et floues qui se lève autour | accroche, problème | `t01-bruit` |
 | La mosaïque de pixels | des blocs de pixels qui couvrent l'écran par à-coups, puis tombent rangée par rangée | raccord entre deux scènes, ouverture d'un chapitre | `t01-raccord-pixels` |
-| Les pixels qui deviennent l'interface | un amas de pixels à l'accent glisse et devient la fiche de l'offre, que des cadres de repérage annotent | solution, démonstration de son produit | `t01-carte-annotee` |
+| Les pixels qui deviennent l'interface | un amas de pixels à l'accent glisse et devient la fiche de l'offre (avec sa vraie capture dans l'aperçu), que des cadres de repérage annotent | solution, démonstration de son produit | `t01-carte-annotee` |
 | Le décodage | chaque texte arrive en glyphes qui se fixent de gauche à droite | tous les textes : labels, titres, nom | toutes les scènes |
 | Le grand chiffre dans les glyphes | un vrai chiffre qui compte au milieu d'un nuage de glyphes | preuve (seulement avec un vrai chiffre) | `t01-chiffre` |
 | Les logos reliés et le chevron | les logos de ses outils reliés à l'offre, le chevron en escalier, le nom en pixels, le bouton tapé et cliqué | outils, offre, appel | `t01-logos-fin` |
@@ -71,18 +71,19 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 
 | Rôle dans l'original | Couleur mesurée | Avec la marque du client |
 |---|---|---|
-| Fond de toute la vidéo | gris très clair `#f9f9f9` | reste `#f8f8f8` : c'est le look, quelle que soit la marque |
-| Grille | traits de 2 px `#e7e7e7` tous les 180 px, un point `#e3e3e3` au centre de chaque case | reste ; quelques cases `#f0f0f0` s'allument par à-coups |
-| Trame de glyphes du bas | glyphes `#d9d9d9` (. : + = X) | reste, très pâle, au bas de l'écran |
-| Cartes, panneaux, tuiles, fin | blanc, ombre douce (8 %) | reste |
-| Accent : pixels, point qui voyage, cadres, chiffre, chevron, bouton | orange `#eb4606` | `var(--brand-accent)` ; teintes du chargeur à 42 % et 18 % sur le fond |
-| Cartes sombres, mosaïque | encre `#1d1d1d`, gris `#262626` et `#373737` | la couleur sombre de la marque : son fond s'il est sombre (LMDM : `#202022`), sinon son texte, sinon `#1d1d1f` ; la mosaïque mêle cette encre à 100, 94 et 88 % |
-| Gris clairs de la mosaïque | `#c9c9c9`, `#adadad` | l'encre à 22 et 36 % sur blanc |
+| Fond de toute la vidéo | gris très clair `#f9f9f9` | sa couleur claire (`var(--brand-clair)`), à peine grisée par un noir à 3 % (LMDM : `#f8f8f8`) |
+| Grille | traits de 2 px `#e7e7e7` tous les 180 px, un point `#e3e3e3` au centre de chaque case | des noirs en transparence (traits à 7 %, points à 8,5 %) ; quelques cases (noir à 3 %) s'allument par à-coups |
+| Trame de glyphes du bas | glyphes `#d9d9d9` (. : + = X) | un noir à 13 %, très pâle, au bas de l'écran |
+| Cartes, panneaux, tuiles, fin | blanc, ombre douce (8 %) | blanc, ombre neutre douce |
+| Accent : pixels, point qui voyage, cadres, chiffre, chevron, bouton | orange `#eb4606` | `var(--brand-accent)`, toujours plein ; le chargeur alterne sa couleur et deux gris (`#cfcfcf`, `#e3e3e3`) |
+| Cartes sombres, mosaïque | encre `#1d1d1d`, gris `#262626` et `#373737` | sa nuit (`var(--brand-sombre)`, écrite en CSS, jamais calculée) ; sur la carte sombre, des blancs en transparence (la bulle à 22 %, le champ à 14 %) ; la mosaïque mêle sa nuit, sa nuit sous un blanc à 5 % et son premier gris (`var(--brand-gris-1)`) |
+| Gris clairs de la mosaïque | `#c9c9c9`, `#adadad` | ses gris clairs (`var(--brand-gris-4)`, `var(--brand-gris-3)`) |
 | Texte posé sur l'accent | blanc | `var(--brand-contrast)` |
+| Aperçu de la fiche (des pages web) | les couleurs de son produit | sa vraie capture, dans ses propres couleurs ; sans capture, pas d'aperçu |
 
-- **Accent clair** (jaune, vert pâle, luminance au-dessus de 0,28) : un jaune ne se lit pas sur le gris clair. Le kit le détecte seul et passe en classe `t01-accent-clair` : les cadres de repérage et le chiffre passent à l'encre (le chiffre souligné d'un trait de couleur), les teintes du chargeur deviennent des gris, l'accent reste en aplat (pixels, étiquettes, surlignage, chevron, bouton). Jamais d'accent clair transparent. Le chiffre, qui est un texte, passe à l'encre plus tôt : dès que l'accent ne s'y lit plus à 4,5:1 sur le gris clair (luminance au-dessus de 0,17).
-- **Sur n'importe quelle marque, claire ou sombre** : le gris clair, la grille, le blanc des cartes et de la fin restent ceux de l'original, fixes ; seuls l'accent et l'encre des cartes sombres viennent de la marque, et l'encre se choisit seule (son fond s'il est sombre, sinon son texte, sinon `#1d1d1f` : jamais une couleur claire). Le texte posé sur l'accent est en `var(--brand-contrast)` ; tout texte garde un contraste d'au moins 4,5:1.
-- Aucun dégradé, aucun néon ; les seules ombres sont douces et larges.
+- **Accent clair** (jaune, vert pâle, luminance au-dessus de 0,28) : un jaune ne se lit pas sur le gris clair. Le kit le détecte seul et passe en classe `t01-accent-clair` : les cadres de repérage et le chiffre passent à l'encre (le chiffre souligné d'un trait de couleur), l'accent reste en aplat (pixels, étiquettes, surlignage, chevron, bouton). Le chiffre, qui est un texte, passe à l'encre plus tôt : dès que l'accent ne s'y lit plus à 4,5:1 sur le gris clair (luminance au-dessus de 0,17).
+- **Sur n'importe quelle marque, claire ou sombre** : tout vient de `brand/tokens.css` : son clair pour le papier, sa nuit (`--brand-sombre`, sa couleur la plus sombre : son fond s'il est sombre, son texte s'il est clair) pour l'encre et les cartes sombres, ses gris (`--brand-gris-1` à `4`), du blanc, du noir et ces neutres en transparence, et sa couleur, toujours pleine. Rien ne se tire de l'accent : ni teinte pâle (le chargeur prend des gris pour toutes les marques), ni accent en transparence, ni lueur de sa couleur derrière un cadre (un éclair gris à la place). Le texte posé sur l'accent est en `var(--brand-contrast)` ; tout texte garde un contraste d'au moins 4,5:1.
+- Aucun dégradé, aucun néon ; les seules ombres sont neutres, douces et larges.
 - Les bascules de fond de l'original : clair presque partout, deux passages sombres (la mosaïque, l'écran de code) et le blanc pur de la fin. Le kit garde ce dosage : ce style ne fait pas alterner sombre, clair et couleur pleine comme le style par défaut du studio, c'est voulu.
 
 ## 4. La typographie
@@ -107,7 +108,7 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 ## 5. Les mouvements signature
 
 1. **La mosaïque de pixels** (`t01-raccord-pixels`, 1,45 s) : des blocs de 240 px, coupés en 2 × 2 pixels de tons différents (un sur six clair), surgissent par à-coups, sans fondu, des bords gauche et droit vers le centre en 0,6 s ; un pixel sur cinq clignote en gris clair 0,07 s avant de foncer. L'écran couvert grossit de 4 % pendant 0,4 s, puis les blocs tombent rangée par rangée du haut vers le bas en 0,3 s.
-2. **Les pixels qui deviennent l'interface** (`t01-carte-annotee`) : un amas en croix de 12 pixels à l'accent (72 px, pas de 104 px) s'allume en vague (0,05 s d'écart), ses teintes tournent toutes les 0,12 s ; puis chaque pixel glisse et s'étire jusqu'à un bloc de la fiche (0,65 s, `expo.inOut`, 0,03 s d'écart) pendant que la carte blanche grandit derrière (0,7 s) ; l'aperçu se dissout en pixels (ordre aléatoire, 0,5 s).
+2. **Les pixels qui deviennent l'interface** (`t01-carte-annotee`) : un amas en croix de 12 pixels à l'accent (72 px, pas de 104 px) s'allume en vague (0,05 s d'écart), ses teintes tournent toutes les 0,12 s ; puis chaque pixel glisse et s'étire jusqu'à un bloc de la fiche (0,65 s, `expo.inOut`, 0,03 s d'écart) pendant que la carte blanche grandit derrière (0,7 s) ; avec sa vraie capture, l'aplat de l'aperçu se dissout en pixels (ordre aléatoire, 0,5 s) et découvre la capture, qui recule doucement (×1,06 → ×1 en 2,4 s).
 3. **Le décodage** (toutes les scènes) : chaque texte arrive en glyphes (# % @ X = + : * / < >) renouvelés toutes les 0,045 s, qui se fixent de gauche à droite en 0,4 à 0,6 s. Labels, titres, contenu des cartes, nom final.
 4. **Les cadres de repérage** (`t01-carte-annotee`) : un cadre de 2 px se pose sur une partie de la fiche (de 112 % à 100 %, 0,3 s, `expo.out`), un éclair de remplissage s'y éteint en 0,45 s, une petite étiquette en capitales monte de 8 px (`back.out`) ; un cadre toutes les 0,32 s, et la caméra fait un pas vers chacun.
 5. **Le chiffre dans les glyphes** (`t01-chiffre`) : les hachures s'ouvrent en 0,5 s, le chiffre compte de 0 à sa valeur en 1,25 s (`expo.out`) au milieu d'un nuage de glyphes d'abord dense sur lui, puis seulement sur ses bords, éteint en 1,6 s ; six points s'allument du centre vers les bords (0,1 s d'écart).
@@ -117,7 +118,7 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 
 - **La mosaïque de pixels sombres** : le raccord signature, deux ou trois fois par vidéo de page, jamais deux fois de suite. Elle se pose sur la piste 2, par-dessus la coupe (voir « Les compositions du kit »).
 - **Le raccord d'objet** : le panneau du chiffre se resserre en case blanche, la case reçoit le logo ; les pixels deviennent la fiche ; dans l'original, le globe se déroule en grille et la caméra entre dans une case.
-- **La dissolution en pixels** : un aplat (l'aperçu de la fiche, le logo final, la case du centre) se découvre par carrés qui tombent dans le désordre.
+- **La dissolution en pixels** : un aplat (l'aperçu de la fiche sur sa vraie capture, le logo final, la case du centre) se découvre par carrés qui tombent dans le désordre.
 - **Le chevron en escalier** : une seule fois, pour passer à la fin.
 - **La coupe franche** : rare, sur un temps fort de la musique.
 - Jamais de fondu enchaîné entre deux écrans chargés.
@@ -126,7 +127,7 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 
 - L'original ne montre jamais de capture brute : son produit (un service pour développeurs) devient des **cartes d'interface simplifiées et propres** : une discussion avec l'agent, une fiche produit qu'on annote, des fiches de données, un mur de pages, une connexion. Chaque carte fait une seule chose, lisible en une seconde.
 - Les **logos des outils** reliés (OpenAI, Anthropic, Gemini) et ceux des clients autour de l'icône disent l'écosystème.
-- **Chez toi** : l'offre devient une fiche blanche (nom, genre, prix exact, promesse en 3 lignes, 3 pastilles de contenu) avec un **vrai visuel** dans l'aperçu (miniature de leçon, écran du logiciel, photo de séance) ; les cadres repèrent ce qui fait vendre ; la discussion sombre porte la vraie question du prospect ; les tuiles portent les vrais logos des outils de l'offre (`studio_motion.py logos`). Une interface qu'il n'a pas ne s'invente pas.
+- **Chez toi** : l'offre devient une fiche blanche (nom, genre, prix exact, promesse en 3 lignes, 3 pastilles de contenu) avec **sa vraie capture** dans l'aperçu (`CAPTURE` : miniature de leçon, sa page, l'écran du logiciel, photo de séance) ; sans capture, la fiche se resserre sur son texte, sans aperçu ni cadre APERÇU : jamais un faux lecteur vidéo, une image inventée ou une étoile décorative à la place. Les cadres repèrent ce qui fait vendre ; la discussion sombre porte la vraie question du prospect ; les tuiles portent les vrais logos des outils de l'offre (`studio_motion.py logos`). Une interface qu'il n'a pas ne s'invente pas.
 
 ## 8. Le son
 
@@ -142,26 +143,27 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 
 ## Ce qui ne se fera pas à l'identique
 
+- **Les images de l'original ne se refont pas** : la veste, les fauteuils, les pages web et le mur de pages ne se redessinent jamais. L'aperçu de la fiche montre sa vraie capture (fournie pour la vidéo), sinon il disparaît ; le faux lecteur vidéo, sa barre de lecture et l'étoile décorative des premiers kits sont retirés.
 - La structure isométrique de l'ouverture, le globe en fil de fer, le cube, le mur de pages qui pivote, la page qui passe en fil de fer puis en code : trop liés à un produit qui lit le web, pas construits dans le kit. Leur grammaire (tramage, raccord d'objet, caméra qui entre dans une case) reste disponible.
 - Le logo final qui se forme dans une trame de glyphes, de gauche à droite : remplacé par une grille de 6 × 6 pixels (blancs et à l'accent) qui tombent, le nom se décodant à côté.
 - Les logos de clients autour de l'icône : remplacés par les logos des outils liés à l'offre (un logo de client se montre seulement avec son accord).
 - Presque aucun texte dans l'original : le kit ajoute un label mono et une étiquette de 2 à 4 mots par scène.
 - Aucun appel à l'action dans l'original : le kit finit sur un bouton écrit et cliqué.
-- Un accent clair (le jaune de LMDM) ne peut pas faire les traits fins de l'orange : le kit passe les cadres et le chiffre à l'encre.
+- Un accent clair (le jaune de LMDM) ne peut pas faire les traits fins de l'orange : le kit passe les cadres et le chiffre à l'encre. Les teintes pâles de l'orange (le chargeur, l'éclair des cadres) deviennent des gris, pour toutes les marques.
 - La police mono de l'original : remplacée par la mono de la marque ou du système.
 
 ## Sur une autre offre
 
 C'est un look : il se pose sur toute offre. Ce qui suivait le produit de l'original s'adapte :
 
-- **Formation** : la discussion porte la question des élèves (« Par où je commence ? ») ; la fiche est la formation (genre « Formation · En ligne · Accès à vie », pastilles Vidéos, Modèles, Bonus), l'aperçu une vraie miniature de leçon ; le chiffre compte les élèves ; les tuiles sont les outils enseignés.
+- **Formation** : la discussion porte la question des élèves (« Par où je commence ? ») ; la fiche est la formation (genre « Formation · En ligne · Accès à vie », pastilles Vidéos, Modèles, Bonus), l'aperçu la capture d'une vraie miniature de leçon ; le chiffre compte les élèves ; les tuiles sont les outils enseignés.
 - **Coaching** : la discussion porte ce que les clients disent au premier appel ; la fiche est l'accompagnement (format, durée, séances), l'aperçu une photo de séance ou l'agenda réel ; le chiffre compte les clients accompagnés ; les tuiles, seulement les outils vraiment utilisés (visio, suivi).
 - **Logiciel** : le bruit, ce sont les dix outils ou onglets qu'il remplace ; la fiche est son écran principal (capture réelle dans l'aperçu), les cadres repèrent ses fonctions ; le chiffre compte les utilisateurs ; les tuiles sont ses intégrations réelles.
-- **Toujours** : la grille claire, les pixels, le décodage, la mosaïque, les cadres, le chevron, l'accent seul en couleur.
+- **Toujours** : la grille claire, les pixels, le décodage, la mosaïque, les cadres, le chevron, l'accent seul en couleur, toujours plein ; dans l'aperçu, sa vraie capture ou rien.
 
 ## En vertical et en carré
 
-- **9:16 (1080 × 1920)** : mets `data-width="1080" data-height="1920"` sur la racine de chaque composition et sur son hôte ; la mise en page se règle seule (classe `t01-vertical`) : mur de bruit en 3 colonnes, fiche en colonne (aperçu 828 × 480 en haut, texte dessous), labels et étiquettes en haut dans la zone sûre (x 100, y 300 et plus), tuiles réparties en hauteur, logo au-dessus du nom à la fin, mosaïque et chevron recalculés. Testé sur toutes les compositions (captures dans les preuves).
+- **9:16 (1080 × 1920)** : mets `data-width="1080" data-height="1920"` sur la racine de chaque composition et sur son hôte ; la mise en page se règle seule (classe `t01-vertical`) : mur de bruit en 3 colonnes, fiche en colonne (sa capture en aperçu, 828 × 480, en haut, texte dessous ; sans capture, la fiche se resserre sur le texte), labels et étiquettes en haut dans la zone sûre (x 100, y 300 et plus), tuiles réparties en hauteur, logo au-dessus du nom à la fin, mosaïque et chevron recalculés. Testé sur toutes les compositions (captures dans les preuves).
 - **4:5 et carré** : pas de mise en page propre. En 4:5 (1080 × 1350), la mise en page verticale s'applique seule mais elle est dessinée pour 1920 de haut ; en carré, force-la (`vertical = true` dans le script). Puis réduis la caméra de chaque scène (`scale` 0,7 en 4:5, 0,56 en carré) et remonte labels et étiquettes vers y = 120. À vérifier image par image : rien n'a été testé dans ces deux formats.
 
 ## Les compositions du kit
@@ -172,8 +174,8 @@ Dossier `compositions/`, 16:9 par défaut, chacune avec son en-tête (ce qu'elle
 |---|---|---|---|
 | `t01-bruit.html` | 5,5 s | Problème : la carte de discussion sombre, la question tapée, la réponse, le mur de bruit flou, l'étiquette « Trop de bruit. » | la question, la réponse (3 lignes), 10 à 14 phrases de bruit du domaine, le label et l'étiquette |
 | `t01-raccord-pixels.html` | 1,45 s | Raccord : la mosaïque de pixels sombres, couverture puis départ par rangées | l'id (un par raccord) et la graine |
-| `t01-carte-annotee.html` | 6,5 s | Solution : le chargeur en pixels, les pixels qui deviennent la fiche, le décodage, l'aperçu dissous, les cinq cadres de repérage, le recadrage final | la fiche (nom, genre, prix exact, promesse, pastilles), le visuel de l'aperçu, les étiquettes des cadres, le label |
-| `t01-chiffre.html` | 2,8 s | Preuve : le panneau à hachures, le chiffre qui compte dans les glyphes, son étiquette, les points ; sortie en case blanche | le vrai chiffre (obligatoire, sinon pas de scène), ce qu'il compte, le label |
+| `t01-carte-annotee.html` | 6,5 s | Solution : le chargeur en pixels, les pixels qui deviennent la fiche, le décodage, l'aperçu dissous sur sa vraie capture, les cadres de repérage (cinq avec l'aperçu, quatre sans), le recadrage final | la fiche (nom, genre, prix exact, promesse, pastilles), `CAPTURE` (sa vraie capture ; "" : pas d'aperçu), les étiquettes des cadres, le label |
+| `t01-chiffre.html` | 2,8 s | Preuve : le panneau à hachures, le chiffre qui compte dans les glyphes, son étiquette, les points de sa couleur ; sortie en case blanche | le vrai chiffre (obligatoire, sinon pas de scène), ce qu'il compte, le label |
 | `t01-logos-fin.html` | 6,8 s | Outils et fin : le logo dans la case, les tuiles d'outils, le maillon qui relie, le chevron en escalier, le logo et le nom en pixels, le bouton tapé et cliqué | les logos des outils, l'outil relié, le logo et le nom, l'étiquette, le bouton |
 
 Le montage dans `index.html` (16:9) : les scènes bout à bout sur la piste 1, le raccord sur la piste 2, au-dessus, démarrant 0,8 s avant la coupe :

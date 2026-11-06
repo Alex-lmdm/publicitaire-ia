@@ -7,37 +7,37 @@
   Style n°3 · Verre sombre · scène « Les onglets » (l'accroche).
   Ce qu'elle montre : ta promesse en très gros, floue, qui devient nette ; la caméra recule d'un
   coup et la phrase finit petite, sa fin à la couleur de ta marque. Puis une barre d'onglets entre,
-  défile très vite (flou de vitesse) sous une pastille lumineuse qui se pose sur ton offre ; on
-  plonge dans ce bouton posé sur une trame de points, et « Découvre Ton offre » se forme en points
-  puis devient net.
+  défile très vite (flou de vitesse) sous une pastille fixe cerclée de ta couleur, qui se pose sur
+  ton offre et se remplit de ta couleur ; on plonge dans ce bouton, qui couvre l'écran d'un éclair
+  de ta couleur, et « Découvre Ton offre » se forme en points puis devient net.
   Durée : 8,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : tout se place
   d'après la taille de la composition (K.cadre).
   À remplacer (objet R en tête du script, rien d'autre) : la promesse en deux morceaux, les onglets
   (les sujets de ton univers, ceux de ta page, 6 à 9 ; « | » pose un séparateur ; le premier
   porte une icône), le nom de l'offre (il doit figurer dans les onglets), le mot d'appel.
-  Couleurs : la nuit, le texte clair et le gris sont ceux du look (fixes) ; la marque donne
-  l'accent (var(--brand-accent)), éclairci en --t3-accent-texte quand il colore un texte.
+  Couleurs : celles de la marque, rien d'autre. La nuit est var(--brand-sombre), le texte posé
+  dessus var(--brand-clair), les gris var(--brand-gris-*), un mot à l'accent sur la nuit
+  var(--brand-accent-lisible) ; l'accent se pose plein (le cercle de la pastille, son remplissage,
+  l'éclair) ; la lueur et la trame sont du blanc très faible.
   Identifiant : t3o (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3o {
-    /* La nuit du look reste celle de l'original quelle que soit la marque, claire ou sombre :
-       presque noire, teintée de 7 % de l'accent ; le texte posé dessus est clair. La marque ne
-       donne que les accents (--t3-accent-texte : l'accent, éclairci s'il est trop sombre pour
-       se lire sur la nuit). Jamais var(--brand-bg) ni var(--brand-text) ici. */
-    --t3-nuit: color-mix(in oklab, #030304 93%, var(--brand-accent));
-    --t3-texte: #ffffff;
-    --t3-accent-texte: oklch(from var(--brand-accent) max(l, 0.7) c h);
-    --t3-lueur: color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 16%, transparent);
-    --t3-gris: color-mix(in oklab, #a1a1a2 78%, var(--brand-accent));
+    /* La palette du look : rien que des couleurs de la marque, du blanc et du noir en transparence. */
+    --t3-nuit: var(--brand-sombre);
+    --t3-texte: var(--brand-clair);
+    --t3-accent-texte: var(--brand-accent-lisible);
+    --t3-gris: var(--brand-gris-3);
+    --t3-lueur: rgba(255, 255, 255, 0.075);
     --t3-police: var(--brand-font-body);
     background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
+  /* La lumière de la scène : du blanc très faible qui glisse lentement sur la nuit. */
   #t3o .t3o-fond {
     position: absolute; inset: -2px -160px -2px -160px;
     background:
       radial-gradient(ellipse 55% 48% at 20% -10%, var(--t3-lueur), transparent 72%),
-      radial-gradient(ellipse 60% 36% at 80% 112%, color-mix(in oklab, color-mix(in oklab, var(--brand-accent) 60%, #fff) 9%, transparent), transparent 70%),
+      radial-gradient(ellipse 60% 36% at 80% 112%, rgba(255, 255, 255, 0.04), transparent 70%),
       var(--t3-nuit);
   }
   /* La trame de points (le motif du look), masquée en ovale. */
@@ -49,7 +49,7 @@
     mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,.55) 45%, transparent 75%);
   }
   #t3o .t3o-halo { position: absolute; left: 50%; top: 50%; width: 1100px; height: 560px; margin: -280px 0 0 -550px; border-radius: 50%;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in oklab, var(--brand-accent) 16%, transparent), transparent 70%); opacity: 0; }
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, 0.07), transparent 70%); opacity: 0; }
   #t3o .t3o-plan { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
   /* L'accroche */
   #t3o .t3o-ligne {
@@ -58,10 +58,9 @@
     letter-spacing: -0.015em; text-shadow: 0 0 26px rgba(255, 255, 255, 0.22);
   }
   #t3o .t3o-ligne span { display: inline-block; }
+  #t3o .t3o-a { position: relative; color: var(--t3-texte); }
   #t3o .t3o-b { color: var(--t3-accent-texte); }
   #t3o .t3o-bm { display: inline-block; }
-  /* La promesse passe de l'accent au blanc : GSAP anime --t3m de 0 à 1 (une var() ne se tweene pas). */
-  #t3o .t3o-a { position: relative; color: color-mix(in oklab, var(--t3-accent-texte) calc(100% - var(--t3m, 0) * 100%), var(--t3-texte)); }
   #t3o .t3o-caret { position: absolute; left: -0.32em; top: 0.12em; width: 0.16em; height: 0.86em;
     background-image: radial-gradient(circle, rgba(255,255,255,.95) 1.6px, transparent 2.2px); background-size: 6px 6px; }
   /* La barre d'onglets */
@@ -76,22 +75,30 @@
     background: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.08); }
   #t3o .t3o-sep { width: 2px; height: 50px; background: rgba(255, 255, 255, 0.16); }
   #t3o .t3o-cible { color: var(--t3-texte); }
-  /* La pastille de sélection, fixe au centre : les onglets défilent dessous. */
+  /* La pastille de sélection, fixe au centre : les onglets défilent dessous. Verre neutre, cerclé
+     d'un trait plein de la marque (jamais un halo de l'accent). */
   #t3o .t3o-selection {
     position: absolute; left: 50%; top: 50%; height: 112px; margin-top: -56px; border-radius: 30px;
-    background: linear-gradient(180deg, color-mix(in oklab, var(--brand-accent) 12%, rgba(255,255,255,.07)), rgba(255,255,255,.015));
-    border: 2px solid color-mix(in oklab, var(--brand-accent) 80%, #fff);
-    box-shadow: 0 0 18px color-mix(in oklab, var(--brand-accent) 38%, transparent),
-      0 0 60px color-mix(in oklab, var(--brand-accent) 14%, transparent),
-      inset 0 0 20px color-mix(in oklab, var(--brand-accent) 20%, transparent);
-    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025));
+    border: 2px solid var(--brand-accent);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
   }
+  /* Le remplissage de la pastille : l'accent plein, qui entre par un volet (jamais en fondu), avec
+     le nom de l'offre écrit dessus dans la couleur lisible sur l'accent. */
+  #t3o .t3o-plein {
+    position: absolute; left: 50%; top: 50%; height: 112px; margin-top: -56px; border-radius: 30px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; white-space: nowrap;
+    font-weight: 600; font-size: 46px; background: var(--brand-accent); color: var(--brand-contrast);
+    clip-path: inset(0% 100% 0% 0% round 30px);
+  }
+  /* L'arête haute de la pastille, où glisse le reflet. */
+  #t3o .t3o-arete { position: absolute; left: 50%; top: 50%; height: 112px; margin-top: -56px; border-radius: 30px; overflow: hidden; pointer-events: none; }
   #t3o .t3o-reflet { position: absolute; top: -2px; left: 0; width: 46%; height: 5px; border-radius: 3px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent); filter: blur(1px); }
   /* La fin : « Découvre Ton offre », d'abord en points */
   #t3o .t3o-final { position: absolute; left: 0; right: 0; top: 50%; height: 200px; margin-top: -100px; }
   #t3o .t3o-bande { position: absolute; left: 50%; top: 50%; width: 1100px; height: 150px; margin: -75px 0 0 -550px; border-radius: 50%;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in oklab, var(--brand-accent) 30%, transparent), transparent 70%); filter: blur(10px); }
+    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, 0.09), transparent 70%); filter: blur(10px); }
   #t3o .t3o-texte {
     position: absolute; left: 0; right: 0; top: 50%; height: 80px; margin-top: -40px; text-align: center; white-space: nowrap;
     font-weight: 600; font-size: 58px; line-height: 80px; letter-spacing: -0.012em;
@@ -101,17 +108,19 @@
   #t3o .t3o-net .t3o-f1 { color: var(--t3-texte); }
   #t3o .t3o-net .t3o-f2 { color: var(--t3-accent-texte); }
   #t3o .t3o-pix {
-    color: #fff; letter-spacing: 0.02em;
+    color: var(--t3-texte); letter-spacing: 0.02em;
     -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 62%); -webkit-mask-size: 7px 7px;
     mask-image: radial-gradient(circle, #000 52%, transparent 62%); mask-size: 7px 7px;
-    text-shadow: 0 0 14px color-mix(in oklab, var(--brand-accent) 70%, #fff);
+    text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
   }
-  #t3o .t3o-echo { color: color-mix(in oklab, var(--brand-accent) 45%, #fff); filter: blur(7px); }
+  #t3o .t3o-echo { color: var(--t3-texte); filter: blur(7px); }
 </style>
 
 <div data-composition-id="t3o" data-width="1920" data-height="1080" data-duration="8.2" style="position:absolute; inset:0;">
   <div id="t3o" class="k-scene">
     <div class="t3o-fond" data-layout-allow-overflow></div>
+    <!-- La vignette assombrit la nuit seule : posée sous le sujet, elle ne touche jamais l'accent. -->
+    <div class="k-vignette"></div>
     <div class="k-scene3d"><div class="k-camera" id="t3o-cam">
       <div class="t3o-plan" id="t3o-plan-trame"><div class="t3o-halo" id="t3o-halo"></div><div class="t3o-trame" id="t3o-trame" data-layout-ignore></div></div>
       <div class="t3o-plan" id="t3o-zoom">
@@ -119,8 +128,10 @@
       </div>
       <div class="t3o-plan" id="t3o-zoom-barre" data-layout-allow-overflow>
         <div class="t3o-barre" id="t3o-barre" data-layout-allow-overflow></div>
-        <div class="t3o-selection" id="t3o-selection"><div class="t3o-reflet" id="t3o-reflet"></div></div>
+        <div class="t3o-selection" id="t3o-selection"></div>
         <div class="t3o-barre" id="t3o-barre-haut" style="pointer-events:none" data-layout-allow-overflow></div>
+        <div class="t3o-plein" id="t3o-plein" data-layout-allow-overlap><span id="t3o-plein-mot"></span></div>
+        <div class="t3o-arete" id="t3o-arete"><div class="t3o-reflet" id="t3o-reflet"></div></div>
       </div>
     </div></div>
     <div class="t3o-final" id="t3o-final">
@@ -129,7 +140,6 @@
       <div class="t3o-texte t3o-pix" id="t3o-pix" data-layout-ignore></div>
       <div class="t3o-texte t3o-net" id="t3o-net"></div>
     </div>
-    <div class="k-vignette"></div>
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
       <filter id="t3o-flou-h" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur id="t3o-flou-h-g" stdDeviation="0 0"/></filter>
     </svg>
@@ -149,18 +159,8 @@
   // -------------------------------------------------------------------------------------------
   var D = 8.2;
   var $ = function (id) { return document.getElementById(id); };
-  var cadre = K.cadre($("t3o")), L = cadre.largeur, H = cadre.hauteur, ech = Math.min(L / 1920, H / 1080) || 1;
+  var cadre = K.cadre($("t3o")), L = cadre.largeur, H = cadre.hauteur;
   var vertical = H > L;
-  // Les couleurs de la marque, lues sur la scène (GSAP anime des valeurs, pas des var()).
-  var css = getComputedStyle($("t3o"));
-  var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
-  var accent = C("--brand-accent", "#ffee00");
-  var rgba = function (c, a) {
-    var m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c), h;
-    if (!m) return c;
-    h = m[1].length === 3 ? m[1].replace(/(.)/g, "$1$1") : m[1];
-    return "rgba(" + parseInt(h.slice(0, 2), 16) + "," + parseInt(h.slice(2, 4), 16) + "," + parseInt(h.slice(4, 6), 16) + "," + a + ")";
-  };
 
   // Construction
   $("t3o-a").innerHTML = R.promesse[0] + '<span class="t3o-caret" id="t3o-caret" data-layout-ignore></span>';
@@ -181,13 +181,14 @@
   }
   remplir($("t3o-barre"), false);
   remplir($("t3o-barre-haut"), true);   // copie : seul l'onglet de l'offre, net, au-dessus de la pastille
+  $("t3o-plein-mot").textContent = R.offre;
   ["t3o-net", "t3o-pix", "t3o-echo"].forEach(function (id) {
     $(id).innerHTML = '<span class="t3o-f1">' + R.appel + '</span>&nbsp;<span class="t3o-f2">' + R.offre + "</span>";
   });
 
   // États de départ (première image comprise)
   gsap.set("#t3o-zoom", { scale: 4.6 * (vertical ? 0.62 : 1) });
-  gsap.set("#t3o-a", { filter: "blur(16px)", "--t3m": 0 });
+  gsap.set("#t3o-a", { filter: "blur(16px)" });
   K.cacher(["#t3o-b", "#t3o-barre", "#t3o-barre-haut", "#t3o-selection", "#t3o-final", "#t3o-trame"]);
   gsap.set("#t3o-barre", { filter: "url(#t3o-flou-h)" });
 
@@ -199,17 +200,19 @@
     var onglets = $("t3o-barre").children, premier = onglets[0];
     var cxPremier = premier.offsetLeft + premier.offsetWidth / 2;
     var cxCible = cible.offsetLeft + cible.offsetWidth / 2;
-    var wBarre = $("t3o-barre").offsetWidth;
     var quatre = onglets[Math.min(3, onglets.length - 1)];
     var cxGroupe = (premier.offsetLeft + quatre.offsetLeft + quatre.offsetWidth) / 2;
+    var wPastille = cible.offsetWidth + 64;
     gsap.set(["#t3o-barre", "#t3o-barre-haut"], { marginLeft: 0, x: -cxPremier });
-    gsap.set("#t3o-selection", { width: cible.offsetWidth + 64, marginLeft: -(cible.offsetWidth + 64) / 2 });
+    gsap.set(["#t3o-selection", "#t3o-plein", "#t3o-arete"], { width: wPastille, marginLeft: -wPastille / 2 });
     gsap.set("#t3o-ligne", { x: decalage });
     // la promesse en très gros occupe ~80 % de la largeur, quelle que soit sa longueur
     gsap.set("#t3o-zoom", { scale: Math.min(4.6, (0.8 * L) / Math.max(1, wA)) });
+    // l'échelle où la pastille pleine couvre tout l'écran (coins arrondis compris)
+    var couvre = 1.12 * Math.max((1.25 * H) / 112, (1.12 * L) / wPastille);
 
     // 1. La promesse floue devient nette, la caméra recule d'un coup (0 → 3,2 s)
-    tl.to("#t3o-a", { filter: "blur(0px)", "--t3m": 1, duration: 0.45, ease: "power2.out" }, 0.02);
+    tl.to("#t3o-a", { filter: "blur(0px)", duration: 0.45, ease: "power2.out" }, 0.02);
     tl.fromTo("#t3o-trame", { opacity: 0, scale: 1.25 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "power2.out" }, 0.12);
     tl.to("#t3o-trame", { opacity: 0, duration: 0.5, ease: "power2.in" }, 0.85);
     tl.to("#t3o-zoom", { scale: 1, duration: 0.75, ease: "expo.inOut" }, 0.42);
@@ -225,7 +228,9 @@
     tl.to("#t3o-ligne", { opacity: 0, filter: "blur(10px)", y: -40, duration: 0.3, ease: "power2.in" }, 3.0);
 
     // 2. La barre d'onglets : le premier, puis les suivants, puis le défilement (3,3 → 5,6 s)
-    var zb = vertical ? 0.55 : 1;
+    // en 9:16, la barre aussi grande que possible (au plus ×0,85) tant que la pastille de l'offre
+    // tient dans la largeur au plus près (×2,6) : de 50 à 100 px de texte selon la longueur du nom
+    var zb = vertical ? Math.min(0.85, (0.92 * L) / (wPastille * 2.6)) : 1;
     gsap.set("#t3o-zoom-barre", { scale: 2.1 * zb });
     tl.set("#t3o-barre", { opacity: 1 }, 3.3);
     gsap.set(onglets, { opacity: 0 });
@@ -244,26 +249,30 @@
     tl.fromTo("#t3o-selection", { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, 4.85);
     tl.set("#t3o-barre-haut", { opacity: 1 }, 5.45);
 
-    // 3. La plongée dans le bouton, sur la trame (5,6 → 7 s)
+    // 3. La plongée dans le bouton (5,6 → 7 s) : la pastille se remplit de l'accent par un volet,
+    //    puis on la traverse : elle couvre tout l'écran (un éclair de la couleur pleine), coupe.
     tl.to("#t3o-barre", { filter: "blur(9px)", opacity: 0.32, duration: 0.6, ease: "power2.out" }, 5.55);
-    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1.1, duration: 1.1, ease: "power2.out", immediateRender: false }, 5.5);
+    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1.1, duration: 1.05, ease: "power2.out", immediateRender: false }, 5.5);
     tl.to("#t3o-zoom-barre", { scale: 2.6 * zb, duration: 0.85, ease: "expo.out" }, 5.6);
-    tl.fromTo("#t3o-reflet", { x: -220 }, { x: cible.offsetWidth + 120, duration: 0.7, ease: "power2.inOut" }, 5.85);
-    tl.fromTo("#t3o-selection", { boxShadow: "0 0 18px " + rgba(accent, 0.38) + ", 0 0 60px " + rgba(accent, 0.14) + ", inset 0 0 20px " + rgba(accent, 0.2) },
-      { boxShadow: "0 0 30px " + rgba(accent, 0.6) + ", 0 0 110px " + rgba(accent, 0.26) + ", inset 0 0 28px " + rgba(accent, 0.32), duration: 0.5, ease: "power2.out", immediateRender: false }, 6.05);
+    tl.fromTo("#t3o-reflet", { x: -220 }, { x: wPastille + 120, duration: 0.7, ease: "power2.inOut" }, 5.85);
     tl.fromTo("#t3o-halo", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 5.6);
-    tl.to("#t3o-zoom-barre", { scale: 7 * zb, filter: "blur(18px)", opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
-    tl.to("#t3o-trame", { scale: 2.4, opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
-    tl.to("#t3o-halo", { scale: 2.2, opacity: 0, duration: 0.45, ease: "power3.in" }, 6.6);
+    tl.fromTo("#t3o-plein", { clipPath: "inset(0% 100% 0% 0% round 30px)" }, { clipPath: "inset(0% 0% 0% 0% round 30px)", duration: 0.26, ease: "power3.inOut" }, 6.02);
+    tl.set(["#t3o-selection", "#t3o-barre-haut"], { opacity: 0 }, 6.3);
+    tl.to("#t3o-plein-mot", { opacity: 0, duration: 0.12, ease: "power1.in" }, 6.55);
+    tl.to("#t3o-barre", { opacity: 0, duration: 0.15, ease: "power1.in" }, 6.55);
+    tl.to("#t3o-zoom-barre", { scale: couvre, duration: 0.38, ease: "power3.in" }, 6.55);
+    tl.to("#t3o-trame", { scale: 2.4, opacity: 0, duration: 0.4, ease: "power3.in" }, 6.55);
+    tl.to("#t3o-halo", { scale: 2.2, opacity: 0, duration: 0.4, ease: "power3.in" }, 6.55);
+    tl.set("#t3o-zoom-barre", { opacity: 0 }, 6.98);
 
     // 4. « Découvre Ton offre » se forme en points, puis net (7 → 8,2 s)
-    tl.set("#t3o-final", { opacity: 1 }, 6.95);
-    tl.fromTo("#t3o-bande", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "expo.out" }, 6.95);
-    tl.fromTo("#t3o-pix", { opacity: 0, scaleX: 1.25, filter: "blur(6px)" }, { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, 6.95);
-    tl.fromTo("#t3o-echo", { opacity: 0.7, scale: 1.9 }, { opacity: 0, scale: 1.15, duration: 0.7, ease: "power2.out" }, 6.98);
+    tl.set("#t3o-final", { opacity: 1 }, 6.98);
+    tl.fromTo("#t3o-bande", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.56, ease: "expo.out" }, 6.98);
+    tl.fromTo("#t3o-pix", { opacity: 0, scaleX: 1.25, filter: "blur(6px)" }, { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.38, ease: "expo.out" }, 6.98);
+    tl.fromTo("#t3o-echo", { opacity: 0.7, scale: 1.9 }, { opacity: 0, scale: 1.15, duration: 0.7, ease: "power2.out" }, 7.0);
     tl.fromTo("#t3o-net", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 7.28);
     tl.to("#t3o-pix", { opacity: 0, duration: 0.3, ease: "power1.in" }, 7.38);
-    tl.fromTo("#t3o-final", { scale: 1 }, { scale: 1.05, duration: 1.25, ease: "sine.inOut" }, 6.95);
+    tl.fromTo("#t3o-final", { scale: 1 }, { scale: 1.05, duration: 1.22, ease: "sine.inOut" }, 6.98);
     tl.to("#t3o-bande", { opacity: 0.55, duration: 0.3, ease: "sine.inOut" }, 7.56);
     tl.to("#t3o-final", { opacity: 0, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, 7.9);
 

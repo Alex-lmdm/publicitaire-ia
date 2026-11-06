@@ -24,7 +24,8 @@
       4. ACCUEIL : le texte gris du champ (le même qu'en scène 4).
       5. Les couleurs du look, en tête du style. La pastille cochée prend l'accent de la marque
          (la coche, la couleur lisible dessus) ; l'anneau prend la couleur du trait (l'accent, ou
-         l'encre si l'accent est trop pâle sur le crème).
+         l'encre si l'accent est trop pâle sur le clair). Le bouton d'envoi du champ, inactif, est
+         gris (jamais l'accent en transparence).
       Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
       du look (Source Serif 4), mode d'emploi dans style.md, section 4.
     Ne pas toucher : la place de la grille au début (raccord avec la scène 2) et la fenêtre à la
@@ -35,11 +36,15 @@
 <template>
   <style>
     #t05-coches {
-      --t05-papier: #efefe5;
-      --t05-carte: #f9f9f4;
-      --t05-pli: #e4e4d8;
-      --t05-encre: #1d1d1b;
-      --t05-gris: #8a8a82;
+      /* La palette du style : les neutres de la marque et son accent plein, rien d'autre. Le papier
+         est un gris très clair (son clair mêlé à son gris le plus clair), les cartes son clair,
+         l'encre sa couleur sombre ; jamais une teinte crème inventée, jamais l'accent en transparence. */
+      --t05-papier: color-mix(in srgb, var(--brand-clair) 58%, var(--brand-gris-4));
+      --t05-carte: var(--brand-clair);
+      --t05-pli: color-mix(in srgb, var(--brand-clair) 25%, var(--brand-gris-4));
+      --t05-encre: var(--brand-sombre);
+      --t05-gris: var(--brand-gris-3);
+      --t05-gris-texte: var(--brand-gris-2);
       --t05-titres: var(--brand-font-display);
       --t05-texte: var(--brand-font-body);
       background: var(--t05-papier);
@@ -47,7 +52,7 @@
     #t05-coches .t05-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
     #t05-coches .t05-disque {
       position: absolute; width: 178px; height: 178px; border-radius: 89px; background: var(--t05-carte); overflow: hidden;
-      box-shadow: 0 10px 24px rgba(60, 60, 30, 0.13), 0 2px 5px rgba(60, 60, 30, 0.06);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     #t05-coches .t05-pastille { position: absolute; left: 50%; top: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px; overflow: visible; }
     #t05-coches .t05-mini { position: absolute; left: 50%; top: 50%; width: 1100px; height: 400px; margin: -200px 0 0 -550px; }
@@ -59,15 +64,15 @@
     #t05-coches .t05-mot { display: inline-block; }
     /* La fenêtre (dans les cartes en miniature, puis plein écran) : dessinée à sa taille finale. */
     #t05-coches .t05-accueil { position: absolute; left: 0; right: 0; top: 60px; text-align: center; white-space: nowrap; font: 400 64px/1.1 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre); }
-    #t05-coches .t05-accueil i { display: inline-block; width: 22px; height: 22px; margin-right: 26px; border-radius: 50%; background: var(--brand-accent); box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08); vertical-align: 0.12em; }
+    #t05-coches .t05-accueil i { display: inline-block; width: 22px; height: 22px; margin-right: 26px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.07); vertical-align: 0.12em; }
     #t05-coches .t05-champ {
       position: absolute; left: 60px; right: 60px; top: 190px; height: 150px; border-radius: 26px; background: #fff;
-      box-shadow: 0 0 0 1.5px rgba(40, 40, 20, 0.07), 0 10px 30px rgba(60, 60, 30, 0.07);
-      font: 400 30px/1 var(--t05-texte); color: var(--t05-gris);
+      box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.06), 0 10px 30px rgba(0, 0, 0, 0.06);
+      font: 400 30px/1 var(--t05-texte); color: var(--t05-gris-texte);
     }
     #t05-coches .t05-champ span { position: absolute; left: 36px; top: 34px; white-space: nowrap; }
-    #t05-coches .t05-champ b { position: absolute; left: 34px; bottom: 26px; font: 300 40px/1 var(--t05-texte); color: var(--t05-gris); }
-    #t05-coches .t05-champ em { position: absolute; right: 26px; bottom: 22px; width: 50px; height: 50px; border-radius: 13px; background: var(--brand-accent); color: var(--brand-contrast); opacity: 0.45; display: grid; place-items: center; }
+    #t05-coches .t05-champ b { position: absolute; left: 34px; bottom: 26px; font: 300 40px/1 var(--t05-texte); color: var(--t05-gris-texte); }
+    #t05-coches .t05-champ em { position: absolute; right: 26px; bottom: 22px; width: 50px; height: 50px; border-radius: 13px; background: var(--t05-pli); color: var(--t05-gris-texte); display: grid; place-items: center; }
     #t05-coches .t05-champ em svg { width: 28px; height: 28px; }
     #t05-coches .t05-fenetre { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: hidden; background: var(--t05-carte); z-index: 20; }
     #t05-coches .t05-fenetre .t05-mini { box-shadow: none; }
@@ -106,11 +111,11 @@
       function lum(c) { return rvb(c).map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, i) { return s + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
       function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
       var cs0 = getComputedStyle(racine), ACCENT = cs0.getPropertyValue("--brand-accent").trim();
-      var TRAIT = contraste(ACCENT, cs0.getPropertyValue("--t05-papier")) >= 2 ? ACCENT : cs0.getPropertyValue("--t05-encre").trim();
+      var TRAIT = contraste(ACCENT, cs0.getPropertyValue("--brand-clair")) >= 2 ? ACCENT : cs0.getPropertyValue("--t05-encre").trim();
       var COCHE = cs0.getPropertyValue("--brand-contrast").trim() || "#ffffff";
       function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
       // La fenêtre de l'espace membre, dessinée à sa taille finale (1100 × 400) : salut + champ.
-      function fenetre(salut) { return '<div class="t05-mini"><div class="t05-accueil"><i></i>' + salut + '</div><div class="t05-champ"><span>' + ACCUEIL + "</span><b>+</b><em>" + K.ic("arrow-up") + "</em></div></div>"; }
+      function fenetre(salut) { return '<div class="t05-mini"><div class="t05-accueil"><i></i><span>' + salut + '</span></div><div class="t05-champ"><span>' + ACCUEIL + "</span><b>+</b><em>" + K.ic("arrow-up") + "</em></div></div>"; }
 
       // --- La grille, à la place exacte de la fin de la scène 2 ------------------------------
       var PAS = 235, X0 = 136, Y0 = 70, COLS = 8, LIGNES = 5;
@@ -157,6 +162,16 @@
       var csT = getComputedStyle(titre);
       document.fonts.load(csT.fontWeight + " " + csT.fontSize + " " + csT.fontFamily).then(suite, suite);
 
+      // Un salut long se réduit pour rester entier pendant les gros plans de la caméra (en 9:16,
+      // 840 px de la fenêtre au plus, son point compris) ; la scène 3 et la scène 4 suivent la même
+      // règle, le raccord reste exact.
+      function ajusterSalut(hote) {
+        var max = vertical ? 840 : 1040;
+        hote.querySelectorAll(".t05-accueil").forEach(function (a) {
+          var s = a.querySelector("span"), l = s ? s.offsetWidth + 48 : 0;
+          if (l > max) a.style.fontSize = (64 * (max - 48) / s.offsetWidth).toFixed(1) + "px";
+        });
+      }
       function suite() {
         // La phrase tient dans le trou du centre (réduite si sa police est large)
         var large = 0; titre.querySelectorAll(".t05-ligne").forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
@@ -182,6 +197,7 @@
         var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
         var ex = cx + S * (wx - cx), ey = cy + S * (wy - cy), cote = 200 * S;
         fen.innerHTML = fenetre(SALUTS[0]);
+        ajusterSalut(racine);
         var miniF = fen.querySelector(".t05-mini");
         // La fenêtre est plein écran dès le départ, découpée (clip-path) à la taille de la carte :
         // la découpe s'ouvre jusqu'aux bords, son contenu grandit depuis le centre de la carte.

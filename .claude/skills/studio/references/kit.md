@@ -53,7 +53,7 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 | Classe | Rôle |
 |---|---|
 | `k-scene` | conteneur plein cadre de la scène |
-| `k-fond k-fond-sombre` · `k-fond-clair` · `k-fond-jaune` | fonds : gris anthracite fixe (`#1b1b1d`, il ne suit pas `--brand-bg`) avec grille fine, blanc cassé avec grille, couleur d'accent pleine |
+| `k-fond k-fond-sombre` · `k-fond-clair` · `k-fond-jaune` | fonds : gris anthracite neutre (`#1b1b1d`) avec grille fine, blanc à peine gris (`#f3f3f3`) avec grille, couleur d'accent pleine ; pour une nuit à sa marque, `var(--brand-sombre)` |
 | `k-vignette` · `k-vignette-claire` | assombrit les bords (à placer sous le sujet si un plein écran de couleur doit rester pur) |
 | `k-scene3d` > `k-camera` | l'espace en perspective et la caméra qu'on anime (`scale`, `rotationX/Y/Z`, `x`, `y`) |
 | `k-plan` | un objet placé dans l'espace 3D |
@@ -91,6 +91,12 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 | `K.chapitre(tl, racine, curseur, t, {depart, cible})` | chapitre complet (mot fantôme, étiquette, curseur, interrupteur) ; rend l'instant de la plongée. Le clic vise l'interrupteur d'après la taille de la composition, en 9:16 comme en 16:9 ; `cible: [x, y]` seulement si le CSS de la scène a déplacé l'interrupteur |
 
 ## Les pièges (tous rencontrés)
+
+- **Un projet créé avant la version 0.9.0** n'a pas les jetons de palette (`--brand-sombre`,
+  `--brand-clair`, `--brand-gris-1` à `4`, `--brand-accent-lisible`) que les scènes des styles
+  utilisent : sans eux, un fond de nuit devient transparent. Recopie `brand/tokens.css` du dossier
+  Publicitaire IA (après `studio_motion.py style`) dans le `brand/` du projet avant d'y poser une
+  scène d'un style.
 
 - **État de départ** : `K.cacher` ou `gsap.set` à la construction, jamais `tl.set(…, 0)` (la
   première image montrerait l'élément). Même chose pour la position de départ d'un curseur ou

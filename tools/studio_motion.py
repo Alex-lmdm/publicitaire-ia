@@ -131,7 +131,7 @@ SUPPORTS: dict[str, dict] = {
                "son": "avec son, compréhensible sans", "cta": "lien en bio ou mot-clé en commentaire",
                "texte": "legende-tiktok.txt"},
     "story": {"nom": "Story", "titre": "Story Instagram ou Facebook", "format": "9x16",
-              "min": 4, "ideal": (8, 30), "max": 60, "zones": (0.14, 0.15, 0.074, 0.074),
+              "min": 4, "ideal": (15, 60), "max": 60, "zones": (0.14, 0.15, 0.074, 0.074),
               "son": "souvent muette : tout se lit", "cta": "sticker lien (posé par le client) ou « réponds MOT »",
               "sticker": True, "texte": "stories.txt"},
     "pub": {"nom": "Pub", "titre": "Publicité plein écran (Reels, Stories, TikTok)", "format": "9x16",
@@ -185,6 +185,10 @@ OBJECTIFS: dict[str, dict] = {
 ROLES = {"teaser": "teaser", "ouverture": "ouverture", "relance": "relance",
          "dernier-jour": "dernier jour", "rappel": "rappel"}
 ROLES_STICKER = {"ouverture", "relance", "dernier-jour", "rappel"}
+# Durée visée de chaque publication d'une campagne (s) : chacune présente l'offre à quelqu'un qui ne
+# la connaît pas (structures.md, section 6). Une story de lancement en 10 s ne dit rien (essai refusé
+# du 06/11/2026) : l'ouverture a le temps d'un vrai script, un segment de story dure jusqu'à 60 s.
+DUREE_ROLE = {"teaser": 15, "ouverture": 45, "relance": 35, "dernier-jour": 35, "rappel": 20}
 ROLES_FERMETURE = {"dernier-jour"}
 # Bande réservée au sticker lien d'une story (fractions de 1080 × 1920) : rien d'important dedans.
 STICKER = (190 / 1080, 1180 / 1920, 700 / 1080, 240 / 1920)
@@ -228,8 +232,8 @@ def nom_video(v: dict) -> str:
 
 def duree_cible(v: dict) -> int:
     lo, hi = SUPPORTS[v["support"]]["ideal"]
-    if v.get("role") in ROLES:
-        return min(hi, max(lo, 10))  # les stories d'une campagne restent courtes
+    if v.get("role") in DUREE_ROLE:
+        return min(hi, max(lo, DUREE_ROLE[v["role"]]))
     return round((lo + hi) / 2)
 
 
@@ -265,10 +269,12 @@ def dans(a: dict, b: dict) -> bool:
 # ---------------------------------------------------------------------------
 # Temps de lecture : la règle la plus stricte des sources étudiées
 # ---------------------------------------------------------------------------
-# Un écran porte 1 à 4 mots (6 au plus) : la vidéo montre, le texte titre. Lu vite, donc tenu
-# moins longtemps qu'une phrase ; ce qui l'entoure continue de vivre pendant la lecture.
-PAR_MOT, ASSISE, PLANCHER, FINAL = 0.25, 0.5, 0.8, 2.5
-MOTS_CONSEILLES, MOTS_MAX = 4, 6
+# Sans voix, le texte raconte : une phrase courte et complète par écran (8 mots conseillés, 12 au
+# plus), tenue le temps qu'un inconnu la lise sur son téléphone (environ 3 mots par seconde, plus
+# le temps de la poser), pendant que ce qui l'entoure continue de vivre. L'ancienne règle (1 à 4 mots,
+# 0,25 s par mot) faisait des stories illisibles : essai refusé du 06/11/2026.
+PAR_MOT, ASSISE, PLANCHER, FINAL = 0.3, 0.8, 1.5, 3.0
+MOTS_CONSEILLES, MOTS_MAX = 8, 12
 
 
 def mots(texte: str) -> int:
@@ -278,8 +284,8 @@ def mots(texte: str) -> int:
 def lecture(texte: str, final: bool = False) -> float:
     """Durée minimale (s) pendant laquelle un texte doit rester immobile et lisible.
 
-    0,25 s par mot + 0,5 s d'assise, jamais moins de 0,8 s ; l'écran final (appel à l'action)
-    reste au moins 2,5 s. Arrondi au dixième supérieur."""
+    0,3 s par mot + 0,8 s d'assise, jamais moins de 1,5 s ; l'écran final (appel à l'action)
+    reste au moins 3 s. Arrondi au dixième supérieur."""
     n = mots(texte)
     if n == 0:
         return 0.0
@@ -309,6 +315,7 @@ FICHE_VIDE = {
     "echeances": [],
     "preuves": [],
     "objections": [],
+    "alternatives": [],
     "cta": {"mot_cle": "", "phrase": "", "lien": "", "source": ""},
     "interdits": [],
 }
@@ -377,7 +384,7 @@ def verifier_fiche(fiche: dict, videos: list[dict] | None = None) -> list[str]:
         pb.append("nouveaute : dis ce qui est nouveau (objectif « nouveauté »).")
     if objectif in ("vente", "explication", "inscription") and not _texte(fiche.get("probleme")):
         pb.append("probleme : une vidéo de vente part du problème de l'audience ; il manque.")
-    for cle in ("recoit", "bonus", "objections"):
+    for cle in ("recoit", "bonus", "objections", "alternatives"):
         for i, item in enumerate(fiche.get(cle) or []):
             if not _texte(item):
                 pb.append(f"{cle}[{i}] : texte manquant.")
@@ -1566,6 +1573,8 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
             "## Brief\n\n(le lien de sa page, l'objectif précis, le public, les supports, ses réponses et préférences, ce que la vidéo doit faire faire)\n",
             "## Repérage\n\n(l'univers de sa page, les surfaces à montrer, les logos, la matière qui manque : references/reperage.md)\n",
             "## Structure et angle retenus\n\n(à remplir après le choix du client)\n",
+            "## Script\n\n(les phrases à l'écran, numérotées, avec ce qu'on voit et leur tenue ; validé par le client "
+            "avant le style et la musique : references/ecriture.md, « Le script »)\n",
             "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
@@ -1823,9 +1832,10 @@ def cmd_lecture(a) -> None:
     n = mots(a.texte)
     print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({n} mot{'s' if n > 1 else ''})")
     if n > MOTS_MAX:
-        print(f"⚠️ {n} mots : trop pour un écran ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus). Coupe, ou montre-le au lieu de l'écrire.")
+        print(f"⚠️ {n} mots : trop pour un écran ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus). "
+              "Coupe la phrase en deux écrans, ou montre une partie au lieu de l'écrire.")
     elif n > MOTS_CONSEILLES:
-        print(f"• {n} mots : acceptable une fois, {MOTS_CONSEILLES} au plus d'habitude.")
+        print(f"• {n} mots : une phrase longue, sur deux lignes ; {MOTS_CONSEILLES} au plus d'habitude.")
 
 
 def cmd_zones(a) -> None:
@@ -1996,6 +2006,143 @@ def cmd_rythme(a) -> None:
             print(f"✗ {pb}")
         sys.exit(1)
     print("ok : le rythme tient (ce contrôle ne dit pas si c'est beau : regarde la planche).")
+
+
+# ---------------------------------------------------------------------------
+# La palette, mesurée sur le MP4 rendu : les couleurs de la marque, du noir, du blanc et des gris,
+# rien d'autre. Né de la story refusée du 06/11/2026 : les paysages du style 2 tiraient de son
+# jaune des bruns et des orangés que ni `check` ni `rythme` ne voyaient. Les vraies captures du
+# client et les logos de ses outils gardent leurs couleurs : le contrôle les signale, la revue
+# tranche.
+# ---------------------------------------------------------------------------
+PALETTE_FPS, PALETTE_TAILLE = 2, (180, 320)
+NEUTRE_MAX = 0.035       # chroma OKLab sous laquelle une couleur est un gris (noir et blanc compris)
+ECART_MARQUE = 0.09      # distance OKLab tolérée autour d'une couleur de la marque (lissage, compression)
+HORS_PALETTE_MAX = 0.04  # part d'une image hors palette au-delà de laquelle l'instant est signalé
+JETONS_PALETTE = ("bg", "surface", "text", "muted", "accent", "secondary", "contrast",
+                  "sombre", "clair", "gris-1", "gris-2", "gris-3", "gris-4")
+
+
+def oklab(rgb: tuple[int, int, int]) -> tuple[float, float, float]:
+    def lin(v: int) -> float:
+        x = v / 255
+        return x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4
+    r, g, b = (lin(v) for v in rgb)
+    l = (0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b) ** (1 / 3)
+    m = (0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b) ** (1 / 3)
+    s_ = (0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b) ** (1 / 3)
+    return (0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s_,
+            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s_,
+            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s_)
+
+
+def couleurs_marque(tokens_css: str) -> list[str]:
+    """Les couleurs de la palette lues dans brand/tokens.css (hexadécimales)."""
+    vues = []
+    for nom in JETONS_PALETTE:
+        m = re.search(rf"--brand-{re.escape(nom)}:\s*(#[0-9a-fA-F]{{6}})\b", tokens_css)
+        if m and m.group(1).lower() not in vues:
+            vues.append(m.group(1).lower())
+    return vues
+
+
+def nom_teinte(hexa: str) -> str:
+    """Un nom simple pour la couleur signalée (brun, orangé, vert…), pour la revue."""
+    L, a, b = oklab(tuple(int(hexa[i:i + 2], 16) for i in (1, 3, 5)))
+    h = math.degrees(math.atan2(b, a)) % 360
+    if 40 <= h < 115 and L < 0.62:
+        return "brun ou olive"
+    for borne, nom in ((20, "rose"), (45, "rouge"), (75, "orangé"), (115, "jaune"), (160, "vert"),
+                       (230, "turquoise"), (285, "bleu"), (330, "violet"), (360, "rose")):
+        if h < borne:
+            return nom
+    return "couleur"
+
+
+def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_FPS) -> dict:
+    """Pour chaque image (rgb24), la part de pixels qui ne sont ni des gris ni proches d'une couleur
+    chromatique de la marque ; les plages signalées et leurs couleurs dominantes."""
+    chromatiques = [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in marque)
+                    if math.hypot(c[1], c[2]) >= NEUTRE_MAX]
+    cache: dict[int, bool] = {}
+
+    def hors(cle: int) -> bool:
+        if cle not in cache:
+            rgb = (((cle >> 10) & 31) << 3 | 4, ((cle >> 5) & 31) << 3 | 4, (cle & 31) << 3 | 4)
+            L, a, b = oklab(rgb)
+            cache[cle] = math.hypot(a, b) >= NEUTRE_MAX and all(
+                math.dist((L, a, b), c) > ECART_MARQUE for c in chromatiques)
+        return cache[cle]
+
+    parts, dominantes = [], []
+    for img in images:
+        cles = [((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3) for r, g, b in zip(img[0::3], img[1::3], img[2::3])]
+        comptes: dict[int, int] = {}
+        for c in cles:
+            if hors(c):
+                comptes[c] = comptes.get(c, 0) + 1
+        n = max(1, len(cles))
+        parts.append(sum(comptes.values()) / n)
+        dominantes.append(sorted(comptes.items(), key=lambda kv: -kv[1])[:3])
+    plages, debut = [], None
+    for i, part in enumerate(parts + [0.0]):
+        if part > HORS_PALETTE_MAX and debut is None:
+            debut = i
+        elif part <= HORS_PALETTE_MAX and debut is not None:
+            pire = max(range(debut, i), key=lambda k: parts[k])
+            couleurs = []
+            for cle, _n in dominantes[pire]:
+                hexa = "#%02x%02x%02x" % (((cle >> 10) & 31) << 3 | 4, ((cle >> 5) & 31) << 3 | 4, (cle & 31) << 3 | 4)
+                couleurs.append(f"{hexa} ({nom_teinte(hexa)})")
+            plages.append({"debut": round(debut / fps, 1), "fin": round(i / fps, 1),
+                           "part": round(parts[pire], 3), "couleurs": couleurs})
+            debut = None
+    return {"images": len(images), "plages": plages}
+
+
+def images_rgb(ffmpeg: str, video: Path, fps: int = PALETTE_FPS, taille=PALETTE_TAILLE) -> list[bytes]:
+    """Les images du MP4 en petit (sans mélange de pixels : `neighbor`), en rgb24."""
+    w, h = taille
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf",
+                        f"fps={fps},scale={w}:{h}:flags=neighbor,format=rgb24", "-f", "rawvideo", "-"],
+                       capture_output=True)
+    if r.returncode != 0:
+        raise RuntimeError(r.stderr.decode("utf-8", "replace")[-400:])
+    n, b = w * h * 3, r.stdout
+    return [b[i:i + n] for i in range(0, len(b) - n + 1, n)]
+
+
+def tokens_pour(video: Path) -> Path | None:
+    """brand/tokens.css du projet de la vidéo, sinon celui du dossier Publicitaire IA."""
+    projet = projet_de(video)
+    candidats = [projet / "brand" / "tokens.css"] if projet else []
+    dossier = Path(video).resolve().parent.parent
+    candidats += sorted(dossier.glob("*/brand/tokens.css")) + [racine() / "brand" / "tokens.css"]
+    return next((c for c in candidats if c.is_file()), None)
+
+
+def cmd_palette(a) -> None:
+    ffmpeg = binaire("ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    tokens = tokens_pour(Path(a.video))
+    if not tokens:
+        sys.exit("ERREUR : brand/tokens.css introuvable (`studio_motion.py style` depuis le dossier).")
+    marque = couleurs_marque(tokens.read_text(encoding="utf-8"))
+    try:
+        v = verdict_palette(images_rgb(ffmpeg, Path(a.video)), marque)
+    except RuntimeError as e:
+        sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    print(f"• palette de la marque : {', '.join(marque)} (plus noir, blanc et gris)")
+    if not v["plages"]:
+        print("ok : rien hors de la palette (regarde quand même la planche).")
+        return
+    for pl in v["plages"]:
+        print(f"✗ {pl['debut']:.1f} → {pl['fin']:.1f} s : {pl['part'] * 100:.0f} % de l'image hors palette "
+              f"({', '.join(pl['couleurs'])})")
+    print("→ chacun de ces instants est une vraie capture du client ou le logo d'un outil (ils gardent leurs "
+          "couleurs) ; sinon il se corrige : jamais de teinte tirée de l'accent, ni d'image inventée.")
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -3241,7 +3388,7 @@ def cmd_livrer(a) -> None:
 # Les fichiers et dossiers que chaque commande lit : absents, on le dit tout de suite, au lieu d'une
 # « vidéo muette » ou d'une erreur Python brute plus loin.
 ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
-           "logos": ("projet",), "rythme": ("video",), "planche": ("video",), "musique": ("entree",),
+           "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "planche": ("video",), "musique": ("entree",),
            "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
            "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
            "livrer": ("dossier",)}
@@ -3362,6 +3509,9 @@ def main(argv: list[str] | None = None) -> None:
     ry = s.add_parser("rythme", help="Mesure le rythme du MP4 : événements par seconde, images figées.")
     ry.add_argument("video")
     ry.set_defaults(f=cmd_rythme)
+    pa = s.add_parser("palette", help="Vérifie que le MP4 reste dans les couleurs de la marque (plus noir, blanc et gris).")
+    pa.add_argument("video")
+    pa.set_defaults(f=cmd_palette)
     pl = s.add_parser("planche", help="Planche de contrôle avec les zones dessinées.")
     pl.add_argument("video")
     pl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")

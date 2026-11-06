@@ -1,10 +1,13 @@
 # Rythme, mouvement et caméra
 
 Ce fichier fait foi pour les vidéos du studio. La référence de niveau est une vidéo de
-lancement produit en motion design : il s'y passe quelque chose **toutes les demi-secondes**, le
-texte tient en quelques mots, la caméra ne s'arrête jamais vraiment, et un objet devient le
-suivant au lieu de laisser place à un écran vide. Une vidéo qui enchaîne des écrans de texte
-posés, même propres, ressemble à des slides : c'est l'échec à éviter.
+lancement produit en motion design : il s'y passe quelque chose **toutes les demi-secondes**
+autour du texte, la caméra ne s'arrête jamais vraiment, et un objet devient le suivant au lieu de
+laisser place à un écran vide. Mais **le texte, lui, suit la lecture** : une phrase reste tant
+qu'un inconnu n'a pas fini de la lire. Deux échecs à éviter : des écrans de texte posés sur un
+fond mort (on dirait des slides), et des phrases qui filent avant d'être lues (la story
+d'ouverture refusée du 06/11/2026 : 19 s, des écrans de 1 à 4 mots changés toutes les 1 à 2 s,
+« beaucoup trop rapide »).
 
 Le contrôle `python3 ../../../tools/studio_motion.py rythme exports/<vidéo>.mp4` (depuis le projet) mesure le MP4 rendu : **au moins
 1 événement par seconde**, **0,8 s au plus entre deux événements en général**, et **aucune image
@@ -12,15 +15,17 @@ figée plus de 1 s** avant l'écran final. Il ne dit pas si c'est beau ; il dit 
 
 ## La densité : un événement toutes les demi-secondes
 
-Un événement, c'est ce que l'œil remarque : un mot qui entre, un objet qui arrive, un curseur qui
-clique, une coche, un compteur qui tourne, un fond qui bascule, la caméra qui change d'intention.
-Pas forcément un nouveau plan : souvent un petit geste dans le même plan.
+Un événement, c'est ce que l'œil remarque : un objet qui arrive, un curseur qui clique, une
+coche, un compteur qui tourne, un fond qui bascule, la caméra qui change d'intention, le mot clé
+de la phrase qui s'allume. Pas forcément un nouveau plan : souvent un petit geste dans le même
+plan. **Jamais une nouvelle phrase** : les phrases changent au rythme de leur lecture, pas du
+tempo.
 
 - Cale le plan sur une **grille de tempo** : 120 battements par minute, un temps = 0,5 s. Les
   événements tombent sur les temps (ou les demi-temps pour une rafale). La musique s'y posera.
 - Pendant qu'un texte se lit, il reste immobile, **mais le monde autour vit** : la caméra dérive
   lentement, les objets flottants bougent, le curseur approche, un compteur tourne.
-- Une tenue sans rien autour ne dépasse jamais 1 s. Seul l'écran final se tient (2,5 s ou plus),
+- Une tenue sans rien autour ne dépasse jamais 1 s. Seul l'écran final se tient (3 s ou plus),
   et même lui garde un peu de vie (objets qui dérivent).
 - Rafales : une liste d'éléments arrive en cascade de 0,05 à 0,13 s d'écart, jamais un par un à
   une seconde d'intervalle.
@@ -37,18 +42,22 @@ trop peu) ; le premier rendu tombait à 0,83 événement par seconde. Un **recad
 sur chaque mot que la voix dit, sur chaque geste (0,4 s, `expo.out`) y suffit, sans rien ajouter au
 décor : 1,28 événement par seconde ensuite.
 
-## Lire sans s'ennuyer
+## Lire d'abord : le texte suit la lecture
 
-- Un écran porte **1 à 4 mots**, 6 au plus et rarement (`studio_motion.py lecture "<texte>"`
-  calcule la tenue et prévient au-delà). Ce qui ne tient pas en 4 mots se **montre** : une
-  interface, un objet, un compteur, un avant / après.
-- Tenue minimale : 0,25 s par mot + 0,5 s, jamais moins de 0,8 s. Un mot isolé se lit en un
-  temps ; une ligne de 4 mots en un peu plus d'une seconde.
+- Sans voix, un écran porte **une phrase courte et complète** (3 à 10 mots, 12 au plus :
+  [ecriture.md](ecriture.md)). Ce qui ne tient pas dans une phrase se **montre** pendant qu'on la
+  lit : une interface, un objet, un compteur, un avant / après.
+- Tenue minimale : **0,3 s par mot + 0,8 s, jamais moins de 1,5 s** (`studio_motion.py lecture
+  "<phrase>"`), l'écran final 3 s. Une phrase de 8 mots reste environ 3,2 s : c'est la vitesse
+  d'un inconnu qui lit sur son téléphone, pas celle de l'auteur qui connaît déjà le texte. Une
+  phrase qui accompagne une démonstration reste plus longtemps, le temps que le geste se fasse.
+- Une seule phrase à lire à la fois : la suivante n'entre qu'après la sortie de la précédente (ou
+  la remplace mot à mot sur la même ligne).
 - Deux graisses : la partie d'appui en léger et grise, le mot qui compte en gras (« Ton nouveau
   **monteur** »). Un mot clé peut être surligné à la couleur de la marque.
 - On ne déplace pas un texte pendant qu'on le lit. Il entre, se pose, reste, sort.
 - Le dernier mot d'une phrase reste au moins 0,6 s avant la coupe, et une phrase d'accroche reste
-  entière à l'écran au moins 1,5 s : retour du client du 03/11/2026 (« il réfléchit » coupé à peine
+  entière à l'écran au moins 2 s : retour du client du 03/11/2026 (« il réfléchit » coupé à peine
   tapé, « qui vendent ton offre » arrivé trop tard). Avec une voix, un texte peut arriver un peu
   avant son mot ; jamais partir avant que la voix ait fini la phrase.
 

@@ -74,7 +74,9 @@ Reprends ce que le client a déjà dit. Pour le reste, un seul message :
 
 Ajoute une question seulement si elle change la vidéo :
 
-- objectif **d** (lancement) : les dates d'ouverture et de fermeture, et les vidéos voulues ;
+- objectif **d** (lancement) : les dates d'ouverture et de fermeture, les vidéos voulues, et s'il a
+  déjà fait des jours de prélancement qui ont posé le problème et ses preuves (sans réponse : non,
+  l'audience est froide et chaque vidéo présente l'offre de zéro, [structures.md](structures.md)) ;
 - objectif **e** (inscription) : la date du live s'il y en a un ;
 - objectif **c** (fonctionnalité) : laquelle, et ce qu'elle évite au client ;
 - support **D** (pub) : « je te prépare 3 accroches différentes sur le même corps, pour tester ? »

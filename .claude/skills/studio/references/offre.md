@@ -49,6 +49,7 @@ ce que l'objectif demande ; les autres champs restent vides.
 | `echeances` | Les autres vraies échéances : `{texte, date, source}` (un bonus retiré, un prix qui change) | Seules urgences permises, avec `dates.fermeture` |
 | `preuves` | `type` : `chiffre`, `temoignage`, `resultat` ou `media` | Un témoignage se cite **mot pour mot** (`mot_pour_mot: true`), avec le prénom s'il est affiché ; jamais de prénom inventé |
 | `objections` | Les doutes que la page lève (« pas besoin de savoir monter ») | |
+| `alternatives` | Ce que l'audience fait aujourd'hui à la place (se filmer, payer quelqu'un, le faire seule), avec le coût que la page leur donne | Aucun prix de prestataire inventé : seulement celui que la page affiche |
 | `cta` | `mot_cle` (un mot en MAJUSCULES), `phrase`, ou `lien` | La phrase reprend le geste réel |
 | `interdits` | Ce que le client ne veut pas voir (un concurrent, un ancien prix, un sujet) | |
 

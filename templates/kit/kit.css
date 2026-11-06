@@ -6,14 +6,14 @@
 :root {
   --k-noir: #1b1b1d;
   --k-noir-2: #242426;
-  --k-clair: #f3f3ef;
+  --k-clair: #f3f3f3;
   --k-blanc: #ffffff;
   --k-encre: #151515;
-  --k-gris: #8d8d88;
+  --k-gris: #8d8d8d;
   --k-grille-sombre: rgba(255, 255, 255, 0.045);
   --k-grille-claire: rgba(0, 0, 0, 0.055);
   --k-ombre: 0 30px 80px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
-  --k-ombre-claire: 0 30px 70px rgba(20, 20, 10, 0.14), 0 6px 18px rgba(20, 20, 10, 0.08);
+  --k-ombre-claire: 0 30px 70px rgba(20, 20, 20, 0.14), 0 6px 18px rgba(20, 20, 20, 0.08);
 }
 
 /* --- Les fonds : jamais un aplat vide ------------------------------------------------- */
@@ -44,7 +44,7 @@
 }
 .k-vignette-claire {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 85% 75% at 50% 50%, transparent 60%, rgba(120, 120, 100, 0.12) 100%);
+  background: radial-gradient(ellipse 85% 75% at 50% 50%, transparent 60%, rgba(110, 110, 110, 0.12) 100%);
 }
 
 /* La caméra : un plan en perspective dont on anime la profondeur et l'angle. */
@@ -129,9 +129,9 @@
 .k-fenetre { position: absolute; border-radius: 18px; overflow: hidden; box-shadow: var(--k-ombre); }
 .k-feux { position: absolute; left: 20px; top: 18px; display: flex; gap: 9px; }
 .k-feux i { display: block; width: 14px; height: 14px; border-radius: 50%; }
-.k-feux i:nth-child(1) { background: #ff5f57; }
-.k-feux i:nth-child(2) { background: #febc2e; }
-.k-feux i:nth-child(3) { background: #28c840; }
+.k-feux i:nth-child(1) { background: #ff5f57; } /* couleur d'outil : les boutons d'une fenêtre du Mac */
+.k-feux i:nth-child(2) { background: #febc2e; } /* couleur d'outil : les boutons d'une fenêtre du Mac */
+.k-feux i:nth-child(3) { background: #28c840; } /* couleur d'outil : les boutons d'une fenêtre du Mac */
 
 .k-tel {
   position: absolute; border-radius: 54px; background: #0d0d0e; padding: 12px;
