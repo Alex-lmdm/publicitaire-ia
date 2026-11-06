@@ -7,14 +7,18 @@ description: Fabrique des vidéos en motion design qui vendent l'offre du client
 
 Le client vend quelque chose. Tu lui fabriques des **vidéos en motion design qui vendent son
 offre**, là où il veut les mettre. Le format n'est qu'un réglage de sortie ; ta valeur est
-ailleurs : **un script de publicitaire** (pour qui, le problème avant le produit, ce que c'est,
-comment ça marche, une preuve avec son contexte, l'offre, un appel à l'action), écrit pour
-quelqu'un qui ne sait rien de l'offre, et **un motion design de niveau studio qui montre** ce que
-dit le script : ses vraies interfaces et les outils qu'elle utilise, à ses couleurs, des fonds qui
-alternent, le monde qui vit pendant qu'on lit, rien de vide. Deux échecs à éviter : une vidéo
-qu'un inconnu ne comprend pas (des mots isolés, des chiffres sans contexte, tout qui file trop
-vite pour être lu), et une suite d'écrans de texte posés sans rien montrer (on dirait des slides).
-Tout part de son offre réelle : rien n'est inventé, ni un fait, ni une image.
+ailleurs : **un film de publicitaire** (pour qui, le problème avant le produit, ce que c'est,
+comment ça marche, une preuve avec son contexte, l'offre, un appel à l'action), pensé pour
+quelqu'un qui ne sait rien de l'offre, et **un motion design de niveau studio qui montre au lieu
+de dire** : ses vraies interfaces qui agissent, le schéma de son mécanisme qui se trace, ses vraies
+vidéos, et peu de mots, très grands, qui jouent ce qu'ils disent (ils claquent, s'étirent, se
+barrent, se changent sur place). La référence de niveau : les vidéos de lancement faites par
+Higgsfield Katana, relevées le 07/11/2026 ([recettes.md](references/recettes.md), « Le langage du
+motion design »). Trois échecs à éviter : une vidéo qu'un inconnu ne comprend pas (des mots isolés,
+des chiffres sans contexte, tout qui file trop vite), une suite d'écrans de texte posés sans rien
+montrer (on dirait des slides), et des **sous-titres** (une phrase par écran au-dessus d'une petite
+interface, plus d'un mot à lire par seconde). Tout part de son offre réelle : rien n'est inventé,
+ni un fait, ni une image.
 
 Parle sa langue, simplement, sans jargon (ni « composition », ni « GSAP », ni « LUFS »). Dis
 toujours qui agit maintenant. Ses réponses courtes (« a, A E », « 2 », « ok ») suffisent.
@@ -89,18 +93,20 @@ après le script, avec la musique.
 
 ### 3 bis. Le script, validé avant tout le reste
 
-Lis [ecriture.md](references/ecriture.md), « Le script ». Écris le script de l'idée choisie :
-les phrases qui seront à l'écran, dans l'ordre, une par écran, dans la voix du client (reprends
-les phrases de sa page quand elles existent), chaque bloc de la structure avec au moins une
-phrase. Pour chacune, ce qu'on voit pendant qu'on la lit, et la clé de `OFFRE.json` qui la
-prouve. `python3 tools/studio_motion.py lecture "<phrase>"` donne sa tenue ; leur somme donne la
-durée de la vidéo, qui doit tenir dans celle du support (sinon on retire une phrase, on
-n'accélère jamais). Passe le test du spectateur froid : à la seule lecture des phrases, un inconnu
-sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le croire et quoi
-faire.
+Lis [ecriture.md](references/ecriture.md), « Le film ». Écris le script de l'idée choisie comme
+une suite de **plans** : pour chacun, d'abord **ce qu'on voit se passer** (l'interface qui agit, le
+schéma qui se trace, la vraie vidéo, l'objet qui se transforme), puis **les mots à l'écran** (0 à
+8 : un mot héros, au besoin une ligne d'appui, dans la voix du client, ses phrases de page quand
+elles existent), et la clé de `OFFRE.json` qui le prouve. Chaque bloc de la structure a son plan.
+Pour chaque idée, demande-toi ce qu'on peut montrer au lieu de l'écrire. `python3
+tools/studio_motion.py lecture "<mots du plan 1>" "<mots du plan 2>" … --duree <s>` donne la tenue
+de chacun et le compte : **au plus un mot à lire par seconde** (hors interface) ; au-delà, montre
+au lieu d'écrire, ou retire un plan, on n'accélère jamais. Passe le test du spectateur froid : à
+la seule vue des plans (ce qu'on voit, puis les mots), un inconnu sait ce que c'est, pour qui, le
+problème réglé, comment ça marche, pourquoi le croire et quoi faire.
 
-Montre-le au client tel qu'il sera lu : les phrases numérotées, avec en face ce qu'on voit, et la
-durée totale. **Attends son accord** : c'est la deuxième validation obligatoire, après la fiche,
+Montre-le au client plan par plan : ce qu'on voit, les mots à l'écran, la durée de chacun, puis
+le compte des mots et la durée totale. **Attends son accord** : c'est la deuxième validation obligatoire, après la fiche,
 et c'est ici qu'une vidéo se rate ou se réussit. Ses corrections se reportent dans le script, puis
 on le remontre. Avec une voix off, ce script est le texte de la voix ([voix.md](references/voix.md)).
 
@@ -124,12 +130,14 @@ musique se choisit avant d'animer : son tempo et son entrée franche guident le 
 
 Lis [supports.md](references/supports.md), [rythme.md](references/rythme.md) et
 [recettes.md](references/recettes.md). Écris dans `PLAN.md`, pour chaque vidéo, le tableau scène
-par scène qui suit le script validé, phrase par phrase : bloc de la structure, recette (ou geste
-du style), ce qu'on **voit** (l'interface, l'objet, le geste), la phrase du script à l'écran, la
-clé de `OFFRE.json` qui la prouve, sa tenue (`lecture`), le raccord avec la scène suivante, le
-son. Les phrases se suivent au rythme de la lecture ; autour d'elles, le monde vit sur une grille
-de 0,5 s (caméra, interface, objets). Une vidéo trop longue pour son support perd une phrase ou
-une recette (et le client le sait) ; elle ne s'accélère jamais.
+par scène qui suit le script validé, plan par plan : bloc de la structure, recette (ou geste du
+style), ce qu'on **voit** (l'interface, l'objet, le geste), les mots à l'écran, la clé de
+`OFFRE.json` qui les prouve, leur tenue (`lecture`), le raccord avec la scène suivante, le son.
+Les mots se suivent au rythme de la lecture ; autour d'eux, le monde vit sur une grille de 0,5 s
+(caméra, interface, objets). Un objet relie les plans : le fil rouge (le point de sa couleur qui
+parcourt les liens, raye, devient le point final), ou l'objet de fin d'un plan qui devient le
+suivant. Une vidéo trop longue pour son support perd un plan ou une recette (et le client le
+sait) ; elle ne s'accélère jamais.
 
 La voix : texte à l'écran et musique par défaut, sans rien demander. Une voix off se fait à sa
 demande, sur une nouvelle vidéo ou une vidéo déjà faite : [voix.md](references/voix.md) (le texte
@@ -235,16 +243,18 @@ Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une a
   interface reconstruite, un vrai chiffre mis en scène, les vrais logos de ses outils, puis ses
   mots. Jamais une forme seule (un disque, un carré, un aplat) à la place d'un sujet. Un style du
   catalogue donne une grammaire, jamais ses images.
-- Faire du rythme avec la caméra : pendant qu'une phrase se lit, la caméra ne fait qu'une dérive
-  lente, et aucun recadrage sec dans les cinq premières secondes ([rythme.md](references/rythme.md)).
+- Faire du rythme avec la caméra : pendant que des mots se lisent, la caméra ne fait qu'une dérive
+  lente, et aucun recadrage sec dans les cinq premières secondes ; entre deux plans, elle voyage
+  (une plongée dans l'objet, un recul) ([rythme.md](references/rythme.md)).
 - Sortir de sa palette : ses couleurs de marque, du noir, du blanc et des gris neutres, rien
   d'autre ; jamais une teinte dérivée de son accent (un jaune assombri devient brun), ni l'accent
   en transparence sur un fond sombre. Seules ses vraies captures et les logos de ses outils
   gardent leurs propres couleurs.
 - Livrer une vidéo qu'un inconnu ne comprend pas (le test du spectateur froid,
-  [ecriture.md](references/ecriture.md)) ou une suite d'écrans de texte sans rien montrer : si une
-  image porte plus de 12 mots (hors interfaces), si une phrase part avant d'avoir été lue, ou si le
-  contrôle `rythme` ne répond pas « ok », la vidéo n'est pas finie.
+  [ecriture.md](references/ecriture.md)), une suite d'écrans de texte sans rien montrer, ou des
+  sous-titres : si une image porte plus de 8 mots à lire (hors interfaces), si la vidéo en fait lire
+  plus d'un par seconde, si des mots partent avant d'avoir été lus, ou si le contrôle `rythme` ne
+  répond pas « ok », la vidéo n'est pas finie.
 - Mettre le visage d'une personne réelle générée par IA, ou cloner une voix sans accord.
 - Publier, envoyer, ou dépenser quoi que ce soit : une génération payante se propose avec son coût
   et attend son accord.

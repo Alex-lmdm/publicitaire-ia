@@ -138,9 +138,33 @@ class Lecture(unittest.TestCase):
         self.assertEqual(sm.lecture("Ton offre est bonne."), 2.0)
         self.assertEqual(sm.lecture("Tu donnes le lien de ta page de vente."), 3.5)
 
-    def test_ecran_phrase(self):
-        # Sans voix, une phrase complète par écran : 8 mots conseillés, au-delà de 12 l'outil prévient.
-        self.assertEqual((sm.MOTS_CONSEILLES, sm.MOTS_MAX), (8, 12))
+    def test_ecran_plan(self):
+        # Sans voix, l'image raconte : un mot héros et une ligne d'appui, 8 mots au plus sur une image
+        # (la story v2 en phrases entières, refusée le 07/11/2026 : « on dirait des sous-titres »).
+        self.assertEqual((sm.MOTS_CONSEILLES, sm.MOTS_MAX), (4, 8))
+
+    def test_budget_de_mots(self):
+        # La story v2 refusée : 115 mots en 47,5 s ; la v3 : 36 mots en 40 s.
+        v2 = sm.budget_mots(["mot " * 115], 47.5)
+        self.assertTrue(v2["trop"])
+        v3 = sm.budget_mots(["Cette story : ni filmée. ni montée.", "C'est Claude.", "mot " * 28], 40)
+        self.assertFalse(v3["trop"])
+        self.assertEqual(sm.budget_mots([], 10)["mots"], 0)
+        self.assertEqual(sm.budget_mots(["un deux trois"], 3)["par_seconde"], 1.0)
+
+    def test_lecture_de_plusieurs_plans(self):
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            sm.main(["lecture", "Ton lien.", "Tes vidéos.", "Touche le lien.", "--final", "--duree", "8"])
+        texte = sortie.getvalue()
+        self.assertIn("plan 1 · 1.5 s", texte)
+        self.assertIn("plan 3 · 3.0 s", texte)
+        self.assertIn("7 mots à lire en 8 s", texte)
+        self.assertNotIn("trop de texte", texte)
+        sortie = io.StringIO()
+        with contextlib.redirect_stdout(sortie):
+            sm.main(["lecture", "Ton lien.", "Tes vidéos.", "Touche le lien.", "--duree", "6"])
+        self.assertIn("trop de texte", sortie.getvalue())
 
     def test_ecran_final(self):
         self.assertEqual(sm.lecture("Commente MONTEUR", final=True), 3.0)

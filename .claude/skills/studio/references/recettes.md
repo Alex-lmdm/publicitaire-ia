@@ -8,9 +8,91 @@ crochets, livré dans ce dossier) donnent d'autres techniques : lis-les avant de
 nouveau.
 
 Une story courte (un rappel, un teaser) = une ou deux recettes ; une story de lancement = une
-recette courte par bloc du script (cinq à sept). Un Reel = trois ou quatre. Une vidéo de page =
-huit à dix, reliées par des raccords d'objet. Chaque recette porte une phrase du script : elle la
-montre pendant qu'on la lit.
+recette par plan du film (huit ou neuf, de 2,5 à 6,5 s). Un Reel = trois ou quatre. Une vidéo de
+page = huit à dix, reliées par des raccords d'objet. Chaque recette porte un plan du film : elle
+montre ce qu'il dit, et pose ses quelques mots.
+
+## Le langage du motion design (relevé le 07/11/2026)
+
+Le créateur a donné pour référence sept vidéos de lancement faites par Higgsfield Katana (du motion
+design écrit par une IA, comme ici). Ce qu'elles font, et que toute vidéo du studio fait aussi :
+
+1. **Peu de mots, et ils jouent.** 20 à 30 mots en 30 à 40 s. Les mots clés en très grand, deux
+   tons ; le mot fait ce qu'il dit (« STRETCH » s'étire, « TEMPLATE » se barre, « MOO » se répète
+   jusqu'à « MOOOOOO »), puis il devient l'objet suivant (le O devient un œil, la caméra y plonge).
+2. **On montre le comment.** La demande tapée dans l'outil, ses mots clés qui se surlignent, des
+   lignes d'étape (« Je lis… », « J'anime… »), le rendu qui se charge, puis le film qui jaillit.
+3. **Un fil rouge.** Un seul objet (un point, une comète, un anneau) traverse toute la vidéo : il
+   relie les nœuds d'un schéma, raye ce qu'on rejette, ouvre la scène suivante.
+4. **Des schémas qui se tracent** : des nœuds reliés par des traits qui se dessinent (« Claude →
+   serveur → After Effects » tranché, « Katana → Prompt → Generate → Render »).
+5. **La comparaison montrée** : l'ancienne méthode en pile d'étapes avec son compteur d'heures
+   (2 h, 5 h, 9 h, 16 h), tranchée d'un coup ; la nouvelle en trois pastilles et « 15 s ».
+6. **Des métaphores faites de la matière** : 4 812 messages qui passent dans un entonnoir et sortent
+   « 1 », des tuiles qui se rangent dans un plateau, un mur de documents et une barre de recherche.
+7. **Des étiquettes de fonction** : deux mots en blocs empilés (« Auto-Tracked / Task Completion »)
+   posés à côté de l'interface qui le fait.
+8. **Des interfaces manipulées** : un curseur qui tire des réglages, des cartes qui arrivent en 3D,
+   une fenêtre qui se remplit.
+9. **Le récapitulatif** : tous les plans du film en mosaïque (« This film is 9 equations »), puis le
+   logo, la promesse, un bouton.
+10. **Le son colle à chaque geste** : un coup sec par mot qui claque, un souffle par passage, le
+    temps fort de la musique sur la révélation.
+
+Ce que le studio ne reprend pas : leurs couleurs (la marque du client, seulement), leurs images
+générées (photos, 3D réaliste : on montre sa vraie matière), leurs lueurs néon. Les recettes 23 à
+33 traduisent ce langage avec le kit ; la story d'ouverture de Publicitaire IA (v3, 07/11/2026,
+40 s, 9 plans, 36 mots à lire) les enchaîne : 23 → 24 → 25 → 26 → 27 + 28 → 29 → 30 → 31.
+
+23. **La négation montrée** (3,5 s, nuit). Au lieu d'écrire « je ne l'ai ni filmée ni montée » :
+    un viseur de caméra qui tourne (quatre coins, « REC » et son point, le temps qui défile), « ni
+    filmée. » claque, une barre de l'accent raye le viseur (`K.barre`), qui s'éteint au gris ;
+    « ni montée. » claque, une timeline de montage s'ouvre piste par piste (`K.volet`), sa tête de
+    lecture avance, une barre la raye et ses morceaux tombent. Sortie : la coupe (32).
+24. **La demande qui devient le film** (9 s, clair, dans l'outil). Le logo de l'outil claque, son
+    nom surligné, puis il se range dans la barre de sa fenêtre ; le curseur y glisse le dossier du
+    produit (une pastille pleine), le lien de sa page se colle (une pastille, jamais une adresse),
+    la demande se tape, envoyer : elle monte en bulle. Les étapes de la page se cochent toutes les
+    0,5 s (un anneau qui tourne, puis la coche) et l'aperçu de chacune sort de la fenêtre par la
+    droite, sans cacher son étape (la vraie page, les vraies phrases, sa palette, la musique, les
+    images relues). Tout se range dans le fichier, qui se charge ; « Prête » ; le curseur clique sa
+    vignette et son jaune part du clic (`K.flash`).
+25. **Le nom sur l'objet** (3 s, aplat). Le dossier géant grandit depuis le point cliqué, plein
+    d'emblée ; son nom claque lettre par lettre (`K.lettres` + `K.claque`, 0,035 s d'écart) ; ses
+    fichiers (ceux que la page promet) en dépassent un instant puis retombent. Sortie : l'aplat
+    s'efface par un volet, le dossier se resserre en nœud et prend l'accent d'un coup (jamais un
+    fondu de l'encre au jaune : il passerait par l'olive).
+26. **Le schéma qui se trace** (3 s, nuit). Le nœud du produit, une ligne d'appui (« Tu l'installes
+    dans »), les nœuds des outils claquent ; deux liens se tracent et le fil rouge les parcourt
+    (`K.lien`, `K.trace`, `K.longer`), chaque outil reçoit (un petit coup d'échelle) et se coche.
+27. **Le titre qui se change sur place** (5 s, nuit) : « Ton lien. » ; la pastille du lien et ses
+    quatre offres en rafale ; le fil descend dans le dossier ; quatre liens en partent vers quatre
+    formats, chacun avec la première image d'une vraie vidéo et son étiquette ; le titre devient
+    « Tes vidéos. » à la même place. Les formats flottent chacun à son temps pendant qu'on lit.
+28. **La vignette qui devient la vidéo** (0,8 s) : le format choisi grandit jusqu'au plein écran
+    (`scale` = largeur de l'écran / largeur de la vignette, centre amené au centre), le reste
+    s'efface en flou ; à l'arrivée, la vraie vidéo joue à la racine d'`index.html`, et sa première
+    image est exactement la vignette (`ffmpeg -ss 0 -frames:v 1`).
+29. **La bande-démo à volets** (6,5 s). Ses vraies vidéos, l'une après l'autre, chacune dans son
+    format (plein écran en 9:16, son 16:9 sur toute la largeur), avec leur étiquette sous la bande
+    du sticker (« Pub » « faite avec Publicitaire IA ») ; un volet de l'accent en biais couvre
+    chaque coupe (8 de rythme.md), le dernier s'arrête et devient l'aplat du prix. Jamais un
+    exemple qui est lui-même un écran de texte, ni l'accroche « problème » d'une pub.
+30. **Le prix en deux temps** (5 s, aplat). « 67 € » claque en très grand (jamais un compteur dont
+    une valeur de passage se lirait comme un prix), « Paiement unique » s'ouvre dessous ; puis ils
+    montent et se resserrent, la page du calendrier de la vraie échéance claque, et l'échéance se
+    lit, la date surlignée d'un bloc d'encre.
+31. **La mosaïque du film qui devient la marque** (5 s, nuit) : huit vraies images de cette vidéo
+    arrivent de la profondeur, la caméra recule, elles se resserrent au centre et deviennent
+    l'avatar et le nom ; l'appel claque juste au-dessus de la bande du sticker, son point final est
+    le point de la marque qui bat la mesure.
+32. **La coupe** (transition, 0,6 s) : `K.tranche(tl, calque, t)`, appelée en dernier : un trait de
+    l'accent traverse l'écran en biais, le calque se fend et ses deux moitiés tombent, le fond
+    d'après apparaît. Sur un temps fort (juste avant l'entrée de la musique).
+33. **La pile contre les pastilles** (comparaison, 5 s) : l'ancienne méthode en étapes empilées une
+    à une avec un compteur qui grimpe (en heures, d'après la page), le fil rouge la tranche et elle
+    tombe ; à sa place, les étapes de l'offre en trois pastilles reliées et leur vrai délai. Vrais
+    chiffres seulement (les alternatives et `recoit` de la fiche).
 
 ## Ouvrir : le problème qu'on vit
 

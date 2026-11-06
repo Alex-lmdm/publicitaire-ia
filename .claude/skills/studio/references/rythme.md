@@ -3,11 +3,12 @@
 Ce fichier fait foi pour les vidéos du studio. La référence de niveau est une vidéo de
 lancement produit en motion design : il s'y passe quelque chose **toutes les demi-secondes**
 autour du texte, la caméra ne s'arrête jamais vraiment, et un objet devient le suivant au lieu de
-laisser place à un écran vide. Mais **le texte, lui, suit la lecture** : une phrase reste tant
-qu'un inconnu n'a pas fini de la lire. Deux échecs à éviter : des écrans de texte posés sur un
-fond mort (on dirait des slides), et des phrases qui filent avant d'être lues (la story
-d'ouverture refusée du 06/11/2026 : 19 s, des écrans de 1 à 4 mots changés toutes les 1 à 2 s,
-« beaucoup trop rapide »).
+laisser place à un écran vide. Mais **les mots, eux, suivent la lecture** : un groupe de mots
+reste tant qu'un inconnu n'a pas fini de le lire. Et il y en a peu : l'image raconte. Trois
+échecs à éviter : des écrans de texte posés sur un fond mort (on dirait des slides), des mots qui
+filent avant d'être lus (la story d'ouverture refusée du 06/11/2026 : 19 s, des écrans de 1 à 4
+mots changés toutes les 1 à 2 s, « beaucoup trop rapide »), et des sous-titres (la story v2
+refusée du 07/11/2026 : une phrase entière par écran, 115 mots en 47 s).
 
 Le contrôle `python3 ../../../tools/studio_motion.py rythme exports/<vidéo>.mp4` (depuis le projet) mesure le MP4 rendu : **au moins
 0,7 événement par seconde**, **1,2 s au plus entre deux événements en général**, et **aucune
@@ -55,11 +56,12 @@ agitée qu'on ne lit plus : c'est la mécanique de la story refusée du 06/11/20
 rapide »). Si une phrase n'a rien à montrer pendant sa tenue, c'est le script ou le repérage qui
 manque de matière ([style.md](style.md), « Aucune image inventée »), pas la caméra.
 
-## Lire d'abord : le texte suit la lecture
+## Lire d'abord : les mots suivent la lecture
 
-- Sans voix, un écran porte **une phrase courte et complète** (3 à 10 mots, 12 au plus :
-  [ecriture.md](ecriture.md)). Ce qui ne tient pas dans une phrase se **montre** pendant qu'on la
-  lit : une interface, un objet, un compteur, un avant / après.
+- Sans voix, un plan porte **un mot héros** (1 à 3 mots) et au besoin **une ligne d'appui** (3 à
+  6 mots), 8 au plus, et la vidéo entière au plus un mot à lire par seconde
+  ([ecriture.md](ecriture.md)). Tout le reste se **montre** : une interface qui agit, un schéma qui
+  se trace, un objet, un compteur, un avant / après, la vraie vidéo.
 - Tenue minimale : **0,3 s par mot + 0,8 s, jamais moins de 1,5 s** (`studio_motion.py lecture
   "<phrase>"`), l'écran final 3 s. Une phrase de 8 mots reste environ 3,2 s : c'est la vitesse
   d'un inconnu qui lit sur son téléphone, pas celle de l'auteur qui connaît déjà le texte. Une
@@ -68,7 +70,10 @@ manque de matière ([style.md](style.md), « Aucune image inventée »), pas la 
   la remplace mot à mot sur la même ligne).
 - Deux graisses : la partie d'appui en léger et grise, le mot qui compte en gras (« Ton nouveau
   **monteur** »). Un mot clé peut être surligné à la couleur de la marque.
-- On ne déplace pas un texte pendant qu'on le lit. Il entre, se pose, reste, sort.
+- Un mot ne glisse pas pendant qu'on le lit. Une fois lisible, il peut **jouer ce qu'il dit** :
+  il claque, s'étire, se barre, se surligne, se change sur place (« Ton lien. » devient « Tes
+  vidéos. »), ses lettres tombent en rafale. C'est un geste du mot, d'une demi-seconde, pas un
+  déplacement : il reste à sa place et lisible.
 - Le dernier mot d'une phrase reste au moins 0,6 s avant la coupe, et une phrase d'accroche reste
   entière à l'écran au moins 2 s : retour du client du 03/11/2026 (« il réfléchit » coupé à peine
   tapé, « qui vendent ton offre » arrivé trop tard). Avec une voix, un texte peut arriver un peu
@@ -110,7 +115,8 @@ manque de matière ([style.md](style.md), « Aucune image inventée »), pas la 
 
 ## Les transitions : un objet devient le suivant
 
-Peu de coupes franches. Les procédés qui marchent, du plus fort au plus simple :
+Peu de coupes franches. Les procédés qui marchent, du plus fort au plus simple (les recettes de
+« Le langage du motion design », [recettes.md](recettes.md), en donnent le détail) :
 
 1. **Le raccord d'objet** : l'objet de fin d'une scène est l'objet de début de la suivante (le
    fond jaune du nom devient la fenêtre de l'application ; la bande montée devient un téléphone ;
@@ -122,7 +128,17 @@ Peu de coupes franches. Les procédés qui marchent, du plus fort au plus simple
    travers, avec flou ; la démo est derrière.
 4. **Le volet** : un panneau d'une autre couleur glisse et pousse la moitié de l'écran (écran
    coupé avant / après), ou remplace le fond.
-5. **La coupe franche** sur un temps fort de la musique, rarement.
+5. **La coupe** (`K.tranche`) : un trait de son accent fend l'écran en biais, les deux moitiés
+   tombent et découvrent le plan suivant. Une fois ou deux par vidéo, sur un temps fort.
+6. **La vignette qui devient la vidéo** : une petite image (un format dans un schéma, un fichier
+   prêt) grandit jusqu'au plein écran ; à l'arrivée, la vraie vidéo joue, avec pour première image
+   exactement cette vignette.
+7. **Le fil rouge qui mène au suivant** : le point de sa couleur parcourt un lien qui se trace et
+   allume l'objet d'arrivée (`K.lien`, `K.trace`, `K.longer`).
+8. **Les volets en biais** entre deux vraies vidéos plein écran : un panneau de son accent, incliné,
+   traverse l'écran et le couvre à l'instant de la coupe (une vidéo ne se fend pas : elle vit à la
+   racine d'`index.html`).
+9. **La coupe franche** sur un temps fort de la musique, rarement.
 
 Jamais de fondu enchaîné entre deux mises en page chargées (double exposition boueuse). Une
 couleur qui disparaît s'efface par un volet net (`scaleY` vers 0), pas par une transparence.
@@ -130,7 +146,9 @@ couleur qui disparaît s'efface par un volet net (`scaleY` vers 0), pas par une 
 ## Le motif qui revient
 
 Une vidéo longue a besoin d'un geste qui revient et structure : le spectateur reconnaît qu'on
-passe à la partie suivante. Le motif du kit : **le chapitre** (`K.chapitre`). Un mot géant et
+passe à la partie suivante. Deux motifs du kit : **le fil rouge** (le point de sa couleur, le même
+d'un bout à l'autre : il raye, il parcourt les liens, il devient le point final de l'appel), et
+**le chapitre** (`K.chapitre`). Un mot géant et
 pâle glisse en fond, l'étiquette nette dit la fonction (« Dérushage »), le curseur active un
 interrupteur, on plonge dans la démonstration. Sur fond de couleur de marque, il devient la
 signature de la vidéo. Deux à cinq chapitres par vidéo de page, un ou deux dans un Reel.

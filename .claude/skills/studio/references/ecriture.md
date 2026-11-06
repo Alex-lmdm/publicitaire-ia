@@ -5,54 +5,71 @@ Le motion design qui décore vend mal : dans l'étude Motion de 578 750 publicit
 (11,6 %), l'annonce d'une nouveauté (11,4 %) ou d'une promo et le prix d'ancrage gagnent plus de
 deux fois plus souvent. **Le mouvement sert le message et la démonstration, jamais l'inverse.**
 
-**Sans voix (le cas par défaut), le texte est le script.** C'est lui qui raconte ; l'image prouve
-ce qu'il dit (l'interface en action, le résultat, la vraie capture). Une vidéo qui enchaîne des
-mots isolés et des chiffres (« C'est ouvert. » « Ma pub la plus rentable. » « 2 976 € de
-ventes. » « Prix de lancement. ») ne dit rien à quelqu'un qui ne connaît pas l'offre : c'est la
-story d'ouverture refusée par le créateur le 06/11/2026 (« on n'a rien compris, on ne sait pas
-ce qui s'est passé »). Court ne veut pas dire elliptique : chaque écran porte une phrase entière,
-qu'on comprend seule.
+**Sans voix (le cas par défaut), l'image raconte et les mots ponctuent.** Ce qu'on voit se passer
+(le dossier glissé dans l'IA, la demande tapée, les étapes qui se cochent, les vidéos qui sortent)
+porte le sens ; à l'écran, seulement les mots qui claquent, très grands, qui jouent ce qu'ils disent.
+Deux échecs opposés, tous deux refusés par le créateur :
+- **le trop peu** : des mots isolés et des chiffres sans rien montrer (« C'est ouvert. » « Ma pub la
+  plus rentable. » « 2 976 € de ventes. ») ne disent rien à un inconnu (story d'ouverture refusée
+  le 06/11/2026 : « on n'a rien compris ») ;
+- **le trop de texte** : une phrase entière par écran, posée en haut au-dessus d'une petite
+  interface, treize fois de suite (115 mots en 47 s) : « trop de texte, on a l'impression de voir
+  des sous-titres, c'est phrase par phrase » (story v2 refusée le 07/11/2026). La référence qu'il a
+  donnée (les vidéos de Higgsfield Katana) dit 20 à 30 mots en 30 à 40 s : tout le reste se montre.
+Court ne veut pas dire elliptique : chaque plan se comprend seul, par ce qu'il montre ET ses mots.
 
 Le client est le créateur ; tu écris dans **sa** voix (relis sa page de vente, ses légendes s'il
 y en a dans le dossier). Le tutoiement suit le sien. Les phrases de sa page sont déjà validées par
 lui : reprends-les quand elles disent ce qu'il faut (« Ton offre est bonne. Encore faut-il qu'on
 la voie. »), plutôt que d'en inventer de moins bonnes.
 
-## Le script : écrire pour un inconnu (étape 3 bis du skill)
+## Le film : ce qu'on voit, puis les mots (étape 3 bis du skill)
 
-Le script s'écrit **avant** les scènes, le style et la musique, et le client le valide.
+Le film (on dit « le script » au client) s'écrit **avant** les scènes, le style et la musique, et le
+client le valide. C'est une suite de **plans** : pour chacun, ce qui se passe à l'écran, puis les
+quelques mots qu'on y lit.
 
 1. **Écris-le d'abord comme tu le dirais.** Imagine que tu présentes l'offre à voix haute, en
    45 secondes, à quelqu'un de son public qui n'a jamais entendu parler du créateur ni du produit.
    Écris ce texte d'un trait, dans sa voix, en suivant les blocs de la structure
-   ([structures.md](structures.md)).
-2. **Découpe en phrases** : une idée par phrase, une phrase par écran, 3 à 10 mots (12 au plus,
-   sur deux lignes). Une phrase trop longue se coupe en deux écrans qui se suivent et se lisent
-   d'un seul mouvement (« Tu donnes le lien de ta page. » puis « Il en fait des vidéos qui
-   vendent. »).
-3. **Chaque bloc a sa phrase.** En particulier : pour qui ; le problème et ce qu'il coûte ; ce que
-   c'est (le nom de l'offre ET ce qu'elle fait, dans la même phrase ou la suivante) ; comment ça
-   marche (deux ou trois phrases d'étapes, montrées) ; la preuve avec son contexte ; l'offre ;
-   l'appel. Un nom seul (« Publicitaire IA. ») n'explique rien : « Publicitaire IA installe un
-   publicitaire dans ton Claude ou ton ChatGPT. »
-4. **Chaque chiffre porte son contexte**, sur le même écran ou celui d'avant : quoi, pour quel
-   produit, sur quelle période, et ce qu'il veut dire. « 2 976 € » seul ne dit rien ; « Ma pub pour
-   Monteur IA, faite avec lui : 2 976 € de ventes pour 239 € de pub. » se comprend.
-5. **Aucun mot que son public n'emploie pas**, ou alors expliqué : « 12 € de ventes pour 1 € de
-   pub » plutôt que « ROAS 12,47 » ; « une vidéo animée » plutôt que « du motion design » s'il ne
-   le dit pas lui-même. Les mots d'une interface montrée (une colonne « ROAS » dans la capture
-   Meta) peuvent rester : la phrase au-dessus dit ce qu'ils veulent dire.
-6. **Pour chaque phrase, ce qu'on voit pendant qu'on la lit.** La phrase dit, l'image prouve : la
-   demande tapée dans la vraie interface, la fiche qui se remplit, la pub qui tourne, la ligne de
-   la capture Meta entourée. Une phrase sans rien à montrer reste courte.
-7. **La tenue** : `studio_motion.py lecture "<phrase>"` pour chacune ; la somme donne la durée.
-   Trop long pour le support : retire la phrase la moins utile, ou montre-la au lieu de l'écrire ;
-   n'accélère jamais.
+   ([structures.md](structures.md)). Ce texte est pour toi : il ne s'affiche pas tel quel.
+2. **Pour chaque idée, demande-toi ce qu'on peut MONTRER au lieu de l'écrire.** Une idée = un plan
+   de 2,5 à 6 s, avec une action que l'œil suit et qui prouve (l'échelle de la matière de
+   [style.md](style.md)). Exemples tirés de la story d'ouverture v3 (07/11/2026) :
+
+   | L'idée (ce qu'on dirait) | Ce qu'on montre à la place | Les mots qui restent |
+   |---|---|---|
+   | « Cette story, je ne l'ai ni filmée ni montée. » | un viseur de caméra REC qui tourne, barré d'un trait jaune ; une timeline de montage qui arrive, barrée, ses morceaux tombent | « Cette story : » « ni filmée. » « ni montée. » |
+   | « Claude a écrit le script, puis l'a animée. » | la fenêtre de Claude : le dossier glissé dans la barre, la demande tapée, cinq étapes qui se cochent et leurs aperçus qui sortent de la fenêtre, le fichier qui se charge | « C'est Claude. » (le reste est l'interface) |
+   | « Tu lui donnes le lien de ta page, il en fait tes pubs, tes Reels, tes stories. » | le schéma qui se trace : la pastille « ta page de vente » entre dans le dossier, quatre liens en sortent vers quatre formats, chacun avec l'image d'une vraie vidéo | « Ton lien. » qui devient « Tes vidéos. » |
+   | « Pour une formation, un coaching, un logiciel ou un service. » | quatre pastilles sous le lien de la page | (les pastilles, matière) |
+   | « Je m'en sers pour mes propres vidéos de vente. » | ses vraies vidéos en plein écran, l'une après l'autre | « Pub faite avec Publicitaire IA » (étiquette) |
+
+3. **Ne garde à l'écran que les mots qui claquent.** Par plan, 0 à 8 mots à lire, hors interface :
+   un **mot héros** (1 à 3 mots, très grand, qui joue ce qu'il dit) et, au besoin, une **ligne
+   d'appui** (3 à 6 mots, petite, au-dessus ou dessous). Les mots d'une interface montrée (la
+   demande tapée, une étape cochée, un nom de fichier, une étiquette de format) font partie de la
+   matière : ils sont vrais et brefs, ils ne racontent pas à la place de l'image.
+4. **Le budget de mots** : sans voix, **au plus un mot à lire par seconde de vidéo** en tout (hors
+   interface), et la moitié des plans portent 0 à 3 mots. `studio_motion.py lecture "<mots du plan
+   1>" "<mots du plan 2>" … --duree <s>` donne la tenue de chacun et le compte. Au-delà : montre au
+   lieu d'écrire, ou retire le plan le moins utile ; n'accélère jamais.
+5. **Chaque bloc a son plan.** En particulier : pour qui ; le problème et ce qu'il coûte ; ce que
+   c'est (le nom de l'offre ET ce qu'elle fait : un nom seul n'explique rien, le plan doit montrer
+   ce qu'il fait) ; comment ça marche (deux ou trois gestes montrés) ; la preuve avec son
+   contexte ; l'offre ; l'appel.
+6. **Chaque chiffre porte son contexte**, montré ou écrit, sur le même plan ou celui d'avant :
+   quoi, pour quel produit, sur quelle période. La ligne Meta à côté du chiffre, la pub qui tourne
+   au-dessus : le contexte peut être l'image.
+7. **Aucun mot que son public n'emploie pas**, ou alors expliqué : « 12 € de ventes pour 1 € de
+   pub » plutôt que « ROAS 12,47 ». Les mots d'une interface montrée peuvent rester.
+8. **La tenue** : chaque groupe de mots reste le temps de sa lecture (`lecture`) ; le plan, lui,
+   dure le temps de son geste. La somme donne la durée, qui tient dans celle du support.
 
 ### Le test du spectateur froid
 
-Lis seulement les phrases, dans l'ordre, comme quelqu'un qui ne sait rien de l'offre. Il doit
-pouvoir répondre, sans les images et sans le son :
+Passe en revue les plans dans l'ordre (ce qu'on voit, puis les mots), comme quelqu'un qui ne sait
+rien de l'offre et regarde sans le son. Il doit pouvoir répondre :
 
 1. C'est quoi ? (le nom et ce que ça fait)
 2. Pour qui ?
@@ -62,23 +79,25 @@ pouvoir répondre, sans les images et sans le son :
 6. Combien, et jusqu'à quand ? (quand la vidéo vend)
 7. Qu'est-ce que je fais maintenant ?
 
-Une réponse manque : une phrase manque. On l'ajoute avant de montrer le script au client. Une
-vidéo d'inscription ou de nouveauté remplace 6 par « ce que j'obtiens en m'inscrivant » ou « ce
-qui est nouveau ».
+Une réponse manque : un plan manque (ou ce qu'il montre ne suffit pas). On l'ajoute avant de
+montrer le script au client. Une vidéo d'inscription ou de nouveauté remplace 6 par « ce que
+j'obtiens en m'inscrivant » ou « ce qui est nouveau ». Le relecteur neuf ([revue.md](revue.md))
+refait ce test sur le rendu : c'est lui qui tranche.
 
 ### Montrer le script au client
 
-Tel qu'il sera lu, sans jargon de fabrication :
+Plan par plan, ce qu'on voit d'abord, les mots ensuite, sans jargon de fabrication :
 
-> Voici le script de ta story, environ 45 s. Chaque ligne est un écran, dans l'ordre, avec ce
-> qu'on voit pendant qu'on la lit :
-> 1. « Un week-end sur Canva pour une seule pub vidéo ? » · la phrase en très grand sur ton
->    jaune (3,5 s)
-> 2. « Et au bout, une vidéo que tu n'oses pas publier. » · la carte « Le faire toi-même » de ta
->    page (3,8 s)
+> Voici le script de ta story, environ 40 s, en 9 plans. Pour chacun, ce qu'on voit, puis les mots
+> à l'écran :
+> 1. Un viseur de caméra qui tourne (REC), barré d'un trait jaune ; une timeline de montage, barrée,
+>    qui tombe en morceaux · « Cette story : ni filmée. ni montée. » (3,5 s)
+> 2. Le logo de Claude, puis sa fenêtre : ton dossier glissé dedans, le lien de ta page, la demande
+>    tapée · « C'est Claude. » (4,5 s)
 > 3. …
 >
-> Dis-moi ce que tu changes (un mot, une phrase, l'ordre), ou « ok ».
+> En tout : 36 mots à lire, 0,9 par seconde. Dis-moi ce que tu changes (un mot, un plan, l'ordre),
+> ou « ok ».
 
 ## L'accroche (les 2 à 3 premières secondes)
 
@@ -161,10 +180,17 @@ redit le problème en une phrase.
 
 ## Les mots à l'écran
 
-- **Sans voix : une phrase courte et complète par écran**, 3 à 10 mots, 12 au plus, sur une ou
-  deux lignes (`studio_motion.py lecture "<phrase>"` donne sa tenue et prévient au-delà). Le mot
-  qui compte en gras ou surligné à la couleur de la marque. Jamais un paragraphe, jamais deux
-  phrases à lire en même temps (une petite ligne d'appui sous le titre, oui).
+- **Trois tailles, jamais plus** : le **mot héros** (1 à 3 mots, 130 à 400 px en 9:16, il remplit
+  la largeur), la **ligne d'appui** (3 à 6 mots, 56 à 72 px), les **étiquettes** posées sur ce
+  qu'on montre (« Pub », « faite avec Publicitaire IA », 30 à 40 px). Au plus 8 mots à lire sur une
+  image, hors interface (`studio_motion.py lecture` prévient au-delà).
+- **Le mot joue ce qu'il dit**, une fois lisible : il claque, s'étire, se barre, se surligne, se
+  change sur place (« Ton lien. » devient « Tes vidéos. »), ses lettres tombent en rafale
+  (`K.claque`, `K.etire`, `K.barre`, `K.surligner`, [kit.md](kit.md)). Deux tons : le plein et
+  l'accent (« Ton **lien.** »), ou le gris d'appui (« ni » gris, « filmée. » blanc).
+- **Jamais la mise en page des sous-titres** : une phrase en haut, une petite interface dessous,
+  plan après plan. C'est la story v2 refusée (07/11/2026). Le sujet du plan est ce qu'on montre, en
+  grand ; les mots s'y posent.
 - **Avec une voix off** : le texte souligne la voix, 1 à 5 mots (les mots clés de la phrase dite),
   plus des sous-titres si la vidéo démarre muette (page de vente, story).
 - Une liste se montre en objets (pastilles, cartes, coches), 5 au plus, chacun de 2 à 5 mots, avec

@@ -1,10 +1,11 @@
 # Le style : vivant, dense, à sa marque
 
 Une vidéo du studio doit avoir le niveau d'une vidéo de lancement produit faite par un
-studio de motion design : **une phrase courte à la fois, le temps de la lire, et beaucoup de choses
-montrées pendant qu'on la lit** : ses vraies captures, des interfaces que les gens reconnaissent,
-ses vrais chiffres, des fonds qui changent, rien qui fasse vide. Le test : on coupe le son, on lit
-chaque phrase sans se presser, et on a compris ce que fait l'offre, pour qui, et quoi faire.
+studio de motion design : **ce qu'on voit raconte, et quelques mots très grands le ponctuent** :
+ses vraies interfaces qui agissent, le schéma de son mécanisme qui se trace, ses vraies vidéos, ses
+vrais chiffres, des fonds qui changent, rien qui fasse vide. Le test : on coupe le son, on regarde
+sans se presser, et on a compris ce que fait l'offre, pour qui, et quoi faire, sans avoir lu plus
+d'un mot par seconde.
 
 ## Trois niveaux d'identité
 
@@ -60,12 +61,16 @@ Pour chaque phrase du script, ce qu'on voit pendant qu'on la lit se cherche en d
 2. **Son interface reconstruite** d'après capture, animée : on tape, on clique, elle répond.
 3. **Un vrai chiffre** de `OFFRE.json` mis en scène : un compteur qui monte, une barre qui se
    remplit, un prix qui se pose, avec son contexte.
-4. **Les vrais logos nus** des outils que l'offre nomme, 6 à 8 (`studio_motion.py logos`).
-5. **Sa typographie seule** : ses vrais mots, en grand, dans la grammaire du style.
+4. **Le schéma de son vrai mécanisme** : des nœuds (sa page, son produit, l'IA, les formats livrés)
+   reliés par des liens qui se tracent, le fil rouge qui les parcourt (`K.lien`, `K.trace`,
+   `K.longer`). Il explique « comment ça marche » sans une phrase ; chaque nœud est vrai.
+5. **Les vrais logos nus** des outils que l'offre nomme, 6 à 8 (`studio_motion.py logos`).
+6. **Sa typographie seule** : ses vrais mots, en grand, qui jouent ce qu'ils disent.
 
 Une forme simple à ses couleurs (un disque, un aplat, une case, un cadre, un trait) sert de
-**cadre** (elle porte une capture, un chiffre, un logo, un mot) ou de **transition** (elle couvre,
-s'ouvre, devient l'objet suivant) : **jamais de sujet d'un plan**. Une image clé dont le seul sujet
+**cadre** (elle porte une capture, un chiffre, un logo, un mot), de **transition** (elle couvre,
+s'ouvre, devient l'objet suivant) ou de **fil rouge** (le point de sa couleur qui raye, parcourt un
+lien, devient le point final) : **jamais de sujet d'un plan**. Une image clé dont le seul sujet
 est une forme ou un aplat pendant plus d'une seconde est un défaut, sauf la carte de fin et une
 transition (essais des styles 2 et 4 du 06/11/2026 : des disques, des carrés et des ronds seuls à
 la place des objets de l'original, une vidéo qui ne montre plus rien). Un style dont l'original
@@ -123,11 +128,18 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 
 ## La typographie
 
-- Sans voix, une phrase courte et complète par écran ; ce qu'elle dit se montre pendant qu'on la
-  lit (`ecriture.md`, `rythme.md`).
-- Deux graisses de sa police : léger et grisé pour l'appui, gras pour le mot qui compte.
-- Le mot clé à la couleur de la marque, ou surligné d'un bloc de cette couleur.
-- Les très grands chiffres (un compteur, un prix) occupent l'écran, sur un fond flou.
+- Sans voix, peu de mots, en trois tailles : le **mot héros** (1 à 3 mots qui remplissent la
+  largeur, `k-heros`), la **ligne d'appui** (3 à 6 mots), les **étiquettes** posées sur ce qu'on
+  montre. Le reste se montre (`ecriture.md`, `rythme.md`).
+- Le mot **joue ce qu'il dit** : il claque (`K.claque`), s'étire (`K.etire`), se barre
+  (`K.barre`), se surligne d'un bloc plein (`K.surligner`), se change sur place, ses lettres
+  tombent en rafale (`K.lettres`).
+- Deux tons : le plein et l'accent (« Ton **lien.** »), ou le gris d'appui et le plein (« ni »
+  gris, « filmée. » blanc). Un contour net (`k-contour`, un trait plein) pour doubler un mot plein,
+  jamais une lueur.
+- Les étiquettes de fonction : deux ou trois mots en blocs pleins empilés (`k-blocs`), posés à côté
+  de l'interface qui le fait (« Retouches / en une phrase »).
+- Les très grands chiffres (un compteur, un prix) occupent l'écran.
 - Un mot géant et pâle en fond, l'étiquette nette devant : le motif des chapitres.
 
 ## Ce qui trahit une vidéo faite par IA (à ne jamais faire)
@@ -135,7 +147,8 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 | Interdit | À la place |
 |---|---|
 | Une suite d'écrans de texte posés sur le même fond uni | Des interfaces et des objets en mouvement, des fonds qui alternent |
-| Des paragraphes, des listes à puces, des mots isolés qu'on ne comprend pas | Une phrase courte et complète par écran, ce qu'elle dit montré pendant qu'on la lit |
+| Des sous-titres : une phrase entière par écran, en haut, au-dessus d'une petite interface, plan après plan | Le plan montre en grand ; un mot héros qui joue, une ligne d'appui au plus ; un mot à lire par seconde au plus |
+| Des paragraphes, des listes à puces, des mots isolés qu'on ne comprend pas | Ce que l'idée dit, montré (l'interface qui agit, le schéma qui se trace), et ses mots qui claquent |
 | Des images inventées (paysages, couchers de soleil, planètes, sphères, illustrations) | La vraie matière du client, en descendant l'échelle : capture, interface, chiffre, logos, ses mots |
 | Des formes seules (disques, carrés, ronds, aplats) à la place des objets d'un style | Une forme qui porte une matière réelle, ou qui sert de transition |
 | Des teintes tirées de l'accent (brun, olive, orangé), l'accent en transparence sur du sombre | L'accent plein sur des neutres : noir, blanc, gris |
@@ -153,7 +166,9 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 mouvement** : la phrase tapée du style 7 ou les longues phrases sur fond clair du style 8 sont ses
 gestes, pas des fautes (revue du 03/11/2026). Jamais pour les couleurs, les images ni la lecture :
 un style ne justifie aucune teinte hors palette, aucune image inventée, aucune forme seule à la
-place d'un sujet, aucune phrase tenue moins longtemps que sa lecture (revues du 06/11/2026).
+place d'un sujet, aucune phrase tenue moins longtemps que sa lecture (revues du 06/11/2026), ni
+plus d'un mot à lire par seconde (07/11/2026) : la phrase tapée du style 7 et les longues phrases
+du style 8 se gardent pour un ou deux plans, pas pour toute la vidéo.
 
 Test final : si cette vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom,
 elle est trop générique. Recommence par ce que son offre a de visible.

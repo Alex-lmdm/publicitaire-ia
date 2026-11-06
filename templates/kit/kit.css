@@ -147,6 +147,39 @@
 /* Le flash de couleur qui part d'un clic. */
 .k-disque { position: absolute; left: 0; top: 0; width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; }
 
+/* --- Le mot qui joue, le schéma, le fil rouge, la coupe (relevé Higgsfield Katana, 06/11/2026) --- */
+/* Le mot héros : 1 à 3 mots qui remplissent la largeur. Deux tons (le plein et l'accent), ou le
+   contour net (un trait plein, jamais une lueur). */
+.k-heros { font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.045em; line-height: 0.92; white-space: nowrap; }
+.k-contour { color: transparent; -webkit-text-stroke: 0.028em var(--k-contour, #fff); }
+.k-lettre { display: inline-block; will-change: transform; }
+.k-barre { position: absolute; left: -4%; right: -4%; top: 54%; height: 0.12em; margin-top: -0.06em; background: var(--brand-accent); transform-origin: 0 50%; border-radius: 0.04em; }
+.k-surligne { position: relative; display: inline-block; }
+.k-surligne-texte { position: relative; z-index: 1; }
+.k-surlignage { position: absolute; left: -0.08em; right: -0.08em; top: 0.06em; bottom: 0.02em; z-index: 0; background: var(--brand-accent); transform-origin: 0 50%; border-radius: 0.06em; }
+/* Les étiquettes de fonction : deux ou trois mots en blocs empilés, posés à côté de ce qui le fait. */
+.k-blocs { position: absolute; display: flex; flex-direction: column; align-items: flex-start; }
+.k-blocs > span { display: inline-block; padding: 0.06em 0.24em 0.1em; font-family: var(--brand-font-display); font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+.k-bloc-accent { background: var(--brand-accent); color: var(--brand-contrast); }
+.k-bloc-clair { background: var(--k-blanc); color: var(--k-encre); }
+.k-bloc-sombre { background: var(--k-encre); color: var(--k-blanc); }
+/* Les nœuds d'un schéma et leurs liens (K.lien, K.trace). */
+.k-noeud {
+  position: absolute; display: flex; align-items: center; gap: 16px; padding: 18px 28px; border-radius: 24px;
+  font-family: var(--brand-font-body); font-weight: 700; font-size: 34px; white-space: nowrap;
+  background: var(--k-blanc); color: var(--k-encre); box-shadow: var(--k-ombre-claire);
+}
+.k-noeud-sombre { background: #2a2a2d; color: var(--k-blanc); box-shadow: var(--k-ombre), inset 0 0 0 1.5px rgba(255, 255, 255, 0.08); }
+.k-noeud-accent { background: var(--brand-accent); color: var(--brand-contrast); }
+.k-liens { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.k-lien { fill: none; stroke: var(--brand-accent); stroke-width: 7; stroke-linecap: round; }
+.k-lien-discret { stroke: rgba(255, 255, 255, 0.2); stroke-width: 3; }
+.k-fond-clair .k-lien-discret, .k-sur-clair .k-lien-discret { stroke: rgba(0, 0, 0, 0.16); }
+/* Le fil rouge : le point de la marque qui voyage d'un plan à l'autre (K.longer, K.trajet). */
+.k-fil { position: absolute; left: 0; top: 0; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; background: var(--brand-accent); z-index: 40; }
+/* Le trait de la coupe (K.tranche). */
+.k-tranche-trait { position: absolute; /* déborde exprès : il traverse tout l'écran */ left: 0; top: 0; height: 14px; margin-top: -7px; border-radius: 7px; background: var(--brand-accent); z-index: 60; }
+
 /* Chapitre sur fond jaune : la variante de la marque. */
 .k-fantome.k-sur-jaune { color: rgba(0, 0, 0, 0.07); }
 .k-etiquette.k-sur-jaune { color: var(--k-encre); }

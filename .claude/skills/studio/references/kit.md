@@ -89,8 +89,46 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 | `K.arrivee(tl, objets, t, {etalement})` | les objets surgissent de la profondeur en rafale |
 | `K.flash(tl, disque, x, y, t, duree)` | un disque de couleur part de (x, y) et couvre l'écran |
 | `K.chapitre(tl, racine, curseur, t, {depart, cible})` | chapitre complet (mot fantôme, étiquette, curseur, interrupteur) ; rend l'instant de la plongée. Le clic vise l'interrupteur d'après la taille de la composition, en 9:16 comme en 16:9 ; `cible: [x, y]` seulement si le CSS de la scène a déplacé l'interrupteur |
+| `K.jeton(nom)` | la valeur d'un jeton de la marque (`K.jeton("--brand-gris-2")`), pour un tween de couleur (GSAP n'interpole pas une variable CSS) |
+
+### Le mot qui joue, le schéma, le fil rouge, la coupe (07/11/2026)
+
+Relevés sur les vidéos de Higgsfield Katana ([recettes.md](recettes.md), recettes 23 à 33). `cible`
+accepte un sélecteur, un élément ou une liste.
+
+| Fonction | Ce qu'elle fait |
+|---|---|
+| `K.lettres(el)` | découpe le texte en lettres (`span.k-lettre`), rend la liste : pour une rafale de lettres |
+| `K.claque(tl, cible, t, {de, y, rotation, decalage, duree, ease})` | le mot arrive d'un coup, plein (aucun fondu : rien ne vire à l'olive sur l'accent), à l'échelle `de` (1,45 : il se pose en rétrécissant ; 0,4 : il grandit), et se pose ; `decalage` pour une rafale |
+| `K.etire(tl, cible, t, {axe, facteur, tenue, retour})` | le mot (ou ses lettres) s'étire puis revient ; `axe: "x"` en largeur |
+| `K.barre(tl, el, t, {angle, eteindre})` | une barre pleine de l'accent raye l'élément ; `eteindre` : la couleur qu'il prend ensuite (`K.jeton("--brand-gris-2")`) |
+| `K.surligner(tl, el, t, {couleur, encre})` | un bloc plein s'ouvre derrière le mot, de gauche à droite ; `couleur` du bloc (l'accent par défaut ; l'encre sur l'aplat), `encre` du mot |
+| `K.volet(tl, cible, t, {decalage, origine})` | des blocs (étiquettes, pastilles pleines, pistes) s'ouvrent depuis leur bord, en rafale |
+| `K.lien(parent, [x1, y1], [x2, y2], {svg, courbe, classe})` | un lien courbe d'un schéma (SVG `k-liens`, aux pixels de la composition), rend le chemin ; `svg` pour en ajouter au même dessin ; `classe: "k-lien-discret"` pour un trait gris |
+| `K.trace(tl, chemin, t, duree)` | le trait se dessine de son début à sa fin |
+| `K.longer(tl, el, chemin, t, duree, D, {de, a})` | le fil rouge (`k-fil`) suit le trait ; même durée et même courbe que `K.trace` : il en dessine la pointe. `el` ne prend aucun autre mouvement x / y |
+| `K.tranche(tl, calque, t, {de, a, duree})` | la coupe : un trait de l'accent fend l'écran en biais, le calque (plein cadre) se fend et ses moitiés tombent. **Appelée en dernier**, la timeline complète : elle fige une copie du calque à l'instant t (jamais de `<video>` dedans) |
+
+| Classe | Rôle |
+|---|---|
+| `k-heros` | le mot héros : 1 à 3 mots, très gras, serrés, qui remplissent la largeur |
+| `k-contour` | le mot en contour net (un trait plein, `--k-contour`), pour doubler un mot plein ; jamais une lueur |
+| `k-blocs` > `span.k-bloc-accent` · `k-bloc-clair` · `k-bloc-sombre` | les étiquettes de fonction : deux ou trois mots en blocs empilés |
+| `k-noeud` (`k-noeud-sombre`, `k-noeud-accent`) | un nœud de schéma (logo + nom) |
+| `k-fil` | le fil rouge : le point de l'accent |
 
 ## Les pièges (tous rencontrés)
+
+- **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :
+  `getElementById` trouve l'hôte, plein écran, et l'objet s'y pose en haut à gauche, sans les styles
+  de la scène (story v3 du 07/11/2026, un dossier en Times dans le coin). Les éléments d'une scène
+  ne finissent jamais par `-hote`.
+- **Une couleur qui passe de l'encre à l'accent** (un dossier sombre qui devient jaune) ne se fond
+  pas : à mi-chemin, elle est olive. Elle change d'un coup (`tl.set`), quand un volet ou un
+  mouvement la couvre.
+- **Les grands titres en Poppins et `check`** : la boîte d'un texte vaut 1,4 fois sa taille, même
+  avec un interligne serré ; deux textes empilés qui se touchent à l'œil se « chevauchent » pour
+  `check`. Laisse environ 0,2 fois la taille de police entre la boîte de l'un et celle de l'autre.
 
 - **Sur un aplat de sa couleur, rien n'entre en fondu, en flou ni avec une ombre sombre** : un élément
   sombre à demi transparent sur un jaune fait de l'olive, et `palette` le relève (styles 2 et 4,

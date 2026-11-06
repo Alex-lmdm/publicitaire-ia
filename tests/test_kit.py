@@ -187,6 +187,16 @@ class KitTexte(unittest.TestCase):
         self.assertIn("data-layout-ignore", md)
         self.assertNotIn("kit de l'extension", md)
 
+    def test_chaque_fonction_a_son_mode_d_emploi(self):
+        # Une fonction du kit que kit.md ne nomme pas, l'agent ne s'en sert jamais (relevé Katana du
+        # 07/11/2026 : le mot qui joue, le schéma, le fil rouge, la coupe).
+        js = (KIT / "kit.js").read_text(encoding="utf-8")
+        md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
+        fonctions = sorted(set(re.findall(r"\bK\.(\w+) = function", js)))
+        self.assertIn("tranche", fonctions)
+        manquantes = [f for f in fonctions if f"K.{f}" not in md and f not in ("entre",)]
+        self.assertEqual(manquantes, [])
+
 
 if __name__ == "__main__":
     unittest.main()

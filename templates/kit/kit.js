@@ -55,6 +55,12 @@
     return (racine && lire(racine)) || { largeur: 1920, hauteur: 1080 };
   };
 
+  // La valeur d'un jeton de la marque (`--brand-gris-2`), pour un tween de couleur : GSAP
+  // n'interpole pas une variable CSS.
+  K.jeton = function (nom) {
+    return window.getComputedStyle ? getComputedStyle(document.documentElement).getPropertyValue(nom).trim() : "";
+  };
+
   K.el = function (parent, tag, classe, html, style) {
     var e = document.createElement(tag || "div");
     if (classe) e.className = classe;
@@ -249,5 +255,174 @@
     tl.to(bille, { x: 40, duration: 0.3, ease: "power3.inOut" }, t + 0.98);
     tl.to(plein, { scaleX: 1, duration: 0.3, ease: "power3.inOut" }, t + 0.98);
     return t + 1.35; // moment où la plongée vers la démo peut partir
+  };
+
+  // --- Le mot qui joue : il fait ce qu'il dit --------------------------------------------
+  // Relevé sur les vidéos de Higgsfield Katana (06/11/2026) : peu de mots, très grands, et chacun
+  // agit (il claque, s'étire, se barre, se surligne). Un geste part d'un mot déjà lisible et le
+  // laisse lisible ; aucun mot ne tremble ni ne glisse sans raison.
+  var liste = function (cible) {
+    if (!cible) return [];
+    if (typeof cible === "string") return Array.prototype.slice.call(document.querySelectorAll(cible));
+    if (cible.length != null && !cible.nodeType) return Array.prototype.slice.call(cible);
+    return [cible];
+  };
+
+  // Découpe le texte d'un élément en lettres (span.k-lettre), espaces gardés ; rend les lettres.
+  K.lettres = function (el) {
+    var texte = el.textContent, lettres = [];
+    el.textContent = "";
+    for (var i = 0; i < texte.length; i++) {
+      if (texte[i] === " ") { el.appendChild(document.createTextNode(" ")); continue; }
+      var s = K.el(el, "span", "k-lettre");
+      s.textContent = texte[i];
+      lettres.push(s);
+    }
+    return lettres;
+  };
+
+  // Le claquement : le mot arrive d'un coup, plein (aucun fondu : rien ne vire à l'olive sur
+  // l'accent), plus grand, et se pose. `decalage` pour une rafale de mots ou de lettres.
+  K.claque = function (tl, cible, t, o) {
+    o = o || {};
+    liste(cible).forEach(function (e, i) {
+      var ti = t + i * (o.decalage || 0);
+      if (ti > 0) { K.cacher(e); tl.set(e, { opacity: 1 }, ti); }
+      tl.fromTo(e, { scale: o.de || 1.45, y: o.y || 0, rotation: o.rotation || 0 },
+        { scale: 1, y: 0, rotation: 0, duration: o.duree || 0.42, ease: o.ease || "expo.out" }, ti);
+    });
+  };
+
+  // L'étirement : le mot (ou ses lettres) s'étire puis revient. axe "y" (défaut) ou "x".
+  K.etire = function (tl, cible, t, o) {
+    o = o || {};
+    var axe = o.axe === "x" ? "scaleX" : "scaleY";
+    liste(cible).forEach(function (e, i) {
+      var ti = t + i * (o.decalage || 0), aller = {}, retour = {};
+      gsap.set(e, { transformOrigin: o.origine || (axe === "scaleY" ? "50% 100%" : "0% 50%") });
+      aller[axe] = o.facteur || 1.7;
+      retour[axe] = 1;
+      tl.to(e, Object.assign({ duration: o.duree || 0.35, ease: "power3.out" }, aller), ti);
+      if (o.retour !== false) tl.to(e, Object.assign({ duration: 0.5, ease: "expo.out" }, retour), ti + (o.tenue || 0.6));
+    });
+  };
+
+  // La barre : un trait plein de l'accent raye le mot (« ni filmée »), qui peut ensuite s'éteindre
+  // (`eteindre` : la couleur qu'il prend, un gris de la marque).
+  K.barre = function (tl, el, t, o) {
+    o = o || {};
+    // Un élément déjà placé (absolu) le reste : seul un élément statique devient le repère de la barre.
+    if (window.getComputedStyle && getComputedStyle(el).position === "static") el.style.position = "relative";
+    var b = K.el(el, "span", "k-barre");
+    gsap.set(b, { scaleX: 0, rotation: o.angle != null ? o.angle : -3 });
+    tl.to(b, { scaleX: 1, duration: o.duree || 0.26, ease: "power3.inOut" }, t);
+    if (o.eteindre) tl.to(el, { color: o.eteindre, duration: 0.2, ease: "power1.out" }, t + 0.16);
+    return b;
+  };
+
+  // Le surlignage : un bloc plein de l'accent (ou de `couleur`) s'ouvre derrière le mot, de gauche
+  // à droite ; `encre` change la couleur du mot au passage.
+  K.surligner = function (tl, el, t, o) {
+    o = o || {};
+    el.classList.add("k-surligne");
+    // le bloc derrière, le texte devant (dans son propre span) : aucun z-index négatif
+    var s = K.el(null, "span", "k-surlignage"), texte = K.el(null, "span", "k-surligne-texte");
+    if (o.couleur) s.style.background = o.couleur;
+    while (el.firstChild) texte.appendChild(el.firstChild);
+    el.appendChild(s);
+    el.appendChild(texte);
+    gsap.set(s, { scaleX: 0 });
+    tl.to(s, { scaleX: 1, duration: o.duree || 0.3, ease: "power3.inOut" }, t);
+    if (o.encre) tl.to(el, { color: o.encre, duration: 0.1, ease: "none" }, t + 0.12);
+    return s;
+  };
+
+  // Le volet : des blocs (étiquettes de fonction, pastilles pleines) s'ouvrent depuis leur bord,
+  // en rafale ; jamais un bloc de l'accent qui entre en fondu.
+  K.volet = function (tl, cible, t, o) {
+    o = o || {};
+    liste(cible).forEach(function (e, i) {
+      gsap.set(e, { scaleX: 0, transformOrigin: o.origine || "0% 50%" });
+      tl.to(e, { scaleX: 1, duration: o.duree || 0.32, ease: o.ease || "power3.out" }, t + i * (o.decalage != null ? o.decalage : 0.09));
+    });
+  };
+
+  // --- Le schéma qui se trace et le fil rouge ---------------------------------------------
+  // Un lien courbe entre deux points [x, y] de la composition (SVG `k-liens` posé sur `parent`,
+  // aux pixels de la composition) ; `o.svg` pour en ajouter au même dessin. Rend le chemin.
+  K.lien = function (parent, a, b, o) {
+    o = o || {};
+    var svg = o.svg;
+    if (!svg) {
+      var c = o.taille || K.cadre(parent);
+      svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "k-liens");
+      svg.setAttribute("viewBox", "0 0 " + c.largeur + " " + c.hauteur);
+      svg.setAttribute("width", String(c.largeur));
+      svg.setAttribute("height", String(c.hauteur));
+      parent.appendChild(svg);
+    }
+    var courbe = o.courbe != null ? o.courbe : 0.25;
+    var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1];
+    var p = document.createElementNS(NS, "path");
+    p.setAttribute("d", "M" + a[0] + " " + a[1] + " Q" + (mx - dy * courbe) + " " + (my + dx * courbe) + " " + b[0] + " " + b[1]);
+    p.setAttribute("class", "k-lien" + (o.classe ? " " + o.classe : ""));
+    svg.appendChild(p);
+    return p;
+  };
+  // Trace un trait SVG (un lien, un arc, un soulignement) de son début à sa fin.
+  K.trace = function (tl, chemin, t, duree, o) {
+    o = o || {};
+    var L = chemin.getTotalLength ? chemin.getTotalLength() : o.longueur || 1000;
+    gsap.set(chemin, { strokeDasharray: L + " " + L, strokeDashoffset: L });
+    tl.to(chemin, { strokeDashoffset: 0, duration: duree || 0.5, ease: o.ease || "power2.inOut" }, t);
+    return L;
+  };
+  // Le fil rouge suit un trait : `el` (un `k-fil`, une pastille) va de `o.de` à `o.a` (0 à 1) de sa
+  // longueur. Avec la même durée et la même courbe que K.trace, il en dessine la pointe. Calculé à
+  // chaque image d'après le temps de la scène (`D`) : `el` ne prend aucun autre mouvement x / y.
+  K.longer = function (tl, el, chemin, t, duree, D, o) {
+    o = o || {};
+    var L = chemin.getTotalLength(), de = o.de || 0, a = o.a != null ? o.a : 1;
+    var ease = gsap.parseEase(o.ease || "power2.inOut"), etat = { t: 0 };
+    var placer = function () {
+      var q = etat.t <= t ? 0 : etat.t >= t + duree ? 1 : ease((etat.t - t) / duree);
+      var pt = chemin.getPointAtLength((de + (a - de) * q) * L);
+      gsap.set(el, { x: pt.x, y: pt.y });
+    };
+    tl.to(etat, { t: D, duration: D, ease: "none", onUpdate: placer }, 0);
+    placer();
+  };
+
+  // --- La coupe : un trait de l'accent fend l'écran, les deux moitiés tombent -------------
+  // `calque` : un calque plein cadre (position absolue, inset 0) de la scène ; ce qui est derrière
+  // lui apparaît. Le trait monte de gauche (o.de, en part de la hauteur) à droite (o.a). Appelle-la
+  // EN DERNIER, la timeline complète : elle fige une copie du calque telle qu'il est à l'instant t
+  // (jamais de <video> dedans). Rend la copie.
+  K.tranche = function (tl, calque, t, o) {
+    o = o || {};
+    var c = K.cadre(calque), L = c.largeur, H = c.hauteur;
+    var ya = (o.de != null ? o.de : 0.64) * H, yb = (o.a != null ? o.a : 0.36) * H;
+    tl.seek(t, false);
+    var copie = calque.cloneNode(true);
+    tl.seek(0, false);
+    copie.removeAttribute("id");
+    Array.prototype.forEach.call(copie.querySelectorAll("[id]"), function (n) { n.removeAttribute("id"); });
+    calque.parentNode.insertBefore(copie, calque.nextSibling);
+    var px = function (x, y) { return x + "px " + y + "px"; };
+    gsap.set(calque, { clipPath: "polygon(" + [px(0, 0), px(L, 0), px(L, H), px(0, H)].join(", ") + ")" });
+    gsap.set(copie, { opacity: 0, clipPath: "polygon(" + [px(0, ya), px(L, yb), px(L, H), px(0, H)].join(", ") + ")" });
+    tl.set(calque, { clipPath: "polygon(" + [px(0, 0), px(L, 0), px(L, yb), px(0, ya)].join(", ") + ")" }, t);
+    tl.set(copie, { opacity: 1 }, t);
+    var long = Math.sqrt(L * L + (yb - ya) * (yb - ya)) * 1.12, angle = (Math.atan2(yb - ya, L) * 180) / Math.PI;
+    var trait = K.el(calque.parentNode, "div", "k-tranche-trait");
+    trait.setAttribute("data-layout-allow-overflow", "");
+    gsap.set(trait, { width: long, x: -long * 0.05, y: ya, rotation: angle, transformOrigin: "0% 50%", scaleX: 0 });
+    tl.to(trait, { scaleX: 1, duration: 0.16, ease: "power2.in" }, t - 0.16);
+    tl.to(trait, { scaleY: 0, duration: 0.24, ease: "power2.in" }, t + 0.16);
+    var d = o.duree || 0.55, ecart = o.ecart || H * 0.75;
+    tl.to(calque, { y: -ecart, x: -50, rotation: -4, duration: d, ease: "power3.in" }, t + 0.04);
+    tl.to(copie, { y: ecart, x: 50, rotation: 4, duration: d, ease: "power3.in" }, t + 0.04);
+    return copie;
   };
 })();

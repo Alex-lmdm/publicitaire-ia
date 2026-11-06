@@ -48,8 +48,12 @@ vraiment :
 - Chaque texte de la planche correspond à une clé de `OFFRE.json`, ou c'est du ton.
 - Vidéo de page : la première image est déjà forte et dit le sujet (c'est elle qu'on voit si la
   lecture automatique est bloquée).
-- Chaque écran porte une phrase entière, qui se comprend seule ; aucun n'en porte plus de 12
-  mots (hors interfaces), ni deux phrases à lire en même temps.
+- **Le test des sous-titres** : chaque plan se comprend par ce qu'il montre ET ses quelques mots ;
+  aucune image ne porte plus de 8 mots à lire (hors interface, étiquettes et logos) ; sur toute la
+  vidéo, un mot à lire par seconde au plus (`studio_motion.py lecture "<mots du plan 1>" … --duree
+  <s>`) ; et la mise en page des sous-titres (une phrase en haut, une petite interface dessous)
+  ne revient pas d'un plan à l'autre. Story v2 refusée le 07/11/2026 : 115 mots en 47 s, « on a
+  l'impression de voir des sous-titres ».
 - Le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
   l'ordre, on sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le
   croire, combien et quoi faire. Une réponse manque : la vidéo n'est pas finie. Ce test se refait
@@ -87,7 +91,8 @@ dossier au nom neutre, et écrit la consigne du relecteur (`CONSIGNE.md`). Lance
 pour seule consigne le contenu de `CONSIGNE.md` et ces seules planches : ni le script, ni
 `PLAN.md`, ni `OFFRE.json`, ni rien de la conversation. Il répond en trois phrases (ce qui est
 vendu, à qui, ce qu'on doit faire maintenant), puis ce qu'il a dû deviner, ce qu'il n'a pas pu
-lire, et le moment où il serait parti. Compare ses trois phrases à la promesse, au public et à
+lire, le moment où il serait parti, et si la vidéo montre ou fait lire (le passage le plus
+« diapositive »). Ce passage-là se refait : il montre ce qu'il écrit. Compare ses trois phrases à la promesse, au public et à
 l'appel à l'action de `OFFRE.json` (l'outil les affiche) : **tout écart est un P0**, à corriger
 avant le reste. Sans sous-agent possible (un assistant qui n'en lance pas), fais la relecture
 toi-même, à partir des seules planches, avant de relire le script, et dis-le dans ta revue.
@@ -121,11 +126,13 @@ avec une phrase de justification, sur ces neuf critères :
 2. **Accroche** : on comprend de quoi on parle, pour qui, et ce qu'on gagne à rester avant 3 s.
 3. **Structure** : chaque bloc de la structure choisie remplit son rôle, dans l'ordre ; le
    problème vient avant le produit ; le comment est montré.
-4. **Rythme** : il se passe quelque chose toutes les demi-secondes autour du texte ; chaque phrase
-   reste le temps de la lire à voix haute, sans se presser. Trop rapide pour être lu, c'est 4 au plus.
-5. **Montré et dit** : une phrase courte par écran, et pendant qu'on la lit, ce qu'elle dit se voit
-   (des interfaces, des résultats, des preuves) ; des fonds qui alternent, rien de vide. Si on
-   dirait des slides, c'est 3 au plus.
+4. **Rythme** : il se passe quelque chose toutes les demi-secondes autour des mots ; chaque groupe
+   de mots reste le temps de le lire à voix haute, sans se presser. Trop rapide pour être lu, c'est
+   4 au plus.
+5. **Montré, pas lu** : chaque plan montre ce qu'il dit (des interfaces qui réagissent, un schéma
+   qui se trace, de vraies vidéos), et ses mots, peu nombreux et très grands, jouent ce qu'ils
+   disent ; des fonds qui alternent, rien de vide. Si on dirait des slides ou des sous-titres
+   (plus d'un mot à lire par seconde), c'est 3 au plus.
 6. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources ; chaque
    chiffre avec son contexte.
 7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le

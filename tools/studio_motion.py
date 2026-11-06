@@ -270,12 +270,15 @@ def dans(a: dict, b: dict) -> bool:
 # ---------------------------------------------------------------------------
 # Temps de lecture : la règle la plus stricte des sources étudiées
 # ---------------------------------------------------------------------------
-# Sans voix, le texte raconte : une phrase courte et complète par écran (8 mots conseillés, 12 au
-# plus), tenue le temps qu'un inconnu la lise sur son téléphone (environ 3 mots par seconde, plus
-# le temps de la poser), pendant que ce qui l'entoure continue de vivre. L'ancienne règle (1 à 4 mots,
-# 0,25 s par mot) faisait des stories illisibles : essai refusé du 06/11/2026.
+# Sans voix, l'image raconte et les mots ponctuent : par plan, un mot héros et au besoin une ligne
+# d'appui (4 mots conseillés, 8 au plus sur une image, hors interface), chaque groupe tenu le temps
+# qu'un inconnu le lise sur son téléphone (environ 3 mots par seconde, plus le temps de le poser).
+# Sur toute la vidéo, au plus un mot à lire par seconde. Deux refus du créateur : 1 à 4 mots changés
+# toutes les 1 à 2 s sans rien montrer (06/11/2026, « on n'a rien compris ») ; une phrase entière par
+# écran, 115 mots en 47 s (07/11/2026, « on a l'impression de voir des sous-titres »).
 PAR_MOT, ASSISE, PLANCHER, FINAL = 0.3, 0.8, 1.5, 3.0
-MOTS_CONSEILLES, MOTS_MAX = 8, 12
+MOTS_CONSEILLES, MOTS_MAX = 4, 8
+MOTS_PAR_SECONDE = 1.0
 
 
 def mots(texte: str) -> int:
@@ -1833,14 +1836,32 @@ def cmd_capture(a) -> None:
     print(f"• capture : {dest.relative_to(dossier)} (texte visible dans extracted/visible-text.txt)")
 
 
+def budget_mots(textes: list[str], duree: float) -> dict:
+    """Le compte des mots à lire d'un film (un texte par plan, hors interface) rapporté à sa durée."""
+    total = sum(mots(t) for t in textes)
+    par_s = total / duree if duree > 0 else 0.0
+    return {"mots": total, "par_seconde": round(par_s, 2), "max": round(MOTS_PAR_SECONDE * duree),
+            "trop": par_s > MOTS_PAR_SECONDE + 1e-9}
+
+
 def cmd_lecture(a) -> None:
-    n = mots(a.texte)
-    print(f"{lecture(a.texte, final=a.final):.1f} s minimum à l'écran ({n} mot{'s' if n > 1 else ''})")
-    if n > MOTS_MAX:
-        print(f"⚠️ {n} mots : trop pour un écran ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus). "
-              "Coupe la phrase en deux écrans, ou montre une partie au lieu de l'écrire.")
-    elif n > MOTS_CONSEILLES:
-        print(f"• {n} mots : une phrase longue, sur deux lignes ; {MOTS_CONSEILLES} au plus d'habitude.")
+    for i, texte in enumerate(a.textes):
+        n = mots(texte)
+        tete = f"plan {i + 1} · " if len(a.textes) > 1 else ""
+        final = a.final and i == len(a.textes) - 1
+        print(f"{tete}{lecture(texte, final=final):.1f} s minimum à l'écran ({n} mot{'s' if n > 1 else ''})")
+        if n > MOTS_MAX:
+            print(f"⚠️ {n} mots : trop pour une image ({MOTS_CONSEILLES} conseillés, {MOTS_MAX} au plus, hors "
+                  "interface). Montre au lieu d'écrire : garde le mot héros, fais voir le reste.")
+        elif n > MOTS_CONSEILLES:
+            print(f"• {n} mots : un mot héros et une ligne d'appui, pas plus ; {MOTS_CONSEILLES} d'habitude.")
+    if a.duree:
+        b = budget_mots(a.textes, a.duree)
+        print(f"• en tout : {b['mots']} mots à lire en {fr_nombre(a.duree)} s, {fr_nombre(b['par_seconde'])} par seconde "
+              f"({fr_nombre(MOTS_PAR_SECONDE)} au plus, soit {b['max']} mots)")
+        if b["trop"]:
+            print("⚠️ trop de texte : on lirait des sous-titres. Montre au lieu d'écrire (l'interface qui agit, "
+                  "le schéma qui se trace, la vraie vidéo), ou retire le plan le moins utile.")
 
 
 def cmd_zones(a) -> None:
@@ -1963,6 +1984,10 @@ Réponds en français, sans note ni compliment :
 3. **Ce que tu n'as pas pu lire** : une phrase restée trop peu de temps, trop petite, ou mangée par
    son fond, avec sa planche et sa place (planche 2, image 5).
 4. **Le moment où tu serais parti**, s'il y en a un, et pourquoi.
+5. **Montre-t-elle, ou fait-elle lire ?** Dis si la vidéo montre des choses qui se passent (des
+   interfaces qui réagissent, des objets, des mots qui bougent et jouent) ou si elle se lit comme des
+   sous-titres ou des diapositives (une phrase par écran, au-dessus d'une petite image). Cite le
+   passage le plus « diapositive », avec sa planche et sa place.
 """
 
 CONSIGNE_RELEVE = """# Relevé des défauts
@@ -3653,9 +3678,10 @@ def main(argv: list[str] | None = None) -> None:
     ca.add_argument("dossier", help="Le dossier de la vidéo (celui de OFFRE.json).")
     ca.add_argument("lien")
     ca.set_defaults(f=cmd_capture)
-    lec = s.add_parser("lecture", help="Temps minimum à l'écran d'un texte.")
-    lec.add_argument("texte")
-    lec.add_argument("--final", action="store_true", help="Écran final (appel à l'action).")
+    lec = s.add_parser("lecture", help="Temps minimum à l'écran des mots d'un plan, et le compte des mots d'un film.")
+    lec.add_argument("textes", nargs="+", help="Les mots à lire d'un plan (un argument par plan, hors interface).")
+    lec.add_argument("--final", action="store_true", help="Le dernier texte est l'écran final (appel à l'action).")
+    lec.add_argument("--duree", type=float, help="Durée de la vidéo (s) : compte les mots à lire par seconde.")
     lec.set_defaults(f=cmd_lecture)
     z = s.add_parser("zones", help="Zone de texte sûre en pixels.")
     z.add_argument("support", choices=sorted(SUPPORTS))
