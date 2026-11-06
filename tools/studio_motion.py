@@ -1020,14 +1020,16 @@ def cmd_musiques(a) -> None:
                 except banque.ErreurMusiques as e:
                     probleme = str(e)
             sources = ([pack] if pack else []) + [Path(v).expanduser() for v in a.valeurs]
+            trouvees = False   # prises dans Téléchargements : un dossier « musiques-… » à lui s'ignore
             if not sources and not a.lien:
                 try:
                     sources = banque.sources_par_defaut()
+                    trouvees = True
                 except banque.ErreurMusiques as e:
                     probleme = str(e)
             if sources:
                 try:
-                    res = banque.installer(r, sources)
+                    res = banque.installer(r, sources, trouvees)
                     for err in res["erreurs"]:
                         print(f"  (ignoré : {err})")
                 except banque.ErreurMusiques as e:

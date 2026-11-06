@@ -105,6 +105,10 @@ class ErreurMusiques(Exception):
     pass
 
 
+class PasDesMusiques(ErreurMusiques):
+    """Une source qui n'est pas un pack de musiques de lancement (un dossier « musiques-… » à lui)."""
+
+
 def _sur(nom: str) -> str | None:
     """Un chemin d'archive sans danger (relatif, sans « .. »), normalisé ; None sinon."""
     nom = nom.replace("\\", "/")
@@ -155,7 +159,7 @@ def selection(noms: list[str], lire) -> dict[str, str]:
         if licence in par_chemin:
             choix[par_chemin[licence]] = f"{DOSSIER}/LICENCE.md"
     if not choix:
-        raise ErreurMusiques("ce ne sont pas des musiques de lancement : aucune fiche <ambiance>/catalog.json dedans")
+        raise PasDesMusiques("ce ne sont pas des musiques de lancement : aucune fiche <ambiance>/catalog.json dedans")
     return choix
 
 
@@ -288,14 +292,18 @@ def installer_mixkit(racine: Path, ouvrir=None) -> dict:
     return {"ecrits": ecrits, "identiques": identiques, "erreurs": erreurs}
 
 
-def installer(racine: Path, sources: list[Path]) -> dict:
+def installer(racine: Path, sources: list[Path], trouvees: bool = False) -> dict:
     """Range les ambiances trouvées dans les sources (archives ou dossiers). Un fichier identique
-    n'est pas réécrit ; un morceau qui n'est plus dans la fiche de son ambiance est retiré."""
+    n'est pas réécrit ; un morceau qui n'est plus dans la fiche de son ambiance est retiré.
+    `trouvees` : les sources viennent de Téléchargements (`sources_par_defaut`), pas du client. Celles
+    qui ne sont pas des musiques de lancement sont alors ignorées, même toutes (essai du 06/11/2026 :
+    un dossier « musiques-pub-a-ecouter » arrêtait la mise à jour, les 17 déjà installées)."""
     if not sources:
         raise ErreurMusiques(f"aucune archive musiques-….zip dans {telechargements()} : recopie la phrase "
                              "« Installe mes musiques de lancement » de ta formation (module Musique), elle contient leur lien")
     copies: dict[str, bytes] = {}
     erreurs = []
+    etrangeres = 0
     for source in sources:
         source = Path(source).expanduser()
         try:
@@ -307,7 +315,8 @@ def installer(racine: Path, sources: list[Path]) -> dict:
             erreurs.append(acces_refuse(source))
         except ErreurMusiques as e:
             erreurs.append(f"{source.name} : {e}")
-    if not copies:
+            etrangeres += isinstance(e, PasDesMusiques)
+    if not copies and not (trouvees and etrangeres == len(erreurs)):
         raise ErreurMusiques(" ; ".join(erreurs) or "rien à installer")
     ecrits = identiques = retires = 0
     for rel, donnees in sorted(copies.items()):

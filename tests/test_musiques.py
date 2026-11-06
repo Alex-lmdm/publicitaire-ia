@@ -222,6 +222,22 @@ class Installation(unittest.TestCase):
         self.assertEqual(res["ambiances"], {"premium-calme": 2})
         self.assertEqual(len(res["erreurs"]), 1)   # le dossier personnel, ignoré et signalé
 
+    def test_seulement_un_dossier_a_lui_dans_telechargements(self):
+        """Essai du 06/11/2026 : « musiques-pub-a-ecouter » (ses MP3 à lui) arrêtait la mise à jour, les 17
+        déjà installées. Trouvé dans Téléchargements, il s'ignore ; donné par le client, il est refusé."""
+        (self.dl / "musiques-pub-a-ecouter").mkdir()
+        (self.dl / "musiques-pub-a-ecouter" / "musique-1-stomp.mp3").write_bytes(b"x")
+        musiques.installer(self.racine, self.zips("tech-minimale"))
+        (self.dl / "musiques-tech-minimale.zip").unlink()
+        sources = musiques.sources_par_defaut(self.dl)
+        res = musiques.installer(self.racine, sources, trouvees=True)
+        self.assertEqual((res["ambiances"], res["ecrits"], len(res["erreurs"])), ({"tech-minimale": 2}, 0, 1))
+        with self.assertRaisesRegex(musiques.ErreurMusiques, "pas des musiques de lancement"):
+            musiques.installer(self.racine, sources)
+        (self.dl / "musiques-x.zip").write_bytes(b"pas un zip")   # une archive abîmée se signale toujours
+        with self.assertRaisesRegex(musiques.ErreurMusiques, "ZIP lisible"):
+            musiques.installer(self.racine, musiques.sources_par_defaut(self.dl), trouvees=True)
+
     def test_rien_a_installer(self):
         with self.assertRaisesRegex(musiques.ErreurMusiques, "aucune archive"):
             musiques.installer(self.racine, [])
@@ -428,6 +444,14 @@ class Commande(unittest.TestCase):
             self.assertIn("8 de la formation", r.stdout)
             self.assertIn("1/1 de Mixkit", r.stdout)
             self.assertTrue((copie / "assets" / "musiques" / "mixkit" / "mixkit-un.mp3").is_file())
+            for a in BANQUE:   # la mise à jour : les archives rangées, un dossier « musiques-… » à lui reste
+                (dl / f"musiques-{a}.zip").unlink()
+            (dl / "musiques-pub-a-ecouter").mkdir()
+            (dl / "musiques-pub-a-ecouter" / "musique-1-stomp.mp3").write_bytes(b"x")
+            r = subprocess.run(outil + ["musiques", "installer"], cwd=copie, env=env, capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            self.assertIn("(ignoré : musiques-pub-a-ecouter", r.stdout)
+            self.assertIn("8 de la formation", r.stdout)
             r = subprocess.run(outil + ["nouvelle", "Test", "--objectif", "vente", "--videos", "reel,section"],
                                cwd=copie, env=env, capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
