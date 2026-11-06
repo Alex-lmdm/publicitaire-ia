@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°5 « INTERRUPTEURS CRÈME » · SCÈNE 3 : LA GRILLE DE COCHES (6,5 s)
+    STYLE N°5 « INTERRUPTEURS EN CASCADE » · SCÈNE 3 : LA GRILLE DE COCHES (7,7 s pour 5 mots)
 
     Ce qu'elle montre : une grille de disques blancs cerclés d'un anneau (la fin de la scène 2).
     Chaque anneau se remplit comme un camembert, en vague de gauche à droite, et devient une
@@ -12,13 +12,20 @@
     cartes (l'espace de chaque membre, avec son prénom), et la caméra plonge dans une carte qui
     devient la fenêtre plein écran de la scène 4 (« fenetre-annonce »).
     Rôle : la preuve que tout le monde est servi (« tout est prêt », « pour chaque élève »).
+    La phrase se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
+    la caméra s'est approchée avant elle (entre deux intentions), puis ne fait qu'une dérive lente ;
+    autour d'elle, les pastilles respirent en vague. Les cartes et la plongée viennent une fois la
+    phrase lue. Durée : la scène la calcule (D dans le script) : 4,9 s + la lecture de la phrase
+    (7,7 s pour 5 mots, 8,3 s pour 7). Reporte-la dans data-duration (ici et sur l'hôte).
 
     Format : 16:9. La grille se recalcule seule en 9:16 (change data-width / data-height de la
     racine) ; la plongée vise alors la carte la plus proche du centre.
 
     À REMPLACER :
       1. L'id « t05-coches » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. TEXTE (deux lignes, 6 mots au plus) : ce que le client gagne, tiré de OFFRE.json.
+      2. TEXTE (deux lignes, 7 mots au plus : la phrase tient dans le trou du centre de la grille ;
+         une phrase plus longue du script ne se raccourcit pas, elle passe dans une scène construite
+         dans le style) : ce que le client gagne, tiré de OFFRE.json.
       3. SALUTS : ce que montrent les cartes (prénoms génériques des membres, ou le nom des
          espaces). La carte où l'on plonge porte SALUTS[0] : c'est aussi le titre de la scène 4.
       4. ACCUEIL : le texte gris du champ (le même qu'en scène 4).
@@ -78,7 +85,7 @@
     #t05-coches .t05-fenetre .t05-mini { box-shadow: none; }
   </style>
 
-  <div data-composition-id="t05-coches" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+  <div data-composition-id="t05-coches" data-width="1920" data-height="1080" data-duration="7.7" style="position:absolute; inset:0;">
     <div id="t05-coches" class="k-scene">
       <div class="t05-cam" id="t05-coches-cam" data-layout-allow-overflow>
         <div id="t05-coches-grille"></div>
@@ -96,10 +103,16 @@
 
   <script>
     (function () {
-      var ID = "t05-coches", D = 6.5;
+      var ID = "t05-coches";
       var TEXTE = ["Tout est prêt", "dès le premier jour"];
       var SALUTS = ["Bonjour, Léa", "Salut, Karim", "Hello, Sofia", "Bon retour, Hugo", "Coucou, Inès", "Bonjour, Malik", "Salut, Chloé", "Hello, Nadia", "Bonjour, Tom", "Salut, Jade"];
       var ACCUEIL = "Que veux-tu apprendre aujourd'hui ?";
+      // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+      function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+      var FE = 2.4 + 0.07 * (TEXTE[TEXTE.length - 1].split(" ").length - 1) + 0.7;   // la phrase est posée
+      var X = FE + lecture(TEXTE);                                                     // elle sort, lue
+      var O = X - 4.3;                                                                 // les cartes et la plongée attendent
+      var D = Math.round((X + 2.2) * 10) / 10;                                         // 7,7 s pour 5 mots
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cam = $("cam"), grille = $("grille"), titre = $("titre"), fen = $("fenetre");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -143,19 +156,20 @@
 
       // 1. La vague : chaque anneau se remplit, puis la coche se trace
       disques.forEach(function (d) {
-        var t0 = 0.1 + (+d.dataset.c) * 0.13 + (+d.dataset.r) * 0.045 + (vertical ? (+d.dataset.r) * 0.06 : 0);
+        // les coches tombent en trois salves, de gauche à droite (en 9:16, de haut en bas)
+        var rang = vertical ? +d.dataset.r / LIGNES : +d.dataset.c / COLS, salve = Math.min(2, Math.floor(rang * 3));
+        var t0 = 0.12 + salve * 0.55 + (vertical ? (+d.dataset.c) : (+d.dataset.r)) * 0.008;
         tl.to(d.querySelector(".t05-tarte"), { attr: { "stroke-dashoffset": 0 }, duration: 0.42, ease: "power1.inOut" }, t0);
         tl.to(d.querySelector(".t05-coche"), { attr: { "stroke-dashoffset": 0 }, duration: 0.22, ease: "power2.out" }, t0 + 0.38);
         if (TRAIT !== ACCENT) tl.to(d.querySelector(".t05-anneau"), { opacity: 0, duration: 0.2, ease: "power1.out" }, t0 + 0.36);
       });
 
-      // 2. La caméra se rapproche, le centre se libère, la phrase s'écrit
+      // 2. La caméra se rapproche avant la phrase (entre deux intentions), le centre se libère, la
+      //    phrase s'écrit ; pendant qu'elle se lit, une dérive lente seulement (Z → Z × 1,05)
       var Z = vertical ? 1.55 : 1.7;
       tl.to(cam, { scale: 1.06, duration: 0.6, ease: "expo.inOut" }, 0.25);
       tl.to(cam, { scale: Z, duration: 0.9, ease: "expo.inOut" }, 1.35);
-      tl.to(cam, { scale: Z * 1.03, duration: 0.45, ease: "expo.inOut" }, 2.3);
-      tl.to(cam, { scale: Z * 1.09, duration: 0.55, ease: "expo.inOut" }, 2.95);
-      tl.to(cam, { scale: Z * 1.05, duration: 0.5, ease: "expo.inOut" }, 3.7);
+      tl.to(cam, { scale: Z * 1.05, duration: X - 2.25, ease: "sine.inOut" }, 2.25);
       centre.forEach(function (d) { tl.to(d, { scale: 0, duration: 0.45, ease: "power3.in" }, 1.45); });
       var tMots = mots(titre, TEXTE);
       K.cacher(tMots);
@@ -181,17 +195,26 @@
         var lignes = titre.querySelectorAll(".t05-ligne");
         K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.1, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
         K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 2.4, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
-        K.sortieMots(tl, tMots, 4.3, { y: -6, flou: 12, duree: 0.35, decalage: 0.03 });
+        // pendant la lecture, les pastilles respirent en vague autour de la phrase (une vague de plus,
+        // de gauche à droite : l'interface vit, la caméra non)
+        // (deux respirations de toute la grille ensemble, au tiers et aux deux tiers de la tenue)
+        [FE + (X - FE) / 3, FE + 2 * (X - FE) / 3].forEach(function (tv) {
+          disques.forEach(function (d) {
+            if (centre.indexOf(d) >= 0) return;
+            tl.fromTo(d.querySelector(".t05-pastille"), { scale: 1 }, { scale: 1.3, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tv);
+          });
+        });
+        K.sortieMots(tl, tMots, X, { y: -6, flou: 12, duree: 0.35, decalage: 0.03 });
 
         // 3. Les pastilles se réduisent à un point, les disques deviennent des cartes
         disques.forEach(function (d) {
-          var dx = (d.dataset.x - cx) * 0.25, dy = (d.dataset.y - cy) * 0.25, t0 = 4.65 + Math.hypot(dx, dy) / 4000;
+          var dx = (d.dataset.x - cx) * 0.25, dy = (d.dataset.y - cy) * 0.25, t0 = 4.65 + O + Math.hypot(dx, dy) / 4000;
           tl.to(d.querySelector(".t05-pastille"), { scale: 0.16, duration: 0.3, ease: "power2.in" }, t0);
           tl.to(d.querySelector(".t05-pastille"), { scale: 0, duration: 0.18, ease: "power2.in" }, t0 + 0.32);
           tl.to(d, { x: dx, y: dy, width: 200, height: 200, borderRadius: 48, duration: 0.55, ease: "power3.inOut" }, t0 + 0.2);
           tl.to(d.querySelector(".t05-mini"), { opacity: 1, duration: 0.3, ease: "power1.out" }, t0 + 0.45);
         });
-        centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 4.85); });
+        centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 4.85 + O); });
 
         // 4. La plongée : la carte visée devient la fenêtre plein écran (raccord scène 4)
         var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
@@ -205,13 +228,14 @@
         var decoupe = function (t, r, b, l, ra) { return "inset(" + t.toFixed(1) + "px " + r.toFixed(1) + "px " + b.toFixed(1) + "px " + l.toFixed(1) + "px round " + ra.toFixed(1) + "px)"; };
         gsap.set(fen, { opacity: 0 });
         gsap.set(miniF, { x: ex - cx, y: ey - cy, scale: 0.176 * S, opacity: 1 });
-        tl.set(fen, { opacity: 1 }, 5.45);
-        tl.set(cible, { opacity: 0 }, 5.45);
+        var PL = 5.45 + O;                     // la plongée
+        tl.set(fen, { opacity: 1 }, PL);
+        tl.set(cible, { opacity: 0 }, PL);
         // La découpe suit une fonction pure du temps (un tween sur la chaîne clip-path ne s'interpole pas).
-        var ouvrir = gsap.parseEase("expo.inOut"), o = { t: 0 }, poser = function () { var p = o.t <= 5.45 ? 0 : o.t >= 6.3 ? 1 : ouvrir((o.t - 5.45) / 0.85), q = 1 - p; fen.style.clipPath = decoupe(h * q, (L - g - cote) * q, (H - h - cote) * q, g * q, rad * q); };
+        var ouvrir = gsap.parseEase("expo.inOut"), o = { t: 0 }, poser = function () { var p = o.t <= PL ? 0 : o.t >= PL + 0.85 ? 1 : ouvrir((o.t - PL) / 0.85), q = 1 - p; fen.style.clipPath = decoupe(h * q, (L - g - cote) * q, (H - h - cote) * q, g * q, rad * q); };
         tl.to(o, { t: D, duration: D, ease: "none", onUpdate: poser }, 0); poser();
-        tl.to(miniF, { x: 0, y: 0, scale: vertical ? 0.86 : 1, duration: 0.85, ease: "expo.inOut" }, 5.45);
-        tl.to(cam, { scale: S * 1.9, x: -(wx - cx) * S * 0.9, y: -(wy - cy) * S * 0.9, duration: 0.85, ease: "expo.inOut" }, 5.45);
+        tl.to(miniF, { x: 0, y: 0, scale: vertical ? 0.86 : 1, duration: 0.85, ease: "expo.inOut" }, PL);
+        tl.to(cam, { scale: S * 1.9, x: -(wx - cx) * S * 0.9, y: -(wy - cy) * S * 0.9, duration: 0.85, ease: "expo.inOut" }, PL);
         window.__timelines[ID] = tl;
       }
     })();

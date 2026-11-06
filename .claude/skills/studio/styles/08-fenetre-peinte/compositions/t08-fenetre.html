@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE PEINTE » · SCÈNE : LA FENÊTRE FILMÉE (la démonstration) · 7 s
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LA FENÊTRE FILMÉE (la démonstration) · 7 s
     Ce que la scène montre : la fenêtre de l'application de l'offre, posée sur un bureau aux
     couleurs de la marque, avec SA vraie interface dedans (ses captures). La caméra filme l'écran
     comme un enregistrement : vue entière, puis gros plans rapides (flou de bougé) sur un détail ;
@@ -124,10 +124,13 @@
     // Un gros plan : le point (wx, wy) de la fenêtre vient au centre de l'écran, au zoom s. En 9:16, la
     // fenêtre est plus petite dans l'image : ses gros plans serrent davantage (×1,4) pour remplir l'écran.
     var SERRE = vertical ? 1.4 : 1;
+    var BOUGE = FOND === "accent" && !FOND_IMAGE ? 2 : 7;
     var viser = function (t, wx, wy, s, duree) {
       var plan = s <= 1.01, p = plan ? [L / 2, H / 2] : P(wx, wy), sc = plan ? 1 : s * SERRE * (L / 1920) / k;
       tl.to(bureau, { x: -(p[0] - L / 2) * sc, y: -(p[1] - H / 2) * sc, scale: sc, duration: duree, ease: "expo.inOut" }, t);
-      tl.to(bureau, { filter: "blur(7px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);
+      // le flou de bougé : 7 px, sauf sur l'aplat de l'accent (2 px), où un flou plus fort mêlerait son
+      // jaune au bord sombre de la fenêtre (du brun, de l'olive : `palette` le relève)
+      tl.to(bureau, { filter: "blur(" + BOUGE + "px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);
     };
     gsap.set(bureau, { x: 0, y: 0, scale: 1, filter: "blur(0px)" });
     tl.to(bureau, { scale: 1.03, duration: 0.5, ease: "sine.out" }, 0);

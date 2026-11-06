@@ -13,9 +13,11 @@ pilote ; lancer une nouvelle formule.
 médian 0,30 s entre deux événements, 2 coupes franches seulement (à 28,2 s), 7,0 s d'image figée au
 total (surtout la fin : l'adresse et le logo tenus en silence). Musique à 93 battements par minute
 (un temps toutes les 0,65 s), entrée franche à 7,0 s.
-**Mesures de l'essai du kit** (les 4 scènes bout à bout, 24,5 s, marque LMDM, 06/11/2026) : en
-16:9, 1,14 événement par seconde, écart médian 0,60 s, aucune image figée, `rythme` « ok »,
-`palette` « ok » ; en 9:16, 1,05 événement par seconde, `rythme` et `palette` « ok ».
+**Mesures de l'essai du kit refait le 06/11/2026** (les 4 scènes bout à bout, 33 s, marque LMDM,
+chaque phrase tenue le temps de sa lecture, ses vraies captures autour de l'accroche et sous
+l'appel, aucun recadrage pendant une lecture) : en 16:9, 1,09 événement par seconde, écart médian
+0,70 s ; en 9:16, 1,02 événement par seconde, écart médian 0,80 s ; aucune image figée, `rythme`
+et `palette` « ok » dans les deux formats.
 
 > On reprend la grammaire de la vidéo (rythme, mise en page, verre, caméra, trame de points,
 > transitions), jamais son contenu : ni ses textes, ni son logo, ni ses marchés, ni ses chiffres, ni
@@ -32,9 +34,14 @@ total (surtout la fin : l'adresse et le logo tenus en silence). Musique à 93 ba
   carrousel très rapide (une carte toutes les 0,5 s).
 - **Une fin qui respire** : la musique se coupe, une ligne seule, l'adresse avec un seul impact, le
   logo tenu 3 à 4 s. C'est la seule tenue longue autorisée.
-- **Chez toi :** grille de 0,5 s (120 par minute) ; le milieu ne garde jamais plus de 1 s sans geste
-  (l'essai a ajouté un recadrage sec et une fin de phrase mot à mot pendant la tenue de l'accroche,
-  là où l'original reste 2 s sur une phrase qui recule).
+- **Chez toi :** grille de 0,5 s (120 par minute). Chaque phrase se tient le temps de sa lecture
+  (`studio_motion.py lecture` : 0,3 s par mot + 0,8 s, 2 s au moins pour l'accroche) et les scènes
+  en déduisent leur durée. Pendant une lecture, la caméra ne fait qu'une dérive lente (3 à 5 %,
+  sine.inOut) : sur cette nuit presque nue, la vie vient de ce que la phrase montre, ses vraies
+  captures en verre qui arrivent de la profondeur une à une (autour de l'accroche, sous l'appel),
+  le nom qui se remplit de l'accent dans sa pastille. Sans capture, une tenue de nuit est une image
+  figée pour `rythme` : c'est le repérage qui manque de matière, jamais un recadrage à ajouter
+  (essai du 06/11/2026 : le recadrage sec ajouté sous l'accroche est retiré).
 
 ## 2. Les gestes signature et leur place
 
@@ -45,7 +52,7 @@ construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vi
 
 | Geste | Ce qu'on voit | Il sert à | Dans le kit |
 |---|---|---|---|
-| La mise au point et le recul | deux mots géants, flous, deviennent nets ; la caméra recule, la phrase finit petite avec sa fin à l'accent | accroche, promesse | `t3-onglets` (début) |
+| La mise au point et le recul | deux mots géants, flous, deviennent nets ; la caméra recule, la phrase finit petite avec sa fin à l'accent, puis se tient pendant que ses vraies captures arrivent autour d'elle | accroche, promesse | `t3-onglets` (début) |
 | La barre filée et la pastille fixe | une barre d'onglets défile sous une pastille cerclée de l'accent qui reste au centre et se pose sur l'offre | le choix (le problème), la solution qui ressort | `t3-onglets` |
 | La plongée et la trame de points | la pastille se remplit de l'accent, on la traverse (un éclair de la couleur pleine) ; un texte se forme en points puis devient net | passage, le nom de l'offre | `t3-onglets` (fin), `t3-cartes` |
 | Le verre piloté | une interface en verre sombre, inclinée en 3D, que la caméra descend par paliers pendant qu'un curseur la règle ; pour un prix, c'est sa vraie page de paiement, simplifiée | démonstration de son interface, l'offre et son prix | `t3-commande` |
@@ -79,7 +86,7 @@ Des points de départ quand le plan s'y prête, jamais une obligation.
 Pour un Reel : `t3-onglets` (raccourci à la plongée) → `t3-commande` → `t3-fin`.
 
 **Une vidéo de page (16:9, 60 à 120 s) :** les quatre scènes du kit bout à bout ne font que
-24,5 s, et une vidéo de page montée avec elles seules sort à 25 s, loin de la cible. La durée
+33 s, et une vidéo de page montée avec elles seules sort à 33 s, loin de la cible. La durée
 vient de la démonstration, jamais de tenues plus longues : entre `t3-onglets` et `t3-cartes`,
 refais le cycle **interface, option, preuve** pour 2 ou 3 fonctionnalités réelles de l'offre (15 à
 20 s par cycle) :
@@ -160,12 +167,16 @@ prend l'accent). Mesure-le sur le rendu de chaque vidéo.
 
 ## 5. Les mouvements signature
 
-1. **La mise au point et le recul** (`t3-onglets`, 0 → 3,2 s) : les deux mots géants, flous de
-   16 px, deviennent nets en 0,45 s (power2.out), en `--brand-clair` ; la caméra
+1. **La mise au point et le recul** (`t3-onglets`, 0 → 2,25 s, puis la tenue) : les deux mots
+   géants, flous de 16 px, deviennent nets en 0,45 s (power2.out), en `--brand-clair` ; la caméra
    recule de ×4,6 à ×1 en 0,75 s (expo.inOut) et la ligne se recentre ; la fin de phrase entre mot
-   à mot (0,3 s d'écart, flou 12 px → 0) ; lent recul jusqu'à ×0,64 puis un recadrage sec (×0,78 en
-   0,4 s, expo.out).
-2. **La barre filée et la pastille fixe** (`t3-onglets`, 3,3 → 5,6 s) : le premier onglet seul, les
+   à mot (0,3 s d'écart au plus, flou 12 px → 0) pendant un dernier recul jusqu'à ×0,64 (×0,86 au
+   plus en 9:16, pour qu'elle se lise sur un téléphone) : c'est l'apparition de l'accroche. Puis
+   elle se tient le temps de sa lecture : dérive de 3 % (sine.inOut), la trame et la lueur
+   s'allument derrière elle, ses vraies captures (`R.captures`, 2 ou 3) arrivent de la profondeur
+   dans le verre du look, une toutes les 0,6 s, à gauche, à droite et en haut (au-dessus et
+   au-dessous en 9:16), jamais sur la phrase, et repartent avec elle. Aucun recadrage sec.
+2. **La barre filée et la pastille fixe** (`t3-onglets`, une fois l'accroche lue) : le premier onglet seul, les
    suivants à 0,17 s d'écart ; toute la barre défile en 1 s (power3.inOut) avec un flou de vitesse
    horizontal (0 → 18 px → 0) et un zoom ×1,6 → ×2 ; la pastille, cerclée d'un trait plein de
    l'accent, reste au centre, les onglets passent dessous, et elle se pose sur l'offre.
@@ -174,7 +185,9 @@ prend l'accent). Mesure-le sur le rendu de chaque vidéo.
    (0,7 s) ; la pastille se remplit de l'accent par un volet de gauche à droite (0,26 s,
    power3.inOut), le nom passe en `--brand-contrast` ; puis on la traverse : elle grandit jusqu'à
    couvrir tout l'écran (0,38 s, power3.in), un éclair de la couleur pleine de deux ou trois
-   images, et coupe sur la nuit (6,98 s).
+   images, et coupe sur la nuit. « Découvre Ton offre » se forme en points et se tient le temps
+   de sa lecture ; au milieu de la tenue, le nom se remplit de l'accent dans sa pastille cerclée
+   (un volet, le mot clé surligné d'un bloc plein), qui se vide par un volet avant la sortie.
 4. **Le bon piloté** (`t3-commande`, 7,2 s) : il entre de profil (pivot de 87° à 0° en 0,8 s,
    power4.inOut) depuis une lame blanche et floue, qui se retire d'un balayage (0,45 s) ; caméra
    inclinée (22° en X, −10° → −5° en Y, −3° en Z) qui descend le bon par paliers de 0,7 s
@@ -187,10 +200,13 @@ prend l'accent). Mesure-le sur le rendu de chaque vidéo.
    résorbe en 0,7 s), le texte plein prend le relais 0,3 s après ; à l'inverse, le bouton cliqué
    s'ouvre d'un trou qui part du clic (0,36 s) et ne laisse que ses points, pleins et à l'accent,
    qui montent de 30 px et s'effacent (0,5 s) pendant que le bon recule.
-6. **Le carrousel en gros plan** (`t3-cartes`) : une carte toutes les 0,5 s, chacune avec son angle
+6. **Le carrousel en gros plan** (`t3-cartes`) : le mot seul se tient 2 s dans la pastille qui se
+   remplit (sa lecture), puis une carte toutes les 0,5 s, chacune avec son angle
    (16 à 24° en X, ±20 à 26° en Y), entrée glissée de 360 px en 0,3 s (expo.out, sans flou), coupe
    nette à la suivante ; arête haute éclairée ; les lignes montent une à une (0,07 s d'écart) ; la
-   dernière file hors champ jusqu'à la coupe.
+   dernière file hors champ jusqu'à la coupe. Le carrousel est une rafale : une carte se voit d'un
+   coup d'œil (son nom, son chiffre), elle ne se lit pas ; ce qu'il faut lire se dit dans le mot
+   ou la phrase qui l'annonce, tenus le temps de leur lecture.
 
 ## 6. Les transitions
 
@@ -242,9 +258,11 @@ prend l'accent). Mesure-le sur le rendu de chaque vidéo.
   recule d'un coup : la promesse complète, petite, sa fin à l'accent. Lisible dès la première image
   (les mots sont énormes), même floue.
 - **La fin :** coupe franche dans le silence sur le verbe d'appel seul, en couleur ; la ligne se
-  complète ; elle se change dans un flou en l'adresse de sa page, qui brille ; puis son logo et son
-  nom, tenus 1,5 s ou plus. En page de vente, l'adresse peut devenir le texte du bouton situé sous
-  la vidéo.
+  complète et se tient le temps de sa lecture pendant que sa vraie page monte de la profondeur
+  dans le verre incliné, sous elle, et se redresse ; elle se change dans un flou en l'adresse de sa
+  page, qui brille et se tient le temps de sa lecture (une seconde capture de la page glisse dans
+  le verre) ; puis son logo et son nom, tenus 3 s (l'écran final). En page de vente, l'adresse
+  peut devenir le texte du bouton situé sous la vidéo.
 
 ## Ce qui ne se fera pas à l'identique
 
@@ -301,8 +319,11 @@ C'est un look : il se monte sur n'importe quelle offre. Ce qui suivait le tradin
 - **9:16, `t3-cartes` et `t3-fin` :** les cartes passent en portrait (940 × 1 000 : le chiffre en
   grand sous le nom, la liste plus grande, le bouton en bas), à ×0,85 à 0,96 et moins inclinées en
   Y : la carte entière tient dans la zone de texte d'un Reel (y de 300 à 1 440). La fin est
-  centrée et ne bouge pas ; une ligne trop longue (une adresse) se réduit seule à 88 % de la
-  largeur.
+  centrée ; avec sa capture, les textes montent au tiers haut et sa page se pose dessous, dans
+  le verre incliné ; une ligne trop longue (une adresse) se réduit seule à 88 % de la largeur.
+- **9:16, l'accroche :** la phrase finit à ×0,86 au plus (au lieu de ×0,64) pour se lire sur un
+  téléphone ; ses captures se posent au-dessus et au-dessous d'elle, une image large prend
+  jusqu'à 60 % de la largeur.
 - **4:5 et 1:1 :** même règle (racine à 1080 × 1350 ou 1080 × 1080) ; garde le bon en entier en
   largeur, et vérifie le cadrage du carrousel (cartes coupées à droite et en bas, jamais en haut).
 
@@ -316,10 +337,15 @@ avec du blanc et du noir en transparence.
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace (objet `R`) |
 |---|---|---|---|
-| `compositions/t3-onglets.html` | 8,2 s | la promesse floue → nette et le recul ; la barre d'onglets filée sous la pastille fixe cerclée de l'accent ; la pastille qui se remplit et la plongée (l'éclair de l'accent) ; « Découvre Ton offre » qui se forme en points | la promesse (2 morceaux), les onglets (les sujets de son univers ; l'offre doit en faire partie), le nom de l'offre, le verbe d'appel, l'icône du premier onglet |
+| `compositions/t3-onglets.html` | 7,2 s + la lecture de la promesse + celle de « Découvre Ton offre » (11,2 s pour 5 et 3 mots, 11,5 s pour 6 et 3 ; la scène la calcule) | la promesse floue → nette et le recul, tenue le temps de sa lecture pendant que ses vraies captures arrivent autour d'elle ; la barre d'onglets filée sous la pastille fixe cerclée de l'accent ; la pastille qui se remplit et la plongée (l'éclair de l'accent) ; « Découvre Ton offre » qui se forme en points et se tient, son nom qui se remplit de l'accent | la promesse (2 morceaux, 8 mots au plus : une ligne), les onglets (les sujets de son univers ; l'offre doit en faire partie), le nom de l'offre, le verbe d'appel, l'icône du premier onglet, ses vraies captures (2 ou 3 : ses vidéos, sa page, un résultat) |
 | `compositions/t3-commande.html` | 7,2 s | le bon de commande en verre incliné, d'après sa vraie page de paiement : entrée de profil, prix qui tourne, pastilles de ce qui est inclus, curseur du nombre de paiements, interrupteur du bonus, total, bouton cliqué qui se défait en points | formules, menu, libellés de paiement, nom, accès, prix réel, ce qui est inclus (icône du kit + mot), nombre de paiements possible (1 = retire le curseur), bonus (0 = retire la ligne), texte du bouton, mention |
-| `compositions/t3-cartes.html` | 3,6 s | un mot seul, puis cinq cartes en gros plan incliné, une toutes les 0,5 s | le mot ; pour chaque carte : l'icône du kit ou le logo d'un outil, le nom, le sous-titre, le vrai chiffre et son unité, trois lignes réelles, la durée ("" pour la retirer). La durée de la scène suit le nombre de cartes (0,5 s chacune + 1,1 s) |
-| `compositions/t3-fin.html` | 5,6 s | le verbe d'appel seul, la ligne complète sur la lueur blanche et la trame, l'adresse qui brille, le logo et le nom (lisible en entier 1,85 s : une scène raccourcie raccourcit le début, jamais cette tenue) | le verbe, la suite de la ligne, l'adresse réelle (courte, sans https://), le logo (`brand/logo.svg`, "" sans logo), le nom |
+| `compositions/t3-cartes.html` | 5,1 s | un mot seul tenu 2 s dans sa pastille qui se remplit, puis cinq cartes en gros plan incliné, une toutes les 0,5 s | le mot ; pour chaque carte : l'icône du kit ou le logo d'un outil, le nom, le sous-titre, le vrai chiffre et son unité, trois lignes réelles, la durée ("" pour la retirer). La durée de la scène suit le nombre de cartes (2 s pour le mot, 0,5 s par carte, + 0,6 s) |
+| `compositions/t3-fin.html` | 9,2 s (ligne de 4 mots, logo ; la scène la calcule) | le verbe d'appel seul, la ligne complète tenue le temps de sa lecture sur la lueur et la trame, sa vraie page dans le verre incliné sous elle, l'adresse qui brille et se tient, le logo et le nom tenus 3 s | le verbe, la suite de la ligne, l'adresse réelle (courte, sans https://), sa capture (la page où mène l'adresse, ou deux captures de cette page ; "" : la tenue ne vit que de la lumière et `rythme` la verra figée), le logo (`brand/logo.svg`, "" sans logo), le nom |
+
+`t3-onglets` et `t3-fin` tiennent chaque phrase le temps de sa lecture et calculent leur durée
+(`D` dans le script) : reporte-la dans `data-duration`, ici et sur l'hôte dans `index.html`. Une
+phrase du script plus longue que ce qu'une mise en page prend ne se raccourcit jamais : elle passe
+dans une scène construite dans le style (deux lignes, même verre, même dérive).
 
 Les scènes `t3-onglets` et `t3-commande` attendent les polices avant de mesurer (onglets, lignes,
 positions du curseur) : garde la construction dans `construire()`. Identifiants préfixés `t3o`,

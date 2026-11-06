@@ -28,6 +28,12 @@ Liste, avec sa source, tout ce que la vidéo peut montrer de vrai :
 | **Les preuves** | captures de témoignages, chiffres de la page | Les vraies captures, les chiffres de la fiche |
 | **Le problème** | l'outil pénible d'avant (une timeline chargée, un tableur, dix onglets) | Reconstruit en simple, reconnaissable, sans marque inventée |
 
+Range cette matière dans l'ordre de l'échelle de [style.md](style.md) (« Aucune image inventée ») :
+les vraies captures, les interfaces à reconstruire, les vrais chiffres de la fiche à mettre en
+scène, les logos des outils, et ce qui ne pourra être dit que par ses mots. Au moment du script,
+chaque phrase prendra le plus haut barreau qui existe pour elle ; une phrase qui ne trouverait que
+sa typographie signale la matière à demander (section 3), jamais une forme à dessiner.
+
 Puis choisis **les logos qui flotteront**, scène par scène : seulement ceux des outils dont la
 scène parle (l'outil du problème, la plateforme des résultats, les IA de l'offre), récupérés par
 `studio_motion.py logos`. Pas d'icônes génériques. Vérifie aussi que les chiffres de la page sont
@@ -48,7 +54,9 @@ messages de clients, les vraies miniatures de la formation.
 ## 3. Ce qui manque : une seule question
 
 Si une surface importante n'a pas de matière (une capture floue, aucune image de son produit en
-action), demande-la **en un seul message à choix**, avec ta recommandation :
+action), ou si des phrases du script n'auraient que du texte à montrer, demande-la **en un seul
+message à choix**, avec ta recommandation ; vise d'abord la matière de ces phrases-là (essais des
+styles 2 et 4 du 06/11/2026 : faute de matière, des disques et des carrés seuls à l'écran) :
 
 > Pour que ta vidéo montre vraiment ton produit, il me manque des images de [ton logiciel / ton
 > espace de formation] en action. Tu peux m'envoyer :
@@ -91,7 +99,8 @@ son produit. Sans référence, la grammaire par défaut est celle de `rythme.md`
 - Surfaces : Claude (bureau, onglet Code) [capture formation-1.jpg] · timeline de montage
   reconstruite · ses 7 Reels [sources/reels] · 4 témoignages [capture/assets] · miniatures de la
   formation.
-- Objets flottants : ciseaux, sous-titres, note, onde, horloge, logo CapCut, logos des IA.
+- Logos flottants : CapCut (le problème du montage), Instagram (les résultats), Claude et ChatGPT
+  (la fin) ; aucune icône générique.
 - Référence : taapit (1,5 événement/s, 17 coupes en 77 s) : chapitres avec interrupteur, fond
   couleur plein écran pour le nom, mosaïque finale qui devient le bouton.
 - Manque : rien (ou : demandé au client le 12/10).

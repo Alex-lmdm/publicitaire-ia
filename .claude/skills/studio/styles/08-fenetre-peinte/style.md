@@ -1,10 +1,11 @@
-# Style n°8 · Fenêtre peinte · d'après Cursor (https://www.youtube.com/watch?v=An8IM-kPyms)
+# Style n°8 · Fenêtre posée · d'après Cursor (https://www.youtube.com/watch?v=An8IM-kPyms)
 
 **Ce qu'on voit :** sur le clair de la marque presque nu, des phrases courtes centrées s'écrivent lettre à lettre et coupent net sur la démonstration : la fenêtre de l'application, avec sa vraie interface (ses captures), posée sur un bureau aux couleurs de la marque (l'aplat de son accent, un dégradé de ses gris ou sa nuit), filmée en gros plans rapides (flou de bougé) pendant que le curseur clique et que l'écran change. Une preuve en barres comparatives (la ligne de l'offre se remplit de sa nuit) et un cube à son vrai logo qui roule ouvrent et ferment la vidéo, la fin sur sa nuit.
 **Souvent utile pour :** une preuve chiffrée posée calmement (avant / après, comparaison d'options), puis l'offre montrée dans son vrai outil, chapitre par chapitre ; lancement d'une nouvelle version, d'un logiciel, d'un espace de formation.
+**Ancien nom :** « Fenêtre peinte » (jusqu'à la 0.9.0 ; il désigne toujours ce style).
 **D'après :** YouTube, Cursor, lancement de Cursor 2.0 · 64 s · 16:9 (1920 × 1080, 60 images/s) · musique électronique très discrète, pas de voix.
 **Mesures (`studio_motion.py reference`) :** 0,75 événement par seconde, écart médian 0,90 s, 3 coupes franches détectées (45,2, 46,5 et 62,3 s), 27,4 s d'images tenues (phrases et graphique tenus 2 s, écrans peu bougés). Tempo de la musique : environ 113 battements par minute, entrée franche à 3,2 s ; sonie -29 LUFS (très bas).
-**Essai du kit refait le 06/11/2026 (marque LMDM, 19,8 s, avec les vraies captures de sa page) :** 1,23 événement par seconde en 16:9 comme en 9:16, écart médian 0,70 s, aucune image figée ; `rythme` et `palette` « ok » dans les deux formats.
+**Essai du kit refait le 06/11/2026 (marque LMDM, 30,8 s, avec les vraies captures de sa page et des phrases complètes de 9 et 11 mots tenues le temps de leur lecture) :** `rythme` « ok » (0,77 événement par seconde en 16:9 comme en 9:16, écart médian 0,80 s, aucune image vraiment immobile) et `palette` « ok » dans les deux formats. L'essai d'avant (19,8 s) tenait des phrases de 3 ou 4 mots 0,7 à 0,9 s : trop court pour les lire.
 
 > On reprend la grammaire (phrase tapée, coupe nette, fenêtre filmée en gros plans, barres grises et ligne forte, cube logo, fin sombre), jamais le contenu : ni ses phrases, ni son logo, ni ses captures, ni le tableau peint de son fond d'écran, ni ses couleurs, ni sa musique.
 
@@ -13,7 +14,7 @@
 - **Le plus calme du catalogue** : l'original tient chaque phrase 2 s, le graphique 3 s, et laisse vivre l'écran filmé. Il se regarde comme une présentation de produit sûre d'elle.
 - **Deux régimes qui alternent** : la phrase seule (immobile, une coupe nette avant et après), puis la démonstration (la caméra bouge toutes les 0,5 à 1,5 s : gros plan, recul, clic, frappe).
 - **Les coupes tombent sur les temps de la musique** (environ 113 battements par minute), jamais au milieu d'un geste.
-- **Chez toi** : le studio exige au moins un événement par seconde et aucune image tenue 1 s ou plus. Le kit garde le calme mais le resserre : phrases de 3 ou 4 mots tenues 0,7 à 0,9 s après la frappe, caméra qui avance de 6 % pendant la phrase, gros plans ajoutés sur le graphique, un geste toutes les 0,5 à 1 s dans la fenêtre. N'allonge jamais une phrase au-delà de ce que dit son en-tête : `rythme` la verrait figée.
+- **Chez toi** : des phrases complètes (8 mots conseillés, 12 au plus), jamais raccourcies, qui se tapent puis se tiennent le temps de leur lecture (`studio_motion.py lecture` : 0,3 s par mot + 0,8 s) ; la scène de la phrase calcule sa durée. Pendant la lecture, la caméra ne fait qu'une dérive lente (6 % sur la scène, sine.inOut). La vie vient de la frappe, des barres et des gros plans sur le graphique, de la fenêtre filmée (un geste toutes les 0,5 à 1 s). Sur ce clair presque nu, une phrase tenue sa lecture est une image presque fixe : c'est le calme du style. Ne la raccourcis pas et n'ajoute pas de recadrage ; garde ces phrases rares (une par chapitre) et laisse la fenêtre et le graphique porter le rythme.
 
 ## 2. Les gestes signature et leur place
 
@@ -59,11 +60,11 @@ Des points de départ quand le plan s'y prête, jamais une obligation.
 
 Une vidéo de page de 45 à 90 s qui annonce, comme l'original, puis démontre :
 
-1. **Ouverture** (2 s) : `t08-logo` en clair, le logo et le nom de l'offre.
-2. **Promesse** (1,4 à 1,6 s) : `t08-phrase`, ce que l'offre change, en 3 ou 4 mots.
+1. **Ouverture** (2,7 s) : `t08-logo` en clair, le logo et le nom de l'offre, tenu le temps de sa lecture.
+2. **Promesse** (4 à 6 s, sa lecture) : `t08-phrase`, ce que l'offre change, en une phrase complète.
 3. **Preuve** (4 s) : `t08-barres`, seulement avec des chiffres vrais pour chaque ligne.
 4. **Démonstration en 2 ou 3 chapitres** : à chaque fois `t08-phrase` (le nom de la partie), puis `t08-fenetre` (7 s) remplie de ses vraies captures et du geste de cette partie.
-5. **Fin** (3,8 s) : `t08-logo` en sombre, le nom et la phrase d'appel.
+5. **Fin** (5,4 s) : `t08-logo` en sombre, le nom et la phrase d'appel, tenue 3 s.
 
 ## 3. Les fonds et les couleurs
 
@@ -97,7 +98,7 @@ transparence pour les ombres et les filets. Ses captures gardent leurs vraies co
 
 | Texte | 1920 × 1080 | 1080 × 1920 | Casse, alignement |
 |---|---|---|---|
-| Phrase tapée (3 ou 4 mots) | 104 px (80 px dans l'original), espacement -0,03 em | 112 px, sur 2 ou 3 lignes équilibrées | phrase, point final, centrée |
+| Phrase tapée (8 à 12 mots) | 104 px sur deux lignes équilibrées, réduite seule jusqu'à 72 px pour 12 mots (80 px dans l'original), espacement -0,03 em | 112 px, sur 2 ou 3 lignes équilibrées, réduite seule jusqu'à 80 px | phrase, point final, centrée |
 | Noms des lignes du graphique | 30 px | 30 px | phrase, à gauche |
 | Graduations | 25 px | 25 px | chiffres |
 | Titres d'axes | 31 px, deux lignes | 31 px | phrase, à gauche sous l'axe |
@@ -108,9 +109,9 @@ transparence pour les ombres et les filets. Ses captures gardent leurs vraies co
 
 ## 5. Les mouvements signature
 
-1. **La phrase tapée** (`t08-phrase`) : la phrase est posée entière, lettres invisibles ; elles apparaissent à leur place définitive (le texte centré ne bouge pas), par petits paquets irréguliers, environ 45 lettres par seconde dans l'original, 25 dans le kit ; puis la tenue, et la coupe nette. La caméra avance de 6 % pendant toute la scène.
+1. **La phrase tapée** (`t08-phrase`) : la phrase est posée entière sur deux lignes équilibrées, lettres invisibles ; elles apparaissent à leur place définitive (le texte centré ne bouge pas), par petits paquets irréguliers, environ 45 lettres par seconde dans l'original, 25 dans le kit (0,04 s par signe) ; puis la tenue, le temps de sa lecture, et la coupe nette. La caméra avance lentement de 6 % pendant toute la scène (sine.inOut).
 2. **Les barres comparatives** (`t08-barres`) : les axes se tracent depuis la gauche (0,45 s, `expo.out`), les graduations et les titres apparaissent ; les lignes arrivent de haut en bas (0,07 s d'écart), chaque barre grandit depuis la gauche (0,6 s, `expo.out`), toutes grises ; puis la ligne de l'offre se remplit de sa couleur de gauche à droite (0,35 s), son nom passe en gras et sa valeur compte au bout de sa barre (0,6 s). Ajout du kit : gros plan sur cette ligne dans le premier graphique (0,7 s, `expo.inOut`), glissé jusqu'au second, recul.
-3. **La fenêtre filmée** (`t08-fenetre`) : vue entière sur le bureau, puis gros plans de 0,5 s (`expo.inOut`) avec un flou de bougé qui monte à 7 px au milieu du mouvement ; le curseur macOS (noir cerné de blanc) clique (enfoncement de 0,07 s, onde) et la capture suivante remplace l'écran d'un coup, sans animation ; une demande se tape dans le vrai champ de sa capture par petits groupes de lettres, puis part au clic suivant ; recul sur la vue entière. Sans capture, la caméra va et vient sur le seul titre.
+3. **La fenêtre filmée** (`t08-fenetre`) : vue entière sur le bureau, puis gros plans de 0,5 s (`expo.inOut`) avec un flou de bougé qui monte à 7 px au milieu du mouvement (2 px sur l'aplat de l'accent : un flou plus fort y mêle son jaune au bord sombre de la fenêtre, du brun que `palette` relève) ; le curseur macOS (noir cerné de blanc) clique (enfoncement de 0,07 s, onde) et la capture suivante remplace l'écran d'un coup, sans animation ; une demande se tape dans le vrai champ de sa capture par petits groupes de lettres, puis part au clic suivant ; recul sur la vue entière. Sans capture, la caméra va et vient sur le seul titre.
 4. **Le cube logo** (`t08-logo`) : un cube aux faces de ses couleurs (sa nuit et ses gris, claires en fin de vidéo ; la face avant à son accent quand son logo est une icône carrée), son vrai logo sur la face avant ; il roule depuis trois rotations qui se calment (1 s, `expo.out`), glisse à gauche (0,7 s, `expo.inOut`) pendant que le nom sort de derrière lui (0,7 s), puis continue de flotter d'un quart de tour. Sans logo, pas de cube : le nom monte seul de derrière son masque.
 5. **La fin sombre** : coupe nette sur sa nuit, le même cube aux faces claires, le nom à son clair, la phrase d'appel qui s'écrit dessous et se tient.
 
@@ -137,17 +138,17 @@ transparence pour les ombres et les filets. Ses captures gardent leurs vraies co
 ## 9. L'ouverture et la fin
 
 - **Ouverture** : le cube roule et se pose, le nom sort de derrière lui, sur son clair, en 2 s ; puis la coupe sur la première phrase. Le sujet se lit dès 1 s.
-- **Fin** : coupe sur sa nuit, le cube aux faces claires, le nom à son clair, et (ajout du kit, l'original n'en a pas) une phrase d'appel calme qui s'écrit dessous (« Le lien est juste en dessous. »), tenue 1,5 s ; c'est l'écran final, il peut se tenir.
+- **Fin** : coupe sur sa nuit, le cube aux faces claires, le nom à son clair, et (ajout du kit, l'original n'en a pas) une phrase d'appel calme qui s'écrit dessous (« Le lien est juste en dessous. »), tenue 3 s ; c'est l'écran final, il peut se tenir.
 
 ## Ce qui ne se fera pas à l'identique
 
 - **Les images de l'original ne se refont pas** : ni le tableau de son fond d'écran (une œuvre réelle), ni ses captures du logiciel. Le bureau prend un fond de sa marque (l'aplat de son accent, un dégradé de ses gris, sa nuit) ou sa vraie photo (`FOND_IMAGE`), et la fenêtre ses vraies captures ; jamais un fond peint généré, un paysage ni une interface inventée.
 - **Ses couleurs** (le blanc chaud, l'encre et les gris chauds) → son clair, sa nuit et ses gris (section 3) ; les feux de la fenêtre macOS → trois points gris.
-- **Le calme** : l'original tient ses phrases 2 s et laisse 27 s d'images presque fixes ; le studio refuse toute image tenue 1 s ou plus. Le kit raccourcit les phrases (3 ou 4 mots au lieu de 6 à 8), tape plus lentement (25 lettres par seconde au lieu de 45), écrit plus grand (104 px au lieu de 80), fait avancer la caméra pendant les phrases et ajoute des gros plans au graphique.
+- **Le calme** : l'original tient ses phrases 2 s et laisse 27 s d'images presque fixes. Le kit garde des phrases complètes et les tient le temps de leur lecture (plus longtemps que l'original : 0,3 s par mot + 0,8 s), tape plus lentement (25 lettres par seconde au lieu de 45), écrit plus grand (104 px au lieu de 80), fait dériver la caméra pendant les phrases et ajoute des gros plans au graphique ; une tenue calme ne se corrige jamais en raccourcissant la phrase ni en recadrant.
 - **L'enregistrement d'écran** : remplacé par ses captures (ou son interface reconstruite d'après capture) que la caméra filme ; les gestes (clic, changement d'écran, frappe) sont joués, pas enregistrés.
 - **Le cube de l'original** est le logo de Cursor : le kit pose le vrai logo de la marque sur la face avant d'un cube aux couleurs de sa marque. Sans logo, pas de cube : son nom seul, jamais une initiale qui ferait un faux logo.
 - **« 2.0 » à côté du logo** : remplacé par le nom de l'offre.
-- **Les phrases longues en deux lignes** de l'original : le kit vise 3 ou 4 mots (règle du studio) ; deux lignes seulement pour 5 ou 6 mots, rarement.
+- **Les phrases longues en deux lignes** de l'original : gardées. Le kit pose une phrase complète de 8 à 12 mots sur deux lignes équilibrées (trois en 9:16) et la réduit seule si elle déborde ; il ne la raccourcit jamais.
 - **Pas d'appel à l'action dans l'original** : le kit en ajoute un, écrit en phrase calme.
 - **La valeur au bout des barres** : absente de l'original, ajoutée pour que la preuve se lise sans les graduations.
 
@@ -163,7 +164,7 @@ C'est un look : il se pose sur toute offre qui a une interface à montrer. Ce qu
 
 ## En vertical et en carré
 
-- **9:16 (1080 × 1920)** : mets `data-width="1080" data-height="1920"` sur la racine de chaque composition et sur son hôte ; tout se règle seul (classe `t08-vertical`) : phrase en 112 px sur 2 ou 3 lignes équilibrées, les deux graphiques empilés (chacun avec ses noms), la fenêtre réduite au milieu du bureau et ses gros plans qui serrent davantage (×1,4) pour remplir l'écran, le nom sous le cube. Essayé sur toutes les compositions le 06/11/2026, `rythme` et `palette` « ok ». Le bureau à l'aplat de l'accent tient bien les bandes au-dessus et au-dessous de la fenêtre ; en gris, elles font vide.
+- **9:16 (1080 × 1920)** : mets `data-width="1080" data-height="1920"` sur la racine de chaque composition et sur son hôte ; tout se règle seul (classe `t08-vertical`) : phrase en 112 px sur 2 ou 3 lignes équilibrées (réduite jusqu'à 80 px pour 12 mots), les deux graphiques empilés (chacun avec ses noms), la fenêtre réduite au milieu du bureau et ses gros plans qui serrent davantage (×1,4) pour remplir l'écran, le nom sous le cube. Essayé sur toutes les compositions le 06/11/2026, `rythme` et `palette` « ok ». Le bureau à l'aplat de l'accent tient bien les bandes au-dessus et au-dessous de la fenêtre ; en gris, elles font vide.
 - **4:5 et carré** : pas de mise en page propre, non testé. La fenêtre se réduit seule pour tenir dans tout format. En 4:5 (1080 × 1350), la mise en page verticale s'applique mais elle est dessinée pour 1920 de haut : réduis la phrase à 90 px et le graphique à 4 lignes. En carré, c'est la mise en page horizontale qui s'applique, dessinée pour 1920 de large : le graphique déborde, place ses deux blocs l'un sous l'autre (`blocs` dans le script). À vérifier image par image.
 
 ## Les compositions du kit
@@ -172,20 +173,20 @@ Dossier `compositions/`, 16:9 par défaut, chacune avec son en-tête (ce qu'elle
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace |
 |---|---|---|---|
-| `t08-logo.html` | 2 s (clair) ou 3,8 s (sombre) | Ouverture ou fin : le cube à son vrai logo qui roule, le nom qui sort de derrière ; en fin, la phrase d'appel tapée | `FOND`, `LOGO`, `FACE`, `LOGO_TAILLE`, `NOM`, `APPEL`, l'id (`t08-ouverture`, `t08-fin`) et la durée |
-| `t08-phrase.html` | 1,4 s (3 mots) | La phrase tapée centrée, le titre de chaque partie | `LIGNES`, la durée (1,4 s pour 3 mots, +0,25 s par mot), un id par phrase |
+| `t08-logo.html` | 2,7 s (clair) ou 5,4 s (sombre), calculée par la scène | Ouverture ou fin : le cube à son vrai logo qui roule, le nom qui sort de derrière et se tient sa lecture ; en fin, la phrase d'appel tapée, tenue 3 s | `FOND`, `LOGO`, `FACE`, `LOGO_TAILLE`, `NOM`, `APPEL`, l'id (`t08-ouverture`, `t08-fin`) et la durée |
+| `t08-phrase.html` | 0,06 s + 0,04 s par signe + sa lecture (5,1 s pour 9 mots et 38 signes) | La phrase complète tapée, centrée sur deux lignes, tenue le temps de sa lecture : le titre de chaque partie | `LIGNES` (une phrase de 8 à 12 mots), la durée (calculée par la scène), un id par phrase |
 | `t08-barres.html` | 4 s | La preuve : deux graphiques en barres, la ligne de l'offre qui se remplit de sa couleur et compte sa valeur, le gros plan qui la lit | `LIGNES` (chiffres vrais seulement), `AXES` (titres, échelle, graduations, format) |
 | `t08-fenetre.html` | 7 s (3 s sans capture) | La démonstration : la fenêtre et ses vraies captures sur un bureau à ses couleurs, sept gros plans, les clics qui changent d'écran, la demande tapée dans son champ | `TITRE`, `CAPTURES`, `CLICS`, `DEMANDE`, `PLANS`, `FOND` (ou `FOND_IMAGE`), `FENETRE` |
 
 Le montage dans `index.html` (16:9), tout sur la piste 1, bout à bout, coupes nettes :
 
 ```html
-<div id="s1-hote" data-composition-id="t08-ouverture" data-composition-src="compositions/t08-ouverture.html" data-start="0" data-duration="2" data-track-index="1" data-width="1920" data-height="1080"></div>
-<div id="s2-hote" data-composition-id="t08-phrase-1" data-composition-src="compositions/t08-phrase-1.html" data-start="2" data-duration="1.4" data-track-index="1" data-width="1920" data-height="1080"></div>
-<div id="s3-hote" data-composition-id="t08-fenetre" data-composition-src="compositions/t08-fenetre.html" data-start="3.4" data-duration="7" data-track-index="1" data-width="1920" data-height="1080"></div>
-<div id="s4-hote" data-composition-id="t08-phrase-2" data-composition-src="compositions/t08-phrase-2.html" data-start="10.4" data-duration="1.6" data-track-index="1" data-width="1920" data-height="1080"></div>
-<div id="s5-hote" data-composition-id="t08-barres" data-composition-src="compositions/t08-barres.html" data-start="12" data-duration="4" data-track-index="1" data-width="1920" data-height="1080"></div>
-<div id="s6-hote" data-composition-id="t08-fin" data-composition-src="compositions/t08-fin.html" data-start="16" data-duration="3.8" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s1-hote" data-composition-id="t08-ouverture" data-composition-src="compositions/t08-ouverture.html" data-start="0" data-duration="2.7" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s2-hote" data-composition-id="t08-phrase-1" data-composition-src="compositions/t08-phrase-1.html" data-start="2.7" data-duration="5.1" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s3-hote" data-composition-id="t08-fenetre" data-composition-src="compositions/t08-fenetre.html" data-start="7.8" data-duration="7" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s4-hote" data-composition-id="t08-phrase-2" data-composition-src="compositions/t08-phrase-2.html" data-start="14.8" data-duration="6.6" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s5-hote" data-composition-id="t08-barres" data-composition-src="compositions/t08-barres.html" data-start="21.4" data-duration="4" data-track-index="1" data-width="1920" data-height="1080"></div>
+<div id="s6-hote" data-composition-id="t08-fin" data-composition-src="compositions/t08-fin.html" data-start="25.4" data-duration="5.4" data-track-index="1" data-width="1920" data-height="1080"></div>
 ```
 
 Chaque copie d'une composition (deux phrases, l'ouverture et la fin) change son id partout dans le fichier (racine, script, préfixe CSS) : deux scènes au même id se marcheraient dessus.

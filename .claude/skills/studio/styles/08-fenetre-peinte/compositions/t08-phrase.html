@@ -3,22 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE PEINTE » · SCÈNE : LA PHRASE TAPÉE (titre de chapitre) · 1,4 s
-    Ce que la scène montre : sur le clair de ta marque, une phrase centrée (une ou deux lignes)
-    s'écrit lettre à lettre à sa place définitive (les lettres apparaissent, rien ne glisse), se
-    tient, puis la scène coupe net. C'est le motif qui revient avant chaque partie de la vidéo :
-    une phrase, puis la démonstration. Aucun objet, aucune image : la typographie seule.
-    Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte
-    (112 px, la phrase passe sur 2 ou 3 lignes).
-    Durée : D = temps de frappe (environ 25 lettres par seconde) + 0,7 s de tenue, jamais plus de
-    0,9 s : une phrase tenue 1 s ou plus est une image figée pour le contrôle de rythme du studio.
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LA PHRASE TAPÉE (titre de chapitre) · 5,1 s pour 9 mots
+    Ce que la scène montre : sur le clair de ta marque, une phrase complète, centrée sur deux lignes
+    équilibrées, s'écrit lettre à lettre à sa place définitive (les lettres apparaissent, rien ne
+    glisse), se tient le temps de sa lecture, puis la scène coupe net. C'est le motif qui revient
+    avant chaque partie de la vidéo : une phrase, puis la démonstration. Aucun objet, aucune image :
+    la typographie seule ; pendant la frappe et la tenue, la caméra ne fait qu'une dérive lente.
+    Format : 16:9 (1920 × 1080), deux lignes à 104 px (réduites seules jusqu'à 72 px pour qu'une
+    phrase de 12 mots tienne sur deux lignes) ; en 9:16, data-width="1080" data-height="1920" ici et
+    sur l'hôte (112 px, sur 2 ou 3 lignes équilibrées, réduites seules jusqu'à 80 px).
+    Durée : D = 0,06 s + 0,04 s par signe (espaces compris : la frappe, 25 signes par seconde) + la
+    lecture de la phrase (0,3 s par mot + 0,8 s : `studio_motion.py lecture`). 5,1 s pour « Tu
+    donnes le lien de ta page de vente. » (38 signes, 9 mots), 6,6 s pour 11 mots et 61 signes. La
+    scène la calcule (D dans le script) : reporte-la dans data-duration (ici et sur l'hôte).
 
     À REMPLACER :
      1. L'id « t08-phrase » (racine, constante ID, préfixe CSS) par un id par phrase
         (t08-phrase-1, t08-phrase-2…) : chaque chapitre a la sienne.
-     2. LIGNES : la phrase, 2 à 4 mots (6 au plus, rarement : alors sur deux lignes), ponctuée d'un
-        point. Une phrase entière au ton calme : « Un seul endroit. », « Tes résultats, mesurés. »
-     3. D et data-duration : 1,4 s pour 3 mots, 1,6 s pour 4 ; ajoute 0,25 s par mot de plus.
+     2. LIGNES : la phrase du script, complète, ponctuée d'un point : 8 mots conseillés, 12 au plus,
+        jamais raccourcie pour aller plus vite. Une seule entrée : elle se coupe seule en deux lignes
+        équilibrées ; deux entrées : tes deux lignes, telles quelles.
+     3. data-duration : la durée D ci-dessus.
     Couleurs : seulement celles de ta marque (brand/tokens.css) : le fond est son clair, le texte
     sa nuit (var(--brand-sombre)). Police : la police de titres de la marque, en 400.
   -->
@@ -31,13 +36,13 @@
   #t08-phrase .t08-phrase { position: absolute; left: 0; right: 0; top: 50%; text-align: center;
     font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; line-height: 1.04; letter-spacing: -0.03em;
     color: var(--t08-encre); transform-origin: 50% 50%; }
-  #t08-phrase .t08-ligne { display: block; white-space: pre; }
+  #t08-phrase .t08-ligne { display: block; white-space: normal; text-wrap: balance; max-width: 1640px; margin: 0 auto; }
   #t08-phrase .t08-l { opacity: 0; }
   #t08-phrase.t08-vertical .t08-phrase { font-size: 112px; padding: 0 100px; }
-  #t08-phrase.t08-vertical .t08-ligne { white-space: normal; text-wrap: balance; }
+  #t08-phrase.t08-vertical .t08-ligne { max-width: none; }
 </style>
 
-<div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="1.4" style="position:absolute; inset:0;">
+<div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="5.1" style="position:absolute; inset:0;">
   <div id="t08-phrase" class="k-scene">
     <div class="t08-fond"></div>
     <div class="t08-phrase" id="t08-phrase-texte"></div>
@@ -46,10 +51,14 @@
 
 <script>
   (function () {
-    var ID = "t08-phrase", D = 1.4;
+    var ID = "t08-phrase";
     // ---- À remplacer -------------------------------------------------------------------------
-    var LIGNES = ["Un seul endroit."];
+    var LIGNES = ["Tu donnes le lien de ta page de vente."];
     // -------------------------------------------------------------------------------------------
+    // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+    function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+    var SIGNES = LIGNES.join(" ").length, FRAPPE = 0.06 + 0.04 * SIGNES;
+    var D = Math.round((FRAPPE + lecture(LIGNES)) * 10) / 10;   // 5,1 s pour la phrase d'exemple : reporte-la en data-duration
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var cadre = K.cadre(racine), vertical = cadre.hauteur > cadre.largeur;
@@ -69,15 +78,28 @@
       div.querySelectorAll(".t08-l").forEach(function (l) { l.setAttribute("data-layout-allow-overlap", ""); });
     });
     gsap.set(bloc, { yPercent: -50 });
-    // Frappe : environ 25 lettres par seconde, par petits paquets irréguliers (fixes, à graine) ;
-    // plus lente que l'original (45), pour que la phrase vive pendant qu'on la lit.
-    var r = K.rng(LIGNES.join("").length * 31 + 7), t = 0.06;
-    lettres.forEach(function (l) {
-      tl.set(l, { opacity: 1 }, t);
-      if (r() < 0.55) t += 0.05 + r() * 0.04;
-    });
-    // Pendant la tenue, la caméra avance lentement (6 % sur la scène) : l'image ne se fige jamais.
-    tl.fromTo(bloc, { scale: 1 }, { scale: 1.06, duration: D, ease: "none" }, 0);
+    // Deux lignes au plus en 16:9, trois en 9:16 : une phrase longue se réduit (jamais en dessous de
+    // 72 px, 80 px en 9:16) au lieu de se raccourcir. Mesuré une fois les polices chargées.
+    function ajuster() {
+      var fs = parseFloat(getComputedStyle(bloc).fontSize), lh = fs * 1.04, max = vertical ? 3 : 2, mini = vertical ? 80 : 72;
+      while (fs > mini && bloc.offsetHeight > lh * max * LIGNES.length / Math.max(1, LIGNES.length) + 2 && LIGNES.length === 1) { fs -= 4; bloc.style.fontSize = fs + "px"; lh = fs * 1.04; }
+      if (LIGNES.length > 1) {
+        var large = 0; bloc.querySelectorAll(".t08-ligne").forEach(function (d) { d.style.whiteSpace = "nowrap"; d.style.maxWidth = "none"; large = Math.max(large, d.scrollWidth); });
+        var dispo = cadre.largeur - (vertical ? 200 : 240);
+        if (large > dispo) bloc.style.fontSize = Math.max(mini, fs * dispo / large).toFixed(1) + "px";
+      }
+    }
+    // Frappe : 25 signes par seconde, par petits paquets irréguliers (fixes, à graine) ; la phrase
+    // entière dure FRAPPE. Puis elle se tient le temps de sa lecture, et la scène coupe net.
+    var r = K.rng(LIGNES.join("").length * 31 + 7), i = 0;
+    while (i < lettres.length) {
+      var paquet = 1 + Math.floor(r() * 3), t = 0.06 + 0.04 * i;
+      for (var k = i; k < Math.min(lettres.length, i + paquet); k++) tl.set(lettres[k], { opacity: 1 }, t);
+      i += paquet;
+    }
+    // La caméra ne fait qu'une dérive lente (6 % sur la scène, sine.inOut), sans à-coup.
+    tl.fromTo(bloc, { scale: 0.98 }, { scale: 1.04, duration: D, ease: "sine.inOut" }, 0);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster); else ajuster();
 
     window.__timelines[ID] = tl;
   })();

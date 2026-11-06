@@ -41,13 +41,14 @@ pas recadrée.
 
 1. **Une structure qui vend**, choisie selon le but : le problème avant le produit, une promesse
    claire, une démonstration, une preuve, un appel à l'action adapté au support.
-2. **Un motion design de niveau studio** : il se passe quelque chose toutes les demi-secondes,
-   très peu de texte, ton produit et les outils que tu utilises à l'écran, des fonds qui
-   alternent.
+2. **Un motion design de niveau studio** : une phrase courte à la fois, le temps de la lire, et
+   pendant qu'on la lit, ton produit, tes vrais résultats et les outils que tu utilises qui
+   bougent à l'écran, à tes couleurs, sur des fonds qui alternent.
 3. **Rien d'inventé** : ton assistant lit ta page de vente et te montre ce qu'il a compris ; c'est
    tout ce que tes vidéos auront le droit d'affirmer.
 4. **Chaque vidéo regardée avant toi** : rythme mesuré, planche de contrôle avec les zones de
-   chaque plateforme, revue critique, son réglé au niveau des Reels, vérification de l'export.
+   chaque plateforme, relecture à froid par une seconde IA qui ne connaît pas le script, revue
+   critique, son réglé au niveau des Reels, vérification de l'export.
 5. **Prête à publier** : la vidéo, le texte de publication de chaque plateforme, la couverture ou
    l'affiche, la façon de la poser sur ta page, le calendrier d'un lancement.
 

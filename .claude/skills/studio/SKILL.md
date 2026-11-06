@@ -30,7 +30,7 @@ Où lancer quoi (Windows : `python`, ou `py -3` si `python` ne répond pas) :
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir` et `musiques prendre`,
   `heygen bruitages`, `heygen prendre`,
   `heygen voix` et `heygen parler`, `musique`, `sons`,
-  `rythme`, `palette`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
+  `rythme`, `palette`, `relecture`, `planche`, `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`,
   `export`), avec `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
 ### 0. La marque et le profil, une seule fois
@@ -184,10 +184,12 @@ finir sans erreur, et ses avertissements se lisent.
 
 Lis [revue.md](references/revue.md) et applique ses cinq portes à **chaque** vidéo :
 composition et rythme (`studio_motion.py rythme` doit répondre « ok »), planche avec les zones,
-la palette (`studio_motion.py palette` : rien hors de ses couleurs, sauf ses vraies captures) et le
-test du spectateur froid, revue critique notée, son, export. Les contrôles automatiques ne disent pas si la vidéo est
-bonne : regarde la planche toi-même (et, s'il y a une vidéo de référence, contre la sienne),
-corrige, recommence.
+la palette (`studio_motion.py palette` : rien hors de ses couleurs, sauf ses vraies captures), le
+relecteur neuf (`studio_motion.py relecture` : une IA qui n'a pas fait la vidéo la regarde sans
+le script et dit ce qui est vendu, à qui, quoi faire ; tout écart avec la fiche est un P0), la
+revue critique notée, son, export. Chaque défaut corrigé s'écrit dans « Interdits de cette vidéo »
+(`PLAN.md`). Les contrôles automatiques ne disent pas si la vidéo est bonne : regarde la planche
+toi-même (et, s'il y a une vidéo de référence, contre la sienne), corrige, recommence.
 
 ### 7. La livraison
 
@@ -203,8 +205,9 @@ vidéo », sans nom : le projet de `videos/` retouché le plus récemment, une q
 moindre doute) : depuis son projet, refais le rendu, la revue (rythme, planche, son, export), le
 mastering et la couverture, et remplace ses fichiers dans `livraison/`.
 
-Une demande = la vidéo concernée seulement. Modifie ce qui est demandé, refais son rendu, sa
-planche et son export, remplace le fichier dans `livraison/`. Ne repropose pas d'idées, ne refais
+Une demande = la vidéo concernée seulement. Relis d'abord « Interdits de cette vidéo » dans
+`PLAN.md` (les défauts déjà corrigés, à ne pas refaire), puis modifie ce qui est demandé, refais
+son rendu, sa planche et son export, remplace le fichier dans `livraison/`. Ne repropose pas d'idées, ne refais
 pas la fiche. Une nouvelle info sur l'offre (prix, date) passe d'abord dans `OFFRE.json`. Une
 autre version (« la même pour LinkedIn ») s'ajoute au même dossier, même fiche et même plan :
 `python3 tools/studio_motion.py ajouter "<dossier>" --videos linkedin`. Elle se remet en page pour
@@ -227,9 +230,13 @@ Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une a
 - Fabriquer l'interface d'un logiciel qu'il n'a pas, ou un écran que sa page ne montre pas.
 - Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés colorés) :
   ce qui bouge vient de l'offre, de ses outils ou de son domaine.
-- Inventer une image : paysage, illustration, objet décoratif, photo factice. Ce qui se montre
-  vient du client (sa page, ses captures, ses vidéos, ses résultats) ou des vrais logos de ses
-  outils ; sinon, rien. Un style du catalogue donne une grammaire, jamais ses images.
+- Inventer une image : paysage, illustration, objet décoratif, photo factice. Ce qui se montre se
+  prend en descendant l'échelle de [style.md](references/style.md) : une vraie capture, son
+  interface reconstruite, un vrai chiffre mis en scène, les vrais logos de ses outils, puis ses
+  mots. Jamais une forme seule (un disque, un carré, un aplat) à la place d'un sujet. Un style du
+  catalogue donne une grammaire, jamais ses images.
+- Faire du rythme avec la caméra : pendant qu'une phrase se lit, la caméra ne fait qu'une dérive
+  lente, et aucun recadrage sec dans les cinq premières secondes ([rythme.md](references/rythme.md)).
 - Sortir de sa palette : ses couleurs de marque, du noir, du blanc et des gris neutres, rien
   d'autre ; jamais une teinte dérivée de son accent (un jaune assombri devient brun), ni l'accent
   en transparence sur un fond sombre. Seules ses vraies captures et les logos de ses outils

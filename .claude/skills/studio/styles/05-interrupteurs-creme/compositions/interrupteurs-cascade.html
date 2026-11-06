@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°5 « INTERRUPTEURS CRÈME » · SCÈNE 1 : LES INTERRUPTEURS EN CASCADE (6,5 s)
+    STYLE N°5 « INTERRUPTEURS EN CASCADE » · SCÈNE 1 : LES INTERRUPTEURS EN CASCADE (7,4 s pour 6 mots)
 
     Ce qu'elle montre : un panneau de réglages de l'offre, vu de très près sur un papier clair. Une
-    main clique l'interrupteur maître, les sept interrupteurs s'allument en cascade. La caméra
-    recule et glisse : le panneau part au bord gauche, la phrase s'écrit au centre, un trait à main
-    levée entoure les mots clés, puis les disques des membres apparaissent à droite. Le trait
-    repart par le haut (il revient dans la scène 2, « trait-qui-relie »).
+    main clique l'interrupteur maître, les sept interrupteurs s'allument en cascade ; la caméra
+    s'approche lentement et suit la cascade sans à-coup (aucun recadrage sec dans les cinq
+    premières secondes). Elle recule : le panneau part au bord gauche et la phrase s'écrit au
+    centre (c'est son apparition). La phrase se tient alors le temps de sa lecture : la caméra ne
+    fait qu'une dérive lente, et la vie vient de ce qu'elle montre : le trait à main levée entoure
+    les mots clés, les disques des membres arrivent en vague à droite, puis le trait repart par le haut (il revient dans la scène 2, « trait-qui-relie »). La caméra
+    ne revient au plan large qu'une fois la phrase lue, pendant qu'elle sort.
+    Durée : la scène tient la phrase le temps de sa lecture (0,3 s par mot + 0,8 s :
+    `studio_motion.py lecture`) et en déduit sa durée : 4,8 s + la lecture de la phrase (7,4 s pour
+    6 mots, 7,7 s pour 7, 8 s pour 8). Reporte-la dans data-duration (ici et sur l'hôte).
     Rôle : l'accroche d'une annonce (nouveau module, bonus, fonction), ou la démonstration « un
     clic suffit ».
 
@@ -24,8 +30,10 @@
       3. Les RANGS (tableau en tête du script) : les vrais éléments de l'offre (modules, bonus,
          fonctions), 5 à 7, avec une icône du kit (K.ic). Si l'offre branche des outils, leurs vrais
          logos (studio_motion.py logos), comme l'original.
-      4. La phrase (les deux span.t05-ligne du HTML, 6 mots au plus) et les mots que le trait
-         entoure (le span.t05-cle) : ce que la vidéo annonce, tiré de OFFRE.json.
+      4. La phrase (les deux span.t05-ligne du HTML, 8 mots au plus : la mise en page n'en prend
+         pas davantage entre le panneau et les membres ; une phrase plus longue du script ne se
+         raccourcit pas, elle passe dans une scène construite dans le style) et les mots que le
+         trait entoure (le span.t05-cle) : ce que la vidéo annonce, tiré de OFFRE.json.
       5. Les couleurs : celles de la marque, rien d'autre (variables en tête du style) : le papier
          (--t05-papier, un gris très clair tiré de son clair et de son gris le plus clair), les
          cartes (son clair), l'encre (sa couleur sombre), ses gris. L'interrupteur allumé et les
@@ -33,7 +41,8 @@
          (jaune, pastel) : il passe alors à l'encre, tout seul. Jamais l'accent en transparence.
       Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
       du look (Source Serif 4), mode d'emploi dans style.md, section 4.
-    Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2).
+    Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2), et la
+    caméra : pendant que la phrase se lit, une dérive lente seulement, jamais un recadrage ajouté.
   -->
 </head>
 <body>
@@ -91,7 +100,7 @@
     }
     #t05-cascade .t05-membre {
       position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
-      background: var(--t05-carte); color: var(--t05-gris); display: grid; place-items: center;
+      background: var(--t05-carte); color: var(--t05-gris-texte); display: grid; place-items: center;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     #t05-cascade .t05-membre svg { width: 50%; height: 50%; }
@@ -101,13 +110,16 @@
     }
     #t05-cascade .t05-ligne { display: block; }
     #t05-cascade .t05-mot, #t05-cascade .t05-cle { display: inline-block; }
+    /* Les mots clés, surlignés d'un bloc plein pendant la lecture (l'accent, ou l'encre s'il est trop pâle), jamais en transparence. */
+    #t05-cascade .t05-cle { position: relative; z-index: 0; }
+    #t05-cascade .t05-bloc { position: absolute; left: -0.18em; right: -0.38em; top: 0.02em; bottom: -0.06em; background: var(--brand-accent); z-index: -1; border-radius: 0.1em; }
     #t05-cascade .t05-traits { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
     #t05-cascade .t05-traits path { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
     #t05-cascade .t05-main { position: absolute; left: 0; top: 0; width: 100px; height: 115px; margin: -5px 0 0 -40px; z-index: 80; }
     #t05-cascade .t05-main svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
   </style>
 
-  <div data-composition-id="t05-cascade" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
+  <div data-composition-id="t05-cascade" data-width="1920" data-height="1080" data-duration="7.4" style="position:absolute; inset:0;">
     <div id="t05-cascade" class="k-scene">
       <div class="t05-cam" id="t05-cascade-cam" data-layout-allow-overflow>
         <div class="t05-onglet" id="t05-cascade-onglet" data-layout-allow-overflow><span id="t05-cascade-onglet-ic"></span><span>Ton offre</span></div>
@@ -139,7 +151,9 @@
 
   <script>
     (function () {
-      var ID = "t05-cascade", D = 6.5;
+      var ID = "t05-cascade";
+      // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+      function lecture(n) { return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
       // Les éléments de l'offre, de haut en bas : [icône du kit, texte]. 5 à 7 rangs.
       var RANGS = [
         ["book-open", "Module 1 · Les bases"],
@@ -155,6 +169,11 @@
       var titre = $("titre"), svg = $("traits"), boucle = $("boucle");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
       var tl = gsap.timeline({ paused: true });
+      // La phrase : ses deux lignes posées à FE, tenues le temps de leur lecture, sorties à X.
+      var lignes = titre.querySelectorAll(".t05-ligne");
+      var n2 = lignes[1].querySelectorAll(".t05-mot").length;
+      var FE = 3.2 + 0.07 * (n2 - 1) + 0.7, X = FE + lecture(titre.querySelectorAll(".t05-mot").length);
+      var D = Math.round((X + 0.75) * 10) / 10;   // 7,4 s pour 6 mots : reporte-la en data-duration
 
       // --- Outils du look (communs aux scènes du style 5) ---------------------------------
       // La couleur du trait : l'accent s'il se voit sur le clair (contraste 2 ou plus), sinon l'encre.
@@ -238,22 +257,26 @@
       tl.to(hand, { x: L + 160, y: my + 260, duration: 0.6, ease: "power3.in" }, 2.05);
 
       // --- Le recul : le panneau part au bord, la phrase arrive ------------------------------
-      // La caméra vit : approche lente, petit coup au clic, elle descend avec la cascade, puis le recul.
+      // Les cinq premières secondes se lisent sur une image stable : la caméra s'approche lentement,
+      // suit la cascade sans à-coup (aucun coup de caméra au clic), puis recule pour révéler la
+      // phrase (son apparition). Pendant que la phrase se lit, une dérive lente seulement (3,5 %) ;
+      // elle ne revient au plan large qu'une fois la phrase lue, pendant qu'elle sort (raccord scène 2).
       var M = [maitre.x, maitre.y], V = [vise.x, vise.y];
-      recadre(0.1, s0 * 1.05, M, V, 0.85, "power2.inOut");
-      recadre(0.95, s0 * 1.1, M, V, 0.14, "power2.out");
-      recadre(1.09, s0 * 1.05, M, V, 0.36, "power2.out");
-      recadre(1.45, s0 * 1.05, M, [vise.x, vise.y - (vertical ? 120 : 250)], 0.7, "power2.inOut");
-      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.85, ease: "expo.inOut" }, 2.15);
-      // Recadrages doux, avec un léger glissement de côté (un zoom au centre seul ne se voit pas).
-      recadre(3.1, 1.06, [L / 2, H / 2], [L / 2 + (vertical ? 0 : 95), H / 2 + (vertical ? 70 : 0)], 0.55, "expo.inOut");
-      var lignes = titre.querySelectorAll(".t05-ligne");
+      recadre(0.05, s0 * 1.04, M, V, 1.35, "sine.inOut");
+      recadre(1.4, s0 * 1.04, M, [vise.x, vise.y - (vertical ? 90 : 160)], 0.75, "sine.inOut");
+      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 1.0, ease: "expo.inOut" }, 2.15);
+      recadre(3.15, 1.035, [L / 2, H / 2], [L / 2 + (vertical ? 0 : 40), H / 2 + (vertical ? 30 : 0)], X - 3.2, "sine.inOut");
+      recadre(X - 0.05, 1, [L / 2, H / 2], [L / 2, H / 2], 0.75, "expo.inOut");
       K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.85, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
       K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 3.2, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
-      // Les membres arrivent en vague, du haut vers le bas
-      discs.forEach(function (d, i) { tl.to(d, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 4.25 + i * 0.07); });
-      // Sortie de la phrase (le trait est déjà reparti)
-      K.sortieMots(tl, titre.querySelectorAll(".t05-mot"), 5.75, { y: -10, flou: 12, duree: 0.4, decalage: 0.035 });
+      // Pendant la lecture, ce que la phrase montre : les membres surgissent ensemble, d'un coup (une
+      // salve, du haut vers le bas)
+      discs.forEach(function (d, i) {
+        tl.set(d, { opacity: 1 }, FE + 0.15 + i * 0.012);
+        tl.fromTo(d, { scale: 0.3 }, { scale: 1, duration: 0.2, ease: "back.out(1.4)", immediateRender: false }, FE + 0.15 + i * 0.008);
+      });
+      // Sortie de la phrase, une fois lue (le trait est déjà reparti)
+      K.sortieMots(tl, titre.querySelectorAll(".t05-mot"), X, { y: -10, flou: 12, duree: 0.4, decalage: 0.035 });
 
       // --- Le trait à main levée : il entoure les mots clés, puis repart par le haut ----------
       // Construit après le chargement des polices (on mesure les mots clés).
@@ -284,14 +307,24 @@
         boucle.setAttribute("d", chemin(pts));
         boucle.setAttribute("stroke", couleurTrait());
         var montrer = morceau(boucle), Ltot = boucle.getTotalLength();
+        // les mots clés se surlignent d'un bloc plein au milieu de la lecture (l'accent ; l'encre si
+        // l'accent est trop pâle sur le clair, comme le trait), d'un coup, puis le bloc se retire avant
+        // que la phrase sorte. Les mots passent à la couleur lisible sur le bloc.
+        var bloc = K.el(cleEl, "span", "t05-bloc"), cs0 = getComputedStyle(racine), surAccent = couleurTrait() === cs0.getPropertyValue("--brand-accent").trim();
+        bloc.style.background = couleurTrait();
+        var motsCle = cleEl.querySelectorAll(".t05-mot"), tBloc = Math.max(FE + 1.0, (FE + X) / 2) - 0.1;
+        gsap.set(bloc, { opacity: 0 });
+        tl.set(bloc, { opacity: 1 }, tBloc);
+        tl.set(motsCle, { color: (surAccent ? cs0.getPropertyValue("--brand-contrast") : cs0.getPropertyValue("--brand-clair")).trim() }, tBloc);
+        tl.fromTo(bloc, { scaleX: 0.85 }, { scaleX: 1, duration: 0.25, ease: "back.out(2)", immediateRender: false }, tBloc);
+        tl.set(bloc, { opacity: 0 }, X - 0.15);
+        tl.set(motsCle, { color: cs0.getPropertyValue("--t05-encre").trim() }, X - 0.15);
         var Lentree = longueur(pts, 2), Lboucle = longueur(pts, 18);
-        // Quand la boucle se ferme, la caméra s'approche des mots entourés, puis revient au plan large.
-        var CLE = [titre.offsetLeft + cx, titre.offsetTop + cy];
-        recadre(3.95, 1.13, CLE, [L / 2, H / 2 + (vertical ? 120 : 0)], 0.7, "expo.inOut");
-        recadre(5.05, 1, CLE, CLE, 0.8, "expo.inOut");
+        // La boucle se ferme sous les yeux du lecteur (la caméra ne bouge pas pour elle), tient
+        // pendant la lecture, puis la queue file hors de l'image juste avant que la phrase sorte.
         selon(function (t) {
-          var b = cle([[3.45, 0], [4.25, Lboucle, "power2.inOut"], [5.15, Lboucle, "none"], [5.9, Ltot, "power2.in"]], t);
-          var a = cle([[3.45, 0], [4.0, Lentree, "power2.inOut"], [5.25, Lentree, "none"], [5.95, Ltot, "power2.in"]], t);
+          var b = cle([[3.45, 0], [4.25, Lboucle, "power2.inOut"], [X - 0.6, Lboucle, "none"], [X + 0.15, Ltot, "power2.in"]], t);
+          var a = cle([[3.45, 0], [4.0, Lentree, "power2.inOut"], [X - 0.5, Lentree, "none"], [X + 0.2, Ltot, "power2.in"]], t);
           montrer(a, b);
         });
         window.__timelines[ID] = tl;

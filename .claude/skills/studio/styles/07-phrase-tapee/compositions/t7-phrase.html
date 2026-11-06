@@ -10,8 +10,15 @@
   de ta marque ; coupe sur fond clair : une barre de demande où la phrase se tape, les logos de
   ses outils empilés, le curseur clique sur envoyer ; la barre s'envole et la fenêtre du résultat
   s'ouvre et se remplit de ses vraies images, en cascade.
-  Durée : 6,6 s. Sans capture ni image du résultat, la fenêtre ne s'ouvre pas : coupe la scène à
-  4,4 s (data-duration ici et sur l'hôte), juste après l'envoi.
+  Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
+  les deux lignes (pendant qu'on les lit, leurs mots s'allument tour à tour et bondissent un peu),
+  la demande dans la barre (sa vraie page, le lien qu'elle donne, glisse au-dessus : `lien` ; ses
+  logos arrivent un à un, puis le curseur vient cliquer), le titre de
+  la fenêtre pendant que ses images tombent. Aucun recadrage sous un texte qu'on lit.
+  Durée : la scène la calcule (D dans le script) : 12,5 s avec une fenêtre (deux lignes de 6 mots,
+  une demande de 8, un titre de 5). Sans capture ni image du résultat, la fenêtre ne s'ouvre pas :
+  la scène s'arrête juste après l'envoi (9,2 s avec les textes d'exemple). Reporte-la dans
+  data-duration (ici et sur l'hôte).
   16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (classe t7p-vertical, réglée seule :
   lignes plus courtes, barre plus haute où la demande passe sur deux lignes, fenêtre en portrait
   qui remplit l'écran).
@@ -41,6 +48,11 @@
   #t7p .t7p-lignes { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
     font-size: 124px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.0; white-space: nowrap; }
   #t7p .t7p-l2 { color: var(--t7-gris); }
+  /* Les mots des deux lignes, une fois tapées : ils s'allument d'un coup à l'accent et bondissent
+     (leurs boîtes, hautes de la police, se touchent d'une ligne à l'autre ; les lettres, non). */
+  #t7p .t7p-mots { display: none; }
+  #t7p .t7p-mot { display: inline-block; }
+  #t7p .t7p-mot[data-on="1"] { color: var(--brand-accent-lisible); }
   #t7p .t7p-caret { display: inline-block; width: 0.075em; height: 0.84em; margin-left: 0.05em; vertical-align: -0.08em; background: var(--brand-accent); }
   #t7p .t7p-scene3d { position: absolute; inset: 0; perspective: 2000px; }
   #t7p .t7p-cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
@@ -56,6 +68,14 @@
   #t7p .t7p-logo svg { width: 36px; height: 36px; }
   #t7p .t7p-envoyer { width: 76px; height: 76px; border-radius: 20px; background: var(--t7-encre); color: var(--t7-clair); display: grid; place-items: center; flex: none; }
   #t7p .t7p-envoyer svg { width: 36px; height: 36px; }
+  /* Le lien joint à la demande : sa vraie page en aperçu (sa capture et son adresse), au-dessus de la barre. */
+  #t7p .t7p-lien { position: absolute; left: 50%; bottom: calc(50% + 92px); width: 520px; margin-left: -620px; border-radius: 22px; background: var(--t7-clair); overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,.12), inset 0 0 0 1.5px rgba(0,0,0,.08); color: var(--t7-encre); font-family: var(--brand-font-body); }
+  #t7p .t7p-lien-ecran { position: relative; height: 272px; overflow: hidden; }
+  #t7p .t7p-lien img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  #t7p .t7p-lien div { padding: 16px 22px 18px; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; }
+  #t7p.t7p-vertical .t7p-lien { margin-left: -500px; width: 640px; bottom: calc(50% + 140px); }
+  #t7p.t7p-vertical .t7p-lien-ecran { height: 330px; }
   /* La fenêtre du résultat : un cadre clair, sa barre de titre, puis SA vraie matière. */
   #t7p .t7p-fenetre { position: absolute; left: 50%; top: 50%; width: 1380px; height: 800px; margin: -400px 0 0 -690px; border-radius: 22px; background: var(--t7-clair); overflow: hidden;
     box-shadow: 0 50px 120px rgba(0,0,0,.16), 0 4px 14px rgba(0,0,0,.06), inset 0 0 0 1.5px rgba(0,0,0,.07); color: var(--t7-encre); font-family: var(--brand-font-body); }
@@ -88,10 +108,10 @@
   #t7p.t7p-vertical .t7p-capture { top: 81px; }
 </style>
 
-<div data-composition-id="t7p" data-width="1920" data-height="1080" data-duration="6.6" style="position:absolute; inset:0;">
+<div data-composition-id="t7p" data-width="1920" data-height="1080" data-duration="9.2" style="position:absolute; inset:0;">
   <div id="t7p" class="k-scene">
     <div class="t7p-plan t7p-ardoise" id="t7p-p1">
-      <div class="t7p-lignes"><div><span id="t7p-l1" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c1"></span></div><div class="t7p-l2"><span id="t7p-l2" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c2"></span></div></div>
+      <div class="t7p-lignes"><div><span id="t7p-l1" data-layout-allow-overlap></span><span id="t7p-m1" class="t7p-mots" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c1"></span></div><div class="t7p-l2"><span id="t7p-l2" data-layout-allow-overlap></span><span id="t7p-m2" class="t7p-mots" data-layout-allow-overlap></span><span class="t7p-caret" id="t7p-c2"></span></div></div>
     </div>
     <div class="t7p-plan t7p-clair" id="t7p-p2">
       <div class="t7p-scene3d"><div class="t7p-cam" id="t7p-cam">
@@ -100,6 +120,7 @@
           <div class="t7p-progres"><div id="t7p-progres"></div></div>
           <div class="t7p-corps" id="t7p-corps"><div class="t7p-titre" id="t7p-titre"></div></div>
         </div>
+        <div class="t7p-lien" id="t7p-lien"></div>
         <div class="t7p-barre" id="t7p-barre">
           <div class="t7p-plus" id="t7p-plus"></div>
           <div class="t7p-demande" id="t7p-demande"></div>
@@ -126,10 +147,20 @@
     // son produit qui remplit la fenêtre (capture : "assets/images/ecran.png"). Ni l'une ni
     // l'autre : la fenêtre ne s'ouvre pas (coupe la scène à 4,4 s).
     cartes: [], format: "9:16",
-    capture: ""
+    capture: "",
+    // Le lien que sa demande donne (sa page) : sa vraie capture (ou deux écrans de sa page, qui
+    // défilent) et son adresse, qui glissent au-dessus de la barre pendant qu'on lit la demande ;
+    // img "" : aucun aperçu
+    lien: { img: "", adresse: "" }
   };
   // -------------------------------------------------------------------------------------------
-  var D = 6.6;
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+  var XL = 1.9 + lecture([R.ligne1, R.ligne2]);              // les deux lignes, lues : coupe sur la barre
+  var XB = XL + 1.0 + lecture(R.demande);                    // la demande, lue : la barre s'envole
+  var W0 = XB + 0.25;                                        // la fenêtre du résultat
+  var avecFenetre = !!(R.capture || R.cartes.length);
+  var D = Math.ceil((avecFenetre ? W0 + 1.2 + lecture([R.titre, R.sousTitre]) : XB + 0.45) * 10 - 1e-9) / 10;
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7p");
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -168,47 +199,92 @@
 
   // États de départ
   K.cacher(["#t7p-p2", "#t7p-c2", "#t7p-fenetre"]);
+  K.cacher(cartes);
+  var lien = R.lien && R.lien.img ? $("t7p-lien") : null;
+  var ecrans = [];
+  if (lien) {
+    var ecran = K.el(lien, "div", "t7p-lien-ecran");
+    ecrans = [].concat(R.lien.img).slice(0, 2).map(function (src, i) { var im = K.el(ecran, "img"); im.alt = ""; im.src = src; if (i) gsap.set(im, { yPercent: 100 }); return im; });
+    K.el(lien, "div", null, R.lien.adresse || ""); gsap.set(lien, { clipPath: "inset(100% 0 0 0 round 22px)" });
+  }
+  else $("t7p-lien").style.display = "none";
   var tl = gsap.timeline({ paused: true });
 
-  // 1. Deux lignes tapées sur l'ardoise (0 → 2,35 s)
+  // 1. Deux lignes tapées sur l'ardoise, tenues le temps de leur lecture : une fois tapées, leurs mots
+  //    s'allument tour à tour à l'accent et bondissent un peu (la vie de la tenue ; la caméra ne fait
+  //    qu'une poussée lente)
   K.taper(tl, $("t7p-l1"), R.ligne1, 0.1, 0.85, D);
   K.taper(tl, $("t7p-l2"), R.ligne2, 1.15, 1.9, D);
   tl.set("#t7p-c1", { opacity: 0 }, 1.0); tl.set("#t7p-c2", { opacity: 1 }, 1.0);
-  [2.05, 2.25].forEach(function (t, i) { tl.set("#t7p-c2", { opacity: i % 2 ? 1 : 0 }, t); });
-  tl.fromTo("#t7p .t7p-lignes", { scale: 1 }, { scale: 1.03, duration: 2.35, ease: "sine.out" }, 0);
+  for (var tc = 2.05, kc = 0; tc < XL - 0.1; tc += 0.4, kc++) tl.set("#t7p-c2", { opacity: kc % 2 ? 1 : 0 }, tc);
+  tl.fromTo("#t7p .t7p-lignes", { scale: 1 }, { scale: 1.03, duration: XL, ease: "sine.inOut" }, 0);
+  var mots = [];
+  [[R.ligne1, "1"], [R.ligne2, "2"]].forEach(function (l) {
+    $("t7p-m" + l[1]).innerHTML = l[0].split(" ").map(function (m) { return '<span class="t7p-mot" data-layout-allow-overlap>' + m + "</span>"; }).join(" ");
+    tl.set("#t7p-l" + l[1], { display: "none" }, 1.98); tl.set("#t7p-m" + l[1], { display: "inline" }, 1.98);
+    mots = mots.concat(Array.prototype.slice.call($("t7p-m" + l[1]).children));
+  });
+  var pasMot = Math.min(0.32, (XL - 2.6) / Math.max(1, mots.length));
+  mots.forEach(function (m, i) {
+    var t = 2.1 + i * pasMot;
+    tl.set(m, { attr: { "data-on": "1" } }, t);
+    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+    tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
+  });
 
-  // 2. La barre de demande, sur fond clair (2,35 → 4,05 s)
-  tl.set("#t7p-p2", { opacity: 1 }, 2.35);
-  tl.set("#t7p-p1", { opacity: 0 }, 2.35);
-  // la caméra recule sur la barre (en 9:16, à peine : la barre y prend presque toute la largeur)
-  tl.fromTo("#t7p-cam", { scale: vertical ? 1.04 : 1.18 }, { scale: 1.0, duration: 1.7, ease: "power2.out" }, 2.35);
-  K.taper(tl, $("t7p-demande"), R.demande, 2.5, 3.35, D);
+  // 2. La barre de demande, sur fond clair, tenue le temps de lire la demande : ses logos arrivent un
+  //    à un, puis le curseur vient cliquer sur envoyer
+  tl.set("#t7p-p2", { opacity: 1 }, XL);
+  tl.set("#t7p-p1", { opacity: 0 }, XL);
+  // la caméra recule sur la barre (son apparition ; en 9:16, à peine), puis ne fait qu'une dérive
+  tl.fromTo("#t7p-cam", { scale: vertical ? 1.04 : 1.18 }, { scale: 1.0, duration: 1.7, ease: "power2.out" }, XL);
+  tl.to("#t7p-cam", { scale: 0.98, duration: XB - XL - 1.7, ease: "sine.inOut" }, XL + 1.7);
+  K.taper(tl, $("t7p-demande"), R.demande, XL + 0.15, XL + 1.0, D);
   var logos = $("t7p-logos").children;
-  if (logos.length) tl.fromTo(logos, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)", stagger: 0.08 }, 2.6);
+  var pasLogo = Math.min(0.7, (XB - XL - 2.6) / Math.max(1, logos.length));
+  Array.prototype.forEach.call(logos, function (lg, i) {
+    tl.fromTo(lg, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)" }, XL + 1.2 + i * pasLogo);
+  });
+  // le lien de la demande : sa vraie page glisse au-dessus de la barre (dévoilée de bas en haut, sans
+  // fondu), puis dérive avec elle ; elle s'envole avec la barre
+  if (lien) {
+    tl.fromTo(lien, { clipPath: "inset(100% 0 0 0 round 22px)", y: 40 }, { clipPath: "inset(0% 0 0 0 round 22px)", y: 0, duration: 0.55, ease: "power3.out", immediateRender: false }, XL + 1.15);
+    tl.to(lien, { y: -14, rotation: -1.5, duration: XB - XL - 1.7, ease: "sine.inOut" }, XL + 1.7);
+    // sa page défile d'un écran au suivant (une vraie capture qui glisse)
+    if (ecrans[1]) { tl.to(ecrans[0], { yPercent: -100, duration: 0.6, ease: "power3.inOut" }, (XL + 1.7 + XB) / 2 - 0.3); tl.to(ecrans[1], { yPercent: 0, duration: 0.6, ease: "power3.inOut" }, (XL + 1.7 + XB) / 2 - 0.3); }
+    tl.to(lien, { y: -320, scale: 0.6, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, XB);
+    tl.set(lien, { opacity: 0 }, XB + 0.45);
+  }
   var bx = L / 2 + (vertical ? 500 - 26 - 38 : 650 - 30 - 38), by = H / 2 + 2;
-  K.trajet(tl, curseur, [[0, L * 0.82, H * 0.86], [3.3, bx + 6, by + 8, 0.55, "power3.out"]]);
+  K.trajet(tl, curseur, [[0, L * 0.82, H * 0.86], [XB - 0.75, bx + 6, by + 8, 0.55, "power3.out"]]);
   K.cacher(curseur);
-  tl.to(curseur, { opacity: 1, duration: 0.15 }, 3.25);
-  K.clic(tl, curseur, 3.9);
-  tl.to("#t7p-envoyer", { scale: 0.88, duration: 0.08, ease: "power2.out" }, 3.9);
-  tl.to("#t7p-envoyer", { scale: 1, duration: 0.25, ease: "back.out(3)" }, 3.98);
+  tl.to(curseur, { opacity: 1, duration: 0.15 }, XB - 0.8);
+  K.clic(tl, curseur, XB - 0.15);
+  tl.to("#t7p-envoyer", { scale: 0.88, duration: 0.08, ease: "power2.out" }, XB - 0.15);
+  tl.to("#t7p-envoyer", { scale: 1, duration: 0.25, ease: "back.out(3)" }, XB - 0.07);
 
-  // 3. La barre s'envole ; la fenêtre du résultat s'ouvre et se remplit de sa vraie matière (4,05 → 6,6 s)
-  tl.to("#t7p-barre", { y: -260, scale: 0.6, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, 4.05);
-  tl.to(curseur, { opacity: 0, duration: 0.2 }, 4.1);
+  // 3. La barre s'envole ; la fenêtre du résultat s'ouvre et se remplit de sa vraie matière, et se
+  //    tient le temps de lire son titre (la caméra s'incline lentement)
+  tl.to("#t7p-barre", { y: -260, scale: 0.6, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, XB);
+  tl.to(curseur, { opacity: 0, duration: 0.2 }, XB + 0.05);
   if (fenetre) {
     tl.fromTo("#t7p-fenetre", { opacity: 0, scale: 0.86, filter: "blur(14px)" },
-      { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, 4.3);
-    tl.fromTo("#t7p-progres", { scaleX: 0 }, { scaleX: 1, duration: 1.7, ease: "power1.inOut" }, 4.45);
+      { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.7, ease: "expo.out" }, W0);
+    tl.fromTo("#t7p-progres", { scaleX: 0 }, { scaleX: 1, duration: D - W0 - 0.3, ease: "power1.inOut" }, W0 + 0.15);
     if (R.capture) {
       // la capture se dévoile de haut en bas, comme une page qui se charge
-      tl.fromTo("#t7p .t7p-capture", { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.8, ease: "power2.out" }, 4.5);
+      tl.fromTo("#t7p .t7p-capture", { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.8, ease: "power2.out" }, W0 + 0.2);
     } else {
-      tl.fromTo("#t7p-titre", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 4.5);
-      tl.fromTo(cartes, { opacity: 0, y: 30, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", stagger: 0.12 }, 4.65);
+      tl.fromTo("#t7p-titre", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, W0 + 0.2);
+      // ses images tombent d'un coup, sans fondu (une vraie image à demi transparente sur le clair en
+      // pâlit les couleurs : `palette` le relève)
+      cartes.forEach(function (c, i) {
+        tl.set(c, { opacity: 1 }, W0 + 0.5 + i * 0.12);
+        tl.fromTo(c, { y: 30, scale: 0.9 }, { y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, W0 + 0.5 + i * 0.12);
+      });
     }
-    tl.fromTo("#t7p-cam", { rotationX: 0, y: 0 }, { rotationX: 6, y: -10, duration: 2.2, ease: "sine.inOut", immediateRender: false }, 4.4);
-    tl.to("#t7p-cam", { scale: 1.06, duration: 2.2, ease: "sine.inOut" }, 4.4);
+    tl.fromTo("#t7p-cam", { rotationX: 0, y: 0 }, { rotationX: 6, y: -10, duration: D - W0 - 0.1, ease: "sine.inOut", immediateRender: false }, W0 + 0.1);
+    tl.to("#t7p-cam", { scale: 1.06, duration: D - W0 - 0.1, ease: "sine.inOut" }, W0 + 0.1);
   }
   window.__timelines["t7p"] = tl;
 })();

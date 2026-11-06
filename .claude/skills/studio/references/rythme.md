@@ -10,16 +10,20 @@ d'ouverture refusée du 06/11/2026 : 19 s, des écrans de 1 à 4 mots changés t
 « beaucoup trop rapide »).
 
 Le contrôle `python3 ../../../tools/studio_motion.py rythme exports/<vidéo>.mp4` (depuis le projet) mesure le MP4 rendu : **au moins
-1 événement par seconde**, **0,8 s au plus entre deux événements en général**, et **aucune image
-figée plus de 1 s** avant l'écran final. Il ne dit pas si c'est beau ; il dit si ça vit.
+0,7 événement par seconde**, **1,2 s au plus entre deux événements en général**, et **aucune
+image vraiment immobile plus de 1,5 s** avant l'écran final (une dérive lente, une vidéo qui tourne
+vivent). Il ne dit pas si c'est beau ; il dit si ça vit. Recalé le 06/11/2026 pour des phrases
+tenues le temps de leur lecture : vise plus (1 à 1,3 événement par seconde autour du texte), ce
+n'est qu'un plancher.
 
 ## La densité : un événement toutes les demi-secondes
 
 Un événement, c'est ce que l'œil remarque : un objet qui arrive, un curseur qui clique, une
-coche, un compteur qui tourne, un fond qui bascule, la caméra qui change d'intention, le mot clé
-de la phrase qui s'allume. Pas forcément un nouveau plan : souvent un petit geste dans le même
-plan. **Jamais une nouvelle phrase** : les phrases changent au rythme de leur lecture, pas du
-tempo.
+coche, un compteur qui tourne, un fond qui bascule, le mot clé de la phrase qui s'allume, la
+caméra qui change d'intention entre deux phrases. Pas forcément un nouveau plan : souvent un petit
+geste dans le même plan. **Jamais une nouvelle phrase** : les phrases changent au rythme de leur
+lecture, pas du tempo. **Jamais un recadrage ajouté** pour qu'il se passe quelque chose : ce qui
+vit pendant la lecture, c'est ce que la phrase montre.
 
 - Cale le plan sur une **grille de tempo** : 120 battements par minute, un temps = 0,5 s. Les
   événements tombent sur les temps (ou les demi-temps pour une rafale). La musique s'y posera.
@@ -38,9 +42,18 @@ tempo.
 
 Piège (essai du 03/11/2026) : un mot qui change seulement de couleur, une ligne qui se tape en
 petit dans une barre, une carte gris clair sur blanc ne comptent pas pour `rythme` (l'image change
-trop peu) ; le premier rendu tombait à 0,83 événement par seconde. Un **recadrage sec de la caméra**
-sur chaque mot que la voix dit, sur chaque geste (0,4 s, `expo.out`) y suffit, sans rien ajouter au
-décor : 1,28 événement par seconde ensuite.
+trop peu) ; le premier rendu tombait à 0,83 événement par seconde. Une graisse qui bascule
+sur un grand titre non plus (essai du style 2 du 06/11/2026) : un surlignage plein, oui. Un logo
+au trait fin ou des mots qui s'allument comptent à peine ; une capture qui se pose, un logo plein,
+une page qui défile par paliers comptent (essai du style 4).
+
+**Un `rythme` trop bas se corrige par un événement de contenu, jamais par la caméra** : un vrai
+logo qui arrive, un compteur qui tourne, l'interface qui réagit (une coche, une bulle, une carte
+de plus), une vraie capture qui glisse, le mot clé surligné d'un bloc plein, un fond qui bascule
+avec sa cause. Un recadrage sec ajouté sur chaque mot passe le contrôle et fabrique une vidéo
+agitée qu'on ne lit plus : c'est la mécanique de la story refusée du 06/11/2026 (« beaucoup trop
+rapide »). Si une phrase n'a rien à montrer pendant sa tenue, c'est le script ou le repérage qui
+manque de matière ([style.md](style.md), « Aucune image inventée »), pas la caméra.
 
 ## Lire d'abord : le texte suit la lecture
 
@@ -78,8 +91,19 @@ décor : 1,28 événement par seconde ensuite.
 
 - Chaque scène vit dans un espace en perspective (`k-scene3d` > `k-camera` du kit). La caméra a
   presque toujours un léger angle (rotation de 4 à 15°) et dérive pendant les tenues.
-- Entre deux intentions, elle **recadre vite** (0,6 à 0,9 s, `expo.inOut`) : elle s'approche du
-  geste (le champ où l'on tape, le bouton qu'on clique), elle recule sur le résultat.
+- **Pendant qu'une phrase se lit** (de la fin de son entrée à sa sortie), la caméra ne fait
+  qu'une **dérive lente** : 2 à 6 % d'échelle ou quelques dizaines de pixels sur toute la tenue,
+  `sine.inOut`. Jamais de recadrage sec, de coup de zoom ni de saut de cadre sous un texte qu'on lit.
+- **Les cinq premières secondes se lisent sur une image stable** : aucun recadrage sec. L'accroche
+  peut entrer par la caméra (un recul qui la révèle, une mise au point, ses mots un à un) : c'est son
+  apparition ; une fois lisible, elle ne bouge plus que lentement.
+- Un **recadrage**, c'est la caméra qui change de cadre sur ce qui est déjà là. Le passage à ce qui
+  suit (un raccord d'objet, un volet, un filé vers la scène suivante) n'en est pas un : il arrive
+  quand la phrase a été lue.
+- Entre deux intentions (une phrase sort, la suivante arrive), elle **recadre vite** (0,6 à 0,9 s,
+  `expo.inOut`) : elle s'approche du geste (le champ où l'on tape, le bouton qu'on clique), elle
+  recule sur le résultat. Un clic peut donner un petit coup de caméra, jamais pendant la lecture
+  d'une phrase posée.
 - Pour zoomer sur un point P avec une échelle s, déplace la caméra de (centre − P) × s.
 - Profondeur de champ : les objets très proches et très lointains sont flous, le sujet est net.
   Pendant un grand chiffre, ce qui est derrière passe au flou et s'assombrit.

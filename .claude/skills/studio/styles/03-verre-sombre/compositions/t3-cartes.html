@@ -5,13 +5,18 @@
 <template>
 <!--
   Style n°3 · Verre sombre · scène « Le carrousel de cartes » (ce qu'on reçoit).
-  Ce qu'elle montre : un mot seul (« Inclus »), puis une carte en verre sombre par élément de ton
-  offre (module, bonus, fonction), une toutes les 0,5 s, en gros plan incliné, sur la trame de
+  Ce qu'elle montre : un mot seul (« Inclus »), tenu le temps de sa lecture dans la pastille du look
+  cerclée de ta couleur, qui se remplit par un volet ; puis une carte en verre sombre par élément de
+  ton offre (module, bonus, fonction), une toutes les 0,5 s, en gros plan incliné, sur la trame de
   points : sa tuile d'icône, son nom, son chiffre, la liste qui défile comme un compteur, le
   bouton « Inclus ». La première se forme en points, les suivantes arrivent en glissant, coupe
   nette de l'une à l'autre ; la dernière file hors champ jusqu'à la coupe vers la scène suivante.
-  Durée : 3,6 s pour 5 cartes (0,5 s par carte + 1,1 s) : avec un autre nombre de cartes, mets
-  cette durée dans data-duration (ici et sur l'hôte dans index.html).
+  Le carrousel est une rafale : une carte se voit d'un coup d'œil (son nom, son chiffre), elle ne
+  se lit pas. Ce qu'il faut lire se dit dans le mot ou la phrase qui l'annonce, tenu le temps de sa
+  lecture (`studio_motion.py lecture`), ou dans une scène construite dans le style.
+  Durée : 5,1 s pour 5 cartes (2 s pour le mot, 0,5 s par carte, + 0,6 s) : avec un autre nombre
+  de cartes, mets cette durée dans data-duration (ici et sur l'hôte dans index.html). Un mot de
+  plus de 2 mots : allonge T0 de 0,3 s par mot (sa lecture).
   16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : la carte passe en portrait seule.
   À remplacer (objet R en tête du script) : le mot, et pour chaque carte : l'icône du kit
   (K.ic : "play", "gift", "users"…) ou le logo d'un outil de l'offre posé par
@@ -43,6 +48,11 @@
     -webkit-mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); }
   #t3k .t3k-mot { position: absolute; left: 0; right: 0; top: 50%; height: 90px; margin-top: -45px; text-align: center; white-space: nowrap;
     font-size: 64px; font-weight: 600; line-height: 90px; letter-spacing: -0.015em; text-shadow: 0 0 28px rgba(255,255,255,.25); }
+  /* Le mot dans la pastille du look, cerclée de l'accent ; elle se remplit par un volet pendant la
+     tenue (le mot clé surligné d'un bloc plein ; jamais l'accent en transparence). */
+  #t3k .t3k-mot-in { position: relative; display: inline-block; padding: 0 30px; border-radius: 26px; border: 2px solid var(--brand-accent); }
+  #t3k .t3k-mot-plein { position: absolute; inset: -2px; border-radius: 26px; background: var(--brand-accent); color: var(--brand-contrast);
+    display: flex; align-items: center; justify-content: center; text-shadow: none; clip-path: inset(0% 100% 0% 0% round 26px); }
   #t3k .t3k-carte {
     position: absolute; left: 50%; top: 50%; width: 1240px; height: 700px; margin: -350px 0 0 -620px; border-radius: 46px; padding: 56px 64px;
     background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.02) 45%, rgba(255,255,255,.04)), var(--t3-verre);
@@ -88,7 +98,7 @@
   #t3k.t3k-vertical .t3k-bas { position: absolute; left: 60px; right: 60px; bottom: 64px; margin: 0; }
 </style>
 
-<div data-composition-id="t3k" data-width="1920" data-height="1080" data-duration="3.6" style="position:absolute; inset:0;">
+<div data-composition-id="t3k" data-width="1920" data-height="1080" data-duration="5.1" style="position:absolute; inset:0;">
   <div id="t3k" class="k-scene">
     <div class="t3k-fond"></div>
     <div class="t3k-trame" data-layout-ignore></div>
@@ -114,11 +124,11 @@
     bouton: "Inclus"
   };
   // -------------------------------------------------------------------------------------------
-  var PAS = 0.5, T0 = 0.5, D = T0 + R.cartes.length * PAS + 0.6;   // 3,6 s pour 5 cartes : reporte-la en data-duration
+  var PAS = 0.5, T0 = 2.0, D = T0 + R.cartes.length * PAS + 0.6;   // 5,1 s pour 5 cartes : reporte-la en data-duration
   var $ = function (id) { return document.getElementById(id); };
   var cadre = K.cadre($("t3k")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
   if (vertical) $("t3k").classList.add("t3k-vertical");
-  $("t3k-mot").textContent = R.mot;
+  $("t3k-mot").innerHTML = '<span class="t3k-mot-in">' + R.mot + '<span class="t3k-mot-plein" id="t3k-mot-plein" data-layout-allow-overlap>' + R.mot + "</span></span>";
   var cam = $("t3k-cam"), cartes = [];
   R.cartes.forEach(function (c, i) {
     var logo = c.icone.indexOf("logo-") === 0;
@@ -140,9 +150,14 @@
   K.cacher(document.querySelectorAll("#t3k .t3k-pile-in div"));
 
   var tl = gsap.timeline({ paused: true });
-  // 1. Le mot seul (0 → 0,5 s)
+  // 1. Le mot seul, tenu le temps de sa lecture (0 → 2 s) : il entre, se pose, sa pastille se remplit
+  //    de l'accent par un volet au milieu de la tenue, la caméra ne fait qu'une poussée lente.
   tl.fromTo("#t3k-mot", { opacity: 0, scale: 0.92, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.0);
-  tl.to("#t3k-mot", { opacity: 0, scale: 1.12, filter: "blur(10px)", duration: 0.2, ease: "power2.in" }, T0 - 0.12);
+  tl.fromTo("#t3k-mot", { y: 0 }, { y: -8, duration: T0 - 0.5, ease: "sine.inOut", immediateRender: false }, 0.3);
+  tl.fromTo("#t3k-mot-plein", { clipPath: "inset(0% 100% 0% 0% round 26px)" }, { clipPath: "inset(0% 0% 0% 0% round 26px)", duration: 0.26, ease: "power3.inOut", immediateRender: false }, (0.3 + T0 - 0.2) / 2 - 0.13);
+  // la pastille se vide par un volet avant que le mot sorte (une couleur pleine ne s'efface jamais en fondu)
+  tl.to("#t3k-mot-plein", { clipPath: "inset(0% 0% 0% 100% round 26px)", duration: 0.16, ease: "power2.in" }, T0 - 0.38);
+  tl.to("#t3k-mot", { opacity: 0, scale: 1.12, filter: "blur(10px)", duration: 0.2, ease: "power2.in" }, T0 - 0.2);
   // 2. Les cartes : chacune en gros plan, un cadrage différent, toutes les 0,5 s. Coupe nette de
   //    l'une à l'autre (la carte apparaît d'un coup et finit son glissé) : jamais un fondu, qui
   //    passerait l'accent du bouton et de la tuile en transparence sur la nuit.

@@ -4,7 +4,7 @@
 **Souvent utile pour :** un teaser (ouverture des inscriptions, nouvelle version, « bientôt disponible »), quand on veut faire monter l'attente sans rien montrer du produit.
 **D'après :** X · Kimi (Moonshot AI), teaser de K3 · 15 s · 16:9 (1920 × 1080, 30 images par seconde).
 **Mesures de l'original (`studio_motion.py reference`) :** 1,88 événement par seconde, écart médian 0,40 s, aucune image figée ; une coupe détectée (le noir final), plus la coupe franche de la page pleine vers la page vide, que l'outil ne compte pas (deux images claires).
-**Mesures de l'essai du kit** (les 4 scènes bout à bout, 16,1 s, marque LMDM, 06/11/2026) : en 16:9, 1,52 événement par seconde, écart médian 0,60 s, aucune image figée ; en 9:16, 1,76 événement par seconde, écart médian 0,50 s ; `rythme` et `palette` « ok » dans les deux formats.
+**Mesures de l'essai du kit refait le 06/11/2026** (les 4 scènes bout à bout, 18,1 s, marque LMDM, sans choc de caméra, les lignes de fin tenues le temps de leur lecture) : en 16:9, 1,23 événement par seconde, écart médian 0,60 s ; en 9:16, 1,30 événement par seconde, écart médian 0,50 s ; aucune image figée, `rythme` et `palette` « ok » dans les deux formats.
 
 > On reprend la grammaire de la vidéo, jamais son contenu : ni ses idéogrammes, ni ses gravures,
 > ni sa photo de lune, ni son papier, ni son logo, ni son texte, ni sa musique. Le pinceau trace un
@@ -15,7 +15,7 @@
 
 - Rapide et continu : une forme toutes les 0,7 s environ, sans jamais s'arrêter. La nuée passe d'une forme à l'autre en 0,45 à 0,55 s ; chaque point part avec un petit retard (jusqu'à 0,22 s), ce qui donne l'effet de vol d'oiseaux.
 - La musique (environ 116 battements par minute) marque un accent tous les quatre temps (2 s) ; elle se retient pendant la rafale de planches, puis frappe sur la coupe vers la page vide : c'est le moment de la révélation.
-- Le contrôle `rythme` du studio compte les gros changements de lumière : des points fins sur une page claire bougent peu. Le kit le fait passer en grossissant et en densifiant la nuée (3 400 points de 3 à 8 px), en changeant de forme toutes les 0,75 s, en donnant de petits coups de caméra (le point posé, la numérisation), en serrant la nuée d'un coup en trois points pleins et en faisant surgir les planches par salves. Garde ces réglages.
+- Le contrôle `rythme` du studio compte les gros changements de lumière : des points fins sur une page claire bougent peu. Le kit le fait passer en grossissant et en densifiant la nuée (3 400 points de 3 à 8 px), en changeant de forme toutes les 0,75 s, en serrant la nuée d'un coup en trois points pleins et en faisant surgir les planches par salves : des événements de la matière, jamais de la caméra. Garde ces réglages. La caméra, elle, ne fait qu'avancer lentement pendant le geste : les cinq premières secondes se lisent sur une image stable (ni choc au point posé, ni sursaut à la numérisation, retirés du kit le 06/11/2026) ; n'ajoute jamais de coup de caméra pour le contrôle.
 
 ## 2. Les gestes signature et leur place
 
@@ -26,7 +26,7 @@ construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vi
 
 | Geste | Ce qu'on voit | Il sert à | Dans le kit |
 |---|---|---|---|
-| Le coup de pinceau | un cercle à l'encre sèche en un geste, le point posé, un petit choc de caméra | accroche, temps fort | `coup-de-pinceau` |
+| Le coup de pinceau | un cercle à l'encre sèche en un geste, le point posé, la caméra qui avance lentement | accroche, temps fort | `coup-de-pinceau` |
 | La numérisation | des colonnes de petits signes traversent l'encre, qui commence à se défaire | passage d'une idée à l'autre | `coup-de-pinceau` |
 | La nuée qui cherche sa forme | des milliers de points qui prennent des formes l'une après l'autre, toujours par trois (traits, colonnes, disques, points pleins), puis l'initiale de l'offre | tension, les trois parties ou étapes de l'offre | `nuee-de-particules` |
 | La rafale de planches | ses images ou ses mots, composés en planches d'imprimerie, qui remplissent la page en salves sur le tempo | crescendo, l'univers de son sujet, ce qu'on reçoit | `planches-en-rafale` |
@@ -49,7 +49,7 @@ Scène par scène, un exemple et pas un plan à suivre (c'est un teaser : il n'a
 | Révélation | 12 à 13 s | Coupe franche sur la page vide : le nom de la version change de forme tous les quarts de seconde. |
 | Offre et appel | 13 à 15 s | Deux lignes posées au centre (le produit, puis « bientôt »), le logotype, coupe au noir. |
 
-Le kit suit le même ordre en quatre scènes de 4,5 s, 5 s, 2,8 s et 3,8 s (section « Les compositions du kit »). Il en garde les gestes, jamais les images : les sphères et la lune deviennent trois points pleins et l'initiale de l'offre, les gravures ses vraies images ou ses mots.
+Le kit suit le même ordre en quatre scènes de 4,5 s, 5 s, 2,8 s et 5,6 s (section « Les compositions du kit »). Il en garde les gestes, jamais les images : les sphères et la lune deviennent trois points pleins et l'initiale de l'offre, les gravures ses vraies images ou ses mots.
 
 ## 3. Les fonds et les couleurs
 
@@ -83,8 +83,8 @@ Le look est monochrome : c'est sa force. Ne remplis pas une forme de couleur, ne
 
 Tous sont dans `compositions/`.
 
-1. **Le coup de pinceau** (scène 1). Un seul geste en deux élans (0,45 s puis 0,6 s) : une tête ronde où le pinceau se pose, 150 poils qui portent l'encre et sèchent le long du geste (la page passe dans la queue), puis un point posé en 0,22 s avec un petit choc de caméra (+3,5 % en 0,09 s, retour en 0,45 s).
-2. **La numérisation** (scène 1). Des colonnes de petits signes, couleur de la page, traversent l'encre (redistribuées douze fois par seconde) ; la page fait un sursaut de côté (14 px, puis -9 px, en 0,11 s).
+1. **Le coup de pinceau** (scène 1). Un seul geste en deux élans (0,45 s puis 0,6 s) : une tête ronde où le pinceau se pose, 150 poils qui portent l'encre et sèchent le long du geste (la page passe dans la queue), puis un point posé en 0,22 s ; la caméra avance lentement pendant tout le geste (×1,02 → ×1,05, sine.inOut), sans choc.
+2. **La numérisation** (scène 1). Des colonnes de petits signes, couleur de la page, traversent l'encre (redistribuées douze fois par seconde) ; la page reste stable (le sursaut de côté de l'original n'est pas repris : c'est le début de la vidéo).
 3. **La nuée qui cherche sa forme** (scènes 1 et 2). L'encre devient 3 400 points qui tournent dans le sens du geste (deux poussées), s'aplatissent en bande, puis prennent les formes une à une : trois traits, trois colonnes en treillis qui tournent (12 anneaux de 10 nœuds, fils fins), trois disques en gros pixels (les points se calent sur une grille de 15 px), trois points serrés qui deviennent d'un coup trois disques pleins (0,26 s : les points de suspension), puis l'initiale de l'offre écrite en points, qui respire (+6 % en 0,4 s) et frémit. Passage : 0,45 à 0,55 s, power3.inOut, avec un léger bombé.
 4. **La rafale de planches** (scène 3). Une trentaine de planches, une par case d'une grille de 8 × 5 (5 × 9 en 9:16) tenue dans une marge, l'initiale gardant sa place, surgissent en cinq salves sur le tempo (0,42 s d'écart), du centre vers les bords : chacune se pose en 0,16 s (back.out), son cadre se dessine en 0,32 s, son mot s'écrit de gauche à droite en 0,3 s. Une planche, c'est une de ses images (en noir et blanc, dans un cadre fin) ou un de ses mots : dans un cadre, sur un aplat d'encre, dans une pilule, seul sur un filet ; quelques disques pleins ponctuent. Aucune ne déborde de sa case ni du cadre. La caméra recule de 14 % pendant 2,2 s.
 5. **Le sigle qui change de forme** (scène 4). Coupes franches tous les 0,24 s : l'initiale fine, puis très grasse avec trois barres, puis en contour, puis fine avec trois points qui arrivent un à un (le dernier à l'accent).
@@ -114,7 +114,7 @@ Tous sont dans `compositions/`.
 ## 9. L'ouverture et la fin
 
 - **Ouverture :** la page et son cadre sont là dès la première image, le pinceau part à 0,1 s : on voit tout de suite une main qui trace.
-- **Fin :** le sigle (1,2 s), les deux lignes (1,3 s, la deuxième 0,5 s après la première), le nom (0,8 s), puis 0,3 s de noir. La deuxième ligne dit quand ou où (« Bientôt disponible. », ou une vraie date de la fiche) ; un appel plus direct (« Inscris-toi sur la liste ») se met à sa place si la page le permet.
+- **Fin :** le sigle (1,2 s), les deux lignes (la deuxième 0,5 s après la première), tenues ensemble le temps de leur lecture (`studio_motion.py lecture` : 2 s pour quatre mots, la scène la calcule), le nom 1,5 s au moins, puis 0,3 s de noir. La deuxième ligne dit quand ou où (« Bientôt disponible. », ou une vraie date de la fiche) ; un appel plus direct (« Inscris-toi sur la liste ») se met à sa place si la page le permet.
 
 ## Ce qui ne se fera pas à l'identique
 
@@ -125,7 +125,7 @@ Tous sont dans `compositions/`.
 - Le logotype « K2, K3, KIII » : l'initiale de l'offre avec trois barres puis trois points.
 - Les légendes de l'original : des légendes génériques en français (à remplacer).
 - Le noir et blanc pur : la page et l'encre sont la plus claire et la plus sombre de ses couleurs, un seul point prend son accent.
-- La durée : 16,1 s au lieu de 15 s.
+- La durée : 17,9 s au lieu de 15 s (les lignes de fin tenues le temps de leur lecture).
 
 ## Sur une autre offre
 
@@ -141,11 +141,11 @@ Tous sont dans `compositions/`.
 
 ## Les compositions du kit
 
-Montées bout à bout dans cet ordre, elles raccordent image pour image (16,1 s) ; chacune vit aussi seule (la scène 2 et la scène 3 commencent alors sur la bande et sur l'initiale). Les couleurs ne viennent que des jetons de la palette (`var(--brand-clair)`, `var(--brand-sombre)`, l'accent plein), lus par le script sur la scène.
+Montées bout à bout dans cet ordre, elles raccordent image pour image (17,9 s avec les textes d'exemple) ; chacune vit aussi seule (la scène 2 et la scène 3 commencent alors sur la bande et sur l'initiale). Les couleurs ne viennent que des jetons de la palette (`var(--brand-clair)`, `var(--brand-sombre)`, l'accent plein), lus par le script sur la scène.
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace |
 |---|---|---|---|
 | `compositions/coup-de-pinceau.html` | 4,5 s | la page et son cadre, le cercle au pinceau, le point, la numérisation, la nuée qui tourne et se pose en bande | LEGENDES, GESTES (le tracé ; `accent: true` pose le point à l'accent, plein) |
 | `compositions/nuee-de-particules.html` | 5 s | la bande qui devient trois traits, trois colonnes en treillis, trois disques en pixels, trois points pleins, puis son initiale en points | LEGENDES (les mêmes), INITIALE, l'ordre et les temps des FORMES |
 | `compositions/planches-en-rafale.html` | 2,8 s | l'initiale au centre, cinq salves de planches (ses images ou ses mots) qui remplissent la page | IMAGES (ses vraies images, dans `assets/images/`), MOTS (ses vrais mots), INITIALE (la même), LEGENDES_FIG |
-| `compositions/bientot.html` | 3,8 s | la page vide, le sigle qui change de forme, les deux lignes, le nom, le noir | NOM, LIGNES, LOGO |
+| `compositions/bientot.html` | 5,6 s (deux lignes de 4 mots ; la scène calcule sa durée d'après ses lignes et son nom) | la page vide, le sigle qui change de forme, les deux lignes, le nom, le noir | NOM, LIGNES, LOGO |

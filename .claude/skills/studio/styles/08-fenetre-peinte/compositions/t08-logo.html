@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE PEINTE » · SCÈNE : LE LOGO EN CUBE (ouverture ou fin) · 2 s ou 3,8 s
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LE LOGO EN CUBE (ouverture ou fin) · 2,7 s ou 5 s
     Ce que la scène montre : le vrai logo de la marque, posé sur la face avant d'un cube aux
     couleurs de la marque, arrive en roulant dans l'espace (trois rotations qui se calment), se pose
     et glisse vers la gauche ; le nom de l'offre sort de derrière lui. Le cube ne porte que son
     logo : sans logo, pas de cube, le nom seul. Deux versions :
-     - FOND = "clair" (ouverture, 2 s) : fond clair de la marque, côtés du cube à sa nuit ;
-     - FOND = "sombre" (fin, 3,8 s) : la nuit de la marque (var(--brand-sombre)), côtés du cube
-       clairs, nom clair, puis la phrase d'appel s'écrit dessous et se tient (l'écran final).
+     - FOND = "clair" (ouverture, 2,7 s) : fond clair de la marque, côtés du cube à sa nuit ; le nom
+       se tient le temps de sa lecture (1,5 s au moins) pendant que le cube flotte ;
+     - FOND = "sombre" (fin, 5,4 s avec la phrase d'exemple) : la nuit de la marque (var(--brand-sombre)), côtés du cube
+       clairs, nom clair, puis la phrase d'appel s'écrit dessous et se tient 3 s (l'écran final).
+    La scène calcule sa durée (D dans le script, d'après le nom et la phrase d'appel) : reporte-la
+    dans data-duration (ici et sur l'hôte).
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte
     (le nom passe sous le cube).
 
     À REMPLACER :
      1. L'id « t08-logo » (racine, constante ID, préfixe CSS) par l'id de la scène (t08-ouverture,
-        t08-fin) ; data-duration = 2 en clair, 3.8 en sombre (et D dans le script).
+        t08-fin) ; data-duration = D (2,7 s en clair avec un nom de 2 mots, 5 s en sombre avec la
+        phrase d'appel d'exemple, 5,4 s).
      2. FOND : "clair" ou "sombre". LOGO : brand/logo.svg ou brand/logo.png ("" : le nom seul,
         sans cube). FACE : la couleur de la face qui porte le logo : "" (sa nuit sur fond clair,
         son clair sur fond sombre : un logo posé au centre de la face, LOGO_TAILLE = 0.58), ou
@@ -53,7 +57,7 @@
   #t08-logo.t08-vertical .t08-nom { font-size: 104px; }
 </style>
 
-<div data-composition-id="t08-logo" data-width="1920" data-height="1080" data-duration="2" style="position:absolute; inset:0;">
+<div data-composition-id="t08-logo" data-width="1920" data-height="1080" data-duration="2.7" style="position:absolute; inset:0;">
   <div id="t08-logo" class="k-scene">
     <div class="t08-fond"></div>
     <div class="t08-lockup" id="t08-logo-lockup">
@@ -66,11 +70,16 @@
 
 <script>
   (function () {
-    var ID = "t08-logo", D = 2;
+    var ID = "t08-logo";
     // ---- À remplacer -------------------------------------------------------------------------
     var FOND = "clair", LOGO = "brand/logo.svg", FACE = "", LOGO_TAILLE = 0.58;
     var NOM = "Ton offre", APPEL = "Le lien est juste en dessous.";
     // -------------------------------------------------------------------------------------------
+    // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
+    // moins ; l'écran final 3 s. Le nom est sorti à 1,2 s ; la phrase d'appel s'écrit à partir de 1,45 s.
+    function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+    var FIN_APPEL = 1.45 + 0.03 * APPEL.length;     // la phrase d'appel est écrite (fin)
+    var D = FOND === "sombre" && APPEL ? Math.ceil((FIN_APPEL + lecture(APPEL, 3)) * 10 - 1e-9) / 10 : Math.ceil((1.2 + lecture(NOM)) * 10 - 1e-9) / 10;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
@@ -118,12 +127,14 @@
     var appel = q("#t08-logo-appel");
     if (FOND === "sombre" && APPEL) {
       appel.style.top = (H / 2 + (vertical ? 220 : 110)) + "px";
-      var r = K.rng(APPEL.length * 13 + 5), t = 1.45;
-      APPEL.split("").forEach(function (c) {
-        var s = K.el(appel, "span", null, c);
-        tl.set(s, { opacity: 1 }, t);
-        if (r() < 0.55) t += 0.024 + r() * 0.02;
-      });
+      // 33 signes par seconde, par petits paquets irréguliers ; la phrase entière s'écrit en
+      // 0,03 s par signe, puis se tient 3 s (l'écran final)
+      var r = K.rng(APPEL.length * 13 + 5), spans = APPEL.split("").map(function (c) { return K.el(appel, "span", null, c); }), i = 0;
+      while (i < spans.length) {
+        var paquet = 1 + Math.floor(r() * 3);
+        for (var k = i; k < Math.min(spans.length, i + paquet); k++) tl.set(spans[k], { opacity: 1 }, 1.45 + 0.03 * i);
+        i += paquet;
+      }
     } else { appel.style.display = "none"; }
 
     window.__timelines[ID] = tl;

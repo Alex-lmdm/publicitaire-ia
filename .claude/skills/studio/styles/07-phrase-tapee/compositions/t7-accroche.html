@@ -11,7 +11,13 @@
   s'allument tour à tour à la couleur de ta marque ; un temps de silence ; un mot géant tapé sur
   l'aplat de ta couleur, des grappes de pixels qui battent la mesure ; coupe sur fond clair : ton
   logo devient net et ton nom sort de lui.
-  Durée : 7,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
+  Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s, 2 s au moins pour
+  l'accroche : `studio_motion.py lecture`) ; pendant qu'il se lit, rien ne recadre : la vie vient de
+  la vignette qui change, de la pastille, des mots qui s'allument, des grappes de pixels.
+  Durée : la scène la calcule (D dans le script) : 3,3 s + la lecture de la phrase, de la suite, du
+  mot géant et du nom (11,8 s avec les textes d'exemple) ; reporte-la dans data-duration (ici et sur
+  l'hôte). La phrase tient sur une ligne en 16:9 (deux en 9:16) : 8 mots au plus avec ses objets.
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
   sur deux lignes, tout est centré).
   À remplacer (objet R en tête du script) : les morceaux de la phrase (ce que contient ton offre),
   ce que montre la vignette (ses vraies images : miniatures de ses vidéos, captures de ses
@@ -64,6 +70,7 @@
   #t7a .t7a-aplat { background: var(--brand-accent); overflow: hidden; }
   #t7a .t7a-grappes { position: absolute; inset: 0; }
   #t7a .t7a-grappes rect { fill: var(--brand-contrast); }
+  #t7a #t7a-grappes-clair rect { fill: var(--t7-encre); }
   #t7a .t7a-geant { position: absolute; left: 0; right: 0; top: 50%; height: 300px; margin-top: -150px; text-align: center; white-space: nowrap;
     font-size: 270px; font-weight: 700; letter-spacing: -0.05em; line-height: 300px; color: var(--brand-contrast); }
   #t7a .t7a-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.06em; background: currentColor; }
@@ -75,7 +82,7 @@
   #t7a .t7a-nom { font-size: 150px; font-weight: 600; letter-spacing: -0.05em; white-space: nowrap; line-height: 1.2; }
 </style>
 
-<div data-composition-id="t7a" data-width="1920" data-height="1080" data-duration="7.2" style="position:absolute; inset:0;">
+<div data-composition-id="t7a" data-width="1920" data-height="1080" data-duration="11.8" style="position:absolute; inset:0;">
   <div id="t7a" class="k-scene">
     <div class="t7a-plan t7a-nuit" id="t7a-p1">
       <svg class="t7a-poussiere" id="t7a-poussiere" aria-hidden="true" data-layout-allow-overflow></svg>
@@ -87,6 +94,7 @@
       <div class="t7a-geant" id="t7a-geant"><span id="t7a-geant-texte"></span><span class="t7a-caret" id="t7a-caret-geant"></span></div>
     </div>
     <div class="t7a-plan t7a-clair" id="t7a-p3">
+      <svg class="t7a-grappes" id="t7a-grappes-clair" aria-hidden="true" data-layout-allow-overflow></svg>
       <div class="t7a-signe"><div class="t7a-logo" id="t7a-logo"></div><div class="t7a-nom-boite"><div class="t7a-nom" id="t7a-nom"></div></div></div>
     </div>
   </div>
@@ -108,7 +116,13 @@
     nom: "Ton offre"
   };
   // -------------------------------------------------------------------------------------------
-  var D = 7.2;
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+  var motsPhrase = R.phrase.filter(function (m) { return m !== "[carte]" && m !== "[pastille]"; }).concat(R.phrase.indexOf("[pastille]") >= 0 ? [R.pastille[0]] : []);
+  var X1 = 0.05 + 0.3 * (R.phrase.length - 1) + 0.45 + lecture(motsPhrase, 2);   // la phrase et ses objets, lue
+  var XS = X1 + 0.35 + 0.06 * (R.suite.length - 1) + lecture(R.suite);             // la suite, lue
+  var G0 = XS + 0.4, XG = G0 + 0.6 + lecture(R.geant);                              // le silence, puis le mot géant, lu
+  var D = Math.ceil((XG + 0.95 + lecture(R.nom)) * 10 - 1e-9) / 10;                // le logo et le nom, lus
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7a"), q = function (s) { return racine.querySelectorAll(s); };
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -133,13 +147,27 @@
   var coins = vertical ? [[0.2, 0.16], [0.8, 0.24], [0.16, 0.8], [0.82, 0.86]] : [[0.12, 0.2], [0.86, 0.17], [0.1, 0.8], [0.88, 0.78]];
   coins.forEach(function (cn) {
     var grp = document.createElementNS(NS, "g");
-    for (var k = 0; k < 14; k++) {
+    for (var k = 0; k < 22; k++) {
       var c = document.createElementNS(NS, "rect"), cote = 8 + Math.round(r() * 3);
       c.setAttribute("x", Math.round((cn[0] * L + (r() - 0.5) * 170) / 15) * 15); c.setAttribute("y", Math.round((cn[1] * H + (r() - 0.5) * 120) / 15) * 15);
       c.setAttribute("width", cote); c.setAttribute("height", cote);
       grp.appendChild(c);
     }
     svg2.appendChild(grp); grappesAplat.push(grp);
+  });
+
+  // Sur le clair de la fin : les mêmes grappes, à l'encre, qui battent la mesure pendant que le nom se lit.
+  var svg3 = $("t7a-grappes-clair"), grappesClair = [];
+  svg3.setAttribute("viewBox", "0 0 " + L + " " + H); svg3.setAttribute("width", L); svg3.setAttribute("height", H);
+  coins.forEach(function (cn) {
+    var grp = document.createElementNS(NS, "g");
+    for (var k = 0; k < 22; k++) {
+      var c = document.createElementNS(NS, "rect"), cote = 8 + Math.round(r() * 3);
+      c.setAttribute("x", Math.round((cn[0] * L + (r() - 0.5) * 170) / 15) * 15); c.setAttribute("y", Math.round((cn[1] * H + (r() - 0.5) * 120) / 15) * 15);
+      c.setAttribute("width", cote); c.setAttribute("height", cote);
+      grp.appendChild(c);
+    }
+    svg3.appendChild(grp); grappesClair.push(grp);
   });
 
   // La phrase, avec ses objets dans la ligne
@@ -173,6 +201,7 @@
   K.cacher(mots); K.cacher(["#t7a-suite", "#t7a-p2", "#t7a-p3"]);
   if (vignettes.length) { gsap.set(vignettes, { opacity: 0 }); gsap.set(vignettes[0], { opacity: 1 }); }
   gsap.set(grappesAplat, { opacity: 0 });
+  gsap.set(grappesClair, { opacity: 0 });
   var tl = gsap.timeline({ paused: true });
 
   // 1. La phrase et ses objets (0 → 2,45 s)
@@ -182,7 +211,7 @@
     else tl.fromTo(m, { opacity: 0, y: 26, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t);
   });
   if (carte && vignettes.length > 1) {
-    for (var s = 1; s < 4; s++) {                     // la vignette change, d'un coup, avec un petit rebond
+    for (var s = 1; 0.75 + s * 0.45 < X1 - 0.3; s++) {   // la vignette change, d'un coup, avec un petit rebond, pendant toute la lecture
       var tv = 0.75 + s * 0.45, iv = s % vignettes.length, ip = (s - 1) % vignettes.length;
       tl.set(vignettes[ip], { opacity: 0 }, tv); tl.set(vignettes[iv], { opacity: 1 }, tv);
       tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, tv);
@@ -192,47 +221,56 @@
     K.texteSelon(tl, $("t7a-pastille-mot"), D, function (t) { return R.pastille[Math.max(0, Math.min(R.pastille.length - 1, Math.floor((t - 1.0) / 0.5)))]; });
     tl.fromTo(pastille, { x: 0 }, { x: 8, duration: 0.25, ease: "power2.out", yoyo: true, repeat: 3, immediateRender: false }, 1.0);
   }
-  tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 0.2);
-  tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, 2.5);
-  tl.fromTo("#t7a-poussiere", { x: 0, y: 0 }, { x: -40, y: -18, duration: 4.6, ease: "sine.inOut" }, 0);
-  tl.to("#t7a-ligne", { opacity: 0, duration: 0.05 }, 2.45);
+  for (var tg = 0.2; tg < XS - 0.5; tg += 2.3) tl.to(grappes, { opacity: 0.25, duration: 0.25, ease: "none", stagger: { each: 0.13, yoyo: true, repeat: 1 } }, tg);
+  tl.fromTo("#t7a-poussiere", { x: 0, y: 0 }, { x: -60, y: -26, duration: G0, ease: "sine.inOut" }, 0);
+  tl.fromTo("#t7a-ligne", { scale: 1 }, { scale: 1.03, duration: X1, ease: "sine.inOut", immediateRender: false }, 0);
+  tl.to("#t7a-ligne", { opacity: 0, duration: 0.05 }, X1);
 
-  // 2. La suite : ses mots s'allument tour à tour à la couleur de la marque (2,45 → 4,45 s)
+  // 2. La suite, une fois la phrase lue : ses mots s'allument tour à tour à la couleur de la marque,
+  //    puis tous ensemble, et elle se tient le temps de sa lecture
   var sm = q(".t7a-s");
-  tl.set("#t7a-suite", { opacity: 1 }, 2.45);
-  tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, 2.45);
+  tl.set("#t7a-suite", { opacity: 1 }, X1);
+  tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, X1);
   sm.forEach(function (m, i) {
-    var t = 2.95 + i * 0.32;
+    var t = X1 + 0.5 + i * 0.32;
     tl.set(m, { attr: { "data-on": "1" } }, t);
     tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
-  tl.fromTo("#t7a-suite", { scale: 0.97 }, { scale: 1.04, duration: 2.0, ease: "sine.inOut", immediateRender: false }, 2.45);
-  sm.forEach(function (m, i) { tl.set(m, { attr: { "data-on": "1" } }, 4.15 + i * 0.05); });
-  // coupe franche sur le silence : la nuit seule, sa poussière (4,45 → 4,85 s)
-  tl.set("#t7a-suite", { opacity: 0 }, 4.45);
+  tl.fromTo("#t7a-suite", { scale: 0.98 }, { scale: 1.03, duration: XS - X1, ease: "sine.inOut", immediateRender: false }, X1);
+  sm.forEach(function (m, i) { tl.set(m, { attr: { "data-on": "1" } }, Math.max(X1 + 0.5 + sm.length * 0.32 + 0.1, XS - 0.3) + i * 0.05); });
+  // coupe franche sur le silence : la nuit seule, sa poussière (0,4 s)
+  tl.set("#t7a-suite", { opacity: 0 }, XS);
 
-  // 3. Le mot géant tapé sur l'aplat de la couleur de la marque (4,85 → 6,0 s)
-  tl.set("#t7a-p2", { opacity: 1 }, 4.85);
-  tl.set("#t7a-p1", { opacity: 0 }, 4.85);
-  K.taper(tl, $("t7a-geant-texte"), R.geant, 4.95, 5.45, D);
-  tl.to("#t7a-caret-geant", { opacity: 0, duration: 0.01 }, 5.6); tl.to("#t7a-caret-geant", { opacity: 1, duration: 0.01 }, 5.8);
-  tl.fromTo("#t7a-geant", { scale: 1 }, { scale: 1.04, duration: 1.15, ease: "sine.out" }, 4.85);
-  // les grappes s'allument d'un coup, sur les temps, puis s'éteignent tour à tour
-  grappesAplat.forEach(function (grp, i) {
-    tl.set(grp, { opacity: 1 }, 4.95 + i * 0.12);
-    tl.set(grp, { opacity: 0 }, 5.55 + ((i + 2) % 4) * 0.1);
+  // 3. Le mot géant tapé sur l'aplat de la couleur de la marque, tenu le temps de sa lecture ; les
+  //    grappes de pixels battent la mesure, le curseur clignote
+  tl.set("#t7a-p2", { opacity: 1 }, G0);
+  tl.set("#t7a-p1", { opacity: 0 }, G0);
+  K.taper(tl, $("t7a-geant-texte"), R.geant, G0 + 0.1, G0 + 0.6, D);
+  for (var tc = G0 + 0.75, kc = 0; tc < XG; tc += 0.4, kc++) tl.to("#t7a-caret-geant", { opacity: kc % 2 ? 1 : 0, duration: 0.01 }, tc);
+  tl.fromTo("#t7a-geant", { scale: 1 }, { scale: 1.04, duration: XG - G0, ease: "sine.out" }, G0);
+  // les grappes s'allument d'un coup, sur les temps, puis s'éteignent tour à tour (deux battues)
+  [G0 + 0.1, G0 + 1.1].forEach(function (tb) {
+    if (tb > XG - 0.5) return;
+    grappesAplat.forEach(function (grp, i) {
+      tl.set(grp, { opacity: 1 }, tb + i * 0.12);
+      tl.set(grp, { opacity: 0 }, tb + 0.6 + ((i + 2) % 4) * 0.1);
+    });
   });
 
-  // 4. Le logo devient net, le nom sort de lui (6,0 → 7,2 s)
-  tl.set("#t7a-p3", { opacity: 1 }, 6.0);
-  tl.set("#t7a-p2", { opacity: 0 }, 6.0);
+  // 4. Le logo devient net, le nom sort de lui et se tient le temps de sa lecture
+  tl.set("#t7a-p3", { opacity: 1 }, XG);
+  tl.set("#t7a-p2", { opacity: 0 }, XG);
   var aLogo = !!R.logo;
-  if (aLogo) tl.fromTo("#t7a-logo", { scale: 1.5, filter: "blur(16px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 6.0);
+  if (aLogo) tl.fromTo("#t7a-logo", { scale: 1.5, filter: "blur(16px)" }, { scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, XG);
   // avec un logo, le nom sort de derrière lui ; sans logo, il monte du flou
   tl.fromTo("#t7a-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
-    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, aLogo ? 6.35 : 6.05);
-  tl.fromTo("#t7a .t7a-signe", { scale: 1 }, { scale: 1.035, duration: 1.2, ease: "sine.out" }, 6.0);
+    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, XG + (aLogo ? 0.35 : 0.05));
+  tl.fromTo("#t7a .t7a-signe", { scale: 1 }, { scale: 1.04, duration: D - XG, ease: "sine.out" }, XG);
+  // pendant la lecture du nom, les grappes de pixels battent la mesure dans les coins, sur les temps
+  for (var tb = XG + 1.0, kb = 0; tb < D - 0.3; tb += 0.5, kb++) {
+    grappesClair.forEach(function (grp, i) { tl.set(grp, { opacity: (kb + i) % 2 ? 0 : 1 }, tb + i * 0.06); });
+  }
   window.__timelines["t7a"] = tl;
 })();
 </script>

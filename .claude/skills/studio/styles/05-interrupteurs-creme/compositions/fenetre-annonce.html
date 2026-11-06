@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°5 « INTERRUPTEURS CRÈME » · SCÈNE 4 : LA FENÊTRE QUI TRAVAILLE, PUIS L'ANNONCE (9 s)
+    STYLE N°5 « INTERRUPTEURS EN CASCADE » · SCÈNE 4 : LA FENÊTRE QUI TRAVAILLE, PUIS L'ANNONCE (16,7 s)
 
     Ce qu'elle montre : la fenêtre plein écran de l'espace du membre (la fin de la scène 3 :
     salut + champ). La main ouvre le menu « + » : les interrupteurs de l'offre s'allument encore
@@ -12,6 +12,13 @@
     carte d'annonce (pastille « Nouveau » + titre sur deux lignes), et la signature finale : le
     nom de l'offre, avec sa pastille de couleur ou le logo.
     Rôle : la démonstration courte, l'offre (ce qui est nouveau) et la signature.
+    Rien ne part avant d'être lu (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) : les étapes
+    restent jusqu'à ce que toutes se lisent (chacune se coche quand elle est faite), le titre de la
+    carte d'annonce se tient le temps de sa lecture, la signature 3 s (l'écran final). La caméra
+    suit les gestes de la démonstration (un petit coup au clic, quand aucune phrase ne se lit) ;
+    pendant une lecture, une dérive lente seulement.
+    Durée : la scène la calcule (D dans le script) : 16,7 s avec les textes d'exemple ; reporte-la
+    dans data-duration (ici et sur l'hôte).
 
     Format : 16:9. En 9:16, change data-width / data-height de la racine : la fenêtre et la carte
     se centrent seules (le contenu est réduit à 86 %).
@@ -26,7 +33,12 @@
          interface inventée : remplace le champ par l'écran réel de son espace de formation ou de
          son logiciel (une vraie capture, ou reconstruit d'après capture), ou garde seulement la
          carte d'annonce et la signature.
-      5. PASTILLE (« Nouveau », « Bonus », « Bientôt »…), TITRE (deux lignes, 6 mots au plus),
+         Chaque étape peut porter sa vraie capture (3e élément : ce qu'elle produit, sa page, le
+         résultat) : elle sort en aperçu flottant quand l'étape se coche. Sans capture, rien ne sort.
+      5. PASTILLE (« Nouveau », « Bonus », « Bientôt »…), FORT (le mot du titre surligné d'un bloc
+         plein de l'accent pendant la tenue ; "" : aucun), TITRE (deux lignes, 8 mots au plus ;
+         une phrase plus longue du script ne se raccourcit pas : elle passe sur deux lignes plus
+         petites, la scène la réduit seule),
          NOM (le nom de l'offre) et LOGO (chemin d'un logo du projet, ex. "brand/logo.svg" ;
          vide = la pastille de couleur de la marque).
       Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
@@ -86,6 +98,13 @@
     #t05-annonce .t05-etape .t05-txt { padding: 0.2em 0; }
     #t05-annonce .t05-etape .t05-ico { width: 72px; height: 72px; border-radius: 18px; }
     #t05-annonce .t05-etape .t05-ico svg { width: 38px; height: 38px; }
+    /* Ce que le produit produit : une carte par étape cochée (sa vraie capture), qui sort en aperçu flottant. */
+    #t05-annonce .t05-apercu { position: absolute; border-radius: 18px; overflow: hidden; background: var(--t05-carte);
+      box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.06), 0 22px 50px rgba(0, 0, 0, 0.16); }
+    #t05-annonce .t05-apercu img { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); border-radius: 12px; object-fit: cover; object-position: top center; }
+    /* Le mot fort du titre, surligné d'un bloc plein (l'accent, ou l'encre si l'accent est trop pâle), jamais en transparence. */
+    #t05-annonce .t05-fort { position: relative; z-index: 0; }
+    #t05-annonce .t05-bloc { position: absolute; left: -0.12em; right: -0.12em; top: 0.1em; bottom: 0.02em; background: var(--brand-accent); z-index: -1; border-radius: 0.08em; }
     #t05-annonce .t05-carte-fin { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; }
     #t05-annonce .t05-pastille-txt {
       display: inline-block; padding: 14px 30px 12px; border-radius: 18px; border: 2px solid var(--t05-encre);
@@ -103,7 +122,7 @@
     #t05-annonce .t05-main svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
   </style>
 
-  <div data-composition-id="t05-annonce" data-width="1920" data-height="1080" data-duration="9" style="position:absolute; inset:0;">
+  <div data-composition-id="t05-annonce" data-width="1920" data-height="1080" data-duration="16.7" style="position:absolute; inset:0;">
     <div id="t05-annonce" class="k-scene">
       <div class="t05-cam" id="t05-annonce-cam" data-layout-allow-overflow>
       <div class="t05-mini" id="t05-annonce-mini">
@@ -128,17 +147,30 @@
 
   <script>
     (function () {
-      var ID = "t05-annonce", D = 9;
+      var ID = "t05-annonce";
       var SALUT = "Bonjour, Léa";
       var ACCUEIL = "Que veux-tu apprendre aujourd'hui ?";
       var MENU = [["book-open", "Module 1 · Les bases"], ["play", "Les vidéos"], ["list-checks", "Les exercices"], ["file-text", "Les modèles"], ["gift", "Les bonus"]];
       var DEMANDE = "Prépare mon plan pour la semaine";
-      var ETAPES = [["book-open", "Lecture du module 1…"], ["list-checks", "Choix de tes exercices…"], ["calendar", "Ton plan de la semaine…"]];
+      // [icône, texte, sa vraie capture (facultative) : la carte qui sort quand l'étape est faite]
+      var ETAPES = [["book-open", "Lecture du module 1…", ""], ["list-checks", "Choix de tes exercices…", ""], ["calendar", "Ton plan de la semaine…", ""]];
       var PASTILLE = "Nouveau";
       var TITRE = ["Ton nouveau module", "est disponible"];
+      var FORT = "nouveau";   // le mot du titre surligné d'un bloc plein pendant la tenue ("" : aucun)
       var NOM = "Ton offre";
       var LOGO = ""; // ex. "brand/logo.svg" ; vide : la pastille de couleur de la marque
 
+      // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
+      // moins ; l'écran final 3 s.
+      function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+      // Les étapes restent jusqu'à ce que toutes se lisent (de la première qui s'écrit), la carte
+      // d'annonce le temps de lire son titre, la signature 3 s.
+      var T_ETAPES = 3.85, XE = T_ETAPES + Math.max(lecture(ETAPES.map(function (e) { return e[1]; })), 0.38 * (ETAPES.length - 1) + 0.85 + 1.5);
+      var OA = XE - 5.1;                                                      // décalage de la carte d'annonce (5,55 s + OA)
+      var nT2 = TITRE[TITRE.length - 1].split(" ").length;
+      var XT = 5.9 + OA + 0.07 * (nT2 - 1) + 0.7 + lecture(TITRE);           // le titre sort, lu
+      var OS = XT - 7.1;                                                      // décalage de la signature (7,45 s + OS)
+      var D = Math.ceil((7.75 + OS + 0.6 + 3) * 10 - 1e-9) / 10;             // le nom écrit, puis 3 s
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
       var tl = gsap.timeline({ paused: true }), cam = $("cam");
@@ -228,30 +260,71 @@
         var t0 = 3.75 + i * 0.38, txt = et.querySelector(".t05-txt");
         gsap.set(et.querySelector(".t05-ico"), { scale: 0.5, opacity: 0 });
         tl.to(et.querySelector(".t05-ico"), { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, t0);
+        // l'étape faite se coche (l'interface réagit) : son icône devient une coche, avec un petit rebond
+        var ico = et.querySelector(".t05-ico"), coche = K.el(ico, "span", "t05-coche", K.ic("check"));
+        gsap.set(coche, { position: "absolute", display: "grid", placeItems: "center", inset: 0, opacity: 0 });
+        ico.style.position = "relative";
+        var tc = Math.min(XE - 0.6, t0 + 1.3 + i * 0.35);
+        tl.to(ico.querySelector("svg"), { opacity: 0, duration: 0.12 }, tc);
+        tl.to(coche, { opacity: 1, duration: 0.12 }, tc);
+        tl.fromTo(ico, { scale: 1 }, { scale: 1.15, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tc);
+        // ce que l'étape produit sort en aperçu flottant : sa vraie capture, dans une carte qui surgit
+        // (sans fondu : une capture à demi transparente salit ses couleurs), et repart d'un coup
+        if (e[2]) {
+          var ap = K.el($("travail"), "div", "t05-apercu"), im = K.el(ap, "img"), place = vertical
+            ? { x: i * 315, y: 650, h: 300 } : { x: 900 + i * 70, y: 120 + i * 210, h: 250 };
+          im.alt = ""; im.src = e[2];
+          var poser = function (r) { var w = Math.min(place.h * r, vertical ? 290 : 470), h = w / r; gsap.set(ap, { left: place.x, top: place.y, width: w, height: h }); };
+          poser(16 / 9); im.onload = function () { poser(im.naturalWidth / Math.max(1, im.naturalHeight)); };
+          K.cacher(ap);
+          tl.set(ap, { opacity: 1 }, tc + 0.05);
+          tl.fromTo(ap, { scale: 0.3, y: 50, rotation: i % 2 ? 6 : -6 }, { scale: 1, y: 0, rotation: i % 2 ? 2 : -2, duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, tc + 0.05);
+          tl.set(ap, { opacity: 0 }, XE);
+        }
         // La ligne se révèle de gauche à droite (un masque qui glisse), comme une IA qui écrit
         txt.style.webkitMaskImage = txt.style.maskImage = "linear-gradient(90deg, #000 0%, #000 40%, transparent 60%)";
         txt.style.webkitMaskSize = txt.style.maskSize = "250% 100%";
         selon(function (t) { var v = (100 * (1 - prog(t, t0 + 0.1, 0.75, "power1.inOut"))).toFixed(1) + "% 0"; txt.style.webkitMaskPosition = v; txt.style.maskPosition = v; });
       });
-      tl.to(travail, { y: -40, duration: 1.3, ease: "sine.inOut" }, 4.0);
+      // pendant qu'on lit les étapes, une dérive lente seulement (la caméra s'en approche de 5 %)
+      tl.to(travail, { y: -40, duration: XE - 4.0, ease: "sine.inOut" }, 4.0);
       var centreEtapes = [L / 2 - 300, H / 2 + 60];
-      recadre(4.4, 1.08, centreEtapes, centreEtapes, 0.6, "expo.inOut");
-      tl.to(travail, { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, 5.1);
+      recadre(3.75, 1.05, centreEtapes, centreEtapes, XE - 3.75, "sine.inOut");
+      tl.to(travail, { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, XE);
 
       // 4. La carte d'annonce : pastille + titre
       var fin = $("fin"), titre = $("titre");
       $("pastille").textContent = PASTILLE;
       var tMots = mots(titre, TITRE);
+      // le mot fort : un bloc plein de l'accent derrière lui, qui s'ouvre par un volet au milieu de la tenue
+      var fort = Array.prototype.filter.call(tMots, function (m) { return FORT && m.textContent.replace(/[.,!?]/g, "").toLowerCase() === FORT.toLowerCase(); })[0], bloc = null;
+      // (l'accent ; l'encre si l'accent est trop pâle sur le clair, comme le trait des scènes 1 et 2)
+      var csA = getComputedStyle(racine), lumA = function (c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle, r = [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; return r.map(function (u) { u /= 255; return u <= 0.03928 ? u / 12.92 : Math.pow((u + 0.055) / 1.055, 2.4); }).reduce(function (s, u, i) { return s + u * [0.2126, 0.7152, 0.0722][i]; }, 0); };
+      var la = lumA(csA.getPropertyValue("--brand-accent")), lc = lumA(csA.getPropertyValue("--brand-clair")), blocAccent = (Math.max(la, lc) + 0.05) / (Math.min(la, lc) + 0.05) >= 2;
+      if (fort) { fort.classList.add("t05-fort"); bloc = K.el(fort, "span", "t05-bloc"); bloc.style.background = blocAccent ? "var(--brand-accent)" : "var(--t05-encre)"; gsap.set(bloc, { opacity: 0 }); }
       K.cacher($("pastille")); K.cacher(tMots);
-      tl.fromTo($("pastille"), { opacity: 0, y: 10, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 5.55);
+      tl.fromTo($("pastille"), { opacity: 0, y: 10, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 5.55 + OA);
       var lignes = titre.querySelectorAll(".t05-ligne");
-      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 5.65, { y: 10, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
-      if (lignes[1]) K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 5.9, { y: 10, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
-      tl.fromTo(fin, { scale: 1 }, { scale: 1.025, duration: 1.6, ease: "sine.inOut", immediateRender: false }, 5.6);
-      // La carte et la signature arrivent avec un léger recul de la caméra.
-      tl.fromTo(cam, { scale: 1.08, x: 0, y: 0 }, { scale: 1, duration: 1.1, ease: "expo.out", immediateRender: false }, 5.5);
-      tl.fromTo(cam, { scale: 1.1 }, { scale: 1, duration: 1.0, ease: "expo.out", immediateRender: false }, 7.42);
-      tl.to([$("pastille")].concat(Array.prototype.slice.call(tMots)), { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in", stagger: 0.02 }, 7.1);
+      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 5.65 + OA, { y: 10, flou: 8, duree: 0.6, decalage: 0.05, echelle: 1 });
+      if (lignes[1]) K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 5.9 + OA, { y: 10, flou: 8, duree: 0.6, decalage: 0.05, echelle: 1 });
+      tl.fromTo(fin, { scale: 1 }, { scale: 1.03, duration: XT - 5.6 - OA, ease: "sine.inOut", immediateRender: false }, 5.6 + OA);
+      // La carte et la signature arrivent avec un léger recul de la caméra (leur apparition), puis
+      // la caméra ne fait plus qu'une dérive.
+      tl.fromTo(cam, { scale: 1.08, x: 0, y: 0 }, { scale: 1, duration: 1.1, ease: "expo.out", immediateRender: false }, 5.5 + OA);
+      tl.fromTo(cam, { scale: 1.1 }, { scale: 1, duration: 1.0, ease: "expo.out", immediateRender: false }, 7.42 + OS);
+      if (bloc) {
+        var tb = 5.9 + OA + 0.07 * (nT2 - 1) + 0.7 + 0.35;      // peu après que le titre est posé
+        tl.set(bloc, { opacity: 1 }, tb);
+        tl.set(fort, { color: (blocAccent ? csA.getPropertyValue("--brand-contrast") : csA.getPropertyValue("--t05-carte")).trim() }, tb);
+        tl.fromTo(bloc, { scaleX: 0.85 }, { scaleX: 1, duration: 0.25, ease: "back.out(2)", immediateRender: false }, tb);
+        tl.set(bloc, { opacity: 0 }, XT - 0.15);
+        tl.set(fort, { color: csA.getPropertyValue("--t05-encre").trim() }, XT - 0.15);
+      }
+      // puis la pastille se remplit de l'encre (l'annonce se confirme), au milieu de ce qui reste à lire
+      var tp = (tb + 0.3 + XT) / 2 - 0.1;
+      tl.to($("pastille"), { backgroundColor: getComputedStyle(racine).getPropertyValue("--t05-encre").trim() || "#202022", color: getComputedStyle(racine).getPropertyValue("--t05-carte").trim() || "#ffffff", duration: 0.12, ease: "power1.out" }, tp);
+      tl.fromTo($("pastille"), { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tp);
+      tl.to([$("pastille")].concat(Array.prototype.slice.call(tMots)), { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in", stagger: 0.02 }, XT);
 
       // 5. La signature : la pastille de la marque (ou le logo) tourne et se pose, le nom s'écrit
       var marque = $("marque"), nom = $("nom"), sig = $("signature");
@@ -259,9 +332,9 @@
       nom.textContent = NOM;
       gsap.set(marque, { scale: 0, rotation: -120 });
 
-      tl.to(marque, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.6)" }, 7.45);
-      selon(function (t) { nom.style.clipPath = "inset(-10% " + (100 - 100 * prog(t, 7.75, 0.6)).toFixed(1) + "% -10% 0%)"; });
-      tl.fromTo(sig, { scale: 1 }, { scale: 1.03, duration: 1.4, ease: "sine.inOut", immediateRender: false }, 7.6);
+      tl.to(marque, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1.6)" }, 7.45 + OS);
+      selon(function (t) { nom.style.clipPath = "inset(-10% " + (100 - 100 * prog(t, 7.75 + OS, 0.4, "power3.out")).toFixed(1) + "% -10% 0%)"; });
+      tl.fromTo(sig, { scale: 1 }, { scale: 1.04, duration: D - 7.6 - OS, ease: "sine.inOut", immediateRender: false }, 7.6 + OS);
 
       // Mise en place verticale des deux cartes finales (mesurées après chargement des polices)
       var cs = getComputedStyle(titre);

@@ -1,9 +1,10 @@
 # Le style : vivant, dense, à sa marque
 
 Une vidéo du studio doit avoir le niveau d'une vidéo de lancement produit faite par un
-studio de motion design : **beaucoup de choses montrées, très peu de texte**, des interfaces que
-les gens reconnaissent, des fonds qui changent, rien qui fasse vide. Le test : on coupe le son,
-on ne lit presque rien, et on a compris ce que fait l'offre.
+studio de motion design : **une phrase courte à la fois, le temps de la lire, et beaucoup de choses
+montrées pendant qu'on la lit** : ses vraies captures, des interfaces que les gens reconnaissent,
+ses vrais chiffres, des fonds qui changent, rien qui fasse vide. Le test : on coupe le son, on lit
+chaque phrase sans se presser, et on a compris ce que fait l'offre, pour qui, et quoi faire.
 
 ## Trois niveaux d'identité
 
@@ -34,7 +35,8 @@ dans `brand/tokens.css`, et seulement là :
   neutres en transparence (une grille en blanc à 5 %, une ombre noire).
 
 Les dégradés se font entre neutres (du noir au gris, du sombre au gris), jamais vers l'accent ni
-depuis lui. L'accent se pose **plein** : jamais en transparence sur un fond sombre, jamais mélangé
+depuis lui. L'accent se pose **plein** : jamais en transparence sur un fond sombre (ni en fondu ni en flou
+à son entrée : le temps de l'effet, il vire à l'olive, essai du style 2 du 06/11/2026), jamais mélangé
 au noir ou au gris, jamais dérivé (`oklch(from …)`, `color-mix` avec l'accent, une « nuit »
 teintée) : un jaune assombri devient brun, olive ou orangé, et la vidéo n'est plus à sa marque
 (story refusée du 06/11/2026, des couchers de soleil bruns tirés de son jaune). Pour un trait
@@ -44,15 +46,32 @@ Seules ses **vraies captures** (sa page, son produit, ses vidéos, ses résultat
 ses outils** gardent leurs propres couleurs. `studio_motion.py palette exports/<vidéo>.mp4` relève
 tout le reste à la revue.
 
-## Aucune image inventée
+## Aucune image inventée : sa vraie matière, dans cet ordre
 
-Ce qui se montre vient du client ou de ses outils : ses captures, son interface reconstruite
-d'après capture, ses vidéos, ses vrais chiffres, les vrais logos. Jamais un paysage, un ciel, une
-planète, une sphère, une gravure, un tableau peint, une photo d'ambiance ou un objet décoratif
-dessiné pour l'occasion : ils font « vidéo d'IA » et sortent de sa palette. Un style dont
-l'original montrait des images (des paysages, des photos) prend à leur place une vraie matière du
-client qui sert le script, ou rien : un fond de sa palette, sa typographie, une forme simple à ses
-couleurs (un rectangle, un cadre, un trait).
+Ce qui se montre vient du client ou de ses outils. Jamais un paysage, un ciel, une planète, une
+sphère, une gravure, un tableau peint, une photo d'ambiance ou un objet décoratif dessiné pour
+l'occasion : ils font « vidéo d'IA » et sortent de sa palette.
+
+Pour chaque phrase du script, ce qu'on voit pendant qu'on la lit se cherche en descendant cette
+échelle ; prends le premier barreau qui existe pour cette phrase :
+
+1. **Une vraie capture** : sa page, son produit, son espace de formation, un résultat, un message
+   reçu, une vraie vidéo (`sources/`, `assets/`).
+2. **Son interface reconstruite** d'après capture, animée : on tape, on clique, elle répond.
+3. **Un vrai chiffre** de `OFFRE.json` mis en scène : un compteur qui monte, une barre qui se
+   remplit, un prix qui se pose, avec son contexte.
+4. **Les vrais logos nus** des outils que l'offre nomme, 6 à 8 (`studio_motion.py logos`).
+5. **Sa typographie seule** : ses vrais mots, en grand, dans la grammaire du style.
+
+Une forme simple à ses couleurs (un disque, un aplat, une case, un cadre, un trait) sert de
+**cadre** (elle porte une capture, un chiffre, un logo, un mot) ou de **transition** (elle couvre,
+s'ouvre, devient l'objet suivant) : **jamais de sujet d'un plan**. Une image clé dont le seul sujet
+est une forme ou un aplat pendant plus d'une seconde est un défaut, sauf la carte de fin et une
+transition (essais des styles 2 et 4 du 06/11/2026 : des disques, des carrés et des ronds seuls à
+la place des objets de l'original, une vidéo qui ne montre plus rien). Un style dont l'original
+montrait des images (paysages, photos, objets) les remplace par le plus haut barreau disponible.
+S'il manque une matière importante, c'est la question unique du repérage
+([reperage.md](reperage.md)), pas une forme de plus.
 
 ## Des fonds qui alternent, jamais un aplat vide
 
@@ -95,7 +114,7 @@ Ce qui se montre, du plus fort au plus faible :
 | Une formation | L'espace de formation, les vidéos du programme (vraies miniatures), les modules qui tombent en place |
 | Des résultats réels (ses Reels, ses ventes, ses avant / après) | Les vraies images, en éventail, en mosaïque, dans un téléphone, avec leurs vrais chiffres qui montent |
 | Des témoignages en capture | Les vraies captures, en cartes qui arrivent de la profondeur |
-| Rien que deux phrases | Une vidéo typographique à sa marque, mais vivante (objets, fonds qui alternent). Dis-lui ce qu'une capture apporterait |
+| Rien que deux phrases | Une vidéo typographique à sa marque, mais vivante (ses vrais chiffres mis en scène, les logos de ses outils, des fonds qui alternent). Dis-lui ce qu'une capture apporterait |
 
 Fidèle, pas littéral : simplifier une interface pour qu'elle se lise (agrandir le bouton utile,
 réduire une liste à cinq lignes, retirer la navigation) oui ; inventer une fonction ou un écran
@@ -117,7 +136,8 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 |---|---|
 | Une suite d'écrans de texte posés sur le même fond uni | Des interfaces et des objets en mouvement, des fonds qui alternent |
 | Des paragraphes, des listes à puces, des mots isolés qu'on ne comprend pas | Une phrase courte et complète par écran, ce qu'elle dit montré pendant qu'on la lit |
-| Des images inventées (paysages, couchers de soleil, planètes, sphères, illustrations) | La vraie matière du client, ou un fond de sa palette |
+| Des images inventées (paysages, couchers de soleil, planètes, sphères, illustrations) | La vraie matière du client, en descendant l'échelle : capture, interface, chiffre, logos, ses mots |
+| Des formes seules (disques, carrés, ronds, aplats) à la place des objets d'un style | Une forme qui porte une matière réelle, ou qui sert de transition |
 | Des teintes tirées de l'accent (brun, olive, orangé), l'accent en transparence sur du sombre | L'accent plein sur des neutres : noir, blanc, gris |
 | Grand titre centré sur un dégradé, trois cartes qui flottent sans rapport avec l'offre | Les objets du sujet, les vraies interfaces |
 | Halos néon, reflets d'objectif, sol quadrillé lumineux, ondes de choc, particules génériques | Des objets du sujet floutés par la profondeur ; la grille fine du kit |
@@ -126,12 +146,14 @@ chiffres et les textes visibles dans une interface sont vrais (de la fiche ou de
 | Des icônes génériques qui flottent dans toutes les scènes, des logos posés sur des tuiles | De vrais logos nus, dans leurs couleurs, 6 à 8 là où l'écran a des zones vides et un sujet relié à ces marques |
 | Fausse interface vague dans un faux navigateur | L'interface réelle, reconstruite d'après capture |
 | Fondus enchaînés entre deux écrans | Un objet qui devient le suivant, un flash, un volet |
+| Une caméra qui recadre sèchement pendant qu'on lit, pour faire du rythme | Une dérive lente pendant la lecture, un recadrage net entre deux phrases ([rythme.md](rythme.md)) |
+| Le même enchaînement d'une vidéo à l'autre | Change l'angle, les interfaces, les motifs et au moins trois réglages (fonds, cadrages, transitions, tempo) d'un client à l'autre |
 
 **Avec un style du catalogue, sa grammaire prime sur ce tableau pour la typographie et le
 mouvement** : la phrase tapée du style 7 ou les longues phrases sur fond clair du style 8 sont ses
-gestes, pas des fautes (revue du 03/11/2026). Jamais pour les couleurs ni les images : un style ne
-justifie aucune teinte hors palette ni aucune image inventée (revue du 06/11/2026).
-| Le même enchaînement d'une vidéo à l'autre | Change l'angle, les interfaces, les motifs et au moins trois réglages (fonds, cadrages, transitions, tempo) d'un client à l'autre |
+gestes, pas des fautes (revue du 03/11/2026). Jamais pour les couleurs, les images ni la lecture :
+un style ne justifie aucune teinte hors palette, aucune image inventée, aucune forme seule à la
+place d'un sujet, aucune phrase tenue moins longtemps que sa lecture (revues du 06/11/2026).
 
 Test final : si cette vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom,
 elle est trop générique. Recommence par ce que son offre a de visible.

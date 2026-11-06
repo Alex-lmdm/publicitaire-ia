@@ -92,6 +92,9 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 
 ## Les pièges (tous rencontrés)
 
+- **Sur un aplat de sa couleur, rien n'entre en fondu, en flou ni avec une ombre sombre** : un élément
+  sombre à demi transparent sur un jaune fait de l'olive, et `palette` le relève (styles 2 et 4,
+  06/11/2026). Fais-le paraître à pleine opacité et grandir, ou entrer par un volet.
 - **Un projet créé avant la version 0.9.0** n'a pas les jetons de palette (`--brand-sombre`,
   `--brand-clair`, `--brand-gris-1` à `4`, `--brand-accent-lisible`) que les scènes des styles
   utilisent : sans eux, un fond de nuit devient transparent. Recopie `brand/tokens.css` du dossier

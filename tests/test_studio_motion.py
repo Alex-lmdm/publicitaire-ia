@@ -370,6 +370,17 @@ class Rythme(unittest.TestCase):
         self.assertTrue(v["figees"])
         self.assertEqual(len(v["problemes"]), 3)
 
+    def test_phrase_tenue_sa_lecture(self):
+        # Recalage du 06/11/2026 : un geste toutes les 1,2 s, une dérive lente entre deux (une phrase
+        # tenue le temps de la lire, la matière qui vit autour) : ok, rien de figé.
+        ecarts = [3.0 if i % 12 == 0 else 0.15 for i in range(1, 400)]
+        v = sm.verdict_rythme(ecarts)
+        self.assertEqual(v["problemes"], [])
+        self.assertEqual(v["figees"], [])
+        # La même tenue sans aucune dérive (un texte posé sur un aplat) : figée.
+        ecarts = [3.0 if i % 20 == 0 else 0.0 for i in range(1, 400)]
+        self.assertTrue(sm.verdict_rythme(ecarts)["figees"])
+
     def test_ecran_final_libre(self):
         vivant = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 200)]
         v = sm.verdict_rythme(vivant + [0.0] * 30)   # 3 s tenues à la fin
@@ -936,6 +947,8 @@ class Creation(unittest.TestCase):
             self.assertLess(texte.index("## Script"), texte.index("## Style et musique"))   # le script se valide avant
             self.assertIn("### LinkedIn (4x5", texte)
             self.assertLess(texte.index("### LinkedIn"), texte.index("## Livraison"))
+            # les défauts de la revue, relus avant chaque retouche, restent après les vidéos (0.9.0)
+            self.assertLess(texte.index("### LinkedIn"), texte.index("## Interdits de cette vidéo"))
             self.assertTrue((ajouts[0] / "assets" / "fonts" / "poppins.css").is_file())
             self.assertTrue(metas["story"]["sticker"])
             self.assertFalse(metas["linkedin"]["sticker"])
@@ -1289,6 +1302,80 @@ class Liens(unittest.TestCase):
             f.parent.mkdir()
             f.write_bytes(b"x")
             self.assertIsNone(sm.lien_video(str(f)))
+
+
+
+class Relecture(unittest.TestCase):
+    """La relecture à froid : le relecteur ne voit que les planches du rendu, jamais le script ni le
+    nom du dossier (story refusée du 06/11/2026, que son auteur avait mal relue)."""
+
+    def test_une_image_par_demi_seconde(self):
+        self.assertEqual(sm.instants_relecture(3.0, 0.5), [0.25, 0.75, 1.25, 1.75, 2.25, 2.75])
+        self.assertEqual(len(sm.instants_relecture(50.0, 0.5)), 100)
+        self.assertEqual(sm.instants_relecture(0.2, 0.5), [0.25])
+
+    def test_section_du_plan(self):
+        plan = "# Titre\n\n## Script\n\n1. Ta dernière vidéo ?\n2. Trois options.\n\n## Style et musique\n\nx\n"
+        self.assertEqual(sm.section_plan(plan, "Script"), "1. Ta dernière vidéo ?\n2. Trois options.")
+        self.assertEqual(sm.section_plan(plan, "Vidéos"), "")
+
+    def test_ce_que_la_video_doit_dire(self):
+        fiche = copy.deepcopy(sm.FICHE_VIDE)
+        fiche.update(produit="Publicitaire IA")
+        fiche["promesse"]["texte"] = "Installe un publicitaire dans Claude"
+        fiche["prix"]["montant"] = 67
+        fiche["cta"]["phrase"] = "Touche le lien"
+        lignes = sm.faits_releve(fiche)
+        for attendu in ("Produit : Publicitaire IA", "Promesse : Installe un publicitaire dans Claude",
+                        "Prix : 67 EUR", "Appel à l'action : Touche le lien"):
+            self.assertIn(attendu, lignes)
+        self.assertNotIn("Pour qui", lignes)                  # un champ vide ne s'écrit pas
+
+    @unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+    def test_planches_neutres_puis_releve(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            maison = racine_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre secrète", "lancement", [sm.lire_video("story:ouverture")], "2026-11-06")
+            projet = sm.projets(dossier)[0][0]
+            video = projet / "exports" / "story.mp4"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=1080x1920:r=30:d=7",
+                            "-c:v", "libx264", "-pix_fmt", "yuv420p", str(video)], check=True)
+            plan = dossier / "PLAN.md"
+            plan.write_text(plan.read_text(encoding="utf-8").replace(
+                "## Script\n", "## Script\n\n1. Une phrase du script, secrète.\n", 1), encoding="utf-8")
+            fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
+            fiche["produit"] = "Offre secrète"
+            fiche["promesse"]["texte"] = "La promesse secrète"
+            (dossier / "OFFRE.json").write_text(json.dumps(fiche, ensure_ascii=False), encoding="utf-8")
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sm.main(["relecture", str(video)])
+            sortie = sm.dossier_relecture(video.resolve())
+            self.addCleanup(shutil.rmtree, sortie, True)
+            planches = sorted(sortie.glob("planche-*.jpg"))
+            self.assertEqual(len(planches), 2)                 # 14 images, 12 par planche
+            consigne = (sortie / "CONSIGNE.md").read_text(encoding="utf-8")
+            for secret in ("secrète", "Offre", "PLAN", str(projet)):
+                self.assertNotIn(secret, consigne.replace("ni un plan", ""))
+            self.assertIn("de 6 à 7 s", consigne)
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sm.main(["relecture", str(video), "--releve"])
+            releve = (sortie / "RELEVE.md").read_text(encoding="utf-8")
+            self.assertIn("1. Une phrase du script, secrète.", releve)
+            self.assertIn("Promesse : La promesse secrète", releve)
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                sm.main(["relecture", str(video)])     # une nouvelle relecture à froid ne garde pas le relevé
+            self.assertFalse((sortie / "RELEVE.md").exists())
+
+    def test_le_modele_vide_n_est_pas_un_script(self):
+        with tempfile.TemporaryDirectory() as d:
+            maison = racine_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("reel")], "2026-11-06")
+            texte = (dossier / "PLAN.md").read_text(encoding="utf-8")
+            self.assertEqual(sm.section_plan(texte, "Script")[:1], "(")   # le modèle vide, entre parenthèses
 
 
 if __name__ == "__main__":

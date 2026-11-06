@@ -72,9 +72,10 @@ Tel qu'il sera lu, sans jargon de fabrication :
 
 > Voici le script de ta story, environ 45 s. Chaque ligne est un écran, dans l'ordre, avec ce
 > qu'on voit pendant qu'on la lit :
-> 1. « La dernière vidéo qui a fait vendre ton offre, c'était quand ? » · la phrase en très grand
->    sur ton jaune (3,4 s)
-> 2. « Pour en avoir une, tu as trois options. » · trois cartes qui arrivent (2,6 s)
+> 1. « Un week-end sur Canva pour une seule pub vidéo ? » · la phrase en très grand sur ton
+>    jaune (3,5 s)
+> 2. « Et au bout, une vidéo que tu n'oses pas publier. » · la carte « Le faire toi-même » de ta
+>    page (3,8 s)
 > 3. …
 >
 > Dis-moi ce que tu changes (un mot, une phrase, l'ordre), ou « ok ».
@@ -106,8 +107,13 @@ secret ». Une question entre dans la tête ; une affirmation se juge vraie ou f
 Devant une audience froide (le cas par défaut) :
 - ouvre sur ce qu'elle vit, pas sur une annonce ni sur le nom du produit, et sans l'interpeller
   par une étiquette (« Coachs, écoutez ») ;
-- une question qui suppose déjà le problème (« La dernière vidéo qui a fait vendre ton offre,
-  c'était quand ? »), jamais une question à laquelle on répond « non » ;
+- **une situation factuelle et précise** qu'il reconnaît d'un coup : un objet concret (une pub, un
+  Reel, sa page de vente), l'outil qu'il utilise, et un temps ou un prix tiré de la page (« 3 heures
+  sur CapCut pour monter tes Reels Instagram ? », la pub la plus rentable de Monteur IA ; « Un
+  week-end sur Canva pour une seule pub vidéo ? »). Jamais une question vague dont il faut deviner
+  l'objet : « La dernière vidéo qui a fait vendre ton offre, c'était quand ? » a été refusée par le
+  client (06/11/2026 : « une vidéo qui a fait vendre, tu parles de quoi ? D'une pub ? ») ;
+- une question qui suppose déjà le problème, jamais une question à laquelle on répond « non » ;
 - aucun mot qui invite seulement à explorer (« découvre », « révélé », « le secret ») : il attire
   des curieux, pas des acheteurs ;
 - l'agacement vise une cible extérieure (le devis, le week-end perdu, la méthode usée), jamais le

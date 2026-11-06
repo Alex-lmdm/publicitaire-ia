@@ -13,9 +13,12 @@ d'une offre (ses outils, ses modules, ses bonus).
 médian 0,30 s entre deux événements, 16 coupes franches (presque toutes avec un changement de
 fond), 4,4 s d'image figée au total. Musique à 104 battements par minute (un temps toutes les
 0,58 s), un silence net à 4,5 s puis l'entrée franche à 5,0 s.
-**Mesures de l'essai du kit refait le 06/11/2026** (les 4 scènes bout à bout, 28,6 s, marque LMDM,
-avec ses vraies images et les logos de ses outils) : 1,48 événement par seconde en 16:9 et 1,16 en
-9:16, écart médian 0,50 s, aucune image figée ; `rythme` et `palette` « ok » dans les deux formats.
+**Mesures de l'essai du kit refait le 06/11/2026** (les 4 scènes bout à bout, 48,9 s, marque LMDM,
+avec ses vraies images et les logos de ses outils, chaque texte tenu le temps de sa lecture, aucun
+recadrage pendant une lecture) : `rythme` « ok », 0,88 événement par seconde en 16:9 et 0,71 en
+9:16 (écart médian 0,70 s), aucune image figée ; `palette` « ok » (ses images tombent sans fondu).
+L'essai d'avant (28,6 s, 1,48 événement par seconde) tenait ses phrases 0,3 à 0,9 s : trop vite
+pour les lire.
 
 > On reprend la grammaire de la vidéo (phrases tapées, alternance des fonds, interfaces claires,
 > objets éparpillés, orbite, recul, point final), jamais son contenu : ni ses textes, ni son logo,
@@ -26,16 +29,24 @@ avec ses vraies images et les logos de ses outils) : 1,48 événement par second
 ## 1. Le rythme
 
 - **Une phrase, puis une preuve à l'écran, en alternance.** Chaque idée tient en deux lignes tapées
-  (3 à 6 mots) sur un fond uni, puis une coupe franche montre la chose dans une interface claire.
-  Une coupe toutes les 4 s en moyenne, presque toujours avec un changement de fond.
-- **La frappe donne la cadence :** une ligne tapée en 0,7 à 0,9 s, la seconde aussitôt après, un ou
-  deux clignements du curseur, coupe. Dans les interfaces, un geste toutes les 0,3 à 0,5 s (une carte qui
-  tombe, un clic, une icône qui surgit).
+  (une phrase complète, 8 mots conseillés) sur un fond uni, puis une coupe franche montre la chose
+  dans une interface claire. Une coupe toutes les 4 s en moyenne, presque toujours avec un
+  changement de fond.
+- **La frappe donne la cadence :** une ligne tapée en 0,7 à 0,9 s, la seconde aussitôt après, puis
+  la phrase se tient le temps de sa lecture (`studio_motion.py lecture` : 0,3 s par mot + 0,8 s, 2 s
+  au moins pour l'accroche) avant la coupe. Les scènes calculent ces tenues et leur durée (D dans le
+  script, à reporter en `data-duration`). Dans les interfaces, un geste toutes les 0,3 à 0,5 s (une
+  carte qui tombe, un clic, une icône qui surgit).
 - **Un silence avant le nom** (0,3 à 0,5 s de vide, musique coupée), puis l'entrée franche sur le mot
   géant.
-- **Chez toi :** grille de 0,5 s ; garde les tenues de lecture vivantes (les mots qui s'allument
-  bondissent un peu, les orbites tournent et les outils « se connectent » un par un, la poussière de
-  pixels scintille) : l'essai a dû les ajouter pour ne laisser aucune image figée.
+- **Chez toi :** grille de 0,5 s. Pendant qu'une phrase se lit, la caméra ne fait qu'une dérive ou
+  une poussée lente (3 à 12 % sur la tenue, sine.inOut), jamais un recadrage sec. La vie vient de ce
+  que la phrase montre : les mots qui s'allument bondissent un peu, la vignette change, sa vraie
+  page glisse au-dessus de la barre, la matière surgit autour de la phrase retapée, les outils
+  « se connectent » sur les orbites qui battent quatre fois, les grappes de pixels battent la
+  mesure. En 9:16, ces gestes fins pèsent moins : la matière éparpillée surgit en deux salves par
+  tenue pour rester lisible par `rythme` ; s'il en manque, ajoute de la vraie matière qui bouge,
+  jamais un recadrage.
 
 ## 2. Les gestes signature et leur place
 
@@ -157,21 +168,25 @@ avec un accent clair (jaune) ; le curseur de frappe y passe à l'encre.
 
 1. **La phrase tapée sur deux lignes** (`t7-phrase`, et le mot géant de `t7-accroche`, la
    conclusion de `t7-orbite`) : frappe par petits groupes de lettres (`K.taper`), une ligne en
-   0,75 s, la seconde 0,3 s après ; le curseur de frappe passe à la ligne suivante ; un
-   clignement de 0,2 s, coupe.
+   0,75 s, la seconde 0,3 s après ; le curseur de frappe passe à la ligne suivante et clignote ;
+   la phrase se tient le temps de sa lecture, ses mots s'allument tour à tour à l'accent en
+   bondissant de 14 px, puis coupe.
 2. **Les objets dans la ligne** (`t7-accroche`) : les mots montent un à un (0,3 s d'écart, 0,45 s,
    expo.out, flou 8 px → 0) ; la vignette et la pastille surgissent dans la phrase (back.out(2.2)) ;
    la vignette change d'un coup toutes les 0,45 s avec un petit rebond ; puis les mots de la suite
    s'allument tour à tour, d'un coup, à la couleur d'accent (0,32 s d'écart) en sautant de 14 px.
    Sur l'aplat, les grappes de pixels s'allument d'un coup sur les temps, puis s'éteignent.
 3. **La demande envoyée** (`t7-phrase`) : la caméra recule sur la barre (×1,18 → 1 en 1,7 s ;
-   ×1,04 en 9:16), la demande se tape en 0,85 s, les logos empilés surgissent (0,08 s d'écart), le
+   ×1,04 en 9:16 : son apparition), la demande se tape en 0,85 s et se tient le temps de sa
+   lecture ; pendant ce temps, sa vraie page (le lien de la demande, `R.lien`) glisse au-dessus de
+   la barre et défile d'un écran au suivant, les logos empilés surgissent un à un, puis le
    curseur clique sur envoyer (enfoncement 0,08 s, back.out(3)), la barre s'envole (0,45 s,
    power3.in), la fenêtre arrive floue (0,7 s, expo.out), son titre, puis ses vraies images tombent
    (0,12 s d'écart, back.out(1.6)), ou sa capture se dévoile de haut en bas (0,8 s).
-4. **Le désordre réduit en points** (`t7-eparpille`) : la phrase se tape, s'efface lettre à lettre
-   et se retape (trois fins en 2,4 s) ; à chaque fin, un groupe d'objets surgit en profondeur (0,07 s
-   d'écart, back.out(1.7)), quelques-uns flous ; chacun prend sa place prévue, ou la plus proche qui
+4. **Le désordre réduit en points** (`t7-eparpille`) : la phrase se tape, se tient le temps de sa
+   lecture, s'efface lettre à lettre et se retape (trois fins, chacune lue) ; à chaque fin, un groupe
+   d'objets surgit en profondeur en deux salves pendant la tenue (back.out(1.7), 0,7 s entre les
+   deux), quelques-uns flous, et dérive autour de la phrase ; chacun prend sa place prévue, ou la plus proche qui
    ne couvre ni la phrase ni un mot ; puis chaque objet passe en points (trame de 10 px) et file vers
    le centre en rétrécissant (0,7 s, power3.in) ; la conclusion apparaît en écriture de points dans
    un cadre de points.
@@ -179,10 +194,13 @@ avec un accent clair (jaune) ; le curseur de frappe y passe à l'encre.
    carte (0,7 s, expo.out, 0,14 s d'écart), les objets surgissent dessus (0,035 s d'écart) ; chaque
    anneau tourne à sa vitesse (100°, −64°, 38° sur la scène, sine.inOut) et les objets restent
    droits ; les outils « se connectent » un par un (liseré plein de l'accent, 0,3 s d'écart) et trois
-   fois les orbites et la carte passent d'un coup à l'accent plein (0,16 s) ; la caméra avance par
-   deux recadrages secs (×1,05 puis ×1,11, expo.out), puis recule à ×0,36 en 1,6 s (expo.inOut) sur
-   ses autres systèmes, le fond passe de l'ardoise à la nuit, tout passe au flou (6 px) sous un
-   voile de la nuit (55 %) pendant que la conclusion se tape.
+   fois (quatre dans le kit) les orbites et la carte passent d'un coup à l'accent plein (0,16 s) ; la ligne de la carte
+   se lit pendant ce temps : la caméra ne fait qu'une poussée lente (×1 → ×1,12, sine.inOut, sans
+   recadrage sec). Une fois la carte lue, elle recule à ×0,36 en 1,6 s (expo.inOut) sur ses autres
+   systèmes, le fond passe de l'ardoise à la nuit, tout passe au flou (6 px) sous un voile de la
+   nuit (55 %) pendant que la conclusion se tape et se tient le temps de sa lecture. Avant
+   l'orbite, la phrase autour de la carte se tient sa lecture : la capture de la carte se dévoile,
+   ses mots s'allument un à un.
 6. **Le point d'encre** (`t7-orbite`) : coupe sur fond clair, un point qui se contracte et se
    déforme (0,55 s), devient le logo (ou s'efface s'il n'y en a pas) ; le nom sort de derrière lui
    (0,6 s, expo.out) ; la pastille se dévoile de gauche à droite (0,45 s) ; la poussière de pixels
@@ -227,7 +245,7 @@ avec un accent clair (jaune) ; le curseur de frappe y passe à l'encre.
   voix avant le nom, jamais sous lui.
 - **Chez toi :** ambiance « Lancement énergique » ; entrée franche calée sur le mot géant
   (`musiques prendre … --a <instant de l'aplat>`), et un silence de la musique calé sur la nuit
-  que le kit laisse juste avant (4,45 → 4,85 s de `t7-accroche`). Bruitages, un par geste : frappe
+  que le kit laisse juste avant (0,4 s avant le mot géant de `t7-accroche` : 6,83 → 7,23 s avec les textes d'exemple). Bruitages, un par geste : frappe
   de clavier par groupe (pas une par lettre) sur chaque phrase tapée, petits pops pour les objets de
   la ligne et les objets éparpillés, clic sur envoyer, souffle quand la fenêtre arrive, grain
   numérique quand tout passe en points, souffle long sur le recul, un impact doux sur le logo.
@@ -238,7 +256,7 @@ avec un accent clair (jaune) ; le curseur de frappe y passe à l'encre.
 - **Les 3 premières secondes :** la nuit de sa marque, poussière de pixels, la phrase mot à mot avec
   ses deux objets dans la ligne, puis la suite dont les mots s'allument. Lisible dès 0,5 s.
 - **La fin :** le point d'encre sur fond clair qui devient le logo, le nom, la pastille d'appel en
-  capitales sur l'accent, tenue 1,7 s avec la poussière de pixels dans les coins. En page de
+  capitales sur l'accent, tenue 3 s (l'écran final) avec la poussière de pixels dans les coins. En page de
   vente, la pastille reprend le texte du bouton situé sous la vidéo.
 
 ## Ce qui ne se fera pas à l'identique
@@ -312,10 +330,15 @@ une icône. Les images (`assets/images/…`) sont ses vraies captures, miniature
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace (objet `R`) |
 |---|---|---|---|
-| `compositions/t7-accroche.html` | 7,2 s | la phrase mot à mot avec une vignette et une pastille dans la ligne, la suite qui s'allume, le silence, le mot géant tapé sur l'aplat de l'accent, le logo et le nom sur fond clair | les morceaux de la phrase (`[carte]` et `[pastille]` placent les objets), les mots gris, ce que montre la vignette (ses vraies images, sinon des mots), les mots de la pastille, la suite, le mot géant, le logo (`brand/logo.svg` ou `.png`, "" sans logo), le nom |
-| `compositions/t7-phrase.html` | 6,6 s (4,4 s sans fenêtre) | deux lignes tapées sur l'ardoise ; la barre de demande tapée, les logos empilés, le clic sur envoyer ; la fenêtre du résultat qui se remplit de sa vraie matière | les deux lignes, la demande, ses logos (3 au plus), le titre et le sous-titre de la fenêtre, ses images du résultat (`cartes` et leur `format`) ou la capture de son produit (`capture`) |
-| `compositions/t7-eparpille.html` | 5,2 s | une grande phrase retapée trois fois, sa matière (captures, logos) et des mots qui surgissent, tout qui se change en points, la conclusion en écriture de points | le début et les trois fins, les trois groupes (`groupes` : ses logos, ses images `{ img, format }`, des mots, des formes pleines `●` et `▬`), la conclusion |
-| `compositions/t7-orbite.html` | 9,6 s | la carte de l'offre dans la phrase, les trois orbites et les outils qui tournent (les orbites qui battent à l'accent à chaque connexion), le recul sur ses autres systèmes, la conclusion tapée, le point d'encre, le logo, le nom, la pastille d'appel | les deux morceaux de la phrase, la carte (nom, ligne, bas, sa capture), les logos, les deux étiquettes, ses autres systèmes (de vrais noms, ou `[]`), la conclusion, le logo, le nom, l'appel (avec sa vraie adresse) |
+| `compositions/t7-accroche.html` | 3,3 s + la lecture de ses quatre textes (11,8 s avec les textes d'exemple) | la phrase mot à mot avec une vignette et une pastille dans la ligne, la suite qui s'allume, le silence, le mot géant tapé sur l'aplat de l'accent, le logo et le nom sur fond clair | les morceaux de la phrase (`[carte]` et `[pastille]` placent les objets), les mots gris, ce que montre la vignette (ses vraies images, sinon des mots), les mots de la pastille, la suite, le mot géant, le logo (`brand/logo.svg` ou `.png`, "" sans logo), le nom |
+| `compositions/t7-phrase.html` | 12,5 s avec une fenêtre (9,2 s sans, avec les textes d'exemple) | deux lignes tapées sur l'ardoise ; la barre de demande tapée, les logos empilés, le clic sur envoyer ; la fenêtre du résultat qui se remplit de sa vraie matière | les deux lignes, la demande, ses logos (3 au plus), le lien de la demande (`lien` : sa vraie page, une ou deux captures, et son adresse), le titre et le sous-titre de la fenêtre, ses images du résultat (`cartes` et leur `format`) ou la capture de son produit (`capture`) |
+| `compositions/t7-eparpille.html` | 10,3 s (trois versions de 3 mots, une conclusion de 3) | une grande phrase retapée trois fois, sa matière (captures, logos) et des mots qui surgissent, tout qui se change en points, la conclusion en écriture de points | le début et les trois fins, les trois groupes (`groupes` : ses logos, ses images `{ img, format }`, des mots, des formes pleines `●` et `▬`), la conclusion |
+| `compositions/t7-orbite.html` | 14,4 s avec les textes d'exemple | la carte de l'offre dans la phrase, les trois orbites et les outils qui tournent (les orbites qui battent à l'accent à chaque connexion), le recul sur ses autres systèmes, la conclusion tapée, le point d'encre, le logo, le nom, la pastille d'appel | les deux morceaux de la phrase, la carte (nom, ligne, bas, sa capture), les logos, les deux étiquettes, ses autres systèmes (de vrais noms, ou `[]`), la conclusion, le logo, le nom, l'appel (avec sa vraie adresse) |
+
+Chaque scène tient ses textes le temps de leur lecture et calcule sa durée (`D` dans le script) :
+reporte-la dans `data-duration`, ici et sur l'hôte (+0,3 s par mot de plus). Une phrase du script
+plus longue que ce qu'une mise en page prend ne se raccourcit jamais : elle passe sur deux lignes
+plus petites, ou dans une scène construite dans le style.
 
 Identifiants préfixés `t7a`, `t7p`, `t7e`, `t7o` : si tu montes deux fois la même scène, change le
 préfixe partout dans la copie.

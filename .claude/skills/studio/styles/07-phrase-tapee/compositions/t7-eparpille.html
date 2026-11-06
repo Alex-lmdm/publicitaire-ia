@@ -10,7 +10,12 @@
   matière (ses captures, les logos de ses outils) et des mots en pilule, quelques formes pleines à
   ses couleurs. Puis tout se change en points, se resserre vers le centre et s'éteint, et la
   conclusion apparaît en écriture de points.
-  Durée : 5,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe à
+  Chaque version de la phrase se tient le temps de sa lecture (0,3 s par mot + 0,8 s :
+  `studio_motion.py lecture`) avant d'être effacée, la conclusion aussi ; pendant qu'on lit, la
+  matière surgit et dérive autour de la phrase, la caméra ne fait qu'un lent recul (6 %).
+  Durée : la scène la calcule (D dans le script) : 10,3 s avec les textes d'exemple (trois versions
+  de 3 mots, une conclusion de 3) ; reporte-la dans data-duration (ici et sur l'hôte).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe à
   la ligne, les objets se répartissent au-dessus et au-dessous).
   À remplacer (objet R en tête du script) : le début de la phrase et ses trois fins, ce qui
   surgit à chaque fin (groupes : 7, 6 et 8 objets au plus), la conclusion en points. Un groupe
@@ -62,7 +67,7 @@
   #t7e .t7e-cadre { position: absolute; width: 12px; height: 12px; background: var(--t7-encre); }
 </style>
 
-<div data-composition-id="t7e" data-width="1920" data-height="1080" data-duration="5.2" style="position:absolute; inset:0;">
+<div data-composition-id="t7e" data-width="1920" data-height="1080" data-duration="10.3" style="position:absolute; inset:0;">
   <div id="t7e" class="k-scene">
     <div class="t7e-fond"></div>
     <div class="k-scene3d"><div class="k-camera" id="t7e-cam"><div id="t7e-objets" style="position:absolute; inset:0"></div></div></div>
@@ -86,7 +91,18 @@
     fin: "Tout devient clair."
   };
   // -------------------------------------------------------------------------------------------
-  var D = 5.2;
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+  // Chaque version : sa frappe [début, fin], sa tenue (sa lecture), puis l'effacement de sa fin.
+  var etapes = [], efface = [], tv = 0.1;
+  R.fins.forEach(function (f, k) {
+    var frappe = k ? 0.35 : 0.65;
+    etapes.push([tv, tv + frappe]);
+    var lue = tv + frappe + lecture(R.debut + " " + f);
+    if (k < R.fins.length - 1) { efface.push([lue, lue + 0.2]); tv = lue + 0.45; } else tv = lue;
+  });
+  var Op = tv - 3.35;                                       // les points et la conclusion attendent la dernière lecture
+  var D = Math.ceil((4.5 + Op + lecture(R.fin)) * 10 - 1e-9) / 10;   // 10,3 s avec les textes d'exemple
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7e");
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L, echelle = vertical ? 0.78 : 1;
@@ -163,8 +179,8 @@
   K.cacher(tous); K.cacher("#t7e-points");
   var tl = gsap.timeline({ paused: true });
 
-  // 1. La phrase se tape, s'efface et se retape ; chaque fin fait surgir son groupe (0 → 3,4 s)
-  var etapes = [[0.1, 0.75], [1.2, 1.55], [2.15, 2.5]], efface = [[0.95, 1.15], [1.85, 2.1]];
+  // 1. La phrase se tape, se tient le temps de sa lecture, s'efface et se retape ; chaque fin fait
+  //    surgir son groupe, qui dérive autour d'elle pendant qu'on la lit
   K.texteSelon(tl, $("t7e-texte"), D, function (t) {
     var base = R.debut + " ";
     if (t < etapes[0][0]) return "";
@@ -179,30 +195,45 @@
     return base + R.fins[R.fins.length - 1];
   });
   groupes.forEach(function (g, i) {
-    var t = [0.3, 1.3, 2.25][i];
+    var t = etapes[Math.min(i, etapes.length - 1)][0] + (i ? 0.1 : 0.2);
     g.forEach(function (e, j) {
-      tl.fromTo(e, { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "back.out(1.7)", immediateRender: false }, t + j * 0.07);
+      // les objets d'un groupe surgissent en deux salves pendant la tenue de leur version (la moitié
+      // tout de suite, l'autre 0,7 s plus tard) : la vie de la lecture
+      var moitie = Math.ceil(g.length / 2), salve = j < moitie ? 0 : 1, k = salve ? j - moitie : j;
+      tl.fromTo(e, { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(1.7)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
     });
   });
   tous.forEach(function (e, i) {      // dérive lente, plus ample pour les objets flous (proches)
-    var a = 10 + (+e.dataset.flou) * 5, sens = i % 2 ? 1 : -1;
-    tl.fromTo(e, { x: -a * sens }, { x: a * sens, duration: 3.05, ease: "sine.inOut", immediateRender: false }, 0.3);
+    var a = 34 + (+e.dataset.flou) * 14, sens = i % 2 ? 1 : -1, dy = (i % 3 - 1) * 18;
+    tl.fromTo(e, { x: -a * sens, y: -dy, rotation: -2 * sens }, { x: a * sens, y: dy, rotation: 2 * sens, duration: 3.05 + Op, ease: "sine.inOut", immediateRender: false }, 0.3);
   });
-  tl.fromTo("#t7e-cam", { scale: 1.06 }, { scale: 1, duration: 3.4, ease: "sine.out" }, 0);
-  [2.7, 3.0].forEach(function (t, i) { tl.set("#t7e-caret", { opacity: i % 2 ? 1 : 0 }, t); });
+  tl.fromTo("#t7e-cam", { scale: 1.06 }, { scale: 1, duration: 3.4 + Op, ease: "sine.inOut" }, 0);
+  // le curseur clignote pendant chaque tenue
+  etapes.forEach(function (e, k) {
+    var fin = k < efface.length ? efface[k][0] : 3.35 + Op;
+    for (var tc = e[1] + 0.2, kc = 0; tc < fin - 0.1; tc += 0.4, kc++) tl.set("#t7e-caret", { opacity: kc % 2 ? 1 : 0 }, tc);
+    tl.set("#t7e-caret", { opacity: 1 }, fin);
+  });
 
   // 2. Tout passe en points et se resserre vers le centre (3,4 → 4,3 s)
   tous.forEach(function (e, i) {
-    var cx = +e.dataset.cx, cy = +e.dataset.cy, t = 3.35 + (i % 6) * 0.04;
+    var cx = +e.dataset.cx, cy = +e.dataset.cy, t = 3.35 + Op + (i % 6) * 0.04;
     tl.set(e, { attr: { "data-pix": "1" } }, t);
     tl.to(e, { x: (L / 2 - cx) * 0.75, y: (H / 2 - cy) * 0.75, scale: 0.25, opacity: 0, duration: 0.7, ease: "power3.in" }, t + 0.1);
   });
-  tl.to("#t7e-phrase", { opacity: 0, filter: "blur(10px)", scale: 0.96, duration: 0.3, ease: "power2.in" }, 3.4);
+  tl.to("#t7e-phrase", { opacity: 0, filter: "blur(10px)", scale: 0.96, duration: 0.3, ease: "power2.in" }, 3.4 + Op);
 
-  // 3. La conclusion en points (4,05 → 5,2 s)
-  tl.fromTo("#t7e-points", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 4.05);
-  tl.fromTo("#t7e .t7e-cadre", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.04 }, 4.15);
-  tl.fromTo("#t7e-points-texte", { scaleX: 1.06 }, { scaleX: 1, duration: 1.0, ease: "expo.out" }, 4.05);
+  // 3. La conclusion en points, tenue le temps de sa lecture (une poussée lente)
+  tl.fromTo("#t7e-points", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 4.05 + Op);
+  tl.fromTo("#t7e .t7e-cadre", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.04 }, 4.15 + Op);
+  tl.fromTo("#t7e-points-texte", { scaleX: 1.06 }, { scaleX: 1, duration: 1.0, ease: "expo.out" }, 4.05 + Op);
+  tl.fromTo("#t7e-points", { y: 0 }, { y: -8, duration: D - 4.5 - Op, ease: "sine.inOut", immediateRender: false }, 4.5 + Op);
+  // pendant sa lecture, les points du cadre scintillent deux fois (la poussière de pixels du look)
+  var cadres = document.querySelectorAll("#t7e .t7e-cadre");
+  [0.55, 1.15].forEach(function (dt) {
+    if (4.5 + Op + dt > D - 0.3) return;
+    tl.to(cadres, { opacity: 0.15, duration: 0.08, ease: "none", stagger: { each: 0.03, yoyo: true, repeat: 1 } }, 4.5 + Op + dt);
+  });
   window.__timelines["t7e"] = tl;
 })();
 </script>

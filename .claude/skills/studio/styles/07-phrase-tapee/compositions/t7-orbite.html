@@ -8,12 +8,19 @@
   Ce qu'elle montre : la carte de ton offre posée DANS une phrase, sur l'ardoise ; les mots
   s'écartent, trois orbites en pointillés se dessinent autour d'elle et les logos de ses outils,
   des points et deux étiquettes s'y mettent à tourner ; chaque outil « se connecte » (un liseré
-  de l'accent) et trois fois les orbites passent à l'accent, le temps d'un battement ; la caméra
+  de l'accent) et quatre fois les orbites passent à l'accent, le temps d'un battement ; la caméra
   recule : ses autres systèmes (ses autres modules, bonus ou offres, s'il en a) apparaissent
   autour, le fond passe à la nuit, tout passe au flou et la conclusion se tape au centre. Coupe
   sur fond clair : un point d'encre se contracte, devient ton logo, ton nom sort, et la pastille
   d'appel en capitales se pose dessous.
-  Durée : 9,6 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
+  Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
+  la phrase autour de la carte (pendant qu'elle se lit, la capture de la carte se dévoile), la ligne
+  de la carte pendant l'orbite (la caméra n'y fait qu'une poussée lente, sans recadrage sec), la
+  conclusion tapée, puis l'écran final 3 s.
+  Durée : la scène la calcule (D dans le script) : 14,4 s avec les textes d'exemple (4 mots autour
+  de la carte, 3 dans la conclusion) ; +0,3 s par mot de plus. Reporte-la dans data-duration (ici
+  et sur l'hôte).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
   au-dessus et au-dessous de la carte, les orbites prennent toute la largeur, deux autres systèmes
   tournent déjà en haut et en bas de l'image, les autres arrivent avec le recul).
   À remplacer (objet R en tête du script) : les deux morceaux de la phrase, la carte (nom, une
@@ -95,7 +102,7 @@
   #t7o .t7o-pixels { position: absolute; inset: 0; }
 </style>
 
-<div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="9.6" style="position:absolute; inset:0;">
+<div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="14.4" style="position:absolute; inset:0;">
   <div id="t7o" class="k-scene">
     <div class="t7o-plan" id="t7o-p1">
       <div class="t7o-fond" id="t7o-fond"></div>
@@ -129,7 +136,14 @@
     appel: "Rejoins-la sur tonsite.fr"
   };
   // -------------------------------------------------------------------------------------------
-  var D = 9.6;
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
+  // moins ; l'écran final 3 s.
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+  var nApres = R.apres.split(" ").length;
+  var XP = 0.6 + 0.12 * (nApres - 1) + 0.45 + lecture([R.avant, R.apres]);   // la phrase autour de la carte, lue
+  var O = XP - 1.45;                                                          // l'orbite attend (1,75 s + O)
+  var O2 = O + 6.1 + lecture(R.conclusion) - 6.55;                            // le point d'encre attend la conclusion lue
+  var D = Math.ceil((8.4 + O2 + 3) * 10 - 1e-9) / 10;                         // la pastille d'appel, puis 3 s
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7o");
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -224,15 +238,28 @@
   tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
   tl.fromTo(laCarte, { opacity: 0, scale: 0.55, rotation: -4 }, { opacity: 1, scale: 0.62, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.3);
   tl.fromTo(droite, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.6);
+  // pendant que la phrase se lit, la carte se remplit : sa capture se dévoile de haut en bas (une page
+  // qui se charge), puis ses lignes montent ; la caméra ne bouge pas, la carte grandit à peine
+  var apercu = laCarte.querySelector(".t7o-apercu, .t7o-marque"), lignesCarte = laCarte.querySelectorAll("h5, p, small");
+  if (apercu) tl.fromTo(apercu, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power2.out", immediateRender: false }, 1.15);
+  tl.fromTo(lignesCarte, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", stagger: 0.12, immediateRender: false }, 1.45);
+  tl.fromTo(laCarte, { scale: 0.62 }, { scale: 0.72, duration: XP - 0.85, ease: "sine.inOut", immediateRender: false }, 0.85);
+  var motsPhrase = Array.prototype.slice.call(gauche).concat(Array.prototype.slice.call(droite));
+  motsPhrase.forEach(function (m, i) {
+    var t = 1.25 + i * Math.min(0.35, (XP - 1.6) / Math.max(1, motsPhrase.length));
+    tl.to(m, { color: C("--brand-accent-lisible", "#ffffff"), duration: 0.01 }, t);
+    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+    tl.to(m, { color: C("--brand-clair", "#ffffff"), duration: 0.01 }, t + 0.38);
+  });
 
   // 2. Les mots s'écartent, les orbites se dessinent et tournent (1,45 → 4,3 s)
-  tl.to(gauche, { opacity: 0, x: vertical ? 0 : -160, y: vertical ? -120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, 1.45);
-  tl.to(droite, { opacity: 0, x: vertical ? 0 : 160, y: vertical ? 120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, 1.45);
-  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, 1.5);
+  tl.to(gauche, { opacity: 0, x: vertical ? 0 : -160, y: vertical ? -120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
+  tl.to(droite, { opacity: 0, x: vertical ? 0 : 160, y: vertical ? 120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
+  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, 1.5 + O);
   centre.anneaux.forEach(function (a, i) {
-    tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 1.75 + i * 0.14);
+    tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 1.75 + O + i * 0.14);
     a.items.forEach(function (it, j) {
-      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, 1.95 + i * 0.18 + j * 0.035);
+      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, 1.95 + O + i * 0.18 + j * 0.035);
     });
   });
   // la rotation : chaque anneau à sa vitesse, les objets restent droits
@@ -241,51 +268,52 @@
     tl.fromTo(a.el, { rotation: 0 }, { rotation: deg, duration: D - t0, ease: "sine.inOut" }, t0);
     if (a.items.length) tl.fromTo(a.items, { rotation: 0 }, { rotation: -deg, duration: D - t0, ease: "sine.inOut" }, t0);
   }
-  centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], 1.75); });
+  centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], 1.75 + O); });
   autres.forEach(function (s, i) { s.anneaux.forEach(function (a, j) { rotation(a, (j ? -1 : 1) * (40 + i * 6), 0); }); });
 
-  // Les outils se connectent à l'offre, un par un (un liseré plein de l'accent) ; trois fois, les
+  // Les outils se connectent à l'offre, un par un (un liseré plein de l'accent) ; quatre fois, les
   // orbites et la carte passent d'un coup à l'accent, le temps d'un battement (un temps fort que
   // l'œil et `rythme` voient ; jamais un halo).
   var cercles = centre.anneaux.map(function (a) { return a.cercle; });
-  [2.6, 3.2, 3.8].forEach(function (t) {
+  [2.6 + O, 3.2 + O, 3.8 + O, 4.1 + O].forEach(function (t) {   // un battement par paire d'outils connectés, et le dernier
     tl.set(cercles.concat([laCarte]), { attr: { "data-on": "1" } }, t);
     tl.set(cercles.concat([laCarte]), { attr: { "data-on": "0" } }, t + 0.16);
   });
   var accent = C("--brand-accent", "currentColor");       // la couleur de la marque, lue dans brand/tokens.css
   var connectes = centre.anneaux[0].items.concat(centre.anneaux[1].items.filter(function (it) { return it.querySelector(".t7o-tuile"); }).slice(0, 2));
   connectes.forEach(function (it, i) {
-    var t = 2.6 + i * 0.3, tuile = it.firstChild;
+    var t = 2.6 + O + i * 0.3, tuile = it.firstChild;
     tl.fromTo(it, { scale: 1 }, { scale: 1.28, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.fromTo(tuile, { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 0px " + accent },
       { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 5px " + accent, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
   });
-  // la caméra avance par deux recadrages secs pendant que les outils se connectent (jamais immobile)
-  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.05, duration: 0.45, ease: "expo.out", immediateRender: false }, 2.45);
-  tl.to(monde, { scale: s0 * 1.11, duration: 0.45, ease: "expo.out" }, 3.35);
-  tl.to(monde, { scale: s0 * 1.13, duration: 0.5, ease: "sine.inOut" }, 3.8);
-  // 3. La caméra recule, le fond passe à la nuit, tout passe au flou, la conclusion se tape (4,3 → 6,5 s)
-  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, 4.3);
-  tl.to("#t7o-fond", { backgroundColor: C("--t7-nuit", "#202022"), duration: 1.4, ease: "power1.inOut" }, 4.5);
-  tl.to(monde, { filter: "blur(6px)", duration: 0.7, ease: "power2.inOut" }, 5.35);
-  tl.to("#t7o-voile", { opacity: 0.55, duration: 0.7, ease: "power2.inOut" }, 5.35);   // un voile de la nuit, jamais un filtre sur la marque
-  tl.set("#t7o-conclusion", { opacity: 1 }, 5.45);
-  K.taper(tl, $("t7o-conclusion-texte"), R.conclusion, 5.5, 6.1, D);
-  tl.to(monde, { scale: s0 * 0.33, duration: 0.9, ease: "sine.out" }, 5.9);
+  // pendant que les outils se connectent, la ligne de la carte se lit : la caméra ne fait qu'une
+  // poussée lente (×1 → ×1,12, sine.inOut), jamais un recadrage sec ; la vie vient des connexions
+  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.12, duration: 2.55, ease: "sine.inOut", immediateRender: false }, 1.75 + O);
+  // 3. Une fois la carte lue, la caméra recule, le fond passe à la nuit, tout passe au flou, la
+  //    conclusion se tape et se tient le temps de sa lecture (les orbites tournent toujours)
+  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, 4.3 + O);
+  tl.to("#t7o-fond", { backgroundColor: C("--t7-nuit", "#202022"), duration: 1.4, ease: "power1.inOut" }, 4.5 + O);
+  tl.to(monde, { filter: "blur(6px)", duration: 0.7, ease: "power2.inOut" }, 5.35 + O);
+  tl.to("#t7o-voile", { opacity: 0.55, duration: 0.7, ease: "power2.inOut" }, 5.35 + O);   // un voile de la nuit, jamais un filtre sur la marque
+  tl.set("#t7o-conclusion", { opacity: 1 }, 5.45 + O);
+  K.taper(tl, $("t7o-conclusion-texte"), R.conclusion, 5.5 + O, 6.1 + O, D);
+  tl.to(monde, { scale: s0 * 0.31, duration: 6.55 + O2 - 5.9 - O, ease: "sine.inOut" }, 5.9 + O);
+  for (var cl = 6.3 + O, kc = 0; cl < 6.45 + O2; cl += 0.5, kc++) tl.set("#t7o-caret", { opacity: kc % 2 ? 1 : 0 }, cl);
 
   // 4. Le point d'encre sur fond clair, puis le logo, le nom et l'appel (6,55 → 9,6 s)
-  tl.set("#t7o-p2", { opacity: 1 }, 6.55);
-  tl.set("#t7o-p1", { opacity: 0 }, 6.55);
-  tl.fromTo("#t7o-encre", { scale: 1, borderRadius: "50%" }, { scale: 0.42, duration: 0.55, ease: "power3.inOut" }, 6.55);
-  tl.to("#t7o-encre", { borderRadius: "46% 54% 40% 60%", duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.65);
+  tl.set("#t7o-p2", { opacity: 1 }, 6.55 + O2);
+  tl.set("#t7o-p1", { opacity: 0 }, 6.55 + O2);
+  tl.fromTo("#t7o-encre", { scale: 1, borderRadius: "50%" }, { scale: 0.42, duration: 0.55, ease: "power3.inOut" }, 6.55 + O2);
+  tl.to("#t7o-encre", { borderRadius: "46% 54% 40% 60%", duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.65 + O2);
   var aLogo = !!R.logo;
-  tl.to("#t7o-encre", { scale: aLogo ? 2.4 : 0, opacity: 0, duration: 0.35, ease: "power2.in" }, 7.1);
-  if (aLogo) tl.fromTo("#t7o-logo", { opacity: 0, scale: 0.3, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 7.15);
+  tl.to("#t7o-encre", { scale: aLogo ? 2.4 : 0, opacity: 0, duration: 0.35, ease: "power2.in" }, 7.1 + O2);
+  if (aLogo) tl.fromTo("#t7o-logo", { opacity: 0, scale: 0.3, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 7.15 + O2);
   tl.fromTo("#t7o-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
-    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, aLogo ? 7.45 : 7.2);
-  tl.fromTo("#t7o-pastille", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 7.95);
-  tl.fromTo("#t7o-pixels rect", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none", stagger: 0.004 }, 7.3);
-  tl.fromTo("#t7o-signe", { scale: 1 }, { scale: 1.03, duration: 2.4, ease: "sine.out" }, 7.2);
+    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, (aLogo ? 7.45 : 7.2) + O2);
+  tl.fromTo("#t7o-pastille", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 7.95 + O2);
+  tl.fromTo("#t7o-pixels rect", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none", stagger: 0.004 }, 7.3 + O2);
+  tl.fromTo("#t7o-signe", { scale: 1 }, { scale: 1.04, duration: D - 7.2 - O2, ease: "sine.out" }, 7.2 + O2);
   window.__timelines["t7o"] = tl;
 })();
 </script>

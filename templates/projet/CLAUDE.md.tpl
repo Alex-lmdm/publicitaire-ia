@@ -25,13 +25,14 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
   musiques (le style et la musique : `musiques choisir --duree <durée> --style <N> --ouvrir`, puis
   `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
-  sons, planche, rythme, palette, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
+  sons, planche, rythme, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
   plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans idée retenue,
   étape 3 ; idée retenue sans script validé (section « Script » du plan), étape 3 bis ; script
   validé sans « Style et musique », étape 4 ; sinon, le plan puis la fabrication.
-- Retouche demandée : modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
+- Retouche demandée : relis d'abord « Interdits de cette vidéo » dans `{{DOSSIER}}PLAN.md` (les
+  défauts déjà corrigés), modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
 - **Dans l'app HyperFrames** (tes consignes disent alors que l'app fait le rendu) : fais la retouche
   dans `index.html`, `compositions/` et `assets/`, sans rendu ; le client la voit tout de suite dans
@@ -45,4 +46,6 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check`. Puis
   `studio_motion.py rythme exports/{{VIDEO}}.mp4` et `studio_motion.py palette
   exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses vraies captures
-  et les logos de ses outils peuvent rester signalés).
+  et les logos de ses outils peuvent rester signalés). Puis `studio_motion.py relecture
+  exports/{{VIDEO}}.mp4` : un relecteur neuf (un sous-agent qui ne voit que ses planches) doit
+  dire ce qui est vendu, à qui et quoi faire (`references/revue.md`, porte 3).

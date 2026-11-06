@@ -49,7 +49,9 @@ stricte), et centre le texte un peu à gauche.
 un lien) : réserve la bande `x 190 → 890, y 1180 → 1420`, fond calme, rien d'important dedans
 **pendant toute la story** (le sticker reste affiché du début à la fin, pas seulement sur l'écran
 final : essai du 06/11/2026, une ligne de chiffres et un prix passaient dessous), et une phrase
-courte juste au-dessus à la fin (« Touche le lien. »). Dis au client où le poser.
+courte juste au-dessus à la fin (« Touche le lien. »). Dis au client où le poser. Ne dessine
+jamais sa place (un cadre en pointillés, un rectangle vide) : sans le sticker, le spectateur voit
+une flèche qui montre un vide (relecture à froid de la story refusée, 06/11/2026).
 
 ## Ce qui change selon le support
 

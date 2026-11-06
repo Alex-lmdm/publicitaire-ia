@@ -81,6 +81,12 @@ logos, images, produits ni musiques n'est repris ; les scènes sont refaites par
 - **claude-motion-design**, howseen-ai, licence MIT : le temps fort trouvé par l'énergie, la revue
   notée par un juge distinct, le test du résumé à partir des seules images.
   https://github.com/howseen-ai/claude-motion-design
+- **Les skills d'HyperFrames** (`review.md`, `spec.md`), HeyGen, licence Apache-2.0 : la critique
+  confiée à un sous-agent qui ne voit que les planches du rendu, les défauts classés P0, P1 et P2,
+  la liste d'interdits qui grandit à chaque rendu (la relecture à froid et « Interdits de cette
+  vidéo », 0.9.0). https://github.com/heygen-com/hyperframes
+- **motion-video-kit**, echris6, licence MIT : le constructeur n'est jamais le juge, la revue par
+  des relecteurs neufs devant le vrai rendu. https://github.com/echris6/motion-video-kit
 - **claude-motion**, whaleyxbt, licence MIT : la planche de contrôle obligatoire, une montée et un
   impact par vidéo. https://github.com/whaleyxbt/claude-motion
 - **animate**, cth9191, licence MIT : silence avant le temps fort, défauts interdits.

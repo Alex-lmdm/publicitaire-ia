@@ -138,19 +138,43 @@ prélancement qui ont déjà posé le problème, l'histoire et les preuves : seu
 story refusée du 06/11/2026 le reprenait). **Par défaut, l'audience est froide** ; la version
 chaude se prend seulement si le client a fait un prélancement, ou pour ses clients existants.
 
+**Avant la structure, classe l'offre** (retour du client du 06/11/2026, sur Publicitaire IA) :
+- elle **soulage une douleur que l'audience a vécue**, dure et récurrente (« 3 heures sur CapCut
+  pour monter un Reel ») : le diagnostic ci-dessous ;
+- elle **rend possible ce que l'audience n'imaginait même pas faire** (des vidéos animées de niveau
+  studio pour son offre) : aucun problème à réveiller, l'audience n'y pensait pas. Prends **la
+  nouveauté montrée**, plus bas. Lui chercher une douleur donne des accroches qui sonnent faux
+  (le week-end sur Canva, le devis à 1 500 €, refusés le 06/11/2026).
+
 **Audience froide (par défaut, 35 à 50 s) : le diagnostic.** Assez long pour poser le contexte,
 assez dense pour qu'on ne passe pas à la story suivante : la moitié des gens tapent pour avancer
 dès qu'une intro traîne, d'où une première phrase qui dit tout de suite de quoi on parle.
 
 | Part | Bloc | Ce que le spectateur se dit | Fiche |
 |---|---|---|---|
-| 0–10 % | **La scène vécue** | « C'est moi. » Ce qu'il vit, en une question qui suppose déjà le problème (jamais une question à laquelle il répond « non »), ou une situation qu'il reconnaît | `probleme`, `public` |
+| 0–10 % | **La scène vécue** | « C'est moi. » Une situation factuelle qu'il reconnaît d'un coup : un objet concret, son outil, un temps ou un prix tiré de la page (« Un week-end sur Canva pour une seule pub vidéo ? ») ; jamais une question vague, ni une question à laquelle il répond « non » | `probleme`, `public` |
 | 10–20 % | **Ce que ça coûte** | « Ça me coûte. » Ses options d'aujourd'hui et leur vrai coût (se filmer, payer quelqu'un, y passer un week-end) | `alternatives`, `probleme` |
-| 20–35 % | **La vraie cause** | « Ah, c'est donc ça. » Pourquoi ça bloque (une vidéo qui vend demande deux métiers), puis « il y a une autre option » | `mecanisme` |
+| 20–35 % | **L'autre option, et pourquoi elle marche** | « Ah, c'est donc ça. » « Il y a une autre option », tout de suite après les options qui échouent, puis ce qui la rend différente (une vidéo qui vend demande deux métiers : elle fait les deux). La cause glissée entre les options et la nouvelle option dilue le message (retour du client du 06/11/2026) | `mecanisme` |
 | 35–60 % | **Ce que c'est, et comment ça marche** | « Je vois, c'est simple. » Le nom et ce qu'il fait en une phrase, puis deux ou trois étapes montrées dans la vraie interface, chacune avec sa phrase | `promesse`, `mecanisme`, `recoit` |
 | 60–75 % | **La preuve mesurée** | « Ça a vraiment marché. » Le repère d'abord (une pub, son budget), puis le résultat, son contexte (quelle offre, quand) et sa traduction simple | `preuves` |
 | 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » C'est ouvert ; ce qu'on reçoit et quand on y accède ; le prix, la vraie échéance et le prix d'après | `nouveaute`, `recoit`, `bonus`, `prix`, `dates`, `echeances` |
 | 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » « Touche le lien. » et ce qui attend derrière, au-dessus de la bande du sticker | `cta` |
+
+**Une possibilité nouvelle (35 à 50 s) : la nouveauté montrée.** Une croyance qui n'existe pas
+encore ne se crée pas par des mots : il faut la faire voir (Alen Sultanic, swipe du coffre
+Obsidian du client). On montre d'abord, on dit ensuite.
+
+| Part | Bloc | Ce que le spectateur se dit | Fiche |
+|---|---|---|---|
+| 0–15 % | **La preuve qu'on voit** | « Attends, c'est possible ? » La chose elle-même, à l'écran : la vidéo est sa propre démonstration (« Cette story, je ne l'ai ni filmée ni montée. ») ou le résultat montré avant d'être expliqué | `preuves` (média), `nouveaute` |
+| 15–35 % | **Le seul geste** | « C'est tout ? » Ce qu'il faut faire, dans des mots qu'il connaît (installer, coller un lien), et ce qui en sort. Un mot nouveau au plus (« vidéo animée » plutôt que « motion design ») | `mecanisme` |
+| 35–55 % | **Pour lui** | « Je vois ce que j'en ferais. » Ce que ça fabrique pour son offre à lui : ses formats, son produit, ses couleurs | `recoit`, `public` |
+| 55–75 % | **La preuve mesurée** | « Et ça vend. » Un cas réel, la dépense à côté du résultat : une preuve, jamais l'accroche (un revenu en accroche attire les acheteurs les plus volatils) | `preuves` |
+| 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » Dire aussi ce que ça demande (l'installation, l'abonnement à son IA) : chaque « sans » réveille le « trop beau pour être vrai » | `prix`, `dates`, `recoit` |
+| 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » | `cta` |
+
+Jamais contre les prestataires qu'on remplace (motion designers, agences) : on leur donne raison,
+puis on montre la nouvelle façon.
 
 **Audience chaude (après un prélancement, ou ses clients ; 30 à 45 s).** « C'est ouvert » et le
 résultat en une phrase (0–10 %) → le rappel du problème, de la solution et du mécanisme, en trois

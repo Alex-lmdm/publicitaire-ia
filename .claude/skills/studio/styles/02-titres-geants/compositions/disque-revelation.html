@@ -3,28 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°2 · TITRES GÉANTS · SCÈNE « LE DISQUE QUI POSE LE NOM » (la révélation), 5,0 s, 16:9
+    STYLE N°2 · TITRES GÉANTS · SCÈNE « LE DISQUE QUI POSE LE NOM » (la révélation), 7,7 s, 16:9
 
     Ce qu'elle montre : sur le clair de la marque, un cercle se dessine au trait avec ses repères de
-    construction (son carré, ses deux diamètres), puis se remplit de l'accent en gonflant ; coupe
-    franche sur la nuit de la marque, quadrillée fin : le disque flotte, un cadre de sélection à
-    poignées l'attrape, la caméra lève les yeux avec lui pendant qu'il monte ; un trait de marque
-    tombe de lui jusqu'au sol, deux traits de construction s'ouvrent en cône ; le disque redescend
-    le long du trait, la caméra le suit, l'horizon se trace, il se pose au point de fuite : les
-    rayons de perspective partent de lui (ils deviennent l'étoile de la scène suivante) et le nom
-    de l'offre s'écrit au-dessus, lettre par lettre.
+    construction (son carré, ses deux diamètres), puis se remplit d'un coup de sa vraie matière en
+    gonflant : son logo (ou une vraie capture découpée dans le disque, ou un vrai chiffre), cerclé
+    d'un anneau d'accent. Coupe franche sur la nuit de la marque, quadrillée fin : un cadre de
+    sélection à poignées attrape le disque, la caméra lève les yeux avec lui pendant qu'il monte ; un
+    trait de marque tombe de lui jusqu'au sol, deux traits de construction s'ouvrent en cône ; le
+    disque redescend le long du trait, la caméra le suit, l'horizon se trace, il se pose au point de
+    fuite : les rayons de perspective partent de lui (ils deviennent l'étoile de la scène suivante),
+    le nom de l'offre s'écrit au-dessus, lettre par lettre, et la phrase qui dit ce qu'elle fait se
+    pose dessous.
+
+    La vraie matière (style.md, « Aucune image inventée ») : le disque n'est jamais un aplat seul.
+    Il porte LOGO, sinon IMAGE, sinon CHIFFRE (le premier qui existe) dès qu'il prend sa couleur,
+    avant 0,6 s ; le cercle tracé n'est qu'une transition vers elle.
+
+    La lecture (rythme.md) : le nom et sa phrase restent lecture(NOM + PHRASE) une fois posés (0,3 s
+    par mot + 0,8 s, jamais moins de 1,5 s) ; pendant cette tenue, la caméra ne fait qu'une dérive
+    lente et la vie vient de la phrase : le mot clé surligné d'un bloc d'accent, puis le surlignage à
+    poignées qui attrape le nom et se retire avant la fin. data-duration (ici et sur l'hôte dans index.html) = l'instant
+    où la phrase est posée + sa lecture : la console donne la valeur s'il manque du temps.
 
     Couleurs : celles de la marque, rien d'autre. Le clair (--brand-clair) et son trait sombre au
-    début, la nuit (--brand-sombre) ensuite ; le disque est l'accent plein ; les repères et les
-    rayons, du blanc en transparence (des gris). Aucun paysage, aucune sphère, aucun faisceau de
-    lumière, aucune teinte dérivée de l'accent.
+    début, la nuit (--brand-sombre) ensuite ; l'anneau du disque est l'accent plein ; les repères et
+    les rayons, du blanc en transparence (des gris). Son logo et sa capture gardent leurs couleurs.
+    Aucun paysage, aucune sphère, aucun faisceau de lumière, aucune teinte dérivée de l'accent.
 
     À remplacer :
       1. L'identifiant « t02-revele » partout (racine, scène, préfixe des ids, clé de la timeline).
       2. NOM : le nom de l'offre (ou de sa marque), 1 à 3 mots ; il se réduit seul s'il est long.
-      3. LOGO : facultatif, le chemin d'un logo rond de sa marque (assets/images/… ou brand/logo.*),
-         posé dans le disque dès la coupe ; vide, le disque reste l'accent plein.
-      4. Les instants (MOMENTS) : la couleur, la coupe, la chute du trait et la pose sur les temps
+      3. PHRASE : la suite de la phrase du nom, ce que fait l'offre (4 à 9 mots, de sa page) :
+         « Publicitaire IA » + « installe un publicitaire dans Claude ou ChatGPT. » ; "" pour le nom
+         seul (un nom seul n'explique rien : seulement si la phrase d'avant ou d'après le fait).
+         MOT_CLE (facultatif) : le mot de PHRASE surligné d'un bloc d'accent pendant la lecture.
+      4. La matière du disque, le premier qui existe :
+         LOGO : le logo de sa marque, rond ou carré (brand/logo.png, son icône), découpé dans le
+              disque ;
+         IMAGE : sans logo, une vraie capture (assets/images/… : sa page, son produit, son
+              espace de formation, un résultat) découpée dans le disque ; CADRAGE : la partie
+              montrée (object-position, "50% 20%") ;
+         CHIFFRE : sans logo ni capture, un vrai chiffre de OFFRE.json (« 67 € »), écrit dans le
+              disque à l'encre posée sur l'accent.
+         Un chemin qui manque fait échouer `npm run check` (erreur 404) : sans logo, vide LOGO et
+         donne IMAGE ou CHIFFRE. Si aucun n'existe, la console le dit : la scène ne se monte pas
+         sur un disque vide.
+      5. ETIQUETTE (facultatif) : une info réelle de la fiche (le prix, la date d'ouverture), posée
+         à côté du cadre de sélection ; vide par défaut. Jamais une cote, un nom de police ni un code
+         couleur : ces étiquettes sont réservées à une vidéo qui parle de design (une marque, un
+         template).
+      6. Les instants (MOMENTS) : la couleur, la coupe, la chute du trait et la pose sur les temps
          forts de la musique ; garde l'ordre.
   -->
 </head>
@@ -39,7 +68,7 @@
     }
     /* Le monde : la grille de la nuit, le papier du début, le disque, ses traits ; la caméra le
        fait glisser en hauteur. */
-    #t02-revele .t02-revele-monde { position: absolute; left: 0; top: 0; width: 1920px; height: 1720px; transform-origin: 960px 1160px; }
+    #t02-revele .t02-revele-monde { position: absolute; left: 0; top: 0; width: 1920px; height: 1760px; transform-origin: 960px 1200px; }
     #t02-revele .t02-revele-grille {
       position: absolute; left: -200px; right: -200px; top: 0; bottom: 0;
       background-image: linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
@@ -48,63 +77,105 @@
     #t02-revele .t02-revele-papier { position: absolute; left: 0; top: 620px; width: 1920px; height: 1080px; background: var(--brand-clair); }
     #t02-revele .t02-revele-pv { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed rgba(0, 0, 0, 0.18); transform-origin: 50% 50%; }
     #t02-revele .t02-revele-ph { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed rgba(0, 0, 0, 0.18); transform-origin: 50% 50%; }
-    #t02-revele .t02-revele-cote { position: absolute; font-family: var(--brand-font-body); font-weight: 500; font-size: 22px; line-height: 1.3; color: var(--brand-sombre); white-space: nowrap; }
     #t02-revele .t02-revele-disque { position: absolute; left: 0; top: 0; width: 400px; height: 400px; margin: -200px 0 0 -200px; z-index: 6; }
     #t02-revele .t02-revele-disque svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    #t02-revele .t02-revele-logo { position: absolute; left: 20px; top: 20px; width: 360px; height: 360px; border-radius: 50%; object-fit: cover; }
+    /* La matière dans le disque : l'anneau d'accent (14 px) la cadre. */
+    #t02-revele .t02-revele-matiere { position: absolute; left: 34px; top: 34px; width: 332px; height: 332px; border-radius: 50%; object-fit: cover; display: block; }
+    #t02-revele .t02-revele-chiffre {
+      position: absolute; left: 20px; top: 20px; width: 360px; height: 360px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; white-space: nowrap;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 130px; line-height: 1;
+      letter-spacing: -0.04em; color: var(--brand-contrast);
+    }
     #t02-revele .t02-revele-sel { position: absolute; left: 4px; top: 4px; width: 392px; height: 392px; border: 3px solid var(--t02-accent-texte); }
     #t02-revele .t02-revele-poignee { position: absolute; width: 20px; height: 20px; margin: -11px 0 0 -11px; background: var(--t02-nuit); border: 3px solid var(--t02-accent-texte); }
-    /* L'étiquette de la couleur, à droite du disque sur la nuit (elle garde sa taille quand il rapetisse). */
-    #t02-revele .t02-revele-etq { position: absolute; left: 432px; top: 186px; font-family: var(--brand-font-body); font-weight: 500; font-size: 24px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; transform-origin: 0 50%; }
+    /* L'étiquette (une info réelle de la fiche), à droite du disque sur la nuit : elle garde sa
+       taille quand il rapetisse. */
+    #t02-revele .t02-revele-etq { position: absolute; left: 432px; top: 180px; font-family: var(--brand-font-body); font-weight: 600; font-size: 34px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; transform-origin: 0 50%; }
     #t02-revele .t02-revele-fil-hote { position: absolute; left: 958px; width: 4px; transform-origin: 50% 100%; z-index: 4; }
     #t02-revele .t02-revele-fil { position: absolute; inset: 0; background: var(--t02-accent-texte); transform-origin: 50% 0; }
     #t02-revele .t02-revele-cone { position: absolute; left: 959px; width: 2px; background: rgba(255, 255, 255, 0.34); transform-origin: 50% 0; z-index: 3; }
     #t02-revele .t02-revele-horizon { position: absolute; left: -100px; right: -100px; height: 2px; background: rgba(255, 255, 255, 0.55); transform-origin: 50% 50%; z-index: 3; }
     #t02-revele .t02-revele-rayons { position: absolute; left: 960px; width: 0; height: 0; z-index: 3; }
-    #t02-revele .t02-revele-rayon { position: absolute; left: 0; top: -1px; width: 1500px; height: 2px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.12)); transform-origin: 0 50%; }
+    /* Les rayons : des traits SVG qui partent du point de pose, du blanc au gris. */
+    #t02-revele .t02-revele-rayons svg { position: absolute; left: 0; top: 0; overflow: visible; }
     #t02-revele .t02-revele-axe { position: absolute; left: -1px; top: 0; width: 0; height: 460px; border-left: 2px dashed rgba(255, 255, 255, 0.5); transform-origin: 50% 0; }
     #t02-revele .t02-revele-nom {
       position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; z-index: 7;
       font-family: var(--brand-font-display); font-weight: 600; font-size: 120px; line-height: 1;
       letter-spacing: -0.04em; color: var(--t02-texte);
     }
+    #t02-revele .t02-revele-nom .t02-revele-mot { display: inline-block; white-space: nowrap; }
+    #t02-revele .t02-revele-nom[data-etat="plein"] { color: var(--brand-contrast); }
+    /* Le surlignage à poignées qui attrape le nom pendant sa lecture : un bloc d'accent plein. */
+    #t02-revele .t02-revele-surligne { position: absolute; z-index: 6; background: var(--brand-accent); transform-origin: 0 50%; }
+    #t02-revele .t02-revele-selnom { position: absolute; z-index: 8; border: 3px solid var(--t02-accent-texte); }
+    #t02-revele .t02-revele-phrase {
+      position: absolute; left: 50%; width: 1500px; margin-left: -750px; text-align: center; z-index: 7;
+      font-family: var(--brand-font-display); font-weight: 400; font-size: 58px; line-height: 1.18;
+      letter-spacing: -0.02em; color: var(--t02-texte); text-wrap: balance;
+    }
+    #t02-revele .t02-revele-cle { position: relative; display: inline-block; }
+    #t02-revele .t02-revele-cle i { position: absolute; left: -0.12em; right: -0.12em; top: 0.04em; bottom: -0.02em; background: var(--brand-accent); transform-origin: 0 50%; }
+    #t02-revele .t02-revele-cle span { position: relative; }
+    #t02-revele .t02-revele-cle[data-etat="plein"] span { color: var(--brand-contrast); }
   </style>
 
-  <div data-composition-id="t02-revele" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
+  <div data-composition-id="t02-revele" data-width="1920" data-height="1080" data-duration="7.7" style="position:absolute; inset:0;">
     <div id="t02-revele" class="k-scene">
       <div class="t02-revele-monde" id="t02-revele-monde" data-layout-allow-overflow>
         <div class="t02-revele-grille" id="t02-revele-grille"></div>
         <div class="t02-revele-papier" id="t02-revele-papier"></div>
         <div class="t02-revele-cone" id="t02-revele-cone-g"></div>
         <div class="t02-revele-cone" id="t02-revele-cone-d"></div>
-        <div class="t02-revele-horizon" id="t02-revele-horizon" style="top:1299px;"></div>
-        <div class="t02-revele-rayons" id="t02-revele-rayons" style="top:1300px;"></div>
+        <div class="t02-revele-horizon" id="t02-revele-horizon" style="top:1339px;"></div>
+        <div class="t02-revele-rayons" id="t02-revele-rayons" style="top:1340px;"></div>
         <div class="t02-revele-fil-hote" id="t02-revele-fil-hote"><div class="t02-revele-fil" id="t02-revele-fil"></div></div>
         <div class="t02-revele-disque" id="t02-revele-disque" style="left:960px; top:1160px;"></div>
-        <div class="t02-revele-nom" id="t02-revele-nom" style="top:1012px;"></div>
+        <div class="t02-revele-nom" id="t02-revele-nom"></div>
+        <div class="t02-revele-phrase" id="t02-revele-phrase"></div>
       </div>
     </div>
   </div>
 
   <script>
     (function () {
-      var D = 5.0, ID = "t02-revele", tl = gsap.timeline({ paused: true });
+      var ID = "t02-revele", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
+      // La durée : la plus courte des data-duration de la scène et de son hôte (index.html).
+      var D = (function () {
+        var v = [], n = document.getElementById(ID);
+        for (; n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === ID && parseFloat(n.getAttribute("data-duration")) > 0) v.push(parseFloat(n.getAttribute("data-duration")));
+        }
+        return v.length ? Math.min.apply(null, v) : 7.7;
+      })();
 
       // ---------- Ce qu'on remplace ----------
       var NOM = "Ton offre";
-      var LOGO = "";   // ex. "brand/logo.png" (un logo rond) ; vide : le disque reste l'accent plein
-      var MOMENTS = { couleur: 0.62, nuit: 0.95, trait: 2.15, descente: 2.55, sol: 3.5, pose: 4.25 };
+      var PHRASE = "dit ici ce qu'elle fait.";   // la suite de la phrase du nom ("" : le nom seul)
+      var MOT_CLE = "";                          // un mot de PHRASE, surligné pendant la lecture
+      var LOGO = "brand/logo.png";               // le logo de sa marque, découpé dans le disque
+      var IMAGE = "", CADRAGE = "50% 20%";       // sans logo : une vraie capture (assets/images/…)
+      var CHIFFRE = "";                          // sans logo ni capture : un vrai chiffre (« 67 € »)
+      var ETIQUETTE = "";                        // une info réelle à côté du cadre ("" : aucune)
+      var MOMENTS = { couleur: 0.55, nuit: 0.95, trait: 1.95, descente: 2.3, sol: 2.95, pose: 3.5 };
 
-      // Le monde (1920 × 1720) : le disque y vit en (960, 1160) ; l'horizon est à 1300.
+      // La lecture : 0,3 s par mot + 0,8 s, jamais moins de 1,5 s (studio_motion.py lecture).
+      var lecture = function (t) {
+        var n = t.split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length;
+        return n ? Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10 : 0;
+      };
+
+      // Le monde (1920 × 1760) : le disque y vit en (960, 1160) ; l'horizon est à 1340.
       // Plan A, monde à y -620 : le disque au centre de l'image. Il monte de 730 px en rapetissant
       // (×0,62) pendant que la caméra lève les yeux (monde à -100), puis redescend se poser sur
       // l'horizon (×0,33, son bas sur la ligne) quand la caméra revient (monde à -620).
-      var X = 960, Y = 1160, HORIZON = 1300, MONTE = 730, S_HAUT = 0.62, S_POSE = 0.333;
+      var X = 960, Y = 1160, HORIZON = 1340, MONTE = 730, S_HAUT = 0.62, S_POSE = 0.333;
       var monde = $("monde"), disque = $("disque"), papier = $("papier");
       var R = 180, HAUT = Y - MONTE, POSE = HORIZON - R * S_POSE;
 
-      // ---------- Le disque, dessiné au trait (SVG 400 × 400) ----------
+      // ---------- Le disque, dessiné au trait (SVG 400 × 400), puis l'anneau de sa matière ----------
       disque.innerHTML = '<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">' +
         '<circle class="d-fond" cx="200" cy="200" r="180" style="fill:var(--brand-accent)"/>' +
         '<g fill="none" style="stroke:var(--brand-sombre)" stroke-width="3.2" stroke-linecap="round">' +
@@ -113,56 +184,61 @@
         '<line class="d-t d-repere" x1="200" y1="20" x2="200" y2="380"/></g>' +
         '<circle class="d-repere d-centre" cx="200" cy="200" r="7" style="fill:var(--brand-sombre)"/></svg>';
       var fondD = disque.querySelector(".d-fond"), reperes = disque.querySelectorAll(".d-repere");
-      var logo = null;
-      if (LOGO) { logo = K.el(disque, "img", "t02-revele-logo"); logo.src = LOGO; logo.alt = ""; K.cacher(logo); }
-      // Le cadre de sélection à poignées qui attrape le disque sur la nuit, et l'étiquette de sa couleur.
+      // Les candidats : le logo, puis la capture (images), puis le chiffre ; le premier qui existe gagne.
+      var candidats = [LOGO, IMAGE].filter(Boolean).map(function (src) {
+        var im = K.el(disque, "img", "t02-revele-matiere"); im.src = src; im.alt = "";
+        if (src === IMAGE && CADRAGE) im.style.objectPosition = CADRAGE;
+        K.cacher(im);
+        return im;
+      });
+      var chiffre = CHIFFRE ? K.el(disque, "div", "t02-revele-chiffre", CHIFFRE) : null;
+      if (chiffre) K.cacher(chiffre);
+      // Le cadre de sélection à poignées qui attrape le disque sur la nuit, et son étiquette.
       var sel = K.el(disque, "div", "t02-revele-sel");
-      var etq = K.el(disque, "div", "t02-revele-etq");
-      etq.textContent = "Accent · " + getComputedStyle(document.getElementById(ID)).getPropertyValue("--brand-accent").trim().toUpperCase();
+      var etq = ETIQUETTE ? K.el(disque, "div", "t02-revele-etq", ETIQUETTE) : null;
       [[0, 0], [100, 0], [0, 100], [100, 100]].forEach(function (p) { K.el(sel, "i", "t02-revele-poignee", null, "left:" + p[0] + "%; top:" + p[1] + "%;"); });
 
       // ---------- Plan A : le dessin au trait sur le clair ----------
-      // Le carré de construction du cercle (tangent à lui) et sa cote, en pixels du monde.
+      // Le carré de construction du cercle (tangent à lui), en pixels du monde ; aucune cote écrite.
       var pv = [X - R, X + R].map(function (x) { return K.el(papier, "i", "t02-revele-pv", null, "left:" + x + "px"); });
       var ph = [540 - R, 540 + R].map(function (y) { return K.el(papier, "i", "t02-revele-ph", null, "top:" + y + "px"); });
-      var cote = K.el(papier, "div", "t02-revele-cote", "Ø " + (2 * R) + " px", "left:" + (X + R + 24) + "px; top:" + (540 - R - 44) + "px;");
-      gsap.set(pv, { scaleY: 0 }); gsap.set(ph, { scaleX: 0 }); K.cacher(cote, { y: 8 });
+      gsap.set(pv, { scaleY: 0 }); gsap.set(ph, { scaleX: 0 });
       tl.to(pv, { scaleY: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.0);
       tl.to(ph, { scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.05);
-      tl.to(cote, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 0.2);
       var traits = disque.querySelectorAll(".d-t");
       traits.forEach(function (t) {
         var L = Math.ceil(t.getTotalLength ? t.getTotalLength() : 1200) + 2;
         t.style.strokeDasharray = L + " " + L;
         gsap.set(t, { strokeDashoffset: L });
       });
-      tl.to(traits, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut", stagger: 0.06 }, 0.04);
+      tl.to(traits, { strokeDashoffset: 0, duration: 0.45, ease: "power2.inOut", stagger: 0.05 }, 0.04);
       K.cacher([fondD, disque.querySelector(".d-centre")]);
-      tl.to(disque.querySelector(".d-centre"), { opacity: 1, duration: 0.1 }, 0.3);
-      // La couleur : le disque se remplit d'un coup en gonflant ; ses repères s'effacent.
+      tl.to(disque.querySelector(".d-centre"), { opacity: 1, duration: 0.1 }, 0.28);
+      // La matière : le disque se remplit d'un coup de son logo (ou de sa capture, de son chiffre),
+      // cerclé d'accent, en gonflant ; ses repères s'effacent.
       gsap.set(disque, { x: 0, y: 0, scale: 0.86 });
       tl.set(fondD, { opacity: 1 }, MOMENTS.couleur);
       tl.set(reperes, { opacity: 0 }, MOMENTS.couleur);
       tl.to(disque, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, MOMENTS.couleur);
       tl.to(pv, { scaleY: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
       tl.to(ph, { scaleX: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
-      tl.to(cote, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.couleur);
 
       // ---------- Plan B : coupe franche sur la nuit, le disque monte ----------
       gsap.set(monde, { y: -620 });
       tl.set(papier, { opacity: 0 }, MOMENTS.nuit);
-      if (logo) tl.set(logo, { opacity: 1 }, MOMENTS.nuit);
-      tl.to(monde, { y: -100, duration: 1.3, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
-      tl.to(disque, { y: -MONTE, scale: S_HAUT, duration: 1.3, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
+      tl.to(monde, { y: -100, duration: 1.1, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
+      tl.to(disque, { y: -MONTE, scale: S_HAUT, duration: 1.1, ease: "power2.inOut" }, MOMENTS.nuit + 0.1);
       // Le cadre de sélection l'attrape pendant la montée, puis le lâche.
       K.cacher(sel, { scale: 1.08 });
-      tl.to(sel, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, MOMENTS.nuit + 0.55);
+      tl.to(sel, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, MOMENTS.nuit + 0.5);
       tl.to(sel, { opacity: 0, scale: 1.06, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
-      // L'étiquette se pose avec le cadre et garde sa taille pendant que le disque rapetisse.
-      K.cacher(etq, { x: -12 });
-      tl.to(etq, { opacity: 0.82, x: 0, duration: 0.35, ease: "expo.out" }, MOMENTS.nuit + 0.65);
-      tl.fromTo(etq, { scale: 1 }, { scale: 1 / S_HAUT, duration: 1.3, ease: "power2.inOut", immediateRender: false }, MOMENTS.nuit + 0.1);
-      tl.to(etq, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
+      if (etq) {
+        // L'étiquette se pose avec le cadre et garde sa taille pendant que le disque rapetisse.
+        K.cacher(etq, { x: -12 });
+        tl.to(etq, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, MOMENTS.nuit + 0.6);
+        tl.fromTo(etq, { scale: 1 }, { scale: 1 / S_HAUT, duration: 1.1, ease: "power2.inOut", immediateRender: false }, MOMENTS.nuit + 0.1);
+        tl.to(etq, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
+      }
 
       // ---------- Le trait de marque tombe, le cône de construction s'ouvre ----------
       var filHote = $("fil-hote"), fil = $("fil");
@@ -185,34 +261,110 @@
       tl.to(filHote, { scaleY: (HORIZON - POSE) / (HORIZON - HAUT), duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
       tl.to(fil, { opacity: 0, duration: 0.15 }, MOMENTS.pose - 0.05);
       // La caméra redescend avec lui ; l'horizon se trace depuis le centre.
-      tl.to(monde, { y: -620, duration: 0.85, ease: "power2.inOut" }, MOMENTS.sol);
+      tl.to(monde, { y: -620, duration: 0.8, ease: "power2.inOut" }, MOMENTS.sol);
       var horizon = $("horizon");
       gsap.set(horizon, { scaleX: 0 });
-      tl.to(horizon, { scaleX: 1, duration: 0.6, ease: "expo.out" }, MOMENTS.sol + 0.2);
+      tl.to(horizon, { scaleX: 1, duration: 0.6, ease: "expo.out" }, MOMENTS.sol + 0.15);
 
       // ---------- Les rayons de perspective, depuis le point de pose ----------
       var rayons = $("rayons"), ANGLES = [8, 22, 40, 62, 90, 118, 140, 158, 172];
-      var lignes = ANGLES.map(function (a) {
-        var r = K.el(rayons, "i", "t02-revele-rayon");
-        r.style.transform = "rotate(" + a + "deg)";
-        return r;
-      });
+      var LR = 1500;
+      rayons.innerHTML = '<svg width="1" height="1" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="' + ID + '-degrade" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="' + LR + '">' +
+        '<stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.12"/></radialGradient></defs>' +
+        ANGLES.map(function (a) {
+          var r = a * Math.PI / 180;
+          return '<line x1="0" y1="0" x2="' + (LR * Math.cos(r)).toFixed(1) + '" y2="' + (LR * Math.sin(r)).toFixed(1) + '" stroke="url(#' + ID + '-degrade)" stroke-width="2"/>';
+        }).join("") + "</svg>";
+      var lignes = rayons.querySelectorAll("line");
       var axe = K.el(rayons, "i", "t02-revele-axe");
-      gsap.set(lignes, { scaleX: 0 }); gsap.set(axe, { scaleY: 0 });
-      tl.to(lignes, { scaleX: 1, duration: 0.55, ease: "expo.out", stagger: 0.018 }, MOMENTS.pose);
+      gsap.set(lignes, { attr: { "stroke-dasharray": LR + " " + LR, "stroke-dashoffset": LR } }); gsap.set(axe, { scaleY: 0 });
+      tl.to(lignes, { attr: { "stroke-dashoffset": 0 }, duration: 0.55, ease: "expo.out", stagger: 0.018 }, MOMENTS.pose);
       tl.to(axe, { scaleY: 1, duration: 0.5, ease: "expo.out" }, MOMENTS.pose + 0.08);
       tl.fromTo(disque.querySelector("svg"), { scaleY: 1 }, { scaleY: 0.9, duration: 0.08, ease: "power2.out", yoyo: true, repeat: 1, transformOrigin: "50% 95%" }, MOMENTS.pose - 0.02);
-      tl.to(monde, { scale: 1.03, duration: D - MOMENTS.pose, ease: "none" }, MOMENTS.pose);
 
-      // ---------- Le nom, lettre par lettre, au-dessus du point de pose ----------
-      var nom = $("nom");
-      nom.innerHTML = NOM.split("").map(function (l) { return '<span class="k-mot">' + (l === " " ? "&nbsp;" : l) + "</span>"; }).join("");
-      K.cacher(nom.querySelectorAll(".k-mot"));
+      // ---------- Le nom, lettre par lettre, et sa phrase, au-dessus du point de pose ----------
+      var nom = $("nom"), phrase = $("phrase");
+      nom.style.top = (PHRASE ? 870 : 1010) + "px";
+      phrase.style.top = "1015px";
+      // Chaque mot du nom dans sa boîte (pour changer de graisse d'un coup), chaque lettre à part.
+      nom.innerHTML = NOM.split(" ").map(function (m) {
+        return '<span class="t02-revele-mot">' + m.split("").map(function (l) { return '<span class="k-mot">' + l + "</span>"; }).join("") + "</span>";
+      }).join('<span class="k-mot">&nbsp;</span>');
+      var lettres = nom.querySelectorAll(".k-mot"), motsNom = nom.querySelectorAll(".t02-revele-mot");
+      K.cacher(lettres);
+      var NOM_POSE = MOMENTS.pose + 0.06 + 0.025 * (lettres.length - 1) + 0.5;
+      // La phrase, mot par mot ; le mot clé dans son bloc d'accent.
+      var motsPhrase = [], cle = null;
+      if (PHRASE) {
+        phrase.innerHTML = PHRASE.split(" ").map(function (m) {
+          var propre = m.replace(/[.,;:!?…]+$/, "");
+          if (MOT_CLE && propre === MOT_CLE) return '<span class="k-mot t02-revele-cle"><i></i><span>' + m + "</span></span>";
+          return '<span class="k-mot">' + m + "</span>";
+        }).join(" ");
+        motsPhrase = phrase.querySelectorAll(".k-mot");
+        cle = phrase.querySelector(".t02-revele-cle");
+        K.cacher(motsPhrase);
+      } else phrase.style.display = "none";
+      var PHRASE_DEBUT = NOM_POSE - 0.2;
+      var PHRASE_POSE = motsPhrase.length ? PHRASE_DEBUT + 0.05 * (motsPhrase.length - 1) + 0.5 : 0;
+      var LU = Math.max(NOM_POSE, PHRASE_POSE);
+      var FIN = LU + lecture(NOM + " " + PHRASE);
+      if (D + 1e-6 < FIN) console.warn(ID + " : data-duration trop courte pour lire le nom et sa phrase, il faut " + (Math.ceil(FIN * 10) / 10).toFixed(1) + " s");
+
+      // La tenue : une dérive lente (3 %), et la vie de la phrase (mot clé, bascules de graisse).
+      tl.to(monde, { scale: 1.03, duration: Math.max(0.5, D - MOMENTS.sol - 0.8), ease: "sine.inOut" }, MOMENTS.sol + 0.8);
+      if (cle) {
+        var bloc = cle.querySelector("i");
+        gsap.set(bloc, { scaleX: 0 });
+        tl.to(bloc, { scaleX: 1, duration: 0.3, ease: "power3.out" }, LU + 0.25);
+        tl.set(cle, { attr: { "data-etat": "plein" } }, LU + 0.35);
+      }
+      // Le surlignage à poignées (le geste du nom de l'original) : un cadre attrape le nom, un bloc
+      // d'accent le remplit, le nom passe à l'encre posée sur l'accent ; il se retire avant la fin.
+      var H = FIN - LU, surligne = K.el(monde, "div", "t02-revele-surligne"), selNom = K.el(monde, "div", "t02-revele-selnom");
+      [[0, 0], [100, 0], [0, 100], [100, 100]].forEach(function (p) { K.el(selNom, "i", "t02-revele-poignee", null, "left:" + p[0] + "%; top:" + p[1] + "%;"); });
+      gsap.set(surligne, { scaleX: 0 });
+      K.cacher(selNom, { scale: 1.06 });
+      tl.to(selNom, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, LU + 0.45);
+      tl.to(surligne, { scaleX: 1, duration: 0.3, ease: "power3.out" }, LU + 0.55);
+      tl.set(nom, { attr: { "data-etat": "plein" } }, LU + 0.65);
+      // Sur le surlignage, le premier mot du nom passe en voix légère puis revient, sur les temps ;
+      // le surlignage se retire 0,9 s avant la fin (rien ne reste figé plus de 0,8 s).
+      var RETRAIT = Math.max(LU + 1.6, LU + H - 0.9), premier = motsNom[0], bascules = [];
+      if (LU + 1.25 < RETRAIT - 0.25) bascules.push([LU + 1.25, 400]);
+      if (LU + 1.9 < RETRAIT - 0.25) bascules.push([LU + 1.9, 600]);
+      if (bascules.length === 1) bascules.push([RETRAIT + 0.12, 600]);
+      bascules.forEach(function (b) { if (b[0] < D - 0.3) tl.set(premier, { fontWeight: b[1] }, b[0]); });
+      if (RETRAIT < D - 0.35) {
+        tl.to(surligne, { scaleX: 0, duration: 0.25, ease: "power2.in", transformOrigin: "100% 50%" }, RETRAIT);
+        tl.set(nom, { attr: { "data-etat": "" } }, RETRAIT + 0.12);
+        tl.to(selNom, { opacity: 0, duration: 0.18, ease: "power2.in" }, RETRAIT + 0.1);
+      }
+
+      // Ce qui se mesure (la largeur du nom, la matière qui se charge) attend la police et les images.
       var cs = getComputedStyle(nom);
-      document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
-      function finir() {
+      var charge = function (im) { return im.decode ? im.decode().then(function () { return im; }, function () { return null; }) : Promise.resolve(im.naturalWidth ? im : null); };
+      Promise.all([document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).catch(function () {})]
+        .concat(candidats.map(charge))).then(finir, finir);
+      function finir(res) {
         if (nom.scrollWidth > 1500) nom.style.fontSize = (120 * 1500 / nom.scrollWidth).toFixed(1) + "px";
-        K.entreeMots(tl, nom.querySelectorAll(".k-mot"), MOMENTS.pose + 0.06, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
+        // Le surlignage et son cadre se calent sur le nom tel qu'il est écrit.
+        var l0 = lettres[0], lz = lettres[lettres.length - 1], gauche = nom.offsetLeft + l0.offsetLeft, large = lz.offsetLeft + lz.offsetWidth - l0.offsetLeft;
+        var hNom = parseFloat(getComputedStyle(nom).fontSize) * 1.0, marge = 0.16 * hNom;
+        [surligne, selNom].forEach(function (e, i) {
+          var m = marge + (i ? 10 : 0);
+          e.style.left = (gauche - m) + "px"; e.style.width = (large + 2 * m) + "px";
+          e.style.top = (nom.offsetTop - m + 0.06 * hNom) + "px"; e.style.height = (hNom + 2 * m) + "px";
+        });
+        K.entreeMots(tl, lettres, MOMENTS.pose + 0.06, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
+        if (motsPhrase.length) K.entreeMots(tl, motsPhrase, PHRASE_DEBUT, { y: 26, flou: 8, decalage: 0.05, duree: 0.5 });
+        // La matière du disque : le premier logo ou la première capture chargés, sinon le chiffre.
+        var images = (Array.isArray(res) ? res : []).slice(1).filter(Boolean);
+        var matiere = images[0] || chiffre;
+        if (matiere) {
+          tl.set(matiere, { opacity: 1 }, MOMENTS.couleur);
+          if (matiere === chiffre && chiffre.scrollWidth > 300) chiffre.style.fontSize = (130 * 300 / chiffre.scrollWidth).toFixed(1) + "px";
+        } else console.warn(ID + " : le disque n'a ni logo, ni capture, ni chiffre (LOGO, IMAGE, CHIFFRE) : il resterait un aplat.");
         window.__timelines[ID] = tl;
       }
     })();

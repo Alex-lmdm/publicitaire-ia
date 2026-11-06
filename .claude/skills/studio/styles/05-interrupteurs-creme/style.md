@@ -1,10 +1,11 @@
-# Style n°5 · Interrupteurs crème · d'après ClaudeDevs (https://x.com/ClaudeDevs/status/2091953609185657251)
+# Style n°5 · Interrupteurs en cascade · d'après ClaudeDevs (https://x.com/ClaudeDevs/status/2091953609185657251)
 
 **Ce qu'on voit :** sur un papier clair (le blanc et les gris de la marque), un panneau de réglages vu de très près : une main clique, les interrupteurs s'allument en cascade. Puis des phrases calmes au centre, un trait à main levée qui entoure, souligne et relie, une grille de pastilles qui se cochent en vague, et la fenêtre de l'offre qui travaille avant la carte d'annonce.
 **Souvent utile pour :** annoncer une nouveauté (un module, un bonus, une fonction, une mise à jour), ou montrer qu'un seul réglage sert tout le monde.
+**Ancien nom :** « Interrupteurs crème » (jusqu'à la 0.9.0 ; il désigne toujours ce style).
 **D'après :** X · ClaudeDevs, « Authorize once » · 34 s · 16:9 (1920 × 1080, 24 images par seconde).
 **Mesures de l'original (`studio_motion.py reference`) :** 0,62 événement par seconde, écart médian 0,50 s entre deux, 8,5 s d'image figée en tout, aucune coupe franche.
-**Mesures du kit monté (les 4 scènes bout à bout, 28,5 s, marque LMDM, essai du 06/11/2026) :** `rythme` répond « ok » : 1,16 événement par seconde en 16:9 et 1,08 en 9:16, écart médian 0,80 s, aucune image figée ; `palette` répond « ok ».
+**Mesures du kit refait le 06/11/2026 (les 4 scènes bout à bout, 42,1 s, marque LMDM, chaque texte tenu le temps de sa lecture, aucun recadrage pendant une lecture, la vie venue des événements de contenu) :** `rythme` « ok » : 0,81 événement par seconde en 16:9 (écart médian 1,0 s) et 0,78 en 9:16 (1,1 s), aucune image figée ; `palette` « ok ». Le kit d'avant ne passait que par des recadrages toutes les 0,6 à 0,8 s sous les phrases, retirés (story refusée du 06/11/2026).
 
 > On reprend la grammaire de la vidéo, jamais son contenu : ni ses textes, ni l'interface et les
 > logos de Claude, ni les logos de ses partenaires, ni ses couleurs, ni sa musique. L'interface du
@@ -12,10 +13,10 @@
 
 ## 1. Le rythme
 
-- Calme et régulier : un geste à la fois, posé sur une grille de 0,5 s (la musique tourne autour de 118 battements par minute). Les textes entrent par un flou qui se dissipe, sans saut ; la caméra fait de grands mouvements rares et nets (le recul, le glissement, la plongée).
-- L'original ne fait que 0,62 événement par seconde : trop calme pour le contrôle `rythme` du studio (1 au moins, 0,8 s d'écart médian au plus). Le kit garde le calme mais **recadre doucement à chaque phrase** (0,5 à 0,8 s, expo.inOut, 4 à 13 % d'échelle, avec un léger glissement de côté : un zoom pile au centre ne se mesure pas) et donne un petit coup de caméra à chaque clic. C'est ce qui le fait passer : ne retire pas ces recadrages.
-- Une couleur de marque claire (jaune, pastel) change peu la luminosité : le contrôle compte alors surtout les textes, le trait, la main et la caméra. Avec un accent foncé, la cascade et les coches comptent aussi.
-- Tenue d'un texte : 1 à 1,5 s, jamais plus sans un recadrage ou un geste autour.
+- Calme et régulier : un geste à la fois, posé sur une grille de 0,5 s (la musique tourne autour de 118 battements par minute). Les textes entrent par un flou qui se dissipe, sans saut ; la caméra fait de grands mouvements rares et nets (le recul, le glissement, la plongée), **entre deux textes, jamais pendant qu'on lit**.
+- **Tenue d'un texte : sa lecture** (`studio_motion.py lecture` : 0,3 s par mot + 0,8 s, 1,5 s au moins, 3 s pour la signature). Les scènes la calculent d'après leurs textes et en déduisent leur durée (D dans le script, à reporter en `data-duration`).
+- **Pendant qu'un texte se lit, la caméra ne fait qu'une dérive lente** (3 à 5 %, sine.inOut). Elle recadre net entre deux textes (le mot sort, la phrase sort), suit la main et donne un petit coup au clic seulement quand aucune phrase ne se lit et jamais dans les cinq premières secondes. Pendant la lecture, la vie vient de ce que la phrase montre : le trait qui entoure, souligne et devient les filets, les membres qui arrivent puis deviennent des anneaux, les pastilles qui respirent en vague, les étapes qui se cochent.
+- **Le rythme vient du contenu.** L'original ne fait que 0,62 événement par seconde, et ses gestes sont fins et clairs (des traits de 7 px, des billes, des coches sur un papier clair) : le contrôle `rythme`, qui mesure les changements de lumière, ne les voit presque pas, même avec un accent foncé (essai du 06/11/2026 : 0,4 événement par seconde sans recadrage). Le kit les rend francs, d'un coup plutôt qu'en traînée, et ajoute de la vraie matière : les membres surgissent ensemble ; les mots clés et le mot fort se surlignent d'un bloc plein (l'accent, ou l'encre si l'accent est trop pâle, comme le trait) ; les vrais logos des outils que la phrase nomme arrivent pendant qu'on la lit (`LOGOS`, scène 2) ; les membres deviennent des anneaux pendant la lecture du nom ; les coches tombent en trois salves et la grille respire deux fois ; chaque étape cochée sort sa vraie capture en aperçu flottant (scène 4) ; la pastille d'annonce se remplit d'encre. Une graisse qui bascule, un trait fin, une bille ne comptent pas. Jamais un recadrage ajouté.
 
 ## 2. Les gestes signature et leur place
 
@@ -32,7 +33,7 @@ construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vi
 | La vague de coches | des anneaux qui se remplissent et se cochent en vague | preuve, résultat, « pour tous » | `grille-de-coches` |
 | La carte qui devient fenêtre | une carte s'ouvre en plein écran sur la vraie interface, où une demande se tape et des étapes s'écrivent | démonstration | `grille-de-coches` (fin), `fenetre-annonce` |
 | La pastille d'annonce et la signature | une petite pastille au-dessus d'un titre en deux lignes, puis le logo qui tourne et se pose | annonce, offre, fin | `fenetre-annonce` (fin) |
-| Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, la caméra s'en approche | toutes les phrases | toutes les scènes |
+| Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, se tient le temps de sa lecture pendant une lente dérive de la caméra | toutes les phrases | toutes les scènes |
 
 Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur
 le même papier clair (recette 1 du studio, la corvée), avec le trait à main levée qui entoure ce
@@ -91,7 +92,7 @@ Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du p
 - **Sa marque n'impose rien, ou il veut le look complet :** Source Serif 4 (libre, Google Fonts), graisse 400 à 500, la plus proche. `python3 tools/studio_motion.py police "Source Serif 4"` (depuis la racine), copie son fichier de `marque/polices/` dans `assets/fonts/` du projet, puis dans le style de chaque scène : `@font-face { font-family: "Source Serif 4"; font-weight: 400; font-display: block; src: url("assets/fonts/<son fichier>.woff2") format("woff2"); }` et `--t05-titres: "Source Serif 4", var(--brand-font-display);`. Essayé sur le projet d'essai : le rendu la prend.
 - **Interfaces** (panneau, menu, champ, étapes) : la police de texte de la marque (`--t05-texte`), régulière.
 - Casse de la phrase partout, sauf la pastille en capitales espacées. Tout est centré, sauf le panneau, le menu et les étapes (alignés à gauche, comme une vraie interface). Approche serrée (-0,02 em) sur les titres.
-- 6 mots au plus par écran. Une phrase trop large se réduit seule (les scènes la mesurent).
+- Une phrase complète par écran (8 mots conseillés). Les mises en page du kit en prennent 6 à 8 (le trou de la grille, l'espace entre le panneau et les membres : chaque en-tête le dit) ; une phrase trop large s'y réduit seule (les scènes la mesurent). Une phrase plus longue du script ne se raccourcit jamais : elle passe sur deux lignes plus petites, ou dans une scène construite dans le style.
 
 | Élément | 1920 × 1080 | 1080 × 1920 |
 |---|---|---|
@@ -109,12 +110,12 @@ Un seul fond pendant presque toute la vidéo ; la bascule, c'est le passage du p
 
 Tous sont dans `compositions/`.
 
-1. **La cascade d'interrupteurs** (scène 1, et le menu de la scène 4). La main clique l'interrupteur maître (bille en 0,28 s, power3.inOut), puis chaque rang s'allume 0,105 s après le précédent (0,24 s chacun, gonflement ×1,07 aller-retour). La caméra donne un petit coup au clic (de ×1,05 à ×1,1 en 0,14 s, retour en 0,36 s), puis descend avec la cascade.
+1. **La cascade d'interrupteurs** (scène 1, et le menu de la scène 4). La main clique l'interrupteur maître (bille en 0,28 s, power3.inOut), puis chaque rang s'allume 0,105 s après le précédent (0,24 s chacun, gonflement ×1,07 aller-retour). En ouverture, la caméra s'approche lentement et suit la cascade sans à-coup (aucun coup de caméra dans les cinq premières secondes) ; dans le menu de la scène 4, où aucune phrase ne se lit, elle donne un petit coup au clic.
 2. **Le trait à main levée qui voyage** (scènes 1 et 2). Un seul trait de 7 px, bouts ronds, bord légèrement irrégulier (filtre de turbulence fixe). Il arrive par la gauche, entoure les mots clés en 0,8 s (power2.inOut) en effaçant son entrée, tient, puis file hors de l'image par une queue qui contourne la phrase (0,7 s, power2.in). Il revient par le haut souligner le mot fort, rembobine, redescend le long du panneau et devient le filet de gauche. Technique : on montre un morceau [a, b] de la longueur du chemin (pointillé SVG), calculé comme une fonction du temps.
 3. **Les filets qui relient** (scène 2). Panneau, phrase, membres, à mi-hauteur. Quand la phrase devient le nom, les filets s'allongent ou raccourcissent (0,5 s) pour garder 46 px d'écart.
 4. **La vague de coches** (scène 3). Chaque anneau se remplit comme un camembert (0,42 s, power1.inOut), la coche se trace (0,22 s), de gauche à droite (0,13 s par colonne, 0,045 s par rang).
 5. **Le disque qui devient carte, la carte qui devient fenêtre** (scènes 3 et 4). Les pastilles se réduisent à un point, les disques s'écartent de 25 % et deviennent des carrés arrondis avec l'espace du membre ; la carte visée s'ouvre en plein écran par une découpe qui s'élargit (0,85 s, expo.inOut) pendant que son contenu grandit.
-6. **Les phrases qui respirent.** Chaque phrase entre mot par mot par un flou qui se dissipe (0,7 s, expo.out, 0,07 s entre deux mots, 12 px de montée) ; la caméra s'en approche de 4 à 13 % avec un léger glissement, puis revient au plan large quand elle sort (flou, 0,35 s).
+6. **Les phrases qui respirent.** Chaque phrase entre mot par mot par un flou qui se dissipe (0,7 s, expo.out, 0,07 s entre deux mots, 12 px de montée), se tient le temps de sa lecture pendant une dérive de 3 à 5 % (sine.inOut), puis sort (flou, 0,35 s) ; la caméra revient au plan large pendant qu'elle sort.
 
 ## 6. Les transitions
 
@@ -139,17 +140,17 @@ Tous sont dans `compositions/`.
 ## 9. L'ouverture et la fin
 
 - **Ouverture :** la première image est déjà le gros plan du panneau (rien de vide), la main entre tout de suite, le clic tombe vers 1 s.
-- **Fin :** la carte d'annonce (pastille + titre, 1,5 s), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite et tient 1,2 s (2,5 s au moins pour une vidéo de page). L'original n'a pas de bouton ; pour une vidéo de vente, la signature peut céder la place à la fin du studio (recette 21, le bouton), sur le même papier clair.
+- **Fin :** la carte d'annonce (pastille + titre, tenue le temps de lire le titre), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite et tient 3 s (l'écran final). L'original n'a pas de bouton ; pour une vidéo de vente, la signature peut céder la place à la fin du studio (recette 21, le bouton), sur le même papier clair.
 
 ## Ce qui ne se fera pas à l'identique
 
 - La serif de l'original (dessin propriétaire) : la police de la marque, ou Source Serif 4.
-- Le papier crème et le blanc cassé : les neutres de la marque (un papier gris très clair tiré de son clair et de son gris le plus clair, des cartes de son clair) ; aucune teinte crème inventée. Le nom du style reste pour l'instant « Interrupteurs crème ».
+- Le papier crème et le blanc cassé : les neutres de la marque (un papier gris très clair tiré de son clair et de son gris le plus clair, des cartes de son clair) ; aucune teinte crème inventée. 
 - Le bleu, le terracotta et la lavande : l'accent de la marque partout, plein ; le trait passe à l'encre si l'accent est trop clair sur le papier.
 - Les logos des outils dans les rangs : des icônes du kit sur une tuile à l'accent (ou les vrais logos des outils de l'offre).
 - La main : un pointeur redessiné.
 - Le logo du partenaire entre les filets : le nom de l'offre (ou le logo de l'outil qui fait le lien chez le client).
-- La caméra : plus de recadrages que l'original, pour passer le contrôle `rythme`.
+- La caméra : aussi calme que l'original pendant les lectures (une dérive lente), ce qui laisse le kit sous le seuil de `rythme` (section 1).
 - La grille de cartes : régulière (l'original décale une rangée sur deux), textes des cartes plus petits.
 - Les étapes : révélées de gauche à droite, sans le scintillement continu de l'original.
 - Le gros plan du début est posé dès la première image (l'original le fait apparaître en fondu).
@@ -164,18 +165,18 @@ Tous sont dans `compositions/`.
 ## En vertical et en carré
 
 - **Scènes 1 et 3 :** elles se remettent en page seules en 9:16 (change `data-width` et `data-height` de leur racine en 1080 et 1920) : panneau en haut, phrase au milieu (84 px), membres sur deux rangées en bas ; la grille passe à 5 colonnes et sa rangée du milieu se vide pour la phrase. Essayées en 1080 × 1920.
-- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %). C'est la scène la plus calme du kit : seule, `rythme` la trouve sous 1 événement par seconde (en 16:9 comme en 9:16). Bout à bout en 9:16, les quatre scènes passent sur LMDM (essai du 06/11/2026 : 1,08 événement par seconde, écart médian 0,80 s), mais tout juste : un accent jaune se voit peu sur le papier clair. Avec un accent clair, garde-lui un geste à l'encre de plus (une étape de plus, la main qui revient cliquer) ou raccourcis-la. En 9:16, la caméra du menu garde le « + » presque à sa place et un salut long se réduit seul : le salut reste entier dans les gros plans.
+- **Scène 4 :** la fenêtre et la carte se centrent seules (contenu à 86 %). C'est la scène la plus calme du kit (les étapes restent jusqu'à ce que toutes se lisent, chacune se coche quand elle est faite). En 9:16, la caméra du menu garde le « + » presque à sa place et un salut long se réduit seul : le salut reste entier dans les gros plans.
 - **Scène 2 (testée, `trait-qui-relie-vertical.html`) :** sa propre mise en page 9:16, à monter à la place de `trait-qui-relie.html`. Le panneau reste en haut et les membres sur deux rangées en bas, exactement là où la scène 1 en 9:16 les laisse ; le mot fort (128 px), la phrase (84 px) et le nom (104 px) se posent au centre, entre les deux ; le trait descend par la droite du panneau pour souligner, puis passe sous lui et devient deux filets verticaux (du panneau à la phrase, de la phrase aux membres). À la fin, la caméra glisse vers le bas et la grille d'anneaux (5 colonnes, la cinquième arrive avec la vague) tombe pile sur la première image de la scène 3 en 9:16. Essayée bout à bout avec les quatre scènes en 1080 × 1920, sur une marque claire et sur LMDM.
 - **Carré et 4:5 :** même logique que le vertical ; le panneau se coupe plus tôt (seule la colonne des interrupteurs reste), la phrase descend à 64 px.
 
 ## Les compositions du kit
 
-Montées bout à bout dans cet ordre, elles raccordent image pour image (28,5 s) ; chacune vit aussi seule. Essai du 06/11/2026 sur la marque LMDM, avec les vrais faits de Publicitaire IA, en 16:9 et en 9:16 : `check` sans erreur ni avertissement, `palette` « ok », `rythme` « ok ». La police se règle par `--t05-titres` et `--t05-texte` ; les couleurs `--t05-*` en tête du style de chaque scène ne font que nommer les jetons de sa marque : ne les remplace jamais par une couleur écrite en dur.
+Montées bout à bout dans cet ordre, elles raccordent image pour image (42,1 s avec les textes de l'essai) ; chacune vit aussi seule. Essai du 06/11/2026 sur la marque LMDM, avec les vrais faits de Publicitaire IA, en 16:9 et en 9:16 : `check` sans erreur ni avertissement, `palette` « ok », `rythme` « ok » (0,81 et 0,78 événement par seconde). Chaque scène calcule sa durée d'après ses textes (D dans le script) : reporte-la dans `data-duration`, ici et sur l'hôte. La police se règle par `--t05-titres` et `--t05-texte` ; les couleurs `--t05-*` en tête du style de chaque scène ne font que nommer les jetons de sa marque : ne les remplace jamais par une couleur écrite en dur.
 
 | Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace |
 |---|---|---|---|
-| `compositions/interrupteurs-cascade.html` | 6,5 s | le panneau en gros plan, le clic, la cascade, le recul, la phrase entourée, les membres | l'onglet, l'interrupteur maître, les RANGS, la phrase et ses mots entourés |
-| `compositions/trait-qui-relie.html` | 6,5 s | le mot fort souligné, la phrase reliée par deux filets, le nom de l'offre, les membres qui deviennent des anneaux, le glissement vers la grille | MOT, PHRASE, NOM (ou un logo), les RANGS identiques à la scène 1 |
-| `compositions/trait-qui-relie-vertical.html` | 6,5 s | la même scène remise en page en 9:16 : panneau en haut, textes au centre, filets verticaux, membres en bas, glissement vers le bas jusqu'à la grille | comme la version 16:9 |
-| `compositions/grille-de-coches.html` | 6,5 s | la vague de coches, le zoom et la phrase, les cartes des membres, la plongée | TEXTE, SALUTS, ACCUEIL |
-| `compositions/fenetre-annonce.html` | 9 s | la fenêtre, le menu « + » en cascade, la demande, les étapes, la pastille et le titre, la signature | SALUT, ACCUEIL, MENU, DEMANDE et ETAPES (seulement si son offre a vraiment un champ de demande, section 7), PASTILLE, TITRE, NOM, LOGO |
+| `compositions/interrupteurs-cascade.html` | 4,8 s + la lecture de la phrase (7,4 s pour 6 mots) | le panneau en gros plan, le clic, la cascade, le recul, la phrase tenue et entourée, les membres | l'onglet, l'interrupteur maître, les RANGS, la phrase (8 mots au plus) et ses mots entourés |
+| `compositions/trait-qui-relie.html` | 3,3 s + la lecture du mot, de la phrase et du nom (9,9 s pour 2, 5 et 2 mots) | le mot fort souligné puis surligné d'un bloc, la phrase reliée par deux filets pendant que les logos de ses outils arrivent, le nom de l'offre, les membres qui deviennent des anneaux, le glissement vers la grille | MOT, PHRASE (6 mots au plus), LOGOS (les vrais logos des outils que la phrase nomme, 2 ou 3 ; [] : aucun), NOM (ou un logo), les RANGS identiques à la scène 1 |
+| `compositions/trait-qui-relie-vertical.html` | comme la version 16:9 | la même scène remise en page en 9:16 : panneau en haut, textes au centre, filets verticaux, membres en bas, glissement vers le bas jusqu'à la grille | comme la version 16:9 |
+| `compositions/grille-de-coches.html` | 4,9 s + la lecture de la phrase (7,7 s pour 5 mots) | la vague de coches, le zoom, la phrase tenue pendant que les pastilles respirent, les cartes des membres, la plongée | TEXTE (7 mots au plus), SALUTS, ACCUEIL |
+| `compositions/fenetre-annonce.html` | 16,7 s avec les textes d'exemple | la fenêtre, le menu « + » en cascade, la demande, les étapes qui se cochent, la pastille et le titre tenus, la signature tenue 3 s | SALUT, ACCUEIL, MENU, DEMANDE et ETAPES (seulement si son offre a vraiment un champ de demande, section 7 ; chaque étape peut porter sa vraie capture, qui sort quand elle se coche), PASTILLE, FORT (le mot du titre surligné), TITRE (8 mots au plus), NOM, LOGO |

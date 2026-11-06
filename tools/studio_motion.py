@@ -56,6 +56,7 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import html
 import json
 import math
@@ -1582,6 +1583,10 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
         plan.append(f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {s['son']})\n\n"
                     "| Temps | Bloc | Recette | À l'écran (texte exact) | Clé de OFFRE.json | Mouvement | Raccord | Son |\n"
                     "|---|---|---|---|---|---|---|---|\n")
+    # Les défauts trouvés à la revue, une ligne chacun : relus avant chaque retouche, pour qu'une
+    # correction n'en défasse pas une autre (d'après la liste d'interdits d'HyperFrames).
+    plan.append("## Interdits de cette vidéo\n\n(chaque défaut P0 ou P1 trouvé à la revue, en une ligne, avec la "
+                "vidéo concernée : relis-les avant chaque retouche ; references/revue.md, porte 3)\n")
     (dossier / "PLAN.md").write_text("\n".join(plan), encoding="utf-8")
     for v in videos:
         creer_projet(r, dossier, sujet, objectif, v, date)
@@ -1928,15 +1933,180 @@ def cmd_planche(a) -> None:
 
 
 # ---------------------------------------------------------------------------
+# La relecture à froid. L'auteur connaît le script : il ne peut pas être le spectateur froid de sa
+# propre vidéo (story refusée du 06/11/2026, « on n'a rien compris », que la revue de l'auteur n'avait
+# pas vu). Le relecteur est une autre IA, qui ne reçoit que les planches du MP4 rendu et sa consigne :
+# ni le script, ni le plan, ni la fiche. Le relevé, ensuite, ajoute le script et classe chaque défaut
+# (P0 casse la lecture, P1 affaiblit le film, P2 polit). D'après la revue par sous-agent
+# d'HyperFrames et motion-video-kit (CREDITS.md).
+# ---------------------------------------------------------------------------
+RELECTURE_PAS, RELECTURE_PAS_LONG, RELECTURE_LONGUE = 0.5, 1.0, 75.0   # s entre deux images (1 s au-delà de 75 s)
+RELECTURE_GRILLE = {True: (4, 3, 360), False: (3, 4, 480)}            # vertical ou non : colonnes, lignes, largeur
+
+CONSIGNE_FROID = """# Relecture à froid
+
+Tu ne connais rien de cette vidéo : ni le produit, ni la marque, ni son auteur, ni son script. Tu la
+regardes comme un inconnu qui tombe dessus, sans le son. Où elle passe : {support}. N'ouvre aucun
+autre fichier que ces planches : ni le dossier de la vidéo, ni un plan, ni une fiche.
+
+Ce que tu reçois : {n} planche(s), à lire dans l'ordre. Chaque planche montre jusqu'à {par} images
+prises toutes les {pas} s, de gauche à droite puis de haut en bas. Une phrase vue sur une ou deux
+images seulement est restée moins de {court} s à l'écran.
+
+{liste}
+
+Réponds en français, sans note ni compliment :
+
+1. **En trois phrases** : ce qui est vendu, à qui, ce qu'on doit faire maintenant. Si tu ne le sais
+   pas, écris-le (« je ne sais pas ce qui est vendu ») : une supposition fausse cache le défaut.
+2. **Ce que tu as dû deviner** : un mot, un nom, un chiffre ou un passage que tu n'as pas compris.
+3. **Ce que tu n'as pas pu lire** : une phrase restée trop peu de temps, trop petite, ou mangée par
+   son fond, avec sa planche et sa place (planche 2, image 5).
+4. **Le moment où tu serais parti**, s'il y en a un, et pourquoi.
+"""
+
+CONSIGNE_RELEVE = """# Relevé des défauts
+
+Tu reçois les mêmes planches que pour la relecture à froid, et cette fois le script validé par le
+client et ce que la vidéo doit faire dire. Compare ce qu'on voit à ce qui est écrit. Les planches :
+{liste}
+
+Une ligne par défaut, du plus grave au moins grave, sans rien d'autre :
+
+`t = 4,5 s · où (planche 1, image 10) · problème · changement exact · P0, P1 ou P2`
+
+- **P0** casse la lecture ou la compréhension : une phrase partie avant d'être lue, un texte illisible
+  ou caché, l'offre jamais dite, un chiffre sans son contexte, une couleur hors de la marque, une forme
+  seule à la place d'un sujet, un recadrage sec pendant une lecture.
+- **P1** affaiblit le film : un creux, un raccord qui saute, une preuve peu lisible, une image qui ne
+  montre pas ce que dit la phrase.
+- **P2** polit : un alignement, une taille, un détail.
+
+## Ce que la vidéo doit faire dire
+
+{fiche}
+
+## Le script validé
+
+{script}
+"""
+
+
+def dossier_relecture(video: Path) -> Path:
+    """Les planches du relecteur, dans un dossier au nom neutre hors du projet : le chemin du projet
+    porte le nom de l'offre, et le relecteur l'aurait lu avant de regarder (essai du 06/11/2026)."""
+    return Path(tempfile.gettempdir()) / ("relecture-" + hashlib.sha1(str(video).encode("utf-8")).hexdigest()[:8])
+
+
+def fr_nombre(x: float) -> str:
+    """3.5 -> « 3,5 » ; 4.0 -> « 4 »."""
+    return f"{round(x, 2):g}".replace(".", ",")
+
+
+def instants_relecture(duree: float, pas: float) -> list[float]:
+    """Le milieu de chaque tranche de `pas` secondes : une phrase tenue 3 s paraît sur 6 images à 0,5 s."""
+    return [round(pas / 2 + i * pas, 2) for i in range(max(1, math.ceil((duree - pas / 2) / pas)))]
+
+
+def section_plan(texte: str, titre: str) -> str:
+    """Le corps d'une section « ## <titre> » de PLAN.md, sans son titre ; "" si elle manque."""
+    m = re.search(rf"^## {re.escape(titre)}[^\n]*\n(.*?)(?=^## |\Z)", texte, re.S | re.M)
+    return m.group(1).strip() if m else ""
+
+
+def faits_releve(fiche: dict) -> str:
+    """Ce que la vidéo doit faire dire, tiré de OFFRE.json, en lignes lisibles par le relecteur."""
+    prix = fiche.get("prix") or {}
+    cta = fiche.get("cta") or {}
+    lignes = [("Produit", fiche.get("produit")), ("Pour qui", (fiche.get("public") or {}).get("texte")),
+              ("Promesse", (fiche.get("promesse") or {}).get("texte")),
+              ("Prix", f"{prix['montant']} {prix.get('devise') or ''}".strip() if prix.get("montant") is not None else ""),
+              ("Appel à l'action", cta.get("phrase") or (f"« {cta['mot_cle']} »" if cta.get("mot_cle") else ""))]
+    return "\n".join(f"- {nom} : {val}" for nom, val in lignes if val) or "(OFFRE.json vide)"
+
+
+def cmd_relecture(a) -> None:
+    ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
+    if not ffmpeg or not ffprobe:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    video = Path(a.video).resolve()
+    info = _sonder(ffprobe, video)
+    meta = meta_de(video) or {}
+    support = a.support or meta.get("support") or "reel"
+    fmt = format_de(info) or SUPPORTS[support]["format"]
+    try:
+        duree = float((info.get("format") or {}).get("duration"))
+    except (TypeError, ValueError):
+        sys.exit(f"ERREUR : durée de {video} illisible.")
+    pas = a.pas or (RELECTURE_PAS if duree <= RELECTURE_LONGUE else RELECTURE_PAS_LONG)
+    colonnes, lignes, largeur = RELECTURE_GRILLE[FORMATS[fmt][0] <= FORMATS[fmt][1]]
+    sortie = dossier_relecture(video)
+    planches = sorted(sortie.glob("planche-*.jpg"))
+    if not (a.releve and planches):
+        # Un dossier neuf à chaque relecture à froid : rien d'un relevé précédent (qui contient le
+        # script) ne doit traîner à côté des planches.
+        shutil.rmtree(sortie, ignore_errors=True)
+        sortie.mkdir(parents=True)
+        r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{pas / 2:.3f}", "-i", str(video), "-an", "-vf",
+                    f"fps=1/{pas},scale={largeur}:-2,tile={colonnes}x{lignes}:padding=8:margin=8:color=0x202022",
+                    "-q:v", "3", str(sortie / "planche-%02d.jpg")])
+        planches = sorted(sortie.glob("planche-*.jpg"))
+        if r.returncode != 0 or not planches:
+            sys.exit(f"ERREUR : planches impossibles : {(r.stderr or '')[-400:]}")
+    par = colonnes * lignes
+    total = len(instants_relecture(duree, pas))
+    liste = "\n".join(f"- `{p}` : de {fr_nombre(i * par * pas)} à {fr_nombre(min((i + 1) * par, total) * pas)} s"
+                      for i, p in enumerate(planches))
+    dossier = (projet_de(video) or video.parent).parent
+    if a.releve:
+        plan, offre = dossier / "PLAN.md", dossier / "OFFRE.json"
+        if not plan.is_file() or not offre.is_file():
+            sys.exit(f"ERREUR : PLAN.md ou OFFRE.json introuvable dans {dossier} : le relevé compare la vidéo au script.")
+        script = section_plan(plan.read_text(encoding="utf-8"), "Script")
+        if not script or script.startswith("("):
+            sys.exit("ERREUR : la section « Script » de PLAN.md est vide : écris le script validé avant le relevé.")
+        fiche = json.loads(offre.read_text(encoding="utf-8"))
+        consigne = sortie / "RELEVE.md"
+        consigne.write_text(CONSIGNE_RELEVE.format(liste=liste, fiche=faits_releve(fiche), script=script), encoding="utf-8")
+        print(f"• relevé : {consigne} ({len(planches)} planches, le script et la fiche ajoutés)")
+        print("  Donne cette consigne et les planches à un relecteur (le même que pour la relecture à froid, ou un neuf).")
+        print("  Chaque P0 et P1 se corrige, puis s'écrit en une ligne dans « Interdits de cette vidéo » (PLAN.md).")
+        return
+    consigne = sortie / "CONSIGNE.md"
+    consigne.write_text(CONSIGNE_FROID.format(support=SUPPORTS[support]["titre"], n=len(planches), par=par,
+                                              pas=fr_nombre(pas), court=fr_nombre(2 * pas), liste=liste),
+                        encoding="utf-8")
+    print(f"• relecture à froid : {sortie} ({len(planches)} planches, une image toutes les {fr_nombre(pas)} s)")
+    print("  1. Lance un relecteur neuf, une IA qui n'a rien vu de cette vidéo : Claude Code, l'outil Agent ;")
+    print("     Codex, un sous-agent. Donne-lui pour seule consigne le contenu de CONSIGNE.md, avec ces seules")
+    print("     planches : ni le script, ni PLAN.md, ni la fiche, ni rien de ta conversation.")
+    fiche = {}
+    if (dossier / "OFFRE.json").is_file():
+        try:
+            fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
+        except ValueError:
+            pass
+    print("  2. Compare ses trois phrases à la fiche (ne la lui montre pas) : tout écart est un P0.")
+    for ligne in faits_releve(fiche).splitlines():
+        print(f"     {ligne}")
+    print(f"  3. Puis le relevé, avec le script : relecture {_court(video)} --releve")
+
+
+# ---------------------------------------------------------------------------
 # Le rythme, mesuré sur le MP4 rendu. Étalonné le 12/10/2026 : une vidéo produit de référence
 # (motion design d'un lancement) fait 1,5 événement par seconde, un écart médian de 0,4 s entre
 # deux et 3 % d'image figée (son écran final) ; une vidéo en « slides » refusée par son client
 # faisait 0,33 événement par seconde, 1,75 s d'écart médian et 67 % d'image figée.
 # ---------------------------------------------------------------------------
 RYTHME_FPS, RYTHME_TAILLE = 10, (96, 54)
-SEUIL_FIGE, FIGE_MAX = 0.3, 1.0        # écart moyen des pixels (0-255) sous lequel rien ne bouge ; plage tolérée (s)
+# Recalé le 06/11/2026 pour des phrases tenues le temps de leur lecture (story refusée : « beaucoup
+# trop rapide ») : une tenue de 3 s avec une dérive lente et un ou deux gestes autour vit, elle n'est
+# pas figée. Le plancher passe de 1 à 0,7 événement par seconde, l'écart médian de 0,8 à 1,2 s, la
+# plage figée tolérée de 1 à 1,5 s, et seule une image vraiment immobile compte comme figée. La
+# vidéo en slides refusée (0,33 événement par seconde, 1,75 s d'écart, 67 % figée) échoue toujours.
+SEUIL_FIGE, FIGE_MAX = 0.1, 1.5        # écart moyen des pixels (0-255) sous lequel rien ne bouge ; plage tolérée (s)
 SEUIL_EVENEMENT = 2.0                   # un pic d'écart au-dessus = un événement (entrée, clic, coupe, compteur)
-EVENEMENTS_MIN, ECART_MEDIAN_MAX = 1.0, 0.8
+EVENEMENTS_MIN, ECART_MEDIAN_MAX = 0.7, 1.2
 CREUX_SIGNALE, FIN_LIBRE = 2.0, 3.5    # creux entre deux événements montrés ; l'écran final peut se tenir
 
 
@@ -1978,8 +2148,9 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
     if figees:
         problemes.append("image figée : " + ", ".join(f"à {d:.1f} s pendant {l:.1f} s" for d, l in figees[:6]))
     if par_s < EVENEMENTS_MIN:
-        problemes.append(f"{par_s:.2f} événement par seconde : il en faut {EVENEMENTS_MIN:.0f} au moins (une entrée, un clic, "
-                         "un compteur, une coche, un recadrage toutes les demi-secondes)")
+        problemes.append(f"{par_s:.2f} événement par seconde : il en faut {EVENEMENTS_MIN:.1f} au moins, venus de ce que "
+                         "montre la phrase (un vrai logo qui arrive, un clic, un compteur, une coche, l'interface qui "
+                         "réagit) ; jamais un recadrage ajouté pendant qu'on lit")
     if mediane > ECART_MEDIAN_MAX:
         problemes.append(f"{mediane:.2f} s entre deux événements en général : {ECART_MEDIAN_MAX} s au plus")
     return {"duree": round(duree, 1), "evenements_par_s": round(par_s, 2), "ecart_median": round(mediane, 2),
@@ -1996,7 +2167,7 @@ def cmd_rythme(a) -> None:
         v = verdict_rythme(ecarts_images(ffmpeg, Path(a.video)), fin_libre=fin)
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
-    print(f"• {v['duree']:.1f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.0f}) · "
+    print(f"• {v['duree']:.1f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.1f}) · "
           f"écart médian {v['ecart_median']:.2f} s (≤ {ECART_MEDIAN_MAX}) · image figée : "
           f"{sum(l for _d, l in v['figees']):.1f} s")
     if v["creux"]:
@@ -3388,7 +3559,7 @@ def cmd_livrer(a) -> None:
 # Les fichiers et dossiers que chaque commande lit : absents, on le dit tout de suite, au lieu d'une
 # « vidéo muette » ou d'une erreur Python brute plus loin.
 ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
-           "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "planche": ("video",), "musique": ("entree",),
+           "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "planche": ("video",), "relecture": ("video",), "musique": ("entree",),
            "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
            "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
            "livrer": ("dossier",)}
@@ -3520,6 +3691,12 @@ def main(argv: list[str] | None = None) -> None:
     pl.add_argument("--temps", help="Instants en secondes, séparés par des virgules (repères + 0,3 s).")
     pl.add_argument("--sortie")
     pl.set_defaults(f=cmd_planche)
+    rl = s.add_parser("relecture", help="Prépare la relecture à froid : les planches du MP4 et la consigne d'un relecteur neuf.")
+    rl.add_argument("video")
+    rl.add_argument("--releve", action="store_true", help="Le second passage : la consigne avec le script et la fiche.")
+    rl.add_argument("--pas", type=float, help="Secondes entre deux images (défaut 0,5 ; 1 au-delà de 75 s).")
+    rl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")
+    rl.set_defaults(f=cmd_relecture)
     mu = s.add_parser("musique", help="Tempo, temps forts et entrée d'un morceau ; version calée sur la vidéo.")
     mu.add_argument("entree")
     mu.add_argument("--sortie", help="Fichier WAV calé à écrire (sinon : analyse seule).")

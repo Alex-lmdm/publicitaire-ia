@@ -5,13 +5,24 @@
 <template>
 <!--
   Style n°3 · Verre sombre · scène « Les onglets » (l'accroche).
-  Ce qu'elle montre : ta promesse en très gros, floue, qui devient nette ; la caméra recule d'un
-  coup et la phrase finit petite, sa fin à la couleur de ta marque. Puis une barre d'onglets entre,
-  défile très vite (flou de vitesse) sous une pastille fixe cerclée de ta couleur, qui se pose sur
-  ton offre et se remplit de ta couleur ; on plonge dans ce bouton, qui couvre l'écran d'un éclair
-  de ta couleur, et « Découvre Ton offre » se forme en points puis devient net.
-  Durée : 8,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : tout se place
-  d'après la taille de la composition (K.cadre).
+  Ce qu'elle montre : ta promesse en très gros, floue, qui devient nette ; la caméra recule et la
+  phrase finit petite, sa fin à la couleur de ta marque (c'est son apparition). Puis elle se tient
+  le temps de sa lecture : la caméra ne fait qu'une dérive lente, la trame de points s'allume
+  derrière elle et la lueur glisse (aucun recadrage sec sous la phrase). Une fois la phrase lue,
+  une barre d'onglets entre, défile très vite (flou de vitesse) sous une pastille fixe cerclée de
+  ta couleur, qui se pose sur ton offre et se remplit de ta couleur ; on plonge dans ce bouton, qui
+  couvre l'écran d'un éclair de ta couleur, et « Découvre Ton offre » se forme en points, devient
+  net et se tient le temps de sa lecture.
+  Durée : la scène tient chaque phrase le temps de sa lecture (0,3 s par mot + 0,8 s, 2 s au
+  moins pour la promesse : `studio_motion.py lecture`) et en déduit sa durée : 7,2 s + la lecture
+  de la promesse + celle de « Découvre Ton offre ». 11,2 s avec les textes d'exemple (5 mots puis
+  3) ; 11,5 s pour une promesse de 6 mots ; +0,3 s par mot de plus. Reporte-la dans data-duration
+  (ici et sur l'hôte dans index.html).
+  La promesse tient sur une ligne : 8 mots au plus (le 1er morceau, 1 ou 2 mots, arrive en très
+  gros). Une promesse plus longue ne se raccourcit pas : elle se pose dans une scène construite
+  dans le style (deux lignes, même mise au point, même dérive).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : tout se place d'après la taille de
+  la composition (K.cadre).
   À remplacer (objet R en tête du script, rien d'autre) : la promesse en deux morceaux, les onglets
   (les sujets de ton univers, ceux de ta page, 6 à 9 ; « | » pose un séparateur ; le premier
   porte une icône), le nom de l'offre (il doit figurer dans les onglets), le mot d'appel.
@@ -114,15 +125,30 @@
     text-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
   }
   #t3o .t3o-echo { color: var(--t3-texte); filter: blur(7px); }
+  /* Le nom de l'offre à la fin : dans la pastille cerclée de l'accent, qui se remplit par un volet
+     pendant la tenue (le mot clé surligné d'un bloc plein ; jamais l'accent en transparence). */
+  #t3o .t3o-texte .t3o-f2 { position: relative; padding: 0 24px; border-radius: 22px; border: 2px solid transparent; }
+  #t3o .t3o-net .t3o-f2 { border-color: var(--brand-accent); }
+  #t3o .t3o-f2-plein { position: absolute; inset: -2px; border-radius: 22px; background: var(--brand-accent); color: var(--brand-contrast);
+    display: flex; align-items: center; justify-content: center; text-shadow: none; clip-path: inset(0% 100% 0% 0% round 22px); }
+  /* Ses vraies captures (ses vidéos, sa page, un résultat) dans le verre du look, autour de la
+     promesse pendant sa tenue : ce que la phrase montre pendant qu'on la lit. */
+  #t3o #t3o-matiere { transform-style: preserve-3d; }
+  #t3o .t3o-capture { position: absolute; left: 0; top: 0; border-radius: 22px; overflow: hidden; background: rgba(0, 0, 0, 0.42);
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.14), 0 30px 70px rgba(0, 0, 0, 0.45); }
+  #t3o .t3o-capture img { position: absolute; inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); border-radius: 15px; object-fit: cover; object-position: top center; }
+  #t3o .t3o-capture::after { content: ""; position: absolute; left: 10%; right: 10%; top: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent); }
 </style>
 
-<div data-composition-id="t3o" data-width="1920" data-height="1080" data-duration="8.2" style="position:absolute; inset:0;">
+<div data-composition-id="t3o" data-width="1920" data-height="1080" data-duration="11.2" style="position:absolute; inset:0;">
   <div id="t3o" class="k-scene">
     <div class="t3o-fond" data-layout-allow-overflow></div>
     <!-- La vignette assombrit la nuit seule : posée sous le sujet, elle ne touche jamais l'accent. -->
     <div class="k-vignette"></div>
     <div class="k-scene3d"><div class="k-camera" id="t3o-cam">
       <div class="t3o-plan" id="t3o-plan-trame"><div class="t3o-halo" id="t3o-halo"></div><div class="t3o-trame" id="t3o-trame" data-layout-ignore></div></div>
+      <div class="t3o-plan" id="t3o-matiere" data-layout-allow-overflow></div>
       <div class="t3o-plan" id="t3o-zoom">
         <div class="t3o-ligne" id="t3o-ligne"><span class="t3o-a" id="t3o-a"></span><span id="t3o-espace">&nbsp;</span><span class="t3o-b" id="t3o-b"></span></div>
       </div>
@@ -154,10 +180,24 @@
     onglets: ["Tendances", "Nouveau", "|", "Formations", "Coaching", "Outils", "Ton offre", "Communauté", "Bonus"],
     offre: "Ton offre",                              // l'onglet où se pose la pastille
     appel: "Découvre",                               // « Découvre Ton offre »
-    iconePremier: "trending-up"                      // icône du kit (K.ic) devant le 1er onglet
+    iconePremier: "trending-up",                     // icône du kit (K.ic) devant le 1er onglet
+    // Ce que la promesse montre pendant qu'on la lit : 2 ou 3 de ses vraies captures (ses vidéos, sa
+    // page, un résultat), en verre autour d'elle : ["assets/images/video-1.jpg", …]. Sans capture,
+    // la tenue ne vit que de sa dérive (`rythme` la verra figée) : c'est le repérage qui manque de matière.
+    captures: []
   };
   // -------------------------------------------------------------------------------------------
-  var D = 8.2;
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
+  // moins (2 s pour une accroche), arrondi au dixième supérieur.
+  function lecture(texte, plancher) {
+    var n = texte.split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length;
+    return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10;
+  }
+  var POSEE = 2.25;                                   // la promesse est entière et posée (fin de son apparition)
+  var TENUE = lecture(R.promesse.join(" "), 2);       // elle se tient le temps de sa lecture
+  var TENUE_FIN = lecture(R.appel + " " + R.offre);   // « Découvre Ton offre » aussi
+  var O = TENUE - 0.75;                               // la suite (la barre à 3,3 s + O) attend que la promesse soit lue
+  var D = Math.round((7.2 + TENUE + TENUE_FIN) * 10) / 10;   // 11,2 s avec les textes d'exemple : reporte-la en data-duration
   var $ = function (id) { return document.getElementById(id); };
   var cadre = K.cadre($("t3o")), L = cadre.largeur, H = cadre.hauteur;
   var vertical = H > L;
@@ -183,7 +223,26 @@
   remplir($("t3o-barre-haut"), true);   // copie : seul l'onglet de l'offre, net, au-dessus de la pastille
   $("t3o-plein-mot").textContent = R.offre;
   ["t3o-net", "t3o-pix", "t3o-echo"].forEach(function (id) {
-    $(id).innerHTML = '<span class="t3o-f1">' + R.appel + '</span>&nbsp;<span class="t3o-f2">' + R.offre + "</span>";
+    $(id).innerHTML = '<span class="t3o-f1">' + R.appel + '</span>&nbsp;<span class="t3o-f2">' + R.offre +
+      (id === "t3o-net" ? '<span class="t3o-f2-plein" id="t3o-f2-plein" data-layout-allow-overlap>' + R.offre + "</span>" : "") + "</span>";
+  });
+  // Les captures : des cartes de verre au format de leur image, placées autour de la promesse
+  // (à gauche, à droite, une plus loin en haut ; en 9:16, au-dessus et au-dessous), jamais dessus.
+  var places = vertical
+    ? [{ x: 0.22, y: 0.27, h: 0.27, ry: 16, rz: -4 }, { x: 0.62, y: 0.74, h: 0.22, ry: -14, rz: 3 }, { x: 0.69, y: 0.19, h: 0.15, ry: -12, rz: 3 }]
+    : [{ x: 0.155, y: 0.53, h: 0.46, ry: 18, rz: -4 }, { x: 0.845, y: 0.47, h: 0.46, ry: -18, rz: 4 }, { x: 0.6, y: 0.19, h: 0.3, ry: -8, rz: 2 }];
+  var captures = (R.captures || []).slice(0, 3).map(function (src, i) {
+    var p = places[i], e = K.el($("t3o-matiere"), "div", "t3o-capture"), img = K.el(e, "img");
+    img.alt = ""; img.src = src;
+    e.dataset.ry = p.ry; e.dataset.rz = p.rz; e.dataset.loin = p.loin || 0;
+    e.style.height = Math.round(p.h * H) + "px"; e.style.width = Math.round(p.h * H * 9 / 16) + "px";
+    img.onload = function () {        // la carte prend le format de son image (portrait, paysage)
+      var r = img.naturalWidth / Math.max(1, img.naturalHeight), h = p.h * H, w = Math.min(h * r, (vertical ? 0.6 : 0.3) * L);
+      e.style.width = Math.round(w) + "px"; e.style.height = Math.round(w / r) + "px";
+      gsap.set(e, { left: p.x * L - w / 2, top: p.y * H - w / r / 2 });
+    };
+    gsap.set(e, { left: p.x * L - p.h * H * 9 / 32, top: p.y * H - p.h * H / 2 });
+    return e;
   });
 
   // États de départ (première image comprise)
@@ -191,6 +250,7 @@
   gsap.set("#t3o-a", { filter: "blur(16px)" });
   K.cacher(["#t3o-b", "#t3o-barre", "#t3o-barre-haut", "#t3o-selection", "#t3o-final", "#t3o-trame"]);
   gsap.set("#t3o-barre", { filter: "url(#t3o-flou-h)" });
+  K.cacher(captures);
 
   function construire() {
     var tl = gsap.timeline({ paused: true });
@@ -211,70 +271,106 @@
     // l'échelle où la pastille pleine couvre tout l'écran (coins arrondis compris)
     var couvre = 1.12 * Math.max((1.25 * H) / 112, (1.12 * L) / wPastille);
 
-    // 1. La promesse floue devient nette, la caméra recule d'un coup (0 → 3,2 s)
+    // 1. L'apparition (0 → 2,25 s) : la promesse floue devient nette, la caméra recule et la ligne
+    //    se recentre, la fin de phrase entre mot à mot pendant un dernier recul (×1 → ×0,64).
+    var bm = document.querySelectorAll("#t3o .t3o-bm"), nb = bm.length;
+    var pasMot = nb > 1 ? Math.min(0.3, 0.62 / (nb - 1)) : 0;     // le dernier mot est posé à 2,1 s
     tl.to("#t3o-a", { filter: "blur(0px)", duration: 0.45, ease: "power2.out" }, 0.02);
     tl.fromTo("#t3o-trame", { opacity: 0, scale: 1.25 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "power2.out" }, 0.12);
     tl.to("#t3o-trame", { opacity: 0, duration: 0.5, ease: "power2.in" }, 0.85);
     tl.to("#t3o-zoom", { scale: 1, duration: 0.75, ease: "expo.inOut" }, 0.42);
     tl.to("#t3o-ligne", { x: 0, duration: 0.75, ease: "expo.inOut" }, 0.62);
     tl.set("#t3o-b", { opacity: 1 }, 0.98);
-    tl.fromTo("#t3o .t3o-bm", { opacity: 0, y: 16, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out", stagger: 0.3 }, 0.98);
-    tl.to("#t3o-zoom", { scale: 0.64, duration: 1.05, ease: "power2.inOut" }, 1.18);
-    tl.to("#t3o-zoom", { scale: 0.78, duration: 0.4, ease: "expo.out" }, 2.25);
-    tl.to("#t3o-zoom", { scale: 0.72, duration: 0.35, ease: "sine.inOut" }, 2.65);
-    tl.fromTo("#t3o-ligne", { y: 0 }, { y: -26, duration: 1.8, ease: "sine.inOut", immediateRender: false }, 1.18);
-    [0.5, 1.0, 1.5, 2.0, 2.5].forEach(function (t, i) { tl.set("#t3o-caret", { opacity: i % 2 ? 1 : 0 }, t); });
-    tl.fromTo(".t3o-fond", { x: 0, scale: 1 }, { x: 120, scale: 1.08, duration: 3.2, ease: "sine.inOut" }, 0);
-    tl.to("#t3o-ligne", { opacity: 0, filter: "blur(10px)", y: -40, duration: 0.3, ease: "power2.in" }, 3.0);
+    tl.fromTo(bm, { opacity: 0, y: 16, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out", stagger: pasMot }, 0.98);
+    // la phrase finit petite (×0,64 : 60 px → 38 px) ; en 9:16, moins petite (×0,86 au plus, tant
+    // qu'elle tient dans 90 % de la largeur) : sur un téléphone, elle doit se lire sans effort
+    var sFin = vertical ? Math.min(0.86, (0.9 * L) / Math.max(1, wA + wE + wB)) : 0.64;
+    tl.to("#t3o-zoom", { scale: sFin, duration: 1.05, ease: "power2.inOut" }, 1.18);
+    // 2. La tenue (2,25 s → la lecture de la promesse) : la phrase ne bouge plus que lentement. La
+    //    caméra dérive (3 %, sine.inOut), la trame de points s'allume derrière elle et la lueur glisse :
+    //    aucun recadrage sec, ni ici ni dans les cinq premières secondes.
+    var X = POSEE + TENUE;                                         // la promesse sort, lue
+    tl.fromTo("#t3o-zoom", { scale: sFin }, { scale: sFin * 0.97, duration: TENUE, ease: "sine.inOut", immediateRender: false }, POSEE);
+    tl.fromTo("#t3o-ligne", { y: 0 }, { y: -16, duration: X - 1.18, ease: "sine.inOut", immediateRender: false }, 1.18);
+    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.94 }, { opacity: 0.5, scale: 1, duration: 0.7, ease: "power2.out", immediateRender: false }, POSEE + 0.1);
+    tl.to("#t3o-trame", { scale: 1.05, duration: TENUE - 0.7, ease: "sine.inOut" }, POSEE + 0.8);
+    tl.fromTo("#t3o-halo", { opacity: 0 }, { opacity: 0.7, duration: 0.7, ease: "power2.out", immediateRender: false }, POSEE + 0.1);
+    for (var c = 0.5, k = 0; c < X; c += 0.5, k++) tl.set("#t3o-caret", { opacity: k % 2 ? 1 : 0 }, c);
+    tl.fromTo(".t3o-fond", { x: 0, scale: 1 }, { x: 160, scale: 1.1, duration: X + 0.3, ease: "sine.inOut" }, 0);
+    // Ses captures arrivent une à une de la profondeur pendant la tenue (une toutes les 0,6 s : la
+    // vie vient de ce que la phrase montre), dérivent lentement, puis repartent avec elle. Sans
+    // fondu : une capture à demi transparente sur la nuit en salirait les couleurs.
+    captures.forEach(function (e, i) {
+      var t = POSEE + 0.15 + i * 0.6, ry = +e.dataset.ry, rz = +e.dataset.rz, loin = +e.dataset.loin;
+      tl.set(e, { opacity: 1, filter: loin ? "blur(2px)" : "none" }, t);
+      tl.fromTo(e, { z: -900, rotationY: ry * 2.2, rotationZ: rz * 2, y: 60 },
+        { z: loin ? -260 : 0, rotationY: ry, rotationZ: rz, y: 0, duration: 0.55, ease: "expo.out", immediateRender: false }, t);
+      tl.to(e, { y: i % 2 ? 14 : -14, rotationY: ry * 0.8, duration: X - t - 0.55, ease: "sine.inOut" }, t + 0.55);
+      tl.to(e, { z: -1100, y: i % 2 ? 80 : -80, duration: 0.32, ease: "power2.in" }, X);
+      tl.set(e, { opacity: 0 }, X + 0.32);
+    });
+    tl.to("#t3o-ligne", { opacity: 0, filter: "blur(10px)", y: -40, duration: 0.3, ease: "power2.in" }, X);
+    tl.to(["#t3o-trame", "#t3o-halo"], { opacity: 0, duration: 0.3, ease: "power2.in" }, X);
 
-    // 2. La barre d'onglets : le premier, puis les suivants, puis le défilement (3,3 → 5,6 s)
+    // 3. La barre d'onglets, une fois la promesse lue : le premier, puis les suivants, puis le
+    //    défilement (3,3 → 5,6 s, décalés de O : tous les temps qui suivent passent par T)
+    var T = function (t) { return t + O; };
     // en 9:16, la barre aussi grande que possible (au plus ×0,85) tant que la pastille de l'offre
     // tient dans la largeur au plus près (×2,6) : de 50 à 100 px de texte selon la longueur du nom
     var zb = vertical ? Math.min(0.85, (0.92 * L) / (wPastille * 2.6)) : 1;
     gsap.set("#t3o-zoom-barre", { scale: 2.1 * zb });
-    tl.set("#t3o-barre", { opacity: 1 }, 3.3);
+    tl.set("#t3o-barre", { opacity: 1 }, T(3.3));
     gsap.set(onglets, { opacity: 0 });
-    tl.fromTo(premier, { opacity: 0, scale: 0.88, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 3.3);
+    tl.fromTo(premier, { opacity: 0, scale: 0.88, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, T(3.3));
     for (var i = 1; i < onglets.length; i++) {
       var t = i <= 4 ? 3.62 + (i - 1) * 0.17 : 4.45 + (i - 5) * 0.04;
-      tl.fromTo(onglets[i], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, t);
+      tl.fromTo(onglets[i], { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out" }, T(t));
     }
-    tl.to("#t3o-zoom-barre", { scale: 1.6 * zb, duration: 1.0, ease: "power2.inOut" }, 3.55);
-    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxGroupe, duration: 1.0, ease: "power2.inOut" }, 3.55);
+    tl.to("#t3o-zoom-barre", { scale: 1.6 * zb, duration: 1.0, ease: "power2.inOut" }, T(3.55));
+    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxGroupe, duration: 1.0, ease: "power2.inOut" }, T(3.55));
     // le défilement très rapide, avec un flou de vitesse horizontal
-    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxCible, duration: 1.0, ease: "power3.inOut" }, 4.55);
-    tl.to("#t3o-zoom-barre", { scale: 2.05 * zb, duration: 1.0, ease: "power3.inOut" }, 4.55);
-    tl.fromTo("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" } }, { attr: { stdDeviation: "18 0" }, duration: 0.5, ease: "power2.in" }, 4.55);
-    tl.to("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" }, duration: 0.45, ease: "power2.out" }, 5.05);
-    tl.fromTo("#t3o-selection", { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, 4.85);
-    tl.set("#t3o-barre-haut", { opacity: 1 }, 5.45);
+    tl.to(["#t3o-barre", "#t3o-barre-haut"], { x: -cxCible, duration: 1.0, ease: "power3.inOut" }, T(4.55));
+    tl.to("#t3o-zoom-barre", { scale: 2.05 * zb, duration: 1.0, ease: "power3.inOut" }, T(4.55));
+    tl.fromTo("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" } }, { attr: { stdDeviation: "18 0" }, duration: 0.5, ease: "power2.in" }, T(4.55));
+    tl.to("#t3o-flou-h-g", { attr: { stdDeviation: "0 0" }, duration: 0.45, ease: "power2.out" }, T(5.05));
+    tl.fromTo("#t3o-selection", { opacity: 0, scaleX: 0.7 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "expo.out" }, T(4.85));
+    tl.set("#t3o-barre-haut", { opacity: 1 }, T(5.45));
 
-    // 3. La plongée dans le bouton (5,6 → 7 s) : la pastille se remplit de l'accent par un volet,
+    // 4. La plongée dans le bouton (5,6 → 7 s) : la pastille se remplit de l'accent par un volet,
     //    puis on la traverse : elle couvre tout l'écran (un éclair de la couleur pleine), coupe.
-    tl.to("#t3o-barre", { filter: "blur(9px)", opacity: 0.32, duration: 0.6, ease: "power2.out" }, 5.55);
-    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1.1, duration: 1.05, ease: "power2.out", immediateRender: false }, 5.5);
-    tl.to("#t3o-zoom-barre", { scale: 2.6 * zb, duration: 0.85, ease: "expo.out" }, 5.6);
-    tl.fromTo("#t3o-reflet", { x: -220 }, { x: wPastille + 120, duration: 0.7, ease: "power2.inOut" }, 5.85);
-    tl.fromTo("#t3o-halo", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 5.6);
-    tl.fromTo("#t3o-plein", { clipPath: "inset(0% 100% 0% 0% round 30px)" }, { clipPath: "inset(0% 0% 0% 0% round 30px)", duration: 0.26, ease: "power3.inOut" }, 6.02);
-    tl.set(["#t3o-selection", "#t3o-barre-haut"], { opacity: 0 }, 6.3);
-    tl.to("#t3o-plein-mot", { opacity: 0, duration: 0.12, ease: "power1.in" }, 6.55);
-    tl.to("#t3o-barre", { opacity: 0, duration: 0.15, ease: "power1.in" }, 6.55);
-    tl.to("#t3o-zoom-barre", { scale: couvre, duration: 0.38, ease: "power3.in" }, 6.55);
-    tl.to("#t3o-trame", { scale: 2.4, opacity: 0, duration: 0.4, ease: "power3.in" }, 6.55);
-    tl.to("#t3o-halo", { scale: 2.2, opacity: 0, duration: 0.4, ease: "power3.in" }, 6.55);
-    tl.set("#t3o-zoom-barre", { opacity: 0 }, 6.98);
+    tl.to("#t3o-barre", { filter: "blur(9px)", opacity: 0.32, duration: 0.6, ease: "power2.out" }, T(5.55));
+    tl.fromTo("#t3o-trame", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1.1, duration: 1.05, ease: "power2.out", immediateRender: false }, T(5.5));
+    tl.to("#t3o-zoom-barre", { scale: 2.6 * zb, duration: 0.85, ease: "expo.out" }, T(5.6));
+    tl.fromTo("#t3o-reflet", { x: -220 }, { x: wPastille + 120, duration: 0.7, ease: "power2.inOut" }, T(5.85));
+    tl.fromTo("#t3o-halo", { opacity: 0, scale: 1 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, T(5.6));
+    tl.fromTo("#t3o-plein", { clipPath: "inset(0% 100% 0% 0% round 30px)" }, { clipPath: "inset(0% 0% 0% 0% round 30px)", duration: 0.26, ease: "power3.inOut" }, T(6.02));
+    tl.set(["#t3o-selection", "#t3o-barre-haut"], { opacity: 0 }, T(6.3));
+    tl.to("#t3o-plein-mot", { opacity: 0, duration: 0.12, ease: "power1.in" }, T(6.55));
+    tl.to("#t3o-barre", { opacity: 0, duration: 0.15, ease: "power1.in" }, T(6.55));
+    tl.to("#t3o-zoom-barre", { scale: couvre, duration: 0.38, ease: "power3.in" }, T(6.55));
+    tl.to("#t3o-trame", { scale: 2.4, opacity: 0, duration: 0.4, ease: "power3.in" }, T(6.55));
+    tl.to("#t3o-halo", { scale: 2.2, opacity: 0, duration: 0.4, ease: "power3.in" }, T(6.55));
+    tl.set("#t3o-zoom-barre", { opacity: 0 }, T(6.98));
 
-    // 4. « Découvre Ton offre » se forme en points, puis net (7 → 8,2 s)
-    tl.set("#t3o-final", { opacity: 1 }, 6.98);
-    tl.fromTo("#t3o-bande", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.56, ease: "expo.out" }, 6.98);
-    tl.fromTo("#t3o-pix", { opacity: 0, scaleX: 1.25, filter: "blur(6px)" }, { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.38, ease: "expo.out" }, 6.98);
-    tl.fromTo("#t3o-echo", { opacity: 0.7, scale: 1.9 }, { opacity: 0, scale: 1.15, duration: 0.7, ease: "power2.out" }, 7.0);
-    tl.fromTo("#t3o-net", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 7.28);
-    tl.to("#t3o-pix", { opacity: 0, duration: 0.3, ease: "power1.in" }, 7.38);
-    tl.fromTo("#t3o-final", { scale: 1 }, { scale: 1.05, duration: 1.22, ease: "sine.inOut" }, 6.98);
-    tl.to("#t3o-bande", { opacity: 0.55, duration: 0.3, ease: "sine.inOut" }, 7.56);
-    tl.to("#t3o-final", { opacity: 0, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, 7.9);
+    // 5. « Découvre Ton offre » se forme en points, devient net (7 → 7,6 s), puis se tient le temps
+    //    de sa lecture pendant une poussée lente (5 %) ; il sort à la fin de la scène.
+    var SORTIE = D - 0.32;
+    tl.set("#t3o-final", { opacity: 1 }, T(6.98));
+    tl.fromTo("#t3o-bande", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.56, ease: "expo.out" }, T(6.98));
+    tl.fromTo("#t3o-pix", { opacity: 0, scaleX: 1.25, filter: "blur(6px)" }, { opacity: 1, scaleX: 1, filter: "blur(0px)", duration: 0.38, ease: "expo.out" }, T(6.98));
+    tl.fromTo("#t3o-echo", { opacity: 0.7, scale: 1.9 }, { opacity: 0, scale: 1.15, duration: 0.7, ease: "power2.out" }, T(7.0));
+    tl.fromTo("#t3o-net", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, T(7.28));
+    tl.to("#t3o-pix", { opacity: 0, duration: 0.3, ease: "power1.in" }, T(7.38));
+    tl.fromTo("#t3o-final", { scale: 1 }, { scale: 1.05, duration: SORTIE - T(6.98), ease: "sine.inOut" }, T(6.98));
+    tl.to("#t3o-bande", { opacity: 0.55, duration: 0.3, ease: "sine.inOut" }, T(7.56));
+    // au milieu de la tenue, la pastille du nom se remplit de l'accent par un volet (un événement de
+    // contenu : le mot clé surligné d'un bloc plein), le reflet glisse sur son arête
+    var VOLET = (T(7.4) + SORTIE) / 2 - 0.13;
+    tl.fromTo("#t3o-f2-plein", { clipPath: "inset(0% 100% 0% 0% round 22px)" }, { clipPath: "inset(0% 0% 0% 0% round 22px)", duration: 0.2, ease: "power2.inOut", immediateRender: false }, VOLET);
+    tl.fromTo("#t3o-net .t3o-f2", { scale: 1 }, { scale: 1.08, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, VOLET + 0.1);
+    // la pastille se vide par un volet, puis la ligne sort (une couleur pleine ne s'efface jamais en fondu)
+    tl.to("#t3o-f2-plein", { clipPath: "inset(0% 0% 0% 100% round 22px)", duration: 0.16, ease: "power2.in" }, SORTIE - 0.16);
+    tl.to("#t3o-final", { opacity: 0, filter: "blur(10px)", duration: 0.3, ease: "power2.in" }, SORTIE);
 
     window.__timelines["t3o"] = tl;
   }

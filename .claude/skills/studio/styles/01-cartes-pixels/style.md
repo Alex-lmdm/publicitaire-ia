@@ -15,7 +15,7 @@
 - **La caméra ne s'arrête jamais** : poussée lente pendant qu'on lit (4 à 6 % sur 2 à 3 s, `sine.inOut`), puis recadrage net à chaque nouvelle intention (0,3 à 0,85 s, `expo.out` ou `expo.inOut`) vers la partie qui compte.
 - **Les rafales** : les pixels et les cartes arrivent en cascade (0,02 à 0,1 s d'écart), jamais un par un à intervalle lent.
 - **Pas de texte à lire dans l'original.** Le kit en ajoute un minimum (un label mono et une étiquette de 2 à 4 mots par scène), parce qu'une vidéo de page démarre muette.
-- **Chez toi :** grille de 0,5 s du studio (120 battements par minute) ou celle de la musique ; les scènes du kit tiennent environ 1,4 événement par seconde. Le milieu (la carte annotée, les logos) est le plus calme : n'y ajoute pas de tenue.
+- **Chez toi :** grille de 0,5 s du studio (120 battements par minute) ou celle de la musique ; les scènes du kit tiennent environ 1,4 événement par seconde. Le milieu (la carte annotée, les logos) est le plus calme : n'y ajoute pas de tenue vide ; une étiquette s'y tient le temps de sa lecture (`studio_motion.py lecture`) pendant que les cadres se posent, jamais moins.
 
 ## 2. Les gestes signature et leur place
 
@@ -139,7 +139,7 @@ Une vidéo de page de 60 à 90 s qui raconte, comme l'original, un problème pui
 ## 9. L'ouverture et la fin
 
 - **Ouverture de l'original** : 3 s sans un mot, une structure de pixels qui se monte en perspective, puis la carte de discussion. **Chez toi** : `t01-bruit` ouvre directement sur la carte et la question qui se tape (le sujet se comprend à la première seconde) ; en vidéo de page, si cette scène ouvre la vidéo, fais arriver l'étiquette dès 0,3 s.
-- **Fin de l'original** : le chevron en escalier, le blanc, le logo et le nom qui se forment en pixels, tenus 4 s, sans appel écrit. **Chez toi** : la même fin, plus le bouton qui s'écrit lettre à lettre et le clic du curseur (repris du bouton orange de l'original, à 30 s), tenus 1 s ; allonge la tenue à 2,5 s si c'est la dernière scène.
+- **Fin de l'original** : le chevron en escalier, le blanc, le logo et le nom qui se forment en pixels, tenus 4 s, sans appel écrit. **Chez toi** : la même fin, plus le bouton qui s'écrit lettre à lettre et le clic du curseur (repris du bouton orange de l'original, à 30 s), tenus le temps de leur lecture (1,5 s au moins : `studio_motion.py lecture`), 3 s si c'est l'écran final.
 
 ## Ce qui ne se fera pas à l'identique
 

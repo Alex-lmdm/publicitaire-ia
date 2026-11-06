@@ -20,6 +20,7 @@ Recommande-en une avec la raison, puis attends.
 | **La preuve en grand** | Le chiffre ou le témoignage le plus fort, puis l'offre | La page a une preuve solide |
 | **La question** | Le problème de l'audience tapé ou dit, l'offre y répond | Audience qui connaît le problème |
 | **Le fait nouveau** | Ce qui a changé (un nouveau modèle, une nouvelle fonction), au centre | Nouveauté, lancement, marché qui bouge |
+| **La vidéo est la démo** | La vidéo qu'on regarde est elle-même ce que l'offre fabrique (« cette story, c'est l'IA qui l'a faite »), puis le geste qui l'a produite | Une offre qui fabrique des contenus, une possibilité que le public n'imaginait pas (Publicitaire IA, 06/11/2026) |
 | **La comparaison** | Les autres options (monteur, agence, faire seul) face à l'offre | Audience qui hésite entre plusieurs solutions |
 
 ## Selon ce que le client vend
