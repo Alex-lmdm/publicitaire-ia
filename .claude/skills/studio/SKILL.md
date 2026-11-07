@@ -97,7 +97,18 @@ ce script est le texte de la voix ([voix.md](references/voix.md)).
 
 `musiques choisir --style <N> --ouvrir` lui montre les 8 styles en vidéo et trois musiques ; il
 répond « 7, 2 », décrit un autre style, colle le lien d'une vidéo qu'il aime, ou écrit « choisis ».
-Un style déjà connu ne se redemande pas (`--sans-styles`). Puis le tableau scène par scène de
+Un style déjà connu ne se redemande pas (`--sans-styles`). Un morceau donné par le client ou choisi
+sur son compte Epidemic Sound remplace ce choix musical ([son.md](references/son.md)).
+
+**La bande-son précède le plan d'animation.** S'il veut une voix, prépare d'abord son fichier,
+ses mots et ses respirations (`voix.md`), puis choisis la musique qui va dessous. Analyse et cale
+le morceau (`son.md`) ; relève dans `PLAN.md` son tempo réel après calage, ses temps forts, son
+entrée franche, ses pauses, ses changements d'énergie et sa fin. Sans voix, ces repères conduisent
+le mouvement ; avec une voix, les mots conduisent les gestes et la musique les respirations.
+Une pause musicale sert une attente ou un arrêt volontaire avant la révélation, jamais un trou
+rempli de bruitages. Ne commence pas l'animation tant que ces repères ne sont pas fixés.
+
+Puis le tableau scène par scène de
 `PLAN.md`, qui suit le script : pour chaque plan, la scène (prête, d'un style, ou construite) et
 **son moment signature**, ce qu'on voit, les mots, la clé de la fiche, le raccord, le son. Le
 tableau ne se montre pas (le script est validé) ; pour une vidéo de page de plus d'une minute, ou
@@ -143,6 +154,12 @@ l'offre passe d'abord dans `OFFRE.json`. Une autre version (« la même pour Lin
 Une voix off sur une vidéo déjà faite : [voix.md](references/voix.md), la version avec voix
 s'ajoute à côté de l'originale. Pack SFX et musiques : [son.md](references/son.md) (jamais
 l'INSTALL.md d'une archive).
+
+**Changer de musique**, même si le client dit seulement « mets cette musique à la place » :
+reprends aussi le tempo, les coupes, les pauses et la révélation à partir du nouveau morceau,
+puis les bruitages et le mixage. Garde son message et sa marque ; avec une voix, garde les gestes
+sur ses mots. Mets à jour les repères de `PLAN.md`, puis refais la revue et la livraison
+(`son.md`, « Changer de morceau »). Remplacer seulement le fichier audio ne suffit pas.
 
 ## Ce que tu ne fais jamais
 

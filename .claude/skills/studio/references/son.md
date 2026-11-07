@@ -17,7 +17,8 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   de `marque.json`, rangé dans `marque/`) ; sinon ses **musiques de lancement** (35 morceaux offerts
   avec la formation, dans `assets/musiques/` ; `python3 tools/studio_motion.py musiques` dit
   lesquelles sont installées), choisies comme dit plus bas. Dans l'app HyperFrames aussi : la
-  commande `musiques`, jamais `find_music`.
+  commande `musiques`, jamais `find_music`. S'il demande son catalogue Epidemic Sound connecté,
+  utilise-le à la place de la banque incluse (section suivante).
 - Moins de 35 installées : lance d'abord `musiques installer` depuis la racine (il reprend celles
   de Mixkit). Il manque encore les 17 de la formation ? Dis-le une fois, en une phrase : « Il manque
   une partie de tes musiques : colle-moi la phrase « Installe mes musiques de lancement » du module
@@ -28,6 +29,27 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   [heygen.md](heygen.md) (`heygen bruitages`, `heygen prendre <n> --bruitage`).
 - Ne télécharge jamais une musique d'un site au hasard : les droits ne sont pas garantis. Ne lance
   jamais une génération de musique payante.
+
+## Son compte Epidemic Sound, en option
+
+Demande d'Alexandre du 07/11/2026 : la banque incluse reste le choix par défaut. Un fichier du
+client passe toujours en premier. S'il demande Epidemic Sound (ou a gardé cette préférence),
+cherche avec **son propre compte connecté** par MCP, sans demander sa clé dans la conversation.
+Connexion : [epidemic.md](epidemic.md). Aucun abonnement n'est nécessaire pour utiliser les 35.
+
+- Recherche trois directions adaptées à l'offre, au style visuel et à la présence d'une voix.
+  Fais écouter les extraits, puis télécharge le morceau retenu avec les outils du MCP. Ne prétends
+  pas l'avoir écouté si tu ne l'as pas fait. Ne lance aucune génération ni adaptation payante.
+- S'il préfère le site, laisse-le choisir et donner le fichier. Playlist conseillée par Alexandre :
+  [Sons déformés / Glitchy Sounds](https://www.epidemicsound.com/fr/music/themes/technology/glitchy-sounds/).
+- Range le fichier dans `assets/audio/` du projet ; note titre, artiste, identifiant, source et
+  licence déclarée dans `SOURCE.md`. Analyse-le comme tout morceau fourni. Un téléchargement ne
+  prouve pas à lui seul que son plan couvre une publicité ou une nouvelle publication.
+- Les bruitages de son compte sont aussi disponibles à sa demande. Garde leurs sources et la
+  même règle de licence ; les fichiers seuls ne se livrent jamais.
+- MCP absent : propose le fichier téléchargé sur le site ou accompagne la connexion. N'achète
+  rien. Les vidéos publiées pendant la période couverte restent autorisées ; une nouvelle vidéo
+  après expiration demande un abonnement actif ou une licence adaptée.
 
 ## Le Pack SFX (produit vendu à part)
 
@@ -99,6 +121,36 @@ démonstration, `musique_db=-17` et les bruitages en proportion), `mastering` re
 avec `id="musique"` : c'est ce que retrouve la version sans musique.
 
 ## La musique
+
+### Construire l'image sur la bande-son
+
+Avant `PLAN.md` et toute animation, le morceau est choisi, analysé et calé. Avec une voix off,
+prépare d'abord ses mots et ses respirations (`voix.md`), puis le morceau. Dans `PLAN.md`, note
+les repères **du fichier qui sera posé** : tempo après calage, temps forts, entrée de batterie,
+pauses ou ruptures, changements d'énergie, dernier accent et fin. Les outils mesurent le tempo
+et l'entrée ; relève les autres repères sur l'onde ou avec `ffmpeg silencedetect`, sans inventer
+une écoute. Vérifie les instants dans le fichier final, pas seulement dans la fiche du catalogue.
+
+Sans voix, le mouvement suit les phrases musicales : révélation sur une entrée forte, rafale
+sur une accélération, attente ou arrêt volontaire dans une pause, écran final sur la résolution.
+Avec une voix, les gestes suivent les mots ; les accents musicaux se placent dans ses pauses.
+La grille à 120 est un moyen de calage : si le tempo reste différent, construis sur celui-ci.
+
+### Changer de morceau
+
+Toute demande de remplacement comprend le **recalage du motion design** : nouveau fichier dans
+`assets/audio/`, source actualisée, analyse, nouveaux repères dans `PLAN.md`, puis coupes,
+transitions, moments forts, pauses et fin adaptés. Garde les faits, le message et la marque ;
+avec une voix, conserve le calage des gestes sur ses mots. Repose ensuite les bruitages, recalcule
+le mixage, puis refais rendu, revue, mastering et livraison (version sans musique comprise).
+Ne te contente pas de remplacer `musique.wav` sous des animations restées au même rythme.
+
+Le client peut coller, avec son nouveau fichier :
+
+> Remplace la musique de cette vidéo par le fichier que je te donne. Adapte le motion design au
+> tempo, aux temps forts, aux pauses et aux changements de la nouvelle musique. Fais tomber la
+> révélation sur son entrée forte et soigne la fin. Garde le message et la marque ; s'il y a une
+> voix off, garde les animations calées sur ses mots. Refais les bruitages, le mixage et la livraison.
 
 ### Choisir le morceau
 

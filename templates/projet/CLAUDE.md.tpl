@@ -34,6 +34,9 @@ référence `composition.md`.
 - Retouche demandée : relis d'abord « Interdits de cette vidéo » dans `{{DOSSIER}}PLAN.md` (les
   défauts déjà corrigés), modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
+- Une nouvelle musique : reprends aussi le tempo, les coupes, les mouvements, les pauses et la
+  révélation, puis les bruitages et le mixage (`references/son.md`). Avec une voix, les gestes
+  restent calés sur ses mots. Note les nouveaux repères dans `{{DOSSIER}}PLAN.md`.
 - **Dans l'app HyperFrames** (tes consignes disent alors que l'app fait le rendu) : fais la retouche
   dans `index.html`, `compositions/` et `assets/`, sans rendu ; le client la voit tout de suite dans
   l'app. Puis dis-lui : « C'est fait, tu la vois dans l'app. Pour mettre à jour tes fichiers prêts à

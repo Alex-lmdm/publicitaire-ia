@@ -27,6 +27,10 @@ peuvent changer pour leur plan.
 
 ## Le rythme : des vitesses qui contrastent
 
+- Le morceau choisi et la voix éventuelle précèdent le plan d'animation (`son.md`). Appuie les
+  coupes et la révélation sur leurs repères mesurés ; utilise une pause musicale pour une attente
+  ou un arrêt volontaire. Avec une voix, les gestes restent calés sur les mots. Après un changement
+  de morceau, reprends ce calage, les transitions, les bruitages et la fin, pas seulement l'audio.
 - **Autour des mots, il se passe toujours quelque chose** : un objet qui arrive, un curseur qui
   clique, une coche, un compteur qui tourne, l'interface qui répond, un fond qui bascule avec sa
   cause. Le contrôle `rythme` mesure le MP4 rendu : au moins 0,7 événement par seconde, 1,2 s au

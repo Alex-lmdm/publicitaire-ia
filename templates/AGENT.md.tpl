@@ -50,6 +50,10 @@ LinkedIn, X, YouTube).
   musique dans ma vidéo » (sa musique) vaut pour la vidéo en cours ; elle ne devient sa musique de
   marque que s'il le demande (`references/son.md`). Une voix off se fait à sa demande seulement
   (`references/voix.md`).
+- **Sa musique guide le montage** : choisis et analyse la bande-son avant le plan d'animation.
+  Changer de morceau comprend le recalage des coupes, des mouvements, des pauses, de la révélation
+  et des bruitages (`references/son.md`). Son compte Epidemic Sound connecté est une option à sa
+  demande, comme un fichier qu'il fournit ; connexion : `references/epidemic.md` du skill `studio`.
 
 - **Le Pack SFX** (156 bruitages pro, vendus à part) : « installe le Pack SFX depuis pack-sfx.zip »
   → `python3 {{MAISON}}tools/studio_motion.py pack-sfx installer` (sans argument : l'archive ou le
