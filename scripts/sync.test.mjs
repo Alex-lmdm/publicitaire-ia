@@ -163,4 +163,6 @@ test("une mise à jour par archive ne laisse aucun fichier retiré du produit, n
   assert.equal(fs.readFileSync(path.join(dir, "videos", "Ma vidéo", "rythme.md"), "utf8"), "au client");
   // Aucun chemin retiré ne vise ce qui appartient au client.
   for (const r of RETIRES) assert.ok(!/^(videos|marque|assets\/(sfx|musiques))\b/.test(r), r);
+  // Ni un fichier encore livré : la mise à jour l'effacerait chez le client.
+  for (const r of RETIRES) assert.equal(fs.existsSync(path.join(RACINE, r)), false, `${r} est encore dans le produit`);
 });

@@ -207,6 +207,12 @@ export const RETIRES = [
   ".claude/skills/studio/references/style.md",
   ".claude/skills/studio/references/rythme.md",
   ".claude/skills/studio/references/recettes.md",
+  // 0.9.0 : les exemples de styles qui ne respectaient plus la règle (texte qui bouge, particules).
+  ".claude/skills/studio/styles/02-titres-geants/compositions/carte-paysage-vertical.html",
+  ".claude/skills/studio/styles/02-titres-geants/compositions/carte-paysage.html",
+  ".claude/skills/studio/styles/02-titres-geants/compositions/sphere-faisceau-vertical.html",
+  ".claude/skills/studio/styles/02-titres-geants/compositions/sphere-faisceau.html",
+  ".claude/skills/studio/styles/06-nuee-d-encre/compositions/gravures-en-rafale.html",
 ];
 
 export function retirerPerimes(racine = ROOT) {
