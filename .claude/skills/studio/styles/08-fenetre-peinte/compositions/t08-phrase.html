@@ -3,27 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LA PHRASE TAPÉE (titre de chapitre) · 5,1 s pour 9 mots
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LA PHRASE TAPÉE (titre de chapitre) · 4,6 s pour 7 mots
     Ce que la scène montre : sur le clair de ta marque, une phrase complète, centrée sur deux lignes
     équilibrées, s'écrit lettre à lettre à sa place définitive (les lettres apparaissent, rien ne
     glisse), se tient le temps de sa lecture, puis la scène coupe net. C'est le motif qui revient
     avant chaque partie de la vidéo : une phrase, puis la démonstration. Aucun objet, aucune image :
     la typographie seule ; pendant la frappe et la tenue, la caméra ne fait qu'une dérive lente.
-    Format : 16:9 (1920 × 1080), deux lignes à 104 px (réduites seules jusqu'à 72 px pour qu'une
-    phrase de 12 mots tienne sur deux lignes) ; en 9:16, data-width="1080" data-height="1920" ici et
-    sur l'hôte (112 px, sur 2 ou 3 lignes équilibrées, réduites seules jusqu'à 80 px).
+    Format : 16:9 (1920 × 1080), deux lignes à 104 px (une phrase longue se réduit seule, jamais
+    sous 72 px) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte (112 px, sur 2 ou
+    3 lignes équilibrées, jamais sous 80 px).
     Durée : D = 0,06 s + 0,04 s par signe (espaces compris : la frappe, 25 signes par seconde) + la
-    lecture de la phrase (0,3 s par mot + 0,8 s : `studio_motion.py lecture`). 5,1 s pour « Tu
-    donnes le lien de ta page de vente. » (38 signes, 9 mots), 6,6 s pour 11 mots et 61 signes. La
-    scène la calcule (D dans le script) : reporte-la dans data-duration (ici et sur l'hôte).
+    lecture de la phrase (0,3 s par mot + 0,8 s : `studio_motion.py lecture`). 4,6 s pour la phrase
+    d'exemple (41 signes, 7 mots), 5,1 s pour 8 mots et 46 signes. La scène la calcule (D dans le
+    script) : reporte-la dans data-duration (ici et sur l'hôte).
 
-    À REMPLACER :
-     1. L'id « t08-phrase » (racine, constante ID, préfixe CSS) par un id par phrase
-        (t08-phrase-1, t08-phrase-2…) : chaque chapitre a la sienne.
-     2. LIGNES : la phrase du script, complète, ponctuée d'un point : 8 mots conseillés, 12 au plus,
-        jamais raccourcie pour aller plus vite. Une seule entrée : elle se coupe seule en deux lignes
-        équilibrées ; deux entrées : tes deux lignes, telles quelles.
-     3. data-duration : la durée D ci-dessus.
+    À remplacer : l'objet EXEMPLE (en tête du script) : la phrase du script, complète et ponctuée
+    d'un point, 8 mots au plus (au-delà, coupe des mots : jamais une police plus petite) ; une seule
+    entrée se coupe seule en deux lignes équilibrées, deux entrées sont tes deux lignes, telles
+    quelles. Puis l'id « t08-phrase » (racine, constante ID, préfixe CSS) : un id par phrase
+    (t08-phrase-1, t08-phrase-2…), et data-duration = D.
     Couleurs : seulement celles de ta marque (brand/tokens.css) : le fond est son clair, le texte
     sa nuit (var(--brand-sombre)). Police : la police de titres de la marque, en 400.
   -->
@@ -42,7 +40,7 @@
   #t08-phrase.t08-vertical .t08-ligne { max-width: none; }
 </style>
 
-<div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="5.1" style="position:absolute; inset:0;">
+<div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="4.6" style="position:absolute; inset:0;">
   <div id="t08-phrase" class="k-scene">
     <div class="t08-fond"></div>
     <div class="t08-phrase" id="t08-phrase-texte"></div>
@@ -51,14 +49,15 @@
 
 <script>
   (function () {
-    var ID = "t08-phrase";
-    // ---- À remplacer -------------------------------------------------------------------------
-    var LIGNES = ["Tu donnes le lien de ta page de vente."];
-    // -------------------------------------------------------------------------------------------
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      lignes: ["Ta méthode, enfin rangée au même endroit."]   // la phrase du script, 8 mots au plus
+    };
+
+    var ID = "t08-phrase", LIGNES = EXEMPLE.lignes;
     // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
     function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
     var SIGNES = LIGNES.join(" ").length, FRAPPE = 0.06 + 0.04 * SIGNES;
-    var D = Math.round((FRAPPE + lecture(LIGNES)) * 10) / 10;   // 5,1 s pour la phrase d'exemple : reporte-la en data-duration
+    var D = Math.round((FRAPPE + lecture(LIGNES)) * 10) / 10;   // 4,6 s pour la phrase d'exemple : reporte-la en data-duration
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var cadre = K.cadre(racine), vertical = cadre.hauteur > cadre.largeur;
@@ -78,8 +77,8 @@
       div.querySelectorAll(".t08-l").forEach(function (l) { l.setAttribute("data-layout-allow-overlap", ""); });
     });
     gsap.set(bloc, { yPercent: -50 });
-    // Deux lignes au plus en 16:9, trois en 9:16 : une phrase longue se réduit (jamais en dessous de
-    // 72 px, 80 px en 9:16) au lieu de se raccourcir. Mesuré une fois les polices chargées.
+    // Deux lignes au plus en 16:9, trois en 9:16 : une phrase un peu longue se réduit (jamais en
+    // dessous de 72 px, 80 px en 9:16). Mesuré une fois les polices chargées.
     function ajuster() {
       var fs = parseFloat(getComputedStyle(bloc).fontSize), lh = fs * 1.04, max = vertical ? 3 : 2, mini = vertical ? 80 : 72;
       while (fs > mini && bloc.offsetHeight > lh * max * LIGNES.length / Math.max(1, LIGNES.length) + 2 && LIGNES.length === 1) { fs -= 4; bloc.style.fontSize = fs + "px"; lh = fs * 1.04; }
@@ -97,8 +96,8 @@
       for (var k = i; k < Math.min(lettres.length, i + paquet); k++) tl.set(lettres[k], { opacity: 1 }, t);
       i += paquet;
     }
-    // La caméra ne fait qu'une dérive lente (6 % sur la scène, sine.inOut), sans à-coup.
-    tl.fromTo(bloc, { scale: 0.98 }, { scale: 1.04, duration: D, ease: "sine.inOut" }, 0);
+    // La caméra ne fait qu'une dérive lente (5,5 % sur la scène, sine.inOut), sans à-coup.
+    tl.fromTo(bloc, { scale: 0.985 }, { scale: 1.04, duration: D, ease: "sine.inOut" }, 0);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster); else ajuster();
 
     window.__timelines[ID] = tl;

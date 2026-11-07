@@ -3,68 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°2 · TITRES GÉANTS · SCÈNE « TITRE GÉANT », VERSION VERTICALE 9:16 (1080 × 1920), 5,6 s
+    STYLE N°2 · TITRES GÉANTS · SCÈNE « TITRE GÉANT », VERSION VERTICALE 9:16 (1080 × 1920), 6,4 s
     (la même scène que titre-geant.html, remise en page pour un Reel, une story ou un TikTok)
 
     Ce qu'elle montre, en deux plans coupés franc, chacun tenu le temps de sa lecture :
-      plan A (0 à COUPE) : la couleur d'accent en plein écran, six lignes d'un mot chacune, si
-        grandes qu'elles touchent le haut et le bas du cadre et débordent à droite ; la phrase se lit dès
-        la première image ; pendant sa lecture, deux mots changent de graisse sur les temps (gras ↔
-        léger), le bloc pousse lentement (×1,045) et la ligne du bas glisse doucement vers la gauche
-        pour révéler la fin de son mot coupé ;
+      plan A (0 à COUPE) : la couleur d'accent en plein écran ; le titre arrive si grand qu'il
+        déborde du cadre de tous côtés et se resserre en 0,6 s jusqu'à tenir entier, six lignes
+        d'un mot du haut au bas du cadre ; pendant sa lecture, le bloc ne fait que pousser
+        lentement (×1,045) et les mots des deux lignes du milieu changent de graisse sur les temps
+        (gras ↔ léger) ; à la sortie, il repart dans le débordement (0,3 s) et la coupe tombe ;
       plan B (COUPE à la fin) : le spécimen sur la nuit de la marque, une grille fine calée sur les
         lignes du texte, la phrase tapée en deux voix (gras, puis léger et en retrait) ; un cadre de
         sélection à poignées attrape la ligne légère, qui passe en gras puis revient (un événement
-        au moins toutes les 0,8 s : une tenue sans rien autour passe pour une image figée) ; la
-        caméra ne fait qu'une dérive lente.
+        au moins toutes les 0,8 s) ; la caméra ne fait qu'une dérive lente.
 
-    La lecture (rythme.md) : la phrase du plan A reste au moins lecture(titre) (0,3 s par mot +
-    0,8 s, jamais moins de 1,5 s : `studio_motion.py lecture "<phrase>"`), celle du plan B au moins
-    lecture(spécimen) après sa dernière lettre (0,9 s après la coupe). La scène allonge le plan A
-    seule si COUPE est trop court et le signale dans la console si data-duration ne suffit pas :
-    data-duration (ici et sur l'hôte dans index.html) = COUPE + 0,9 + lecture(spécimen).
+    Le débordement est l'entrée et la sortie, jamais le moment où l'on lit : entre les deux, chaque
+    mot est entier et la plus longue ligne tient dans 90 % de la largeur (la scène baisse la taille
+    seule si une ligne est trop longue : garde 5 caractères au plus par ligne pour rester à 300 px).
+    Le spécimen tient dans la zone de texte d'un Reel (x 100 à 930), un peu au-dessus du milieu (les
+    commandes de l'application occupent le bas).
 
-    À remplacer :
-      1. L'identifiant « t02-titre » partout (racine, scène, préfixe des ids, clé de la timeline)
-         par celui de la scène, et data-duration (voir la lecture ci-dessus).
-      2. Plan A : les six lignes (#t02-titre-a1 à a6), un mot par ligne : une phrase entière (4 à
-         6 mots), jamais des mots isolés. Les lignes du milieu portent les mots qui comptent,
-         entiers (6 caractères au plus) ; la dernière peut déborder (7 à 9 caractères : la glissade
-         se mesure seule).
-      3. Plan B : les trois lignes du spécimen (data-texte de #t02-titre-b1 à b3), une phrase
-         entière : deux lignes grasses (2 à 3 mots en tout, 8 caractères au plus par ligne, 830 px
-         de large au plus : la zone de texte d'un Reel), une ligne légère en retrait (1 mot,
-         7 caractères au plus).
-      4. ETIQUETTES (facultatif, 2 au plus) : une info réelle de OFFRE.json en 2 à 5 mots (le prix,
-         la date, un chiffre de preuve), posée près du spécimen ; vide par défaut. Jamais une cote,
-         un nom de police ni un code couleur : ces étiquettes de maquette ne disent rien à son
-         public, elles sont réservées à une vidéo qui parle de design (une marque, un template).
-      5. COUPE et les bascules de graisse (BASCULES) : sur les temps de la musique.
+    La lecture (mouvement.md, « La lecture ») : le titre reste lecture(titre) entre la fin de son
+    entrée et le début de sa sortie (0,3 s par mot + 0,8 s, jamais moins de 1,5 s :
+    `studio_motion.py lecture "<phrase>"`), le spécimen lecture(spécimen) après sa dernière lettre
+    (0,9 s après la coupe). La scène recule COUPE seule s'il le faut et le signale dans la console
+    si data-duration ne suffit pas : data-duration (ici et sur l'hôte dans index.html) =
+    COUPE + 0,9 + lecture(spécimen).
+
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque valeur vient de OFFRE.json ou d'une
+    phrase de sa page, ou sa ligne se retire), puis l'identifiant « t02-titre » partout (racine,
+    scène, préfixe des ids, clé de la timeline), data-duration, COUPE et les bascules de graisse
+    (BASCULES) sur les temps de la musique. Les étiquettes ne sont jamais une cote, un nom de police
+    ni un code couleur (réservées à une vidéo qui parle de design).
     Couleurs : celles de la marque, rien d'autre. Le plan A est l'accent plein (le titre posé dessus
-    en --brand-contrast) ; le plan B, la nuit de la marque (--brand-sombre), son texte clair
-    (--brand-clair), le spécimen en --brand-accent-lisible (l'accent, ou le clair s'il ne se lit
-    pas sur la nuit), la grille en blanc transparent (un gris), le cadre de sélection en trait de
-    marque plein et fin. Aucune teinte dérivée de l'accent, aucun accent en transparence.
-    Polices : aucune en dur ; les graisses 400 et 600 de la police des titres doivent exister dans
-    brand/fonts.css (sinon le navigateur les simule, mal).
+    en --brand-contrast) ; le plan B, la nuit (--brand-sombre), son texte clair (--brand-clair), le
+    spécimen en --brand-accent-lisible, la grille en blanc transparent (un gris), le cadre de
+    sélection en trait de marque plein et fin. Aucune teinte tirée de l'accent, aucun accent en
+    transparence. Polices : aucune en dur ; les graisses 400 et 600 de la police des titres doivent
+    exister dans brand/fonts.css (sinon le navigateur les simule, mal).
   -->
 </head>
 <body>
 <template>
   <style>
     #t02-titre {
-      /* La palette du style : la nuit de la marque (sa couleur la plus sombre ; sur une marque
-         claire, c'est son texte), son clair pour le texte posé dessus, ses gris, et l'accent plein
-         (--brand-accent-lisible pour un texte ou un trait posé sur la nuit). Rien n'est dérivé de
-         l'accent : un jaune assombri ou mélangé devient brun (story refusée du 06/11/2026). */
       --t02-nuit: var(--brand-sombre);
       --t02-texte: var(--brand-clair);
-      --t02-gris: var(--brand-gris-3);
       --t02-accent-texte: var(--brand-accent-lisible);
       --t02-ligne: rgba(255, 255, 255, 0.13);
       background: var(--t02-nuit);
     }
-    /* --- Plan A : la couleur d'accent et le titre qui déborde --- */
+    /* --- Plan A : la couleur d'accent et le titre géant --- */
     #t02-titre .t02-titre-planA { position: absolute; inset: 0; background: var(--brand-accent); overflow: hidden; }
     #t02-titre .t02-titre-blocA { position: absolute; inset: 0; transform-origin: 8% 50%; }
     #t02-titre .t02-titre-ligneA {
@@ -73,13 +62,6 @@
       letter-spacing: -0.045em; color: var(--brand-contrast);
     }
     #t02-titre .t02-titre-ligneA span { display: inline-block; }
-    /* La base de chaque ligne (top + 0,85 × la taille) : la 1re touche le haut, la 6e le bas. */
-    #t02-titre #t02-titre-a1 { top: -18px; }
-    #t02-titre #t02-titre-a2 { top: 300px; }
-    #t02-titre #t02-titre-a3 { top: 618px; }
-    #t02-titre #t02-titre-a4 { top: 936px; }
-    #t02-titre #t02-titre-a5 { top: 1254px; }
-    #t02-titre #t02-titre-a6 { top: 1572px; }
 
     /* --- Plan B : le spécimen sur la grille --- */
     #t02-titre .t02-titre-planB { position: absolute; inset: 0; background: var(--t02-nuit); overflow: hidden; z-index: 5; }
@@ -112,27 +94,20 @@
     }
   </style>
 
-  <div data-composition-id="t02-titre" data-width="1080" data-height="1920" data-duration="5.6" style="position:absolute; inset:0;">
+  <div data-composition-id="t02-titre" data-width="1080" data-height="1920" data-duration="6.4" style="position:absolute; inset:0;">
     <div id="t02-titre" class="k-scene">
-      <!-- Plan A -->
+      <!-- Plan A : les lignes du titre s'écrivent depuis EXEMPLE.titre -->
       <div class="t02-titre-planA" id="t02-titre-planA">
-        <div class="t02-titre-blocA" id="t02-titre-blocA">
-          <div class="t02-titre-ligneA" id="t02-titre-a1" data-layout-allow-overflow><span data-layout-allow-overlap>Ton</span></div>
-          <div class="t02-titre-ligneA" id="t02-titre-a2" data-layout-allow-overflow><span data-layout-allow-overlap>offre,</span></div>
-          <div class="t02-titre-ligneA" id="t02-titre-a3" data-layout-allow-overflow><span id="t02-titre-a2m1" data-layout-allow-overlap>en</span></div>
-          <div class="t02-titre-ligneA" id="t02-titre-a4" data-layout-allow-overflow><span id="t02-titre-a2m2" data-layout-allow-overlap>grand.</span></div>
-          <div class="t02-titre-ligneA" id="t02-titre-a5" data-layout-allow-overflow><span data-layout-allow-overlap>Enfin</span></div>
-          <div class="t02-titre-ligneA" id="t02-titre-a6" data-layout-allow-overflow><span data-layout-allow-overlap>lancée.</span></div>
-        </div>
+        <div class="t02-titre-blocA" id="t02-titre-blocA"></div>
       </div>
 
-      <!-- Plan B -->
+      <!-- Plan B : les lignes du spécimen se tapent depuis EXEMPLE.specimen -->
       <div class="t02-titre-planB" id="t02-titre-planB">
         <div class="t02-titre-cameraB" id="t02-titre-cameraB">
           <div id="t02-titre-grille"></div>
-          <div class="t02-titre-ligneB" id="t02-titre-b1" data-texte="Simple" data-layout-allow-overlap></div>
-          <div class="t02-titre-ligneB" id="t02-titre-b2" data-texte="à suivre." data-layout-allow-overlap></div>
-          <div class="t02-titre-ligneB" id="t02-titre-b3" data-texte="Rapide." data-voix="legere" data-layout-allow-overlap><span id="t02-titre-b3t"></span>
+          <div class="t02-titre-ligneB" id="t02-titre-b1" data-layout-allow-overlap></div>
+          <div class="t02-titre-ligneB" id="t02-titre-b2" data-layout-allow-overlap></div>
+          <div class="t02-titre-ligneB" id="t02-titre-b3" data-voix="legere" data-layout-allow-overlap><span id="t02-titre-b3t"></span>
             <div class="t02-titre-selection" id="t02-titre-sel">
               <i class="t02-titre-poignee" style="left:0; top:0;"></i><i class="t02-titre-poignee" style="left:100%; top:0;"></i>
               <i class="t02-titre-poignee" style="left:0; top:100%;"></i><i class="t02-titre-poignee" style="left:100%; top:100%;"></i>
@@ -147,6 +122,17 @@
 
   <script>
     (function () {
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+        // Plan A : une phrase entière de sa page, un mot par ligne (4 à 6 mots, 5 caractères au
+        // plus par ligne) ; les lignes du milieu portent les mots qui comptent. Exemple : un logiciel.
+        titre: ["Ton", "site", "en", "ligne", "ce", "soir."],
+        // Plan B : une phrase entière, deux lignes grasses (2 à 3 mots en tout, 8 caractères au
+        // plus par ligne) puis une ligne légère en retrait (1 mot, 7 caractères au plus).
+        specimen: ["Simple", "à lancer.", "Rapide."],
+        // 0 à 2 infos réelles de la fiche en 2 à 5 mots (le prix, la date d'ouverture) ; [] : aucune.
+        etiquettes: []
+      };
+
       window.__timelines = window.__timelines || {};
       var ID = "t02-titre", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
@@ -156,85 +142,58 @@
         for (; n; n = n.parentElement) {
           if (n.getAttribute && n.getAttribute("data-composition-id") === ID && parseFloat(n.getAttribute("data-duration")) > 0) v.push(parseFloat(n.getAttribute("data-duration")));
         }
-        return v.length ? Math.min.apply(null, v) : 5.6;
+        return v.length ? Math.min.apply(null, v) : 6.4;
       })();
 
-      // ---------- Ce qu'on remplace ----------
-      var COUPE = 2.7;      // la coupe sur le spécimen (un temps fort) ; jamais avant lecture(titre)
-      // Les bascules de graisse, sur les temps (0,5 s) : la voix légère passe d'un mot à l'autre.
-      var BASCULES = [
-        [0.5, "a2m1", 400], [1.0, "a2m1", 600], [1.0, "a2m2", 400],
-        [1.5, "a2m1", 400], [1.5, "a2m2", 600], [2.0, "a2m1", 600], [2.4, "a2m2", 400]
-      ];
-      var ETIQUETTES = [];   // ex. ["Ouverture · dimanche 8 novembre"] : une info réelle de la fiche
+      // ---------- Le mouvement (sur les temps de la musique) ----------
+      var W = 1080, H = 1920;
+      var COUPE = 3.5;                  // la coupe sur le spécimen ; jamais avant ENTREE + lecture(titre) + SORTIE
+      var ENTREE = 0.6, SORTIE = 0.3;   // le débordement : l'entrée et la sortie du titre
+      var DEBORDE = 1.5;                // l'échelle du titre quand il déborde
+      var TAILLE_A = 300;               // six lignes de 300 px vont du haut au bas du cadre
+      var MARGE = 70;                   // en haut et en bas : la poussée (×1,045) ne coupe aucune lettre
+      // Les bascules de graisse, depuis la fin de l'entrée : [instant, ligne, mot, graisse].
+      var BASCULES = [[0.4, 2, 0, 400], [0.9, 2, 0, 600], [0.9, 3, 0, 400], [1.4, 2, 0, 400],
+        [1.4, 3, 0, 600], [1.9, 2, 0, 600], [2.3, 3, 0, 400]];
 
       // La lecture : 0,3 s par mot + 0,8 s, jamais moins de 1,5 s (studio_motion.py lecture).
       var lecture = function (t) {
         var n = t.split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length;
         return n ? Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10 : 0;
       };
-      var b1 = $("b1"), b2 = $("b2"), b3 = $("b3");
-      var texteA = ["a1", "a2", "a3", "a4", "a5", "a6"].map(function (l) { return $(l).textContent; }).join(" ");
-      var texteB = [b1, b2, b3].map(function (l) { return l.dataset.texte; }).join(" ");
-      COUPE = Math.max(COUPE, lecture(texteA));
+      var texteA = EXEMPLE.titre.join(" "), texteB = EXEMPLE.specimen.join(" ");
+      COUPE = Math.max(COUPE, ENTREE + lecture(texteA) + SORTIE);
       var ENTREE_B = 0.9;   // la dernière ligne du spécimen est posée 0,9 s après la coupe
       if (D + 1e-6 < COUPE + ENTREE_B + lecture(texteB)) {
         console.warn(ID + " : data-duration trop courte pour lire le spécimen, il faut " + (COUPE + ENTREE_B + lecture(texteB)).toFixed(1) + " s");
       }
 
-      // ---------- Plan A : le titre géant, lisible dès la première image ----------
-      // Pendant sa lecture, le bloc pousse lentement (×1,045 sur toute la tenue) et la 1re ligne
-      // dérive : le titre ne bouge que doucement.
-      tl.fromTo($("blocA"), { scale: 1, y: 10 }, { scale: 1.045, y: -14, duration: COUPE, ease: "sine.inOut" }, 0);
-      tl.fromTo($("a1"), { x: 0 }, { x: 30, duration: COUPE, ease: "sine.inOut" }, 0);
-      BASCULES.forEach(function (b) { if (b[0] < COUPE) tl.set($(b[1]), { fontWeight: b[2] }, b[0]); });
+      // ---------- Plan A : le titre géant ----------
+      var blocA = $("blocA");
+      var lignesA = EXEMPLE.titre.map(function (texte, i) {
+        var l = K.el(blocA, "div", "t02-titre-ligneA", texte.split(" ").map(function (m) {
+          return "<span data-layout-allow-overlap>" + m + "</span>";
+        }).join(" "));
+        l.id = ID + "-a" + (i + 1);
+        l.setAttribute("data-layout-allow-overflow", "");   // à l'entrée et à la sortie seulement
+        return l;
+      });
+      // L'entrée : si grand qu'il déborde, il se resserre jusqu'à tenir entier ; pendant la lecture,
+      // une poussée lente seulement ; la sortie repart dans le débordement.
+      tl.fromTo(blocA, { scale: DEBORDE }, { scale: 1, duration: ENTREE, ease: "power3.out" }, 0);
+      tl.to(blocA, { scale: 1.045, duration: COUPE - SORTIE - ENTREE, ease: "sine.inOut" }, ENTREE);
+      tl.to(blocA, { scale: DEBORDE, duration: SORTIE, ease: "power2.in" }, COUPE - SORTIE);
+      if (lignesA[0]) tl.fromTo(lignesA[0], { x: 0 }, { x: 30, duration: COUPE, ease: "sine.inOut" }, 0);
+      BASCULES.forEach(function (b) {
+        var mot = lignesA[b[1]] && lignesA[b[1]].querySelectorAll("span")[b[2]];
+        if (mot && ENTREE + b[0] < COUPE - SORTIE) tl.set(mot, { fontWeight: b[3] }, ENTREE + b[0]);
+      });
 
       // ---------- Plan B : le spécimen ----------
-      var planB = $("planB");
+      var planB = $("planB"), b1 = $("b1"), b2 = $("b2"), b3 = $("b3"), b3t = $("b3t");
       K.cacher(planB);
       tl.set(planB, { opacity: 1 }, COUPE);
       tl.set($("planA"), { opacity: 0 }, COUPE + 0.02);
-
-      // Bases des lignes (px) : la grille se cale sur elles (base et hauteur des minuscules).
-      // Écart d'une base à l'autre : 186 et 176 px ; le spécimen tient dans la zone de texte d'un
-      // Reel (x 100 à 930). Si une lettre à jambage (p, g, q) tombe sur un accent ou un point de la
-      // ligne du dessous, augmente l'écart ou change la coupe.
-      var TAILLE = 180, BASES = [660, 846, 1022];
-      [b1, b2, b3].forEach(function (el, i) { el.style.top = (BASES[i] - TAILLE * 0.85) + "px"; });
-
-      // La grille : une ligne sur chaque base et sur la hauteur des minuscules, et des colonnes.
-      var grille = $("grille"), traitsH = [], traitsV = [];
-      BASES.forEach(function (b) {
-        [b, b - TAILLE * 0.53].forEach(function (y) {
-          traitsH.push(K.el(grille, "div", "t02-titre-trait h", null, "top:" + Math.round(y) + "px"));
-        });
-      });
-      [100, 260, 760, 930].forEach(function (x) {
-        traitsV.push(K.el(grille, "div", "t02-titre-trait v", null, "left:" + x + "px"));
-      });
-      gsap.set(traitsH, { scaleX: 0 });
-      gsap.set(traitsV, { scaleY: 0 });
-      tl.to(traitsH, { scaleX: 1, duration: 0.5, ease: "expo.out", stagger: 0.03 }, COUPE);
-      tl.to(traitsV, { scaleY: 1, duration: 0.5, ease: "expo.out", stagger: 0.04 }, COUPE + 0.05);
-
-      // La phrase tapée en deux voix. La 1re ligne commence juste avant la coupe : la première
-      // image du plan montre déjà des lettres ; la ligne légère est posée à COUPE + 0,9 s. Tout se
-      // tape, rien n'entre en fondu ni en flou : un accent transparent sur la nuit vire à l'olive.
-      K.taper(tl, b1, b1.dataset.texte, COUPE - 0.3, COUPE + 0.25, D);
-      K.taper(tl, b2, b2.dataset.texte, COUPE + 0.25, COUPE + 0.55, D);
-      K.taper(tl, $("b3t"), b3.dataset.texte, COUPE + 0.6, COUPE + 0.9, D);
-
-      // Les étiquettes (facultatives) : une info réelle de la fiche, au-dessus du spécimen et
-      // sous la ligne légère.
-      var e1 = $("e1"), e2 = $("e2");
-      e1.style.left = "102px"; e1.style.top = "400px";
-      e2.style.left = "102px"; e2.style.top = "1120px";
-      [e1, e2].forEach(function (e, i) {
-        if (!ETIQUETTES[i]) { e.style.display = "none"; return; }
-        e.textContent = ETIQUETTES[i];
-        K.cacher(e, { y: 10 });
-        tl.to(e, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, COUPE + 0.7 + i * 0.12);
-      });
 
       // Pendant la lecture, ce qui vit est la phrase elle-même : le cadre de sélection attrape la
       // ligne légère, qui passe en gras et en clair, puis revient ; le texte ne bouge pas.
@@ -247,14 +206,66 @@
       // La caméra ne fait qu'une dérive lente pendant tout le plan (3 %).
       tl.fromTo($("cameraB"), { scale: 1.0, x: 0 }, { scale: 1.03, x: -14, duration: D - COUPE, ease: "sine.inOut" }, COUPE);
 
-      // La ligne du bas glisse vers la gauche, juste assez pour montrer la fin de son mot coupé
-      // (mesurée une fois la police chargée), lentement, pendant la lecture.
-      var a6 = $("a6"), cs = getComputedStyle(a6);
-      document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
+      // Les étiquettes (facultatives) : une info réelle de la fiche, au-dessus du spécimen et
+      // sous la ligne légère.
+      var e1 = $("e1"), e2 = $("e2");
+      e1.style.left = "102px"; e1.style.top = "400px";
+      e2.style.left = "102px"; e2.style.top = "1120px";
+      [e1, e2].forEach(function (e, i) {
+        var texte = EXEMPLE.etiquettes[i];
+        if (!texte) { e.style.display = "none"; return; }
+        e.textContent = texte;
+        K.cacher(e, { y: 10 });
+        tl.to(e, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, COUPE + 0.7 + i * 0.12);
+      });
+
+      // Ce qui se mesure (la taille du titre, celle du spécimen) attend la police.
+      var cs = getComputedStyle(lignesA[0] || blocA);
+      document.fonts.load("600 " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
       function finir() {
-        var o = 0.08 * 1080, droite = o + (30 + a6.scrollWidth - o) * 1.045;
-        var glisse = Math.max(-220, Math.min(0, (1050 - droite) / 1.045));
-        if (glisse < 0) tl.fromTo(a6, { x: 0 }, { x: glisse, duration: Math.min(1.8, COUPE - 0.4), ease: "sine.inOut" }, 0.2);
+        // Le titre : la plus longue ligne dans 90 % de la largeur (mesurée en gras), les lignes du
+        // haut au bas du cadre, entières (des capitales aux jambages : 0,15 à 1,07 de la taille).
+        var n = lignesA.length, large = Math.max.apply(null, lignesA.map(function (l) { return l.scrollWidth; }).concat([1]));
+        var t = Math.min(TAILLE_A, TAILLE_A * 0.9 * W / large, (H - 2 * MARGE) / ((n - 1) * 0.987 + 0.92)), pas = t * 0.987;
+        var haut = (H - ((n - 1) * pas + 0.92 * t)) / 2 - 0.15 * t;
+        lignesA.forEach(function (l, i) { l.style.fontSize = t.toFixed(1) + "px"; l.style.top = (haut + i * pas).toFixed(1) + "px"; });
+
+        // Le spécimen : chaque ligne entière dans la zone de texte d'un Reel (x 100 à 930, mesurée
+        // en gras), sinon la taille baisse.
+        var TAILLE = 180, BASES = [660, 846, 1022], DROITE = 930;
+        var lignesB = [[b1, b1, EXEMPLE.specimen[0]], [b2, b2, EXEMPLE.specimen[1]], [b3, b3t, EXEMPLE.specimen[2]]];
+        b3.setAttribute("data-voix", "grasse");
+        var droite = Math.max.apply(null, lignesB.map(function (l) {
+          l[1].textContent = l[2] || ""; return l[0].offsetLeft + l[1].offsetWidth;
+        }));
+        b3.setAttribute("data-voix", "legere");
+        if (droite > DROITE) TAILLE = TAILLE * (DROITE - b1.offsetLeft) / (droite - b1.offsetLeft);
+        lignesB.forEach(function (l, i) {
+          l[0].style.fontSize = TAILLE.toFixed(1) + "px";
+          l[0].style.top = (BASES[i] - TAILLE * 0.85) + "px";
+        });
+        // La grille : une ligne sur chaque base et sur la hauteur des minuscules, et des colonnes.
+        // Si une lettre à jambage (p, g, q) tombe sur un accent ou un point de la ligne du dessous,
+        // change la coupe.
+        var grille = $("grille"), traitsH = [], traitsV = [];
+        BASES.forEach(function (b) {
+          [b, b - TAILLE * 0.53].forEach(function (y) {
+            traitsH.push(K.el(grille, "div", "t02-titre-trait h", null, "top:" + Math.round(y) + "px"));
+          });
+        });
+        [100, 260, 760, 930].forEach(function (x) {
+          traitsV.push(K.el(grille, "div", "t02-titre-trait v", null, "left:" + x + "px"));
+        });
+        gsap.set(traitsH, { scaleX: 0 });
+        gsap.set(traitsV, { scaleY: 0 });
+        tl.to(traitsH, { scaleX: 1, duration: 0.5, ease: "expo.out", stagger: 0.03 }, COUPE);
+        tl.to(traitsV, { scaleY: 1, duration: 0.5, ease: "expo.out", stagger: 0.04 }, COUPE + 0.05);
+        // La phrase tapée en deux voix. La 1re ligne commence juste avant la coupe : la première
+        // image du plan montre déjà des lettres ; la ligne légère est posée à COUPE + 0,9 s. Tout se
+        // tape, rien n'entre en fondu ni en flou : un accent transparent sur la nuit vire à l'olive.
+        K.taper(tl, b1, lignesB[0][2], COUPE - 0.3, COUPE + 0.25, D);
+        K.taper(tl, b2, lignesB[1][2], COUPE + 0.25, COUPE + 0.55, D);
+        K.taper(tl, b3t, lignesB[2][2], COUPE + 0.6, COUPE + ENTREE_B, D);
         window.__timelines[ID] = tl;
       }
     })();

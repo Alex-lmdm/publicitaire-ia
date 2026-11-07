@@ -3,23 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LES BARRES COMPARATIVES (la preuve chiffrée) · 4 s
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LES BARRES COMPARATIVES (la preuve chiffrée) · 5 s
     Ce que la scène montre : sur le clair de ta marque, deux graphiques en barres horizontales côte
     à côte qui partagent leurs lignes (une option par ligne). Les axes et leurs titres arrivent,
     puis les lignes une à une, de haut en bas, chaque barre grandit depuis la gauche ; toutes sont
     grises. Puis la ligne de l'offre se remplit de sa couleur, de gauche à droite (sa nuit, ou son
-    accent s'il se lit sur le clair), son nom passe en gras et sa valeur s'affiche au bout de ses
-    barres. Tenue courte, caméra qui va lire la ligne de près.
+    accent s'il se lit sur le clair), son nom passe en gras et sa valeur compte au bout de ses
+    barres. Le graphique se tient 4 s, le temps de le lire ; la caméra ne fait qu'une dérive lente
+    vers la ligne forte (5 %), jamais de gros plan ni d'aller-retour pendant la lecture.
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
     les deux graphiques s'empilent (classe t08-vertical, réglée seule).
 
-    À REMPLACER (obligatoire : uniquement des chiffres vrais, sourcés dans OFFRE.json ; sans
-    chiffres réels pour chaque ligne, n'utilise pas cette scène) :
-     1. L'id « t08-barres » (racine, constante ID, préfixe CSS) par l'id de la scène.
-     2. LIGNES : les options comparées (3 à 5), [nom, valeur A, valeur B, fort] ; fort = true pour
-        l'offre du client (une seule). Les noms sont courts (« À la main », « Ton offre »).
-     3. AXES : pour chaque graphique, le titre en deux lignes (mesure, puis unité entre parenthèses),
-        la valeur maximale de l'échelle, les graduations, et le format de la valeur affichée.
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t08-barres » (racine, constante
+    ID, préfixe CSS). Uniquement des chiffres vrais, sourcés dans OFFRE.json : sans chiffre réel
+    pour chaque ligne, n'utilise pas cette scène. Au plus 8 mots à lire en tout : des noms d'un ou
+    deux mots, un mot par axe, l'unité dans la valeur.
+    Tailles (1920 × 1080) : noms des lignes 36 px, valeur 32 px, titres d'axes 32 px ; les
+    graduations (26 px) sont de la texture (data-layout-ignore) : la valeur au bout de la barre dit
+    le chiffre.
     Couleurs : seulement celles de ta marque (brand/tokens.css) : son clair en fond, ses gris pour
     les barres, les noms et les traits, sa nuit pour l'encre. La ligne forte prend son accent s'il
     se lit sur le clair (contraste de 3:1 au moins), sinon sa nuit, avec un repère carré plein de
@@ -29,26 +30,27 @@
 <body>
 <template>
 <style>
-  #t08-barres { --t08-papier: var(--brand-clair); --t08-encre: var(--brand-sombre); --t08-gris: var(--brand-gris-4); --t08-trait: rgba(0,0,0,.07);
+  #t08-barres { --t08-papier: var(--brand-clair); --t08-encre: var(--brand-sombre); --t08-gris: var(--brand-gris-4); --t08-trait: rgba(0, 0, 0, 0.07);
     --t08-appui: var(--brand-gris-2); --t08-fort: var(--t08-encre); --t08-sur-fort: var(--brand-clair);
     background: var(--t08-papier); }
   #t08-barres.t08-accent-fort { --t08-fort: var(--brand-accent); --t08-sur-fort: var(--brand-contrast); }
   #t08-barres .t08-fond { position: absolute; inset: -2px; background: var(--t08-papier); }
   #t08-barres .t08-graphe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
-  #t08-barres .t08-nom { position: absolute; font: 400 30px/40px var(--brand-font-body); color: var(--t08-appui); white-space: nowrap; letter-spacing: -0.01em; }
+  #t08-barres .t08-nom { position: absolute; font: 400 36px/48px var(--brand-font-body); color: var(--t08-appui); white-space: nowrap; letter-spacing: -0.01em; }
   #t08-barres .t08-nom.t08-fort { color: var(--t08-encre); font-weight: 700; }
-  #t08-barres .t08-repere { position: absolute; left: -28px; top: 14px; width: 12px; height: 12px; background: var(--brand-accent); box-shadow: 0 0 0 1.5px var(--t08-encre); }
-  #t08-barres .t08-barre { position: absolute; height: 40px; background: var(--t08-gris); transform-origin: 0 50%; }
+  #t08-barres .t08-repere { position: absolute; left: -32px; top: 16px; width: 16px; height: 16px; background: var(--brand-accent); box-shadow: 0 0 0 1.5px var(--t08-encre); }
+  #t08-barres .t08-barre { position: absolute; background: var(--t08-gris); transform-origin: 0 50%; }
   #t08-barres .t08-plein { position: absolute; inset: 0; background: var(--t08-fort); transform-origin: 0 50%; }
   #t08-barres .t08-sep { position: absolute; height: 2px; background: var(--t08-trait); transform-origin: 0 50%; }
   #t08-barres .t08-axe { position: absolute; height: 2px; background: var(--t08-encre); transform-origin: 0 50%; }
-  #t08-barres .t08-grad { position: absolute; font: 400 25px/1 var(--brand-font-body); color: var(--brand-gris-1); white-space: nowrap; }
-  #t08-barres .t08-titre-axe { position: absolute; font: 400 31px/38px var(--brand-font-body); color: var(--t08-encre); white-space: pre; letter-spacing: -0.01em; }
-  #t08-barres .t08-valeur { position: absolute; font: 600 26px/40px var(--brand-font-body); color: var(--t08-sur-fort); white-space: nowrap; text-align: right; }
-  #t08-barres .t08-valeur.t08-dehors { color: var(--t08-encre); text-align: left; }
+  #t08-barres .t08-grad { position: absolute; font: 400 26px/1 var(--brand-font-body); color: var(--brand-gris-2); white-space: nowrap; }
+  #t08-barres .t08-titre-axe { position: absolute; font: 400 32px/40px var(--brand-font-body); color: var(--t08-encre); white-space: pre; letter-spacing: -0.01em; }
+  #t08-barres .t08-valeur { position: absolute; font: 600 32px/1 var(--brand-font-body); color: var(--t08-sur-fort); white-space: nowrap; text-align: right;
+    display: flex; align-items: center; justify-content: flex-end; }
+  #t08-barres .t08-valeur.t08-dehors { color: var(--t08-encre); justify-content: flex-start; }
 </style>
 
-<div data-composition-id="t08-barres" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+<div data-composition-id="t08-barres" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
   <div id="t08-barres" class="k-scene">
     <div class="t08-fond"></div>
     <div class="t08-graphe" id="t08-barres-graphe"></div>
@@ -57,20 +59,25 @@
 
 <script>
   (function () {
-    var ID = "t08-barres", D = 4;
-    // ---- À remplacer (chiffres vrais seulement) ----------------------------------------------
-    var LIGNES = [
-      ["À la main", 22, 40, false],
-      ["Un logiciel gratuit", 30, 85, false],
-      ["Une agence", 36, 55, false],
-      ["Ton offre", 52, 190, true],
-      ["Un coach privé", 58, 60, false]
-    ];
-    var AXES = [
-      { titre: "Résultat\n(note sur 60)", max: 60, graduations: [0, 20, 40, 60], format: function (v) { return Math.round(v) + "/60"; } },
-      { titre: "Vitesse\n(tâches par heure)", max: 200, graduations: [0, 100, 200], format: function (v) { return Math.round(v) + " / h"; } }
-    ];
-    // -------------------------------------------------------------------------------------------
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      // Les options comparées (3 à 5) : [nom d'un ou deux mots, valeur A, valeur B, forte] ; forte = true
+      // pour l'offre du client (une seule). Des chiffres vrais et sourcés seulement : ceux-ci sont des exemples.
+      lignes: [
+        ["Manuel", 22, 40, false],
+        ["Agence", 36, 55, false],
+        ["Ton offre", 52, 190, true],
+        ["Coach", 58, 60, false]
+      ],
+      // Pour chaque graphique : son titre (un mot : la mesure), l'unité écrite après la valeur,
+      // l'échelle (max) et ses graduations.
+      axes: [
+        { titre: "Résultat", unite: "/60", max: 60, graduations: [0, 20, 40, 60] },
+        { titre: "Vitesse", unite: "/h", max: 200, graduations: [0, 100, 200] }
+      ]
+    };
+
+    var ID = "t08-barres", D = 5;
+    var LIGNES = EXEMPLE.lignes, AXES = EXEMPLE.axes;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -97,31 +104,33 @@
       e.style.left = x + "px"; e.style.top = y + "px"; if (l != null) e.style.width = l + "px"; if (h != null) e.style.height = h + "px";
       return e;
     };
-    var PAS = 80, HB = 40, n = LIGNES.length;
+    var PAS = 96, HB = 52, NOM = 48, n = LIGNES.length, HAUT = n * PAS + 110;
     // Géométrie : en 16:9 les deux graphiques côte à côte partagent la colonne des noms ;
     // en 9:16 ils s'empilent, chacun avec sa colonne de noms.
     var blocs = vertical
-      ? [{ xNoms: 90, x: 420, l: 570, y: H / 2 - 40 - (n * PAS + 150) }, { xNoms: 90, x: 420, l: 570, y: H / 2 + 120 }]
-      : [{ xNoms: 256, x: 626, l: 514, y: (H - (n * PAS + 150)) / 2 }, { xNoms: null, x: 1182, l: 514, y: (H - (n * PAS + 150)) / 2 }];
+      ? [{ xNoms: 90, x: 420, l: 570, y: H / 2 - 40 - HAUT }, { xNoms: 90, x: 420, l: 570, y: H / 2 + 120 }]
+      : [{ xNoms: 230, x: 600, l: 520, y: (H - HAUT) / 2 }, { xNoms: null, x: 1180, l: 520, y: (H - HAUT) / 2 }];
     var tLigne = function (i) { return 0.3 + i * 0.07; }, T_FORT = 0.3 + n * 0.07 + 0.4;
 
     blocs.forEach(function (b, k) {
       var ax = AXES[k], yAxe = b.y + n * PAS;
-      // L'axe, ses graduations, son titre.
+      var format = function (v) { return Math.round(v) + ax.unite; };
+      // L'axe, ses graduations (de la texture : la valeur dit le chiffre), son titre.
       var axe = el("t08-axe", b.x, yAxe, b.l, 2);
       tl.fromTo(axe, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 0.05 + k * 0.08);
       ax.graduations.forEach(function (g, j) {
-        var gr = el("t08-grad", b.x + (g / ax.max) * b.l - (j === 0 ? 0 : (j === ax.graduations.length - 1 ? 30 : 14)), yAxe + 16, null, null, String(g));
+        var gr = el("t08-grad", b.x + (g / ax.max) * b.l - (j === 0 ? 0 : (j === ax.graduations.length - 1 ? 32 : 16)), yAxe + 16, null, null, String(g));
+        gr.setAttribute("data-layout-ignore", "");
         K.cacher(gr); tl.to(gr, { opacity: 1, duration: 0.25 }, 0.12 + k * 0.08 + j * 0.04);
       });
-      var titre = el("t08-titre-axe", b.x, yAxe + 58, null, null, ax.titre);
+      var titre = el("t08-titre-axe", b.x, yAxe + 56, null, null, ax.titre);
       K.cacher(titre, { y: 10 }); tl.to(titre, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.18 + k * 0.08);
       // Les lignes : séparateur, nom (une fois par colonne de noms), barre.
       LIGNES.forEach(function (ln, i) {
         var y = b.y + i * PAS, t0 = tLigne(i);
         if (i > 0) { var sep = el("t08-sep", b.x, y - 1, b.l, 2); tl.fromTo(sep, { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out" }, t0 - 0.05); }
         if (b.xNoms != null) {
-          var nom = el("t08-nom", b.xNoms, y + (PAS - 40) / 2, null, null, ln[0]);
+          var nom = el("t08-nom", b.xNoms, y + (PAS - NOM) / 2, null, null, ln[0]);
           K.cacher(nom, { x: -8 }); tl.to(nom, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, t0);
           if (ln[3]) {
             tl.set(nom, { attr: { "class": "t08-nom t08-fort" } }, T_FORT);
@@ -140,23 +149,18 @@
           gsap.set(plein, { scaleX: 0 });
           tl.to(plein, { scaleX: 1, duration: 0.35, ease: "expo.out" }, T_FORT);
           // La valeur s'écrit au bout de la barre, dedans (dehors si la barre est trop courte).
-          var dedans = b.l * v > 150, val = el("t08-valeur" + (dedans ? "" : " t08-dehors"), dedans ? b.x : b.x + b.l * v + 14, y + (PAS - 40) / 2, dedans ? b.l * v - 16 : null, null, "");
-          K.compteur(tl, val, 0, ln[k + 1], T_FORT + 0.05, 0.6, D, ax.format, "expo.out");
+          var dedans = b.l * v > 170, val = el("t08-valeur" + (dedans ? "" : " t08-dehors"), dedans ? b.x : b.x + b.l * v + 16, y + (PAS - HB) / 2, dedans ? b.l * v - 18 : null, HB, "");
+          K.compteur(tl, val, 0, ln[k + 1], T_FORT + 0.05, 0.6, D, format, "expo.out");
           K.cacher(val, { x: -10 }); tl.to(val, { opacity: 1, x: 0, duration: 0.3, ease: "expo.out" }, T_FORT + 0.05);
         }
       });
     });
-    // La caméra avance à peine ; une fois la ligne forte colorée, elle va la lire de près :
-    // gros plan sur sa barre du premier graphique, glissé jusqu'à celle du second, puis recul.
+    // La caméra : une entrée qui se pose (avant que la lecture commence), puis une dérive lente
+    // vers la ligne forte (5 %, sine.inOut) pendant toute la lecture : aucun gros plan, aucun aller-retour.
     var iFort = Math.max(0, LIGNES.map(function (l) { return l[3]; }).indexOf(true));
-    var viser = function (t, b, s, duree) {
-      var px = vertical ? L / 2 : b.x + b.l / 2, py = b.y + iFort * PAS + PAS / 2;
-      tl.to(G, { scale: s, x: -(px - L / 2) * s, y: -(py - H / 2) * s, duration: duree, ease: "expo.inOut" }, t);
-    };
-    tl.fromTo(G, { scale: 1.08 }, { scale: 1, duration: T_FORT + 0.25, ease: "expo.out" }, 0);
-    viser(T_FORT + 0.3, blocs[0], vertical ? 1.12 : 1.3, 0.7);
-    viser(T_FORT + 1.15, blocs[1], vertical ? 1.12 : 1.3, 0.7);
-    tl.to(G, { scale: 1, x: 0, y: 0, duration: 0.6, ease: "expo.inOut" }, T_FORT + 2.0);
+    var Px = vertical ? L / 2 : (blocs[0].xNoms + blocs[1].x + blocs[1].l) / 2, Py = blocs[0].y + iFort * PAS + PAS / 2;
+    tl.fromTo(G, { scale: 1.06 }, { scale: 1, duration: 0.9, ease: "expo.out" }, 0);
+    tl.to(G, { scale: 1.05, x: (L / 2 - Px) * 0.05, y: (H / 2 - Py) * 0.05, duration: D - 0.9, ease: "sine.inOut" }, 0.9);
 
     window.__timelines[ID] = tl;
   })();

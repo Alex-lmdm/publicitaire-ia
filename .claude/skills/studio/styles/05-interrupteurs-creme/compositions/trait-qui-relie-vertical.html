@@ -9,36 +9,27 @@
 
     Ce qu'elle montre : la suite directe de la scène 1 en 9:16 (interrupteurs-cascade.html, racine
     en 1080 × 1920) : le même panneau en haut, les mêmes disques des membres sur deux rangées en bas.
-    Un mot fort au centre, entre les deux ; le trait à main levée descend par la droite du panneau
-    et le souligne, puis repart. Une phrase de deux lignes arrive ; le trait redescend, passe sous le
-    panneau et devient deux filets VERTICAUX qui RELIENT le panneau à la phrase (au-dessus) et la
-    phrase aux membres (au-dessous). La phrase cède la place au nom de l'offre, les filets
-    s'ajustent, les icônes des membres deviennent des anneaux, et la caméra glisse vers le bas : la
-    grille d'anneaux (5 colonnes) remplit l'image (raccord avec la scène 3 en 9:16,
-    « grille-de-coches », racine en 1080 × 1920).
+    Le mot fort au centre, en grand (le mot héros : 60 % de la largeur ou plus) ; le trait à main
+    levée descend par la droite du panneau et le souligne, puis repart. Une phrase de deux lignes
+    arrive ; le trait redescend, passe sous le panneau et devient deux filets VERTICAUX qui RELIENT
+    le panneau à la phrase (au-dessus) et la phrase aux membres (au-dessous). La phrase cède la place
+    au nom de l'offre, les filets s'ajustent, les icônes des membres deviennent des anneaux, et la
+    caméra glisse vers le bas : la grille d'anneaux (5 colonnes) remplit l'image (raccord avec la
+    scène 3 en 9:16, « grille-de-coches », racine en 1080 × 1920).
     Rôle : la solution (« une seule fois », « pour tous », « là où ils sont déjà »).
-    Chaque texte (le mot, la phrase, le nom) se tient le temps de sa lecture (0,3 s par mot + 0,8 s,
-    1,5 s au moins : `studio_motion.py lecture`) ; pendant qu'il se lit, la caméra ne fait qu'une
-    dérive lente et la vie vient du trait (il souligne, rembobine, descend, devient les filets qui
-    s'ajustent) et des membres qui deviennent des anneaux. La caméra ne recadre qu'entre deux
-    textes, et la glissade vers la grille n'arrive qu'une fois le nom lu.
+    Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s, 1,5 s au moins :
+    `studio_motion.py lecture`) ; pendant qu'il se lit, la caméra ne fait qu'une dérive lente et la
+    vie vient du trait, du bloc plein qui surligne le mot fort et des membres qui deviennent des
+    anneaux. La caméra ne recadre qu'entre deux textes, et la glissade vers la grille n'arrive
+    qu'une fois le nom lu.
     Durée : la scène la calcule (D dans le script) : 3,3 s + la lecture du mot, de la phrase et du
     nom (9,9 s pour 2, 5 et 2 mots). Reporte-la dans data-duration (ici et sur l'hôte).
 
     Format : 9:16 seulement (la version 16:9 est trait-qui-relie.html).
 
-    À REMPLACER :
-      1. L'id « t05-trait » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. MOT (le mot fort, 1 ou 2 mots), PHRASE (deux lignes, 6 mots au plus : la mise en page n'en
-         prend pas davantage entre le panneau et les membres ; une phrase plus longue du script ne se
-         raccourcit pas, elle passe dans une scène construite dans le style) et NOM (le nom de
-         l'offre, ou de l'outil qui relie : sa plateforme de cours, son logiciel), en tête du script.
-         Un logo à la place du nom : mets son SVG dans #t05-trait-nom (même taille, environ 100 px
-         de haut).
-      3. RANGS : les mêmes que dans la scène 1 (le panneau doit être identique au raccord).
-      4. Les couleurs du look : les mêmes variables qu'en scène 1 (--t05-papier, --t05-encre…).
-      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
-      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque champ dit ce qu'il montre), et l'id
+    « t05-trait » partout (rechercher-remplacer) par l'id de la scène dans index.html. Les couleurs
+    et la police : les mêmes variables qu'en scène 1.
     Ne pas toucher : la place du panneau, des disques et de la caméra au début (raccord avec la
     scène 1 en 9:16 : panneau en (224, 150), membres en 182 + 238 × colonne, 1635 + 238 × rangée)
     et à la fin (raccord avec la scène 3 en 9:16 : grille de 5 × 9 disques en 70 + 235 × colonne,
@@ -71,14 +62,14 @@
     #t05-trait .t05-rang {
       position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
       display: flex; align-items: center; gap: 16px; white-space: nowrap;
-      font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
+      font: 400 28px/1 var(--t05-texte); color: var(--t05-encre);
     }
-    #t05-trait .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
+    #t05-trait .t05-tete { font-size: 30px; font-weight: 500; letter-spacing: -0.01em; }
     #t05-trait .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(0, 0, 0, 0.12); }
     #t05-trait .t05-ico { width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--brand-accent); color: var(--brand-contrast); }
     #t05-trait .t05-ico svg { width: 21px; height: 21px; }
     #t05-trait .t05-inter { position: absolute; right: 0; top: 12px; width: 62px; height: 36px; border-radius: 18px; background: var(--t05-allume); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07); }
-    #t05-trait .t05-bille { position: absolute; left: 29px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12); }
+    #t05-trait .t05-bille { position: absolute; left: 29px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: var(--t05-carte); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12); }
     #t05-trait .t05-membre {
       position: absolute; width: 178px; height: 178px; margin: -89px 0 0 -89px; border-radius: 50%;
       background: var(--t05-carte); color: var(--t05-gris-texte);
@@ -106,7 +97,7 @@
     <div id="t05-trait" class="k-scene">
       <div class="t05-cam" id="t05-trait-cam" data-layout-allow-overflow>
         <div class="t05-panneau" id="t05-trait-panneau" data-layout-allow-overflow>
-          <div class="t05-rang t05-tete" style="top:76px;"><span>Tout activer</span><div class="t05-inter"><div class="t05-bille"></div></div></div>
+          <div class="t05-rang t05-tete" style="top:76px;"><span id="t05-trait-maitre-nom"></span><div class="t05-inter"><div class="t05-bille"></div></div></div>
           <div class="t05-filet" style="top:132px;"></div>
           <div id="t05-trait-rangs"></div>
         </div>
@@ -131,17 +122,21 @@
 
   <script>
     (function () {
+      // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire (ici, une formation
+      // d'exemple : aucun de ces textes n'est un fait).
+      var EXEMPLE = {
+        MOT: "Une fois.",                                // le mot fort, 1 à 3 mots : il s'affiche en grand
+        PHRASE: ["Directement dans", "ton espace membre"],  // deux lignes de 3 mots au plus (6 en tout)
+        NOM: "Ton offre",                                // le nom de l'offre, ou de l'outil qui fait le lien
+        LOGOS: [],                                       // 2 ou 3 vrais logos des outils que la PHRASE nomme (posés par `studio_motion.py logos`) ; [] : aucun
+        MAITRE: "Tout activer",                          // le panneau : le même qu'en scène 1 (raccord)
+        RANGS: [
+          ["book-open", "Module 1 · Les bases"], ["play", "Les vidéos"], ["list-checks", "Les exercices"],
+          ["file-text", "Les modèles"], ["users", "La communauté"], ["calendar", "Les lives"], ["gift", "Les bonus"]
+        ]
+      };
       var ID = "t05-trait";
-      var MOT = "Une fois.";
-      var PHRASE = ["Directement dans", "ton espace membre"];
-      var NOM = "Ton offre";
-      // Les vrais logos des outils que la PHRASE nomme (posés par `studio_motion.py logos` : "logo-claude"…),
-      // 2 ou 3 : ils arrivent pendant qu'on la lit et repartent avec elle. [] : aucun.
-      var LOGOS = [];
-      var RANGS = [
-        ["book-open", "Module 1 · Les bases"], ["play", "Les vidéos"], ["list-checks", "Les exercices"],
-        ["file-text", "Les modèles"], ["users", "La communauté"], ["calendar", "Les lives"], ["gift", "Les bonus"]
-      ];
+      var MOT = EXEMPLE.MOT, PHRASE = EXEMPLE.PHRASE, NOM = EXEMPLE.NOM, LOGOS = EXEMPLE.LOGOS, RANGS = EXEMPLE.RANGS;
       // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
       function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
       var nMot = MOT.split(" ").length, n2 = PHRASE[PHRASE.length - 1].split(" ").length;
@@ -171,13 +166,18 @@
       // Boîte (x, y, largeur, hauteur) des mots d'un texte, dans le repère de la caméra.
       function boite(hote) { var ms = hote.querySelectorAll(".t05-mot"), x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; ms.forEach(function (m) { var x = hote.offsetLeft + m.offsetLeft, y = hote.offsetTop + m.offsetTop; x0 = Math.min(x0, x); x1 = Math.max(x1, x + m.offsetWidth); y0 = Math.min(y0, y); y1 = Math.max(y1, y + m.offsetHeight); }); return { x: x0, y: y0, l: x1 - x0, h: y1 - y0 }; }
 
-      // Un texte trop large (police large, phrase longue) se réduit pour tenir dans la largeur.
+      // Une phrase posée dans une police de marque plus large se réduit pour tenir dans la largeur
+      // (jusqu'à 70 %) ; une phrase trop longue du script ne se réduit pas : elle passe dans une scène
+      // construite dans le style.
       function ajuster(hote, max) { var b = boite(hote); if (b.l > max) { var fs = parseFloat(getComputedStyle(hote).fontSize); hote.style.fontSize = Math.max(fs * max / b.l, fs * 0.7).toFixed(1) + "px"; } }
+      // Le mot héros (le mot fort, le nom) prend la largeur visée, entre deux tailles.
+      function remplir(hote, largeur, min, max) { var b = boite(hote), fs = parseFloat(getComputedStyle(hote).fontSize); hote.style.fontSize = Math.min(max, Math.max(min, fs * largeur / b.l)).toFixed(1) + "px"; }
 
       // --- Le décor, identique à la fin de la scène 1 en 9:16 -------------------------------
       // Le panneau en haut (comme la scène 1 en 9:16), les textes entre son bas et les membres.
       var P = { x: 224, y: 150 }, BAS_PANNEAU = P.y + 743;
       gsap.set($("panneau"), { left: P.x, top: P.y });
+      $("maitre-nom").textContent = EXEMPLE.MAITRE;
       RANGS.forEach(function (r, i) { K.el($("rangs"), "div", "t05-rang", '<span class="t05-ico">' + K.ic(r[0]) + "</span><span>" + r[1] + '</span><div class="t05-inter"><div class="t05-bille"></div></div>', "top:" + (195 + i * 77.5) + "px;"); });
       // Les membres : la grille de la scène 3 en 9:16 (5 colonnes, pas de 235 px), posée dans le
       // monde de la caméra pour qu'après la glissade finale (FIN_CAM) elle tombe pile sur la sienne.
@@ -210,7 +210,8 @@
 
       function construire() {
         // Les textes : sur toute la largeur (marges de 70 px), centrés entre le panneau et les membres
-        ajuster($("phrase"), 940); ajuster($("nom"), 940); ajuster($("mot"), 940);
+        // le mot fort et le nom (les mots héros) remplissent 64 % de la largeur ; la phrase tient sur toute la largeur
+        remplir($("mot"), 0.64 * L, 130, 300); ajuster($("phrase"), 940); remplir($("nom"), 0.64 * L, 104, 220);
         var TY = (BAS_PANNEAU + HAUT_MEMBRES) / 2, TC = [L / 2, TY];
         ["mot", "phrase", "nom"].forEach(function (k) { var h = $(k); gsap.set(h, { top: TY - h.offsetHeight / 2 }); });
         var trait = couleurTrait();

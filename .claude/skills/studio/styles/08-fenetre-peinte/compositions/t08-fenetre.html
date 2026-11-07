@@ -8,48 +8,48 @@
     couleurs de la marque, avec SA vraie interface dedans (ses captures). La caméra filme l'écran
     comme un enregistrement : vue entière, puis gros plans rapides (flou de bougé) sur un détail ;
     le curseur clique et l'écran change d'un coup (la capture suivante) ; une demande peut se taper
-    dans le vrai champ de sa capture ; la caméra recule.
-    Sans capture, la fenêtre reste vide, à ses couleurs, avec son seul titre : jamais une
-    interface inventée (garde alors la scène courte, 3 s au plus, ou montre plutôt sa page).
+    dans le vrai champ de sa capture ; la caméra recule. Pendant qu'une demande se tape et se lit,
+    aucun gros plan ne part (le script retire ceux qui tomberaient dedans).
+    Sans capture, la scène se retire (montre plutôt sa page en capture) ; ou, pour un titre de
+    partie, la fenêtre se montre sur son seul nom (60 % de sa largeur), 3 s, la caméra en dérive lente
+    (data-duration="3") : jamais une interface inventée, jamais de va-et-vient de caméra.
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
     la fenêtre garde son dessin, réduite au milieu du bureau ; les gros plans remplissent l'écran.
 
-    À REMPLACER (seulement par la vraie matière de l'offre, jamais une fonction qu'elle n'a pas) :
-     1. L'id « t08-fenetre » (racine, constante ID, préfixe CSS) par l'id de la scène.
-     2. TITRE : le nom dans la barre de titre (son produit, sa page).
-     3. CAPTURES : ses vraies captures, dans l'ordre (sa page, son espace de formation, son
-        logiciel : "assets/images/ecran-1.png" ; au mieux 1760 × 928, sinon du 16:9, cadré par le
-        haut). La première s'affiche d'abord ; chaque clic de CLICS montre la suivante, d'un coup.
-     4. CLICS : [instant, x, y] en coordonnées de la fenêtre (1760 × 980, barre de titre comprise) :
-        là où le curseur clique sur sa capture (un onglet, un bouton, un champ). Sans capture, aucun.
-     5. DEMANDE : une demande qui se tape dans le vrai champ de sa capture (texte, instants, place,
-        taille, couleur du texte de ce champ) ; texte "" : aucune.
-     6. PLANS : les gros plans [instant, x, y, zoom] en coordonnées de la fenêtre ; zoom 1 = vue
-        entière. Vise ce qui fait vendre dans sa capture ; au-delà de 1,8, une capture en image
-        devient floue.
-     7. Le bureau : FOND = "accent" (l'aplat de sa couleur, le défaut : la fenêtre y prend un trait fin
-        de sa nuit au lieu d'une ombre), "gris" (un dégradé entre ses gris et l'ombre douce de la
-        fenêtre : plus calme) ou "sombre" (sa nuit, pour une capture claire) ; ou FOND_IMAGE =
-        "assets/images/bureau.jpg", une vraie photo à lui.
-        FENETRE = "claire" ou "sombre" : la barre de titre et le fond de la fenêtre, à accorder à sa
-        capture.
+    À remplacer : l'objet EXEMPLE (en tête du script), seulement par la vraie matière de l'offre,
+    jamais une fonction qu'elle n'a pas ; puis l'id « t08-fenetre » (racine, constante ID, préfixe
+    CSS). Les réglages du geste, hors d'EXEMPLE, suivent ses captures :
+     - CLICS : [instant, x, y] en coordonnées de la fenêtre (1760 × 980, barre de titre comprise) :
+       là où le curseur clique sur sa capture (un onglet, un bouton, un champ) ; chaque clic montre
+       la capture suivante, d'un coup.
+     - DEMANDE : les instants, la place, la taille et la couleur du texte du vrai champ où la
+       demande d'EXEMPLE se tape.
+     - PLANS : les gros plans [instant, x, y, zoom] en coordonnées de la fenêtre ; zoom 1 = vue
+       entière. Vise ce qui fait vendre dans sa capture ; au-delà de 1,8, une capture en image
+       devient floue.
+     - Le bureau : FOND = "accent" (l'aplat de sa couleur, le défaut : la fenêtre y prend un trait fin
+       de sa nuit au lieu d'une ombre), "gris" (un dégradé entre ses gris et l'ombre douce de la
+       fenêtre : plus calme) ou "sombre" (sa nuit, pour une capture claire) ; ou FOND_IMAGE =
+       "assets/images/bureau.jpg", une vraie photo à lui.
+       FENETRE = "claire" ou "sombre" : la barre de titre et le fond de la fenêtre, à accorder à sa
+       capture.
     Couleurs : seulement celles de ta marque (brand/tokens.css) : ses gris, sa nuit, son clair,
     son accent en aplat plein ; des noirs et des blancs en transparence pour les ombres et les
-    traits. Ses captures gardent leurs vraies couleurs.
+    filets. Ses captures gardent leurs vraies couleurs ; la barre de titre (15 px) est de la texture.
   -->
 </head>
 <body>
 <template>
 <style>
   #t08-fenetre { --t08-bureau: radial-gradient(ellipse 60% 55% at 50% 45%, var(--brand-gris-2), var(--brand-gris-1));
-    --t08-cadre: var(--brand-clair); --t08-barre: var(--brand-clair); --t08-filet: rgba(0,0,0,.08); --t08-feu: rgba(0,0,0,.16);
+    --t08-cadre: var(--brand-clair); --t08-barre: var(--brand-clair); --t08-filet: rgba(0,0,0,.08); --t08-feu: var(--brand-gris-4);
     --t08-titre: var(--brand-gris-2); --t08-texte: var(--brand-sombre);
     --t08-ombre: 0 0 0 1px rgba(0,0,0,.18), 0 36px 90px rgba(0,0,0,.38);
     background: var(--brand-gris-1); font-family: "Inter", var(--brand-font-body); }
   #t08-fenetre.t08-bureau-sombre { --t08-bureau: var(--brand-sombre); background: var(--brand-sombre); }
   #t08-fenetre.t08-bureau-accent { --t08-bureau: var(--brand-accent); --t08-ombre: 0 0 0 2px var(--brand-sombre); background: var(--brand-accent); }
   #t08-fenetre.t08-fenetre-sombre { --t08-cadre: var(--brand-sombre); --t08-barre: var(--brand-sombre); --t08-filet: rgba(255,255,255,.08);
-    --t08-feu: rgba(255,255,255,.2); --t08-titre: var(--brand-gris-3); --t08-texte: var(--brand-clair); }
+    --t08-feu: var(--brand-gris-2); --t08-titre: var(--brand-gris-3); --t08-texte: var(--brand-clair); }
   #t08-fenetre .t08-bureau { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; }
   /* Le fond du bureau déborde largement du cadre : un gros plan près d'un bord ne montre jamais sa limite. */
   #t08-fenetre .t08-toile { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; background: var(--t08-bureau); }
@@ -81,18 +81,22 @@
 
 <script>
   (function () {
-    var ID = "t08-fenetre", D = 7;
-    // ---- À remplacer -------------------------------------------------------------------------
-    var TITRE = "Ton offre";
-    var CAPTURES = [];              // ses vraies captures, dans l'ordre : ["assets/images/ecran-1.png", …]
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      titre: "Ton offre",   // le nom dans la barre de titre (son produit, sa page)
+      captures: [],         // ses vraies captures, dans l'ordre : ["assets/images/ecran-1.png", …] (au mieux 1760 × 928, cadrées par le haut)
+      demande: ""           // une demande qui se tape dans le vrai champ de sa capture ; "" : aucune
+    };
+
+    var ID = "t08-fenetre", D = 7;   // sans capture : D = 3, et data-duration="3" (ici et sur l'hôte)
     // Les clics : [instant, x, y] dans la fenêtre (1760 × 980) ; chaque clic montre la capture suivante.
     var CLICS = [[1.12, 156, 20], [2.12, 112, 176], [3.25, 1233, 219]];
-    // Une demande tapée dans le vrai champ de sa capture (texte "" : aucune).
-    var DEMANDE = { texte: "", debut: 4.15, fin: 4.7, x: 384, y: 838, taille: 17, couleur: "var(--brand-sombre)" };
-    // Les gros plans : [instant, x, y, zoom] dans la fenêtre (1760 × 980) ; zoom 1 = vue entière.
-    var PLANS = [[0.55, 880, 26, 1.8], [1.55, 520, 360, 1.6], [2.7, 900, 420, 1.3], [3.55, 760, 700, 1.6], [4.7, 1300, 600, 1.5], [5.3, 880, 490, 1], [6.1, 880, 520, 1.2]];
+    // Le champ de la demande : instants de frappe, place, taille et couleur du texte de ce champ.
+    var DEMANDE = { texte: EXEMPLE.demande, debut: 4.15, fin: 4.7, x: 384, y: 838, taille: 17, couleur: "var(--brand-sombre)" };
+    // Les gros plans : [instant, x, y, zoom] dans la fenêtre (1760 × 980) ; zoom 1 = vue entière. Celui
+    // qui précède une demande la montre à 28 px au moins (taille du champ × zoom).
+    var PLANS = [[0.55, 880, 26, 1.8], [1.55, 520, 360, 1.6], [2.7, 900, 420, 1.3], [3.55, 760, 700, 1.7], [4.7, 1300, 600, 1.5], [5.3, 880, 490, 1], [6.1, 880, 520, 1.2]];
     var FOND = "accent", FOND_IMAGE = "", FENETRE = "claire";
-    // -------------------------------------------------------------------------------------------
+    var TITRE = EXEMPLE.titre, CAPTURES = EXEMPLE.captures;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
@@ -111,9 +115,10 @@
     var k = Math.min(1, (L - 60) / 1760, (H - 60) / 980), fx = (L - 1760 * k) / 2, fy = (H - 980 * k) / 2;
     fen.style.left = fx + "px"; fen.style.top = fy + "px"; if (k < 1) fen.style.transform = "scale(" + k + ")";
     [0, 1, 2].forEach(function (i) { K.el(barre, "div", "t08-feu", null, "left:" + (20 + i * 22) + "px;"); });   // trois points gris
-    K.el(barre, "div", "t08-titre-fen", TITRE);
+    K.el(barre, "div", "t08-titre-fen", TITRE).setAttribute("data-layout-ignore", "");   // micro-texte de la barre : de la texture
     var ecrans = CAPTURES.map(function (src) { var im = K.el(C, "img", "t08-capture"); im.alt = ""; im.src = src; return im; });
-    if (!ecrans.length) K.el(C, "div", "t08-vide", TITRE);
+    // Sans capture, son nom seul en mot héros : environ 60 % de la largeur de la fenêtre.
+    if (!ecrans.length) K.el(C, "div", "t08-vide", TITRE).style.fontSize = Math.min(220, Math.round(0.6 * 1760 / (TITRE.length * 0.55))) + "px";
     var champ = null;
     if (DEMANDE.texte && ecrans.length) {
       champ = K.el(fen, "div", "t08-demande", null, "left:" + DEMANDE.x + "px; top:" + DEMANDE.y + "px; font-size:" + DEMANDE.taille + "px; color:" + DEMANDE.couleur + "; z-index:3;");
@@ -133,12 +138,17 @@
       tl.to(bureau, { filter: "blur(" + BOUGE + "px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);
     };
     gsap.set(bureau, { x: 0, y: 0, scale: 1, filter: "blur(0px)" });
-    tl.to(bureau, { scale: 1.03, duration: 0.5, ease: "sine.out" }, 0);
-    // Sans capture, la caméra ne cherche aucun détail : elle va et vient sur le seul titre.
-    var plans = ecrans.length ? PLANS : [[0.6, 880, 516, 1.3], [1.6, 880, 516, 1], [2.4, 880, 516, 1.2]];
+    // Sans capture : aucun gros plan, la fenêtre se montre sur son seul nom et la caméra ne fait
+    // qu'une dérive lente (4 %, sine.inOut) le temps de sa lecture.
+    if (!ecrans.length) tl.to(bureau, { scale: 1.04, duration: D, ease: "sine.inOut" }, 0);
+    else tl.to(bureau, { scale: 1.03, duration: 0.5, ease: "sine.out" }, 0);
+    // Pendant qu'une demande se tape puis se lit (0,8 s + 0,3 s par mot), aucun gros plan ne part.
+    var mots = DEMANDE.texte ? DEMANDE.texte.split(/\s+/).filter(Boolean).length : 0;
+    var lue = [DEMANDE.debut, DEMANDE.fin + Math.max(1.5, 0.8 + 0.3 * mots)];
+    var plans = !ecrans.length ? [] : PLANS.filter(function (pl) { return !mots || pl[0] + 0.5 <= lue[0] || pl[0] >= lue[1]; });
     plans.forEach(function (pl) { viser(pl[0], pl[1], pl[2], pl[3], 0.5); });
-    var dernier = plans.length ? plans[plans.length - 1][0] + 0.55 : 0.5;
-    if (dernier < D) tl.to(bureau, { scale: "+=0.03", duration: D - dernier, ease: "none" }, dernier);
+    var dernier = plans.length ? plans[plans.length - 1][0] + 0.55 : D;
+    if (dernier < D) tl.to(bureau, { scale: "+=0.03", duration: D - dernier, ease: "sine.inOut" }, dernier);
 
     // Les captures : la première d'abord, puis la suivante à chaque clic, d'un coup (sans animation).
     if (ecrans.length) {

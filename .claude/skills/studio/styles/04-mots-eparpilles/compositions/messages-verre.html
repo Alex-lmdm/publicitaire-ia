@@ -10,13 +10,11 @@
     pour avatar et une étiquette, celles du client en clair ; un lien collé y montre l'aperçu de sa
     vraie page, qui défile section par section tant qu'il est à l'écran) : trois points qui sautent annoncent
     chaque réponse de l'offre, puis la bulle se pose et ses mots s'allument un à un, au rythme où on
-    les lit (les mots à venir sont déjà là, pâles) ; une réponse peut proposer des choix (des cartes numérotées), que
+    les lit (les mots à venir sont déjà là, dans un gris lisible) ; une réponse peut proposer des choix (des cartes numérotées), que
     la réponse du client sélectionne ; la carte du résultat arrive sous la dernière réponse, ses
     vraies vignettes se cochent une à une pendant que sa barre se remplit ; autour, dans les marges,
     les vrais logos nus des outils où l'offre travaille arrivent un à un et dérivent ; à la fin, sa
     couleur se referme en disque sur sa nuit (raccord avec fin-cadre.html, qui commence sur la nuit).
-    Exemple : l'échange réel que montre la vidéo du haut de la page de Publicitaire IA (le lien de
-    la page, « Fais-moi une vidéo de vente. », les trois idées, « La 2. », les 5 scènes prêtes).
 
     Les durées suivent la lecture : chaque bulle (avec ses choix) reste le temps de la lire (0,3 s
     par mot + 0,8 s, jamais moins de 1,5 s : `studio_motion.py lecture`) avant que la suivante
@@ -26,29 +24,30 @@
     une poussée lente (×1,03 sur toute la scène, sine.inOut) ; le fil ne remonte qu'à l'arrivée
     d'une nouvelle bulle, entre deux lectures.
 
-    À remplacer :
+    À remplacer : l'objet EXEMPLE (en tête du script).
       1. L'identifiant « t04-msg » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. MESSAGES : [qui, texte, options]. qui = "offre" (à gauche, avec son logo et l'ÉTIQUETTE) ou
+      2. messages : [qui, texte, options]. qui = "offre" (à gauche, avec son logo et l'ÉTIQUETTE) ou
          "client" (à droite). UNIQUEMENT un vrai échange : une vraie conversation avec son produit
          (son assistant, son outil, telle qu'une capture ou sa vidéo la montre), de vrais messages
          de clients (captures de témoignages), ou une vraie question de sa FAQ et sa vraie
-         réponse. 2 à 4 bulles, 12 mots au plus chacune, deux lignes au plus (39 signes par ligne).
+         réponse. 2 à 4 bulles, 8 mots au plus chacune (ses choix compris), deux lignes au plus
+         (39 signes par ligne).
          options (facultatif) : { lien: "sa-page.fr/…" } (le lien collé au-dessus du texte, dans une
          bulle du client), avec apercu: "assets/images/…" (sa vraie page, une longue capture de haut
          en bas : l'aperçu du lien, qui défile par paliers pendant que l'offre la lit) ; { choix: ["…", "…", "…"] } (deux ou trois cartes numérotées sous une
          bulle de l'offre, ses vrais choix) ; { prend: 2 } (la bulle du client qui sélectionne la
          carte n° 2 des derniers choix).
-      3. ETIQUETTE : le nom de son produit ou de lui-même (« Ton coach », le nom de l'outil).
-      4. LOGO : son logo pour l'avatar (le fichier de brand/ : "brand/logo.png" ou "brand/logo.svg") ;
+      3. etiquette : le nom de son produit ou de lui-même (« Ton coach », le nom de l'outil).
+      4. logo : son logo pour l'avatar (le fichier de brand/ : "brand/logo.png" ou "brand/logo.svg") ;
          "" sans logo : l'initiale de l'ÉTIQUETTE s'affiche. Un logo sombre se pose sur un disque
          clair : passe .t04-msg-avatar en var(--brand-clair).
-      5. CADENCE : l'écart entre deux mots qui s'allument : le rythme de la lecture (0,3 s), sur la
-         voix s'il y en a. La bulle se pose entière (ses mots à venir pâles) et ses mots s'allument au
+      5. CADENCE (hors d'EXEMPLE) : l'écart entre deux mots qui s'allument : le rythme de la lecture
+         (0,3 s), sur la voix s'il y en a. La bulle se pose entière (ses mots à venir en gris) et ses mots s'allument au
          rythme où on les lit, puis ses choix ; la bulle suivante n'arrive qu'après sa lecture.
-      6. RESULTAT : ce que son produit rend vraiment { icone, titre, vignettes } (icône du kit, titre
+      6. resultat : ce que son produit rend vraiment { icone, titre, vignettes } (icône du kit, titre
          court, ses vraies captures en vignettes : les scènes d'une vidéo, les pages d'un plan…) ;
          null pour ne pas montrer de carte.
-      7. OUTILS : les vrais logos nus et nets (sans flou ni ombre sur sa couleur) des outils où l'offre travaille (ceux qu'elle nomme, posés par
+      7. outils : les vrais logos nus et nets (sans flou ni ombre sur sa couleur) des outils où l'offre travaille (ceux qu'elle nomme, posés par
          `studio_motion.py logos`), répartis sur les places des marges (PLACES : [x, y, taille,
          flou]) ; [] sans logos. Un logo absent du projet ne s'affiche pas.
     Couleurs : celles de sa marque, rien d'autre : le fond est sa couleur pleine (un aplat, sans
@@ -74,7 +73,7 @@
     #t04-msg .t04-msg-fil { position: absolute; left: 400px; top: 0; width: 1120px; height: 1080px; }
     #t04-msg .t04-msg-ligne { position: absolute; left: 0; width: 1120px; }
     #t04-msg .t04-msg-etiquette {
-      position: absolute; left: 82px; top: -36px; font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 22px;
+      position: absolute; left: 82px; top: -42px; font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 28px;
       color: var(--brand-contrast); white-space: nowrap;
     }
     #t04-msg .t04-msg-bulle {
@@ -84,8 +83,10 @@
     }
     #t04-msg .t04-msg-client .t04-msg-bulle { right: 0; top: 0; background: var(--t04-clair); color: var(--t04-nuit); }
     #t04-msg .t04-msg-offre .t04-msg-bulle { left: 82px; top: 0; }
-    #t04-msg .t04-msg-bulle span { opacity: 0.22; }
-    #t04-msg .t04-msg-lien { display: block; margin-bottom: 8px; font-size: 26px; line-height: 1.3; font-weight: 500; color: var(--brand-gris-2); text-decoration: underline; text-underline-offset: 4px; }
+    /* Les mots à venir : un gris de la marque lisible sur leur bulle (4,5:1), jamais un texte en transparence. */
+    #t04-msg .t04-msg-offre .t04-msg-bulle span[data-lu="0"], #t04-msg .t04-msg-idee span[data-lu="0"] { color: var(--brand-gris-3); }
+    #t04-msg .t04-msg-client .t04-msg-bulle span[data-lu="0"] { color: var(--brand-gris-2); }
+    #t04-msg .t04-msg-lien { display: block; margin-bottom: 8px; font-size: 28px; line-height: 1.3; font-weight: 500; color: var(--brand-gris-2); text-decoration: underline; text-underline-offset: 4px; }
     #t04-msg .t04-msg-apercu { position: relative; width: 560px; height: 315px; margin: 6px 0 14px; border-radius: 14px; overflow: hidden; background: var(--brand-gris-4); }
     #t04-msg .t04-msg-apercu img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; display: block; }
     #t04-msg .t04-msg-points { position: absolute; left: 82px; top: 0; padding: 26px 30px; border-radius: 22px; display: flex; gap: 12px;
@@ -101,9 +102,9 @@
     #t04-msg .t04-msg-choix { position: absolute; left: 82px; display: flex; gap: 14px; }
     #t04-msg .t04-msg-idee { width: 330px; height: 104px; padding: 0 22px; border-radius: 18px; display: flex; align-items: center; gap: 16px;
       background: var(--t04-nuit);
-      font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 26px; line-height: 1.2; color: var(--t04-clair); }
+      font-family: "Inter", var(--brand-font-body); font-weight: 600; font-size: 30px; line-height: 1.2; color: var(--t04-clair); }
     #t04-msg .t04-msg-idee i { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-style: normal;
-      background: var(--brand-gris-1); color: var(--t04-clair); font-size: 24px; }
+      background: var(--brand-gris-1); color: var(--t04-clair); font-size: 28px; }
     #t04-msg .t04-msg-idee[data-pris="1"] { box-shadow: inset 0 0 0 3px var(--t04-clair); }
     #t04-msg .t04-msg-idee[data-pris="1"] i { background: var(--brand-accent); color: var(--brand-contrast); }
     /* La carte du résultat : son icône, son titre, ses vraies vignettes qui se cochent, sa barre. */
@@ -112,7 +113,7 @@
     #t04-msg .t04-msg-resultat .tete { display: flex; align-items: center; gap: 22px; }
     #t04-msg .t04-msg-resultat .ic { width: 72px; height: 72px; border-radius: 18px; display: grid; place-items: center; background: var(--brand-accent); color: var(--brand-contrast); flex: none; }
     #t04-msg .t04-msg-resultat .ic svg { width: 40px; height: 40px; }
-    #t04-msg .t04-msg-resultat b { font-size: 32px; font-weight: 700; }
+    #t04-msg .t04-msg-resultat b { font-size: 34px; font-weight: 700; }
     #t04-msg .t04-msg-resultat .vignettes { display: flex; gap: 12px; margin-top: 18px; }
     #t04-msg .t04-msg-resultat .vignettes div { position: relative; width: 128px; height: 72px; border-radius: 10px; overflow: hidden; background: var(--brand-gris-1); }
     #t04-msg .t04-msg-resultat .vignettes img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -129,7 +130,7 @@
     #t04-msg .t04-msg-outil svg, #t04-msg .t04-msg-outil img { width: 100%; height: 100%; object-fit: contain; }
   </style>
 
-  <div data-composition-id="t04-msg" data-width="1920" data-height="1080" data-duration="16.4" style="position:absolute; inset:0;">
+  <div data-composition-id="t04-msg" data-width="1920" data-height="1080" data-duration="14.6" style="position:absolute; inset:0;">
     <div id="t04-msg" class="k-scene">
       <div class="t04-msg-monde" id="t04-msg-monde">
         <div id="t04-msg-outils" data-layout-allow-overlap></div>
@@ -142,20 +143,27 @@
 
   <script>
     (function () {
+      // Exemple fictif : l'assistant d'un logiciel de prise de rendez-vous.
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json et d'un vrai échange, ou la ligne se retire
+        etiquette: "Ton assistant", logo: "brand/logo.png",
+        // [qui, texte, options] : un vrai échange (son assistant, ses vrais messages, une question de sa FAQ).
+        messages: [
+          ["client", "Réponds à mes messages en attente.", { lien: "ton-site.fr/contact", apercu: "assets/images/capture-page.jpg" }],
+          ["offre", "Trois réponses :", { choix: ["Un créneau", "Le tarif", "Une relance"] }],
+          ["client", "La 1.", { prend: 1 }],
+          ["offre", "Ton agenda est à jour."]
+        ],
+        // Ce que le produit rend vraiment : ses vraies captures en vignettes (« 4 » n'est qu'un exemple).
+        resultat: { icone: "calendar", titre: "4 rendez-vous calés",
+          vignettes: ["assets/images/rdv-1.jpg", "assets/images/rdv-2.jpg", "assets/images/rdv-3.jpg", "assets/images/rdv-4.jpg"] },
+        outils: ["logo-whatsapp", "logo-google"]
+      };
+
       window.__timelines = window.__timelines || {};
-      var D = 16.4, ID = "t04-msg", tl = gsap.timeline({ paused: true });
+      var D = 14.6, ID = "t04-msg", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
-      var ETIQUETTE = "Publicitaire IA", LOGO = "brand/logo.png", CADENCE = 0.3;
-      // [qui, texte, options] : un vrai échange (ici, celui que montre la vidéo de sa page).
-      var MESSAGES = [
-        ["client", "Fais-moi une vidéo de vente.", { lien: "lemondedumarketing.fr/publicitaire-ia", apercu: "assets/images/page-defile.jpg" }],
-        ["offre", "Trois idées pour ta vidéo :", { choix: ["L'IA qui parle", "Deux métiers en un", "Trois étapes"] }],
-        ["client", "La 2.", { prend: 2 }],
-        ["offre", "Je fabrique tout en motion design."]
-      ];
-      var RESULTAT = { icone: "clapperboard", titre: "5 scènes prêtes",
-        vignettes: ["assets/images/scene-1.jpg", "assets/images/scene-2.jpg", "assets/images/scene-3.jpg", "assets/images/scene-4.jpg", "assets/images/scene-5.jpg"] };
-      var OUTILS = ["logo-claude", "logo-chatgpt"];
+      var ETIQUETTE = EXEMPLE.etiquette, LOGO = EXEMPLE.logo, CADENCE = 0.3;
+      var MESSAGES = EXEMPLE.messages, RESULTAT = EXEMPLE.resultat, OUTILS = EXEMPLE.outils;
       var PLACES = [[1630, 200, 140, 0], [120, 150, 190, 0], [200, 570, 120, 0], [1660, 660, 210, 0], [1570, 930, 110, 0], [80, 880, 230, 0], [1600, 40, 90, 0], [230, 380, 100, 0]];
       // La mise en page du fil : le premier élément se pose vers Y0, le fil remonte quand le dernier
       // descendrait sous BAS ; 39 signes par ligne de bulle (38 px dans 820 px).
@@ -176,8 +184,8 @@
       var fil = $("fil"), y = 0, t = DEBUT, arrivees = [], derniersChoix = null, finLecture = DEBUT, dernierLu = DEBUT, evts = [], apercus = [];
       MESSAGES.forEach(function (m) {
         var qui = m[0], texte = m[1], o = m[2] || {};
-        var haut = 48 + Math.ceil(texte.length / SIGNES) * LIGNE + (o.lien ? 42 : 0);
-        var top = y + (qui === "offre" ? 40 : 0), bas = top + haut;
+        var haut = 48 + Math.ceil(texte.length / SIGNES) * LIGNE + (o.lien ? 45 : 0);
+        var top = y + (qui === "offre" ? 46 : 0), bas = top + haut;
         var ligne = K.el(fil, "div", "t04-msg-ligne t04-msg-" + qui, null, "top:" + top + "px;");
         var pose = qui === "offre" ? t + 0.38 : t;
         if (qui === "offre") {
@@ -204,6 +212,7 @@
         }
         var mots = texte.split(" ").map(function (w, k, tous) {
           var s = K.el(bulle, "span", null, w);
+          s.setAttribute("data-lu", "0");
           if (k < tous.length - 1) bulle.appendChild(document.createTextNode(" "));
           return s;
         });
@@ -213,7 +222,7 @@
           { y: 0, scale: 1, duration: 0.45, ease: "expo.out", transformOrigin: qui === "offre" ? "0% 50%" : "100% 50%", immediateRender: false }, pose);
         // Ses mots s'allument au rythme de la lecture ; la lecture compte depuis que la bulle est posée.
         var lit = pose + 0.3, aLire = (o.lien ? o.lien + " " : "") + texte;
-        tl.to(mots, { opacity: 1, duration: 0.12, ease: "none", stagger: CADENCE }, lit);
+        mots.forEach(function (s, k) { tl.set(s, { attr: { "data-lu": "1" } }, lit + k * CADENCE); });
         var lu = lit + mots.length * CADENCE;
         if (o.choix) {   // ses vrais choix, en cartes numérotées sous la bulle
           var rangee = K.el(ligne, "div", "t04-msg-choix", null, "top:" + (haut + 16) + "px;");
@@ -226,10 +235,9 @@
           });
           // Leurs titres s'allument à leur tour, au même rythme.
           var titres = derniersChoix.map(function (c) { return c.querySelector("span"); });
-          gsap.set(titres, { opacity: 0.3 });
           titres.forEach(function (s, k) {
-            var n = o.choix[k].split(" ").length;
-            tl.to(s, { opacity: 1, duration: 0.25, ease: "none" }, lu + 0.3 + (k ? o.choix.slice(0, k).join(" ").split(" ").length : 0) * CADENCE);
+            s.setAttribute("data-lu", "0");
+            tl.set(s, { attr: { "data-lu": "1" } }, lu + 0.3 + (k ? o.choix.slice(0, k).join(" ").split(" ").length : 0) * CADENCE);
           });
           lu += 0.3 + o.choix.join(" ").split(" ").length * CADENCE;
           bas += 16 + 104;

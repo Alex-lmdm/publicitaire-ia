@@ -1,0 +1,297 @@
+<!-- Scène prête « L'écran coupé » (comparer : scenes.md, recette 16).
+     L'ancienne façon en grand, sur la nuit, avec son étiquette et un chrono qui file ; un volet clair
+     arrive et la pousse dans sa moitié (en 9:16, le haut ; en 16:9, la gauche). De son côté, sombre,
+     la liste continue de se remplir pendant que le chrono s'emballe ; de l'autre, clair, le résultat
+     et son vrai délai, ses étapes qui se cochent une à une, calmement. Sortie : le panneau clair
+     couvre tout, pousse l'ancienne façon hors du cadre, et le résultat revient au centre en grand
+     (raccord avec la scène suivante). Les étiquettes, le chrono et le délai se lisent ; les deux
+     cartes sont de la matière (data-layout-ignore). Se met en page seule en 9:16 et en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (`check` la signale en erreur
+     si elle manque), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « avant-apres » par un autre identifiant. -->
+<template>
+  <style>
+    #avant-apres .aa-calque { position: absolute; left: 0; top: 0; width: 100%; height: 100%; will-change: transform; }
+    #avant-apres .aa-panneau {
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%; will-change: transform;
+      background-color: var(--k-clair);
+      background-image:
+        linear-gradient(var(--k-grille-claire) 1px, transparent 1px),
+        linear-gradient(90deg, var(--k-grille-claire) 1px, transparent 1px);
+      background-size: 64px 64px; background-position: -1px -1px;
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.45);
+    }
+    #avant-apres .aa-bord { position: absolute; background: var(--brand-accent); }
+    #avant-apres .aa-carte {
+      position: absolute; border-radius: 30px; overflow: hidden; will-change: transform, clip-path;
+      font-family: "Inter", var(--brand-font-body);
+    }
+    #avant-apres .aa-carte-sombre { background: var(--brand-surface); color: var(--k-blanc); box-shadow: var(--k-ombre), inset 0 0 0 2px rgba(255, 255, 255, 0.06); }
+    #avant-apres .aa-carte-claire { background: var(--k-blanc); color: var(--k-encre); box-shadow: var(--k-ombre-claire); }
+    #avant-apres .aa-tete {
+      display: flex; align-items: center; gap: 20px; padding: 0 44px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap;
+    }
+    #avant-apres .aa-carte-sombre .aa-tete { border-bottom: 2px solid var(--brand-gris-1); }
+    #avant-apres .aa-carte-claire .aa-tete { border-bottom: 2px solid var(--brand-gris-4); }
+    #avant-apres .aa-tete i { display: block; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brand-gris-2); }
+    #avant-apres .aa-ligne {
+      display: flex; align-items: center; gap: 24px; padding: 0 44px; font-weight: 600; white-space: nowrap; will-change: transform;
+    }
+    #avant-apres .aa-carte-sombre .aa-ligne { border-bottom: 2px solid var(--brand-gris-1); }
+    #avant-apres .aa-carte-claire .aa-ligne { border-bottom: 2px solid var(--brand-gris-4); }
+    #avant-apres .aa-puce { position: relative; flex: none; width: 40px; height: 40px; border-radius: 50%; border: 4px solid var(--brand-gris-2); }
+    #avant-apres .aa-carte-claire .aa-puce { border-color: var(--brand-gris-4); }
+    #avant-apres .aa-coche { position: absolute; left: -4px; top: -4px; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-accent); }
+    #avant-apres .aa-coche svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    #avant-apres .aa-coche path { fill: none; stroke: var(--brand-contrast); stroke-width: 4.5; stroke-linecap: round; stroke-linejoin: round; }
+    #avant-apres .aa-meta { margin-left: auto; font-weight: 700; color: var(--brand-gris-3); }
+    #avant-apres .aa-capture { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+    #avant-apres .aa-etiquette {
+      position: absolute; padding: 0.08em 0.26em 0.12em; font-family: var(--brand-font-display); font-weight: 800;
+      line-height: 1; letter-spacing: -0.02em; white-space: nowrap; transform-origin: 0% 50%;
+    }
+    #avant-apres .aa-sur-sombre { background: var(--k-blanc); color: var(--k-encre); }
+    #avant-apres .aa-sur-clair { background: var(--k-encre); color: var(--k-blanc); }
+    #avant-apres .aa-delai { background: var(--brand-accent); color: var(--brand-contrast); transform-origin: 100% 50%; }
+    #avant-apres .aa-chrono {
+      position: absolute; text-align: right; white-space: nowrap; color: var(--k-blanc);
+      font-family: var(--brand-font-display); font-weight: 800; line-height: 1; letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+  <div data-composition-id="avant-apres" data-width="1080" data-height="1920" data-duration="5.5" style="position:absolute; inset:0;">
+    <div id="avant-apres" class="k-scene">
+      <div class="k-fond k-fond-sombre"></div>
+      <div class="k-vignette"></div>
+      <div class="aa-calque" id="avant-apres-avant" data-layout-allow-overflow>
+        <div class="k-scene3d"><div class="k-camera" id="avant-apres-cam-avant"></div></div>
+        <div class="k-mots" id="avant-apres-mots-avant"></div>
+      </div>
+      <div class="aa-panneau" id="avant-apres-panneau" data-layout-allow-overflow></div>
+      <div class="aa-calque" id="avant-apres-apres" data-layout-allow-overflow>
+        <div class="k-scene3d"><div class="k-camera" id="avant-apres-cam-apres"></div></div>
+        <div class="k-mots" id="avant-apres-mots-apres"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "avant-apres";
+
+      // À REMPLACER : chaque texte, chiffre et image vient de OFFRE.json ou de sources/ ; ce qui
+      // n'existe pas pour son offre se met à null.
+      var CONTENU = {
+        etiquettes: ["Avant", "Après"],   // ou celles de sa page (« Seul », « Accompagné »), 1 à 3 mots chacune
+        avant: {
+          titre: "Trouver ses clients seul",   // l'en-tête de l'ancienne façon (une méthode, un outil, un dossier)
+          lignes: [                            // l'ancienne façon en 3 à 6 lignes, d'après sa page : "texte" ou ["texte", "son coût"]
+            ["Poster tous les jours", "2 h"], ["Relancer à la main", "1 h"], ["Baisser ses prix", "−20 %"],
+            ["Changer d'offre", "encore"], ["Tout recommencer", "…"]
+          ],
+          capture: null,                       // "assets/images/<sa capture>.png" : remplace l'en-tête et les lignes
+          chrono: { de: 0, a: 240, format: "{} h" }   // ce qu'elle coûte (temps ou argent, une unité invariable : « h », « € »), d'après sa page ; ou null
+        },
+        apres: {
+          titre: "Ton premier client signé",   // le résultat qu'on obtient
+          lignes: ["Offre clarifiée", "Page prête", "Appel réservé"],   // 2 à 4 étapes qui se cochent, ses vraies étapes
+          capture: null,                       // "assets/images/<le résultat>.png" : remplace l'en-tête et les lignes
+          delai: "en 6 semaines"               // son vrai délai (OFFRE.json), 1 à 4 mots ; ou null
+        },
+        zone: null                             // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID);
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      // La durée donnée à la scène : celle de sa racine, ou, une fois montée, celle de son hôte dans
+      // index.html (HyperFrames retire data-duration de la racine intérieure au montage).
+      var duree = 30;
+      for (var nd = racine.parentElement; nd; nd = nd.parentElement) {
+        var dd = parseFloat(nd.getAttribute("data-duration"));
+        if (dd > 0) { duree = dd; break; }
+      }
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var calqueA = document.getElementById(ID + "-avant"), calqueB = document.getElementById(ID + "-apres");
+      var panneau = document.getElementById(ID + "-panneau");
+      var A = CONTENU.avant || {}, B = CONTENU.apres || {};
+      var etiquettes = CONTENU.etiquettes || ["Avant", "Après"];
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+
+      // --- La mise en page : deux moitiés (haut et bas en 9:16, gauche et droite en 16:9) ---------
+      // Chaque moitié : une rangée (l'étiquette, et à droite le chrono ou le délai) et sa carte, qui
+      // prend la hauteur de sa matière. En 9:16, les deux rangées bordent la coupe (dans la zone sûre)
+      // et les cartes remplissent leur moitié vers l'extérieur : l'ancienne façon s'empile vers le haut.
+      var coupe = V ? H / 2 : L / 2;
+      var col = V ? { l: 0.88 * L } : { l: 0.42 * L };
+      var formatChrono = function (v) { return String((A.chrono || {}).format || "{}").replace("{}", String(Math.round(v))); };
+      var fEt = V ? 64 : 58;
+      var fChrono = A.chrono ? taillePour(formatChrono(A.chrono.a), col.l * 0.45, 60, V ? 110 : 96) : 0;
+      var rangee = Math.max(fEt * 1.25, fChrono * 1.05);
+      var entete = V ? 120 : 110, rangMax = [V ? 124 : 132, V ? 156 : 160];   // le résultat respire plus que la corvée
+      var nomb = function (cote) { return cote.capture ? 0 : Math.max(1, (cote.lignes || []).length); };
+      var moitie = function (cote, k) {
+        var m = { x: V ? (L - col.l) / 2 : (k ? coupe : 0) + (coupe - col.l) / 2 }, place;
+        if (V && !k) {                       // en haut : la rangée sur la coupe, la carte au-dessus
+          m.yRang = coupe - 46 - rangee;
+          m.basCarte = m.yRang - 28;
+          place = m.basCarte - 0.04 * H;
+        } else {                             // la rangée en haut de sa moitié, la carte dessous
+          m.yRang = V ? coupe + 50 : haut + 30;
+          m.yCarte = m.yRang + rangee + (V ? 28 : 34);
+          place = (V ? H - 0.04 * H : H - 0.04 * H) - m.yCarte;
+        }
+        var nl = nomb(cote);
+        m.rang = nl ? Math.min(rangMax[k], (place - entete) / nl) : 0;
+        m.h = cote.capture ? place : entete + m.rang * nl;
+        if (m.yCarte == null) m.yCarte = m.basCarte - m.h;
+        return m;
+      };
+      var mA = moitie(A, 0), mB = moitie(B, 1);
+
+      // Une carte : sa capture, ou son en-tête et ses lignes.
+      var carte = function (cam, cote, m, classe) {
+        var el = K.el(cam, "div", "aa-carte k-plan " + classe, null,
+          "left:" + m.x + "px; top:" + m.yCarte + "px; width:" + col.l + "px; height:" + m.h + "px;");
+        // Les cartes sont la matière de la comparaison : `check` ne les lit pas comme des textes
+        // (ce sont les mots d'une interface, au-dessus de 28 px), et elles sortent du cadre poussées.
+        el.setAttribute("data-layout-ignore", "");
+        el.setAttribute("data-layout-allow-overflow", "");
+        var lignes = [];
+        if (cote.capture) {
+          var img = K.el(el, "img", "aa-capture");
+          img.src = cote.capture;
+          img.alt = "";
+          return { el: el, lignes: lignes };
+        }
+        var tete = K.el(el, "div", "aa-tete", "<i></i>", "height:" + entete + "px; font-size:" + (V ? 52 : 46) + "px;");
+        K.el(tete, "span", null).textContent = cote.titre || "";
+        (cote.lignes || []).forEach(function (l) {
+          var t = typeof l === "string" ? [l] : l;
+          var e = K.el(el, "div", "aa-ligne", '<span class="aa-puce"></span>', "height:" + m.rang + "px; font-size:" + (m === mB ? (V ? 50 : 46) : (V ? 46 : 42)) + "px;");
+          K.el(e, "span", null).textContent = t[0];
+          if (t[1]) K.el(e, "span", "aa-meta").textContent = t[1];
+          lignes.push(e);
+        });
+        return { el: el, lignes: lignes };
+      };
+      var cA = carte(document.getElementById(ID + "-cam-avant"), A, mA, "aa-carte-sombre");
+      var cB = carte(document.getElementById(ID + "-cam-apres"), B, mB, "aa-carte-claire");
+
+      // Les mots : l'étiquette de chaque moitié, le chrono (avant) et le délai (après).
+      var motsA = document.getElementById(ID + "-mots-avant"), motsB = document.getElementById(ID + "-mots-apres");
+      var etA = K.el(motsA, "div", "aa-etiquette aa-sur-sombre", null, "left:" + mA.x + "px; top:" + (mA.yRang + (rangee - fEt * 1.2) / 2) + "px; font-size:" + fEt + "px;");
+      etA.textContent = etiquettes[0] || "";
+      var etB = K.el(motsB, "div", "aa-etiquette aa-sur-clair", null, "left:" + mB.x + "px; top:" + (mB.yRang + (rangee - fEt * 1.2) / 2) + "px; font-size:" + fEt + "px;");
+      etB.textContent = etiquettes[1] || "";
+      var chrono = null;
+      if (A.chrono) {
+        chrono = K.el(motsA, "div", "aa-chrono", null,
+          "right:" + (L - (mA.x + col.l)) + "px; top:" + (mA.yRang + (rangee - fChrono) / 2) + "px; font-size:" + fChrono + "px;");
+      }
+      var delai = null;
+      if (B.delai) {
+        var fDelai = Math.min(fEt, taillePour(B.delai, col.l * 0.5, 40, fEt));
+        delai = K.el(motsB, "div", "aa-etiquette aa-delai", null,
+          "right:" + (L - (mB.x + col.l)) + "px; top:" + (mB.yRang + (rangee - fDelai * 1.2) / 2) + "px; font-size:" + fDelai + "px;");
+        delai.textContent = B.delai;
+      }
+
+      // Le bord du volet : un trait plein de l'accent sur son arête.
+      var bord = K.el(panneau, "div", "aa-bord", null, V ? "left:0; right:0; top:0; height:10px;" : "top:0; bottom:0; left:0; width:10px;");
+
+      var tl = gsap.timeline({ paused: true });
+      var axe = V ? "y" : "x", plein = V ? H : L;
+      // À l'affiche : l'ancienne façon seule, centrée sur la nuit, avec son étiquette et son chrono.
+      var deja = Math.min(3, cA.lignes.length);          // les lignes déjà là à l'affiche
+      var cache = function (k) { return A.capture ? 0 : Math.max(0, mA.h - entete - mA.rang * k); };
+      var centreA = V ? (mA.yCarte + cache(deja) + mA.yRang + rangee) / 2 : mA.x + col.l / 2;
+      var decalA = (V ? H / 2 : L / 2) - centreA;
+      var depart = {}, vers = {};
+      // À l'affiche, l'ancienne façon est plus grande : elle remplit la nuit, puis le volet la pousse
+      // et la ramène à la taille de sa moitié.
+      var visibleH = (mA.yRang + mA.yCarte + mA.h - cache(deja)) / 2;    // le milieu de ce qu'on voit (16:9)
+      var grandA = V ? 1.06 : 1.24, oA = V ? { x: L / 2, y: centreA } : { x: centreA, y: visibleH };
+      depart[axe] = decalA; depart.scale = grandA; depart.transformOrigin = oA.x + "px " + oA.y + "px";
+      if (!V) depart.y = (haut + bas) / 2 - visibleH;
+      gsap.set(calqueA, depart);
+      depart = {}; depart[axe] = plein; gsap.set(panneau, depart); gsap.set(calqueB, depart);
+      gsap.set(cA.el, { transformOrigin: "50% 50%", rotationX: V ? 7 : 0, rotationY: V ? 0 : 10 });
+      gsap.set(cB.el, { transformOrigin: "50% 50%", rotationX: V ? 5 : 0, rotationY: V ? 0 : -8 });
+      tl.fromTo(cA.el, { scale: 1.04, rotationX: V ? 16 : 4, rotationY: V ? 0 : 20 },
+        { scale: 1, rotationX: V ? 7 : 0, rotationY: V ? 0 : 10, duration: 1, ease: "expo.out" }, 0);
+
+      // Le chrono file, de plus en plus vite (le temps qu'on perd).
+      var tChrono = 0.2, dChrono = 2.0;
+      if (chrono) K.compteur(tl, chrono, A.chrono.de || 0, A.chrono.a, tChrono, dChrono, duree, formatChrono, "power2.in");
+
+      // Le volet clair pousse l'ancienne façon dans sa moitié.
+      var tVolet = 0.3, dVolet = 0.75;
+      vers = {}; vers[axe] = coupe; vers.duration = dVolet; vers.ease = "expo.inOut";
+      tl.to(panneau, vers, tVolet);
+      vers = Object.assign({}, vers); vers[axe] = 0;
+      tl.to(calqueB, vers, tVolet);
+      tl.to(calqueA, Object.assign({ scale: 1, y: 0 }, vers), tVolet);
+
+      // L'ancienne façon se remplit : la carte s'allonge d'une ligne toutes les 0,4 s (un masque
+      // qui découvre la suivante), pendant que le chrono s'emballe. Une capture est là d'emblée.
+      // En 9:16 la carte est posée sur la rangée : elle s'allonge vers le haut (la pile qui monte).
+      var masque = function (k) { return "inset(0px 0px " + cache(k) + "px 0px round 30px)"; };
+      var etat = function (k) { var e = { clipPath: masque(k) }; if (V) e.y = cache(k); return e; };
+      var aCharger = cA.lignes.slice(deja), tLigne = 0.65;
+      if (!A.capture && aCharger.length) gsap.set(cA.el, etat(deja));
+      aCharger.forEach(function (e, i) {
+        var ti = tLigne + i * 0.4;
+        tl.to(cA.el, Object.assign(etat(deja + i + 1), { duration: 0.34, ease: "expo.out" }), ti);
+        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1.6)", immediateRender: false }, ti);
+      });
+      var tFinA = aCharger.length ? tLigne + (aCharger.length - 1) * 0.4 + 0.4 : tLigne;
+
+      // Le résultat, calme : son délai s'ouvre, ses étapes se cochent une à une.
+      var tDelai = tVolet + dVolet;
+      if (delai) K.volet(tl, delai, tDelai, { origine: "100% 50%", duree: 0.36 });
+      var tCoche = tDelai + 0.3;
+      cB.lignes.forEach(function (e, i) {
+        var puce = e.querySelector(".aa-puce");
+        var coche = K.el(puce, "span", "aa-coche", '<svg viewBox="0 0 40 40"><path d="M11 20.5 L17.5 27 L29 14"/></svg>');
+        gsap.set(coche, { scale: 0 });
+        var ti = tCoche + i * 0.4;
+        tl.to(coche, { scale: 1, duration: 0.36, ease: "back.out(2)" }, ti);
+        K.trace(tl, coche.querySelector("path"), ti + 0.1, 0.26, { longueur: 30 });
+      });
+      var tFinB = cB.lignes.length ? tCoche + (cB.lignes.length - 1) * 0.4 + 0.5 : tCoche;
+
+      // La sortie : le panneau clair couvre tout, pousse l'ancienne façon hors du cadre, et le
+      // résultat revient au centre, en grand (raccord).
+      var tSortie = Math.max(chrono ? tChrono + dChrono + lecture(formatChrono(A.chrono.a)) : 0,
+        tFinA + 0.6, tFinB + 0.4, delai ? tDelai + lecture(B.delai) : 0, lecture(etiquettes[0] || "x"));
+      var dSortie = 0.7;
+      vers = { duration: dSortie, ease: "expo.inOut" };
+      vers[axe] = 0; tl.to(panneau, vers, tSortie);
+      vers = Object.assign({}, vers); vers[axe] = -coupe; tl.to(calqueA, vers, tSortie);
+      var centreB = { x: mB.x + col.l / 2, y: (mB.yRang + mB.yCarte + mB.h) / 2 };
+      var echelle = V ? 1.08 : 1.15;
+      gsap.set(calqueB, { transformOrigin: centreB.x + "px " + centreB.y + "px" });
+      tl.to(calqueB, { x: L / 2 - centreB.x, y: (haut + bas) / 2 - centreB.y, scale: echelle, duration: dSortie, ease: "expo.inOut" }, tSortie);
+      tl.to(cB.el, { rotationX: 0, rotationY: 0, duration: dSortie, ease: "expo.inOut" }, tSortie);
+      tl.to(bord, V ? { y: -14, duration: 0.3, ease: "power2.in" } : { x: -14, duration: 0.3, ease: "power2.in" }, tSortie + dSortie - 0.3);
+
+      // La durée qu'il faut à la scène : le résultat tenu au centre 1,1 s au moins.
+      var t = tSortie + dSortie + 1.1;
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

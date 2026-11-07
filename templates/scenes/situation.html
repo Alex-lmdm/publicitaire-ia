@@ -1,0 +1,247 @@
+<!-- Scène prête « La situation qu'on reconnaît » (ouvrir une vidéo : scenes.md, recette 1).
+     Sa vraie matière en grand (une liste reconstruite d'après sa page, ou sa capture), un ou deux
+     temps de mots qui claquent, un compteur qui chiffre la corvée, puis le ressenti qui tombe et la
+     matière qui s'effondre. Se met en page seule en 9:16 et en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (environ 9,5 s avec deux
+     temps de mots, un compteur et un ressenti ; trop courte, `check` relève des mots partis avant
+     d'être lus et la console de l'aperçu dit la durée à mettre), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « situation » par un autre identifiant. -->
+<template>
+  <style>
+    #situation .sit-carte {
+      position: absolute; border-radius: 30px; overflow: hidden; background: var(--k-blanc);
+      box-shadow: var(--k-ombre); will-change: transform, filter;
+    }
+    #situation .sit-tete {
+      display: flex; align-items: center; gap: 20px; padding: 0 44px;
+      border-bottom: 2px solid var(--brand-gris-4);
+      font: 800 46px/1 var(--brand-font-display); color: var(--k-encre); letter-spacing: -0.02em;
+    }
+    #situation .sit-tete i { display: block; width: 18px; height: 18px; border-radius: 50%; background: var(--brand-gris-3); }
+    #situation .sit-ligne {
+      display: flex; align-items: center; gap: 24px; padding: 0 44px;
+      border-bottom: 2px solid var(--brand-gris-4);
+      font: 600 38px/1 var(--brand-font-body); color: var(--k-encre); white-space: nowrap; will-change: transform, opacity;
+    }
+    #situation .sit-puce { flex: none; width: 34px; height: 34px; border-radius: 9px; border: 4px solid var(--brand-gris-3); }
+    #situation .sit-meta { margin-left: auto; font-weight: 700; color: var(--brand-gris-2); }
+    #situation .sit-capture { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+    #situation .sit-heros { color: var(--k-blanc); text-align: left; }
+    #situation.sit-clair .sit-heros { color: var(--k-encre); }
+    #situation .sit-chiffre { position: absolute; left: 0; right: 0; text-align: center; color: var(--brand-accent-lisible); }
+    #situation.sit-clair .sit-chiffre { color: var(--k-encre); }
+    #situation .sit-contexte {
+      position: absolute; left: 0; right: 0; text-align: center; color: var(--k-blanc);
+      font: 700 60px/1.1 var(--brand-font-body);
+    }
+    #situation.sit-clair .sit-contexte { color: var(--k-encre); }
+  </style>
+  <div data-composition-id="situation" data-width="1080" data-height="1920" data-duration="9" style="position:absolute; inset:0;">
+    <div id="situation" class="k-scene">
+      <div id="situation-fond" class="k-fond k-fond-sombre"></div>
+      <div class="k-scene3d"><div class="k-camera" id="situation-cam"></div></div>
+      <div class="k-vignette" id="situation-vignette"></div>
+      <div class="k-mots" id="situation-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "situation";
+
+      // À REMPLACER : chaque texte, chiffre et image vient de OFFRE.json ou de sources/ ; ce qui
+      // n'existe pas pour son offre se met à null (le temps correspondant disparaît).
+      var CONTENU = {
+        fond: "sombre",                 // "sombre" (sa nuit) ou "clair"
+        titre: "Dimanche",              // l'en-tête de la matière : un jour, un outil, un dossier
+        lignes: [                       // la corvée en lignes (2 à 6), reconstruites d'après sa page
+          ["Factures du mois", "1 h"], ["Relevé bancaire", "45 min"],
+          ["Notes de frais", "40 min"], ["Relances", "35 min"]
+        ],
+        capture: null,                  // "assets/images/<sa capture>.png" : remplace l'en-tête et les lignes
+        mots: ["Ton dimanche", "sur ta compta ?"],   // 1 ou 2 temps, 1 à 4 mots chacun
+        compteur: { de: 0, a: 3, format: "{} h", contexte: "chaque semaine" },   // ou null
+        ressenti: "Épuisant.",          // ou null
+        zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
+      var mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      var duree = K.duree(racine) || 30;   // une fois montée : la durée de son hôte dans index.html
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var clair = CONTENU.fond === "clair";
+      if (clair) {
+        racine.classList.add("sit-clair");
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-clair";
+        document.getElementById(ID + "-vignette").className = "k-vignette-claire";
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.6 * Math.max(4, String(texte).length))));
+      };
+
+      // --- La mise en page ----------------------------------------------------------------
+      // Un temps de mots tient sur une ou deux lignes (coupé à l'espace le plus proche du milieu),
+      // assez grand pour remplir sa colonne.
+      var decouper = function (texte, maxCars) {
+        texte = String(texte).trim();
+        if (texte.length <= maxCars || texte.indexOf(" ") < 0) return [texte];
+        var milieu = texte.length / 2, coupe = -1;
+        for (var i = 0; i < texte.length; i++) {
+          if (texte[i] === " " && (coupe < 0 || Math.abs(i - milieu) < Math.abs(coupe - milieu))) coupe = i;
+        }
+        return [texte.slice(0, coupe), texte.slice(coupe + 1)];
+      };
+      var colMots = V ? { x: 0.07 * L, l: 0.86 * L } : { x: 0.06 * L, l: 0.4 * L };
+      var temps = (CONTENU.mots || []).filter(Boolean).map(function (texte) {
+        return { texte: texte, lignes: decouper(texte, V ? 13 : 10) };
+      });
+      var plusLong = "", nLignesMax = 1;
+      temps.forEach(function (tp) {
+        nLignesMax = Math.max(nLignesMax, tp.lignes.length);
+        tp.lignes.forEach(function (l) { if (l.length > plusLong.length) plusLong = l; });
+      });
+      var fMots = taillePour(plusLong, colMots.l, V ? 112 : 96, V ? 210 : 180);
+      var hBloc = fMots * 0.98 * nLignesMax;
+      var yMots = V ? haut + 10 : (haut + bas) / 2 - hBloc / 2;
+      // La carte prend la hauteur de sa matière (jamais une grande surface vide), centrée dans la
+      // place qui reste ; une capture prend toute cette place.
+      var rang = V ? 132 : 116, entete = V ? 118 : 104;
+      var nLignes = (CONTENU.lignes || []).length;
+      var carte = V
+        ? { x: 0.06 * L, l: 0.88 * L, y0: haut + hBloc + 70, y1: bas }
+        : { x: 0.49 * L, l: 0.45 * L, y0: haut + 10, y1: bas - 10 };
+      var hPlace = carte.y1 - carte.y0;
+      carte.h = CONTENU.capture ? hPlace : Math.min(hPlace, entete + rang * Math.max(1, Math.min(nLignes, Math.floor((hPlace - entete) / rang))));
+      carte.y = carte.y0 + (hPlace - carte.h) / 2;
+
+      // --- La matière : sa capture, ou la corvée en lignes ---------------------------------
+      var elCarte = K.el(cam, "div", "sit-carte k-plan", null,
+        "left:" + carte.x + "px; top:" + carte.y + "px; width:" + carte.l + "px; height:" + carte.h + "px;");
+      // La matière est une texture qui passera au flou sous le compteur : `check` ne la lit pas comme
+      // un texte (ses mots sont ceux d'une interface, au-dessus du plancher de 28 px), et elle sort
+      // du cadre en tombant.
+      elCarte.setAttribute("data-layout-ignore", "");
+      elCarte.setAttribute("data-layout-allow-overflow", "");
+      var elLignes = [];
+      if (CONTENU.capture) {
+        var img = K.el(elCarte, "img", "sit-capture");
+        img.src = CONTENU.capture;
+        img.alt = "";
+      } else {
+        var tete = K.el(elCarte, "div", "sit-tete", "<i></i>", "height:" + entete + "px; font-size:" + (V ? 50 : 44) + "px;");
+        K.el(tete, "span", null).textContent = CONTENU.titre || "";
+        elLignes.push(tete);
+        (CONTENU.lignes || []).slice(0, Math.max(1, Math.round((carte.h - entete) / rang))).forEach(function (l) {
+          var e = K.el(elCarte, "div", "sit-ligne", '<span class="sit-puce"></span>',
+            "height:" + rang + "px; font-size:" + (V ? 44 : 40) + "px;");
+          K.el(e, "span", null).textContent = l[0];
+          if (l[1]) K.el(e, "span", "sit-meta").textContent = l[1];
+          elLignes.push(e);
+        });
+      }
+
+      var tl = gsap.timeline({ paused: true });
+
+      // La matière est là dès la première image (c'est l'affiche) et arrive de la profondeur.
+      gsap.set(elCarte, { transformOrigin: "50% 50%" });
+      tl.fromTo(elCarte,
+        { z: -320, rotationX: V ? 9 : 6, rotationY: V ? 0 : -16, y: 40 },
+        { z: 0, rotationX: V ? 4 : 3, rotationY: V ? 0 : -9, y: 0, duration: 1.1, ease: "expo.out" }, 0);
+
+      // --- Les mots : un ou deux temps, posés au-dessus de la caméra -------------------------
+      // Le premier temps est entier dès la première image (l'affiche). Chaque temps claque en bloc
+      // (ses mots ne se chevauchent jamais), tient sa lecture, puis sort.
+      var t = 0;
+      temps.forEach(function (tp, k) {
+        var bloc = K.el(mots, "div", "k-heros sit-heros", null,
+          "position:absolute; top:" + yMots + "px; left:" + colMots.x + "px; font-size:" + fMots + "px; line-height:0.98;" +
+          (V ? "" : " width:" + colMots.l + "px;"));
+        var lignes = tp.lignes.map(function (l) {
+          var e = K.el(bloc, "div", "k-mot", null, "display:block;");
+          e.textContent = l;
+          return e;
+        });
+        if (k > 0) t += 0.12;
+        tp.debut = t;
+        if (k > 0) K.claque(tl, bloc, t, { de: 1.25, duree: 0.42 });
+        else K.etire(tl, lignes, 0.5, { axe: "x", facteur: 1.06, tenue: 0.25 });   // posé dès l'image 0, puis un geste
+        t += lecture(tp.texte);
+        tp.fin = t;
+        if (k < temps.length - 1 || CONTENU.compteur || CONTENU.ressenti) K.sortieMots(tl, lignes, t, { decalage: 0.05 });
+      });
+
+      // Les lignes de la matière arrivent pendant la lecture des mots, une toutes les 0,3 à 0,7 s : la
+      // carte s'allonge à chacune (un masque qui découvre la ligne suivante), la corvée s'empile, et
+      // l'œil a un événement à voir pendant que les mots tiennent. Une capture est là d'emblée.
+      var aCharger = elLignes.slice(2), debutCharge = 0.45, finCharge = Math.max(debutCharge + 0.3, t - 0.4);
+      var pas = aCharger.length > 1 ? Math.max(0.3, Math.min(0.7, (finCharge - debutCharge) / (aCharger.length - 1))) : 0;
+      var masque = function (n) { return "inset(0px 0px " + Math.max(0, carte.h - entete - rang * n) + "px 0px round 30px)"; };
+      if (!CONTENU.capture && elLignes.length > 2) gsap.set(elCarte, { clipPath: masque(1) });
+      aCharger.forEach(function (e, i) {
+        var ti = debutCharge + i * pas;
+        tl.to(elCarte, { clipPath: masque(i + 2), duration: 0.34, ease: "expo.out" }, ti);
+        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1.6)", immediateRender: false }, ti);
+      });
+
+      // --- Le compteur : le prix de la corvée, avec son contexte ---------------------------
+      var centre = V ? carte.y + carte.h * 0.42 : carte.y + carte.h * 0.45;
+      if (CONTENU.compteur) {
+        var cpt = CONTENU.compteur, tC = t + 0.1;
+        tl.fromTo(elCarte, { filter: "blur(0px) brightness(1)", scale: 1 },
+          { filter: "blur(16px) brightness(0.3)", scale: 0.94, duration: 0.5, ease: "power2.inOut", immediateRender: false }, tC);
+        var format = function (v) { return String(cpt.format || "{}").replace("{}", String(Math.round(v))); };
+        var fChiffre = taillePour(format(cpt.a), carte.l * 0.9, 140, V ? 300 : 240);
+        var placeCarte = "left:" + carte.x + "px; width:" + carte.l + "px;";
+        var chiffre = K.el(mots, "div", "k-heros sit-chiffre", null,
+          "top:" + (centre - fChiffre * 0.55) + "px; font-size:" + fChiffre + "px; " + placeCarte);
+        // Le chiffre arrive quand la matière est passée au sombre : il se lit sur la nuit.
+        K.compteur(tl, chiffre, cpt.de || 0, cpt.a, tC + 0.5, 1.1, duree, format, "expo.out");
+        K.claque(tl, chiffre, tC + 0.5, { de: 1.6, duree: 0.4 });
+        var ctx = K.el(mots, "div", "sit-contexte", null,
+          "top:" + (centre + fChiffre * 0.62) + "px; font-size:" + taillePour(cpt.contexte || "x", carte.l * 0.95, 34, 60) + "px; " + placeCarte);
+        var ctxMots = String(cpt.contexte || "").split(/\s+/).filter(Boolean).map(function (m) {
+          var s = K.el(ctx, "span", "k-mot", null, "margin:0 0.14em;");
+          s.textContent = m;
+          return s;
+        });
+        if (ctxMots.length) K.entreeMots(tl, ctxMots, tC + 0.85, { decalage: 0.07 });
+        t = tC + 0.85 + Math.max(1.1, lecture(cpt.contexte || "x"));
+        if (CONTENU.ressenti) K.sortieMots(tl, [chiffre, ctx], t);
+      }
+
+      // --- Le ressenti tombe, la matière s'effondre ----------------------------------------
+      if (CONTENU.ressenti) {
+        var tR = t + (CONTENU.compteur ? 0.32 : 0.1), fR = taillePour(CONTENU.ressenti, V ? 0.86 * L : 0.78 * L, 120, V ? 240 : 280);
+        var ressenti = K.el(mots, "div", "k-ligne k-heros sit-heros", null,
+          "top:" + ((V ? (haut + bas) / 2 : H / 2) - fR * 0.5) + "px; text-align:center; font-size:" + fR + "px;");
+        ressenti.textContent = CONTENU.ressenti;
+        K.claque(tl, ressenti, tR, { de: 1.5, duree: 0.34, ease: "power4.in" });
+        var r = K.rng(31);
+        elLignes.forEach(function (e, i) {
+          tl.to(e, { y: H * (0.8 + r() * 0.4), rotation: (r() - 0.5) * 24, duration: 1.3, ease: "power2.in" }, tR + 0.2 + i * 0.09);
+        });
+        tl.to(elCarte, { y: H, rotationX: -24, duration: 1.4, ease: "power2.in" }, tR + 0.45);
+        t = tR + 0.34 + lecture(CONTENU.ressenti);
+      }
+
+      // La caméra : une dérive lente du monde derrière les mots (les mots, eux, ne bougent pas).
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.035, duration: t, ease: "sine.inOut" }, 0);
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

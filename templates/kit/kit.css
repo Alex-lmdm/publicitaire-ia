@@ -37,7 +37,8 @@
   background-size: 100% 100%, 64px 64px, 64px 64px;
   background-position: 0 0, -1px -1px, -1px -1px;
 }
-.k-fond-jaune { background-color: var(--brand-accent); }
+/* L'accent plein (les temps forts). « jaune » : ancien nom, gardé pour les projets existants. */
+.k-fond-accent, .k-fond-jaune { background-color: var(--brand-accent); }
 .k-vignette {
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 85% 75% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
@@ -62,7 +63,7 @@
 .k-mot { display: inline-block; will-change: transform, filter, opacity; }
 .k-sur-sombre { color: var(--k-blanc); }
 .k-sur-clair { color: var(--k-encre); }
-.k-sur-jaune { color: var(--k-encre); }
+.k-sur-accent, .k-sur-jaune { color: var(--k-encre); }
 .k-accent { color: var(--brand-accent); }
 
 /* Le mot fantôme géant d'un chapitre, et son étiquette. Le chapitre mesure sa largeur (container
@@ -110,14 +111,14 @@
 }
 .k-tuile svg { width: 52%; height: 52%; }
 .k-tuile-sombre { background: #2c2c2f; color: var(--brand-accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
-.k-tuile-jaune { background: var(--brand-accent); color: var(--k-encre); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4); }
+.k-tuile-accent, .k-tuile-jaune { background: var(--brand-accent); color: var(--k-encre); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4); }
 .k-tuile-blanche { background: #fff; color: var(--k-encre); box-shadow: var(--k-ombre-claire); }
 .k-tuile-marque { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
 .k-tuile-marque svg { width: 58%; height: 58%; }
 /* Un logo monochrome (currentColor) prend la couleur lisible du fond : blanc sur sombre, encre sur
    clair et sur la couleur d'accent ; K.logoNu(svg, couleur) la force. */
 .k-logo-nu { position: absolute; display: grid; place-items: center; will-change: transform, filter; color: var(--k-blanc); }
-.k-fond-clair .k-logo-nu, .k-fond-jaune .k-logo-nu { color: var(--k-encre); }
+.k-fond-clair .k-logo-nu, .k-fond-accent .k-logo-nu, .k-fond-jaune .k-logo-nu { color: var(--k-encre); }
 /* L'ombre sur le logo lui-même : le flou de profondeur de K.champ (sur le conteneur) s'y ajoute. */
 .k-logo-nu svg, .k-logo-nu img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35)); }
 .k-pastille {
@@ -180,8 +181,15 @@
 /* Le trait de la coupe (K.tranche). */
 .k-tranche-trait { position: absolute; /* déborde exprès : il traverse tout l'écran */ left: 0; top: 0; height: 14px; margin-top: -7px; border-radius: 7px; background: var(--brand-accent); z-index: 60; }
 
-/* Chapitre sur fond jaune : la variante de la marque. */
-.k-fantome.k-sur-jaune { color: rgba(0, 0, 0, 0.07); }
-.k-etiquette.k-sur-jaune { color: var(--k-encre); }
-.k-interrupteur.k-sur-jaune { background: rgba(0, 0, 0, 0.16); }
-.k-interrupteur.k-sur-jaune .k-plein { background: var(--k-encre); }
+/* Chapitre sur l'accent : la variante de la marque. Rien de transparent sur l'accent (du noir à
+   demi transparent sur un jaune fait de l'olive) : le fantôme est un contour fin et plein, le rail
+   de l'interrupteur un trait plein. */
+.k-fantome.k-sur-accent, .k-fantome.k-sur-jaune { color: transparent; -webkit-text-stroke: 2px var(--k-encre); }
+.k-etiquette.k-sur-accent, .k-etiquette.k-sur-jaune { color: var(--k-encre); }
+.k-interrupteur.k-sur-accent, .k-interrupteur.k-sur-jaune { background: transparent; box-shadow: inset 0 0 0 4px var(--k-encre); }
+.k-interrupteur.k-sur-accent .k-plein, .k-interrupteur.k-sur-jaune .k-plein { background: var(--k-encre); }
+
+/* Le calque des mots : au-dessus de la caméra. Un texte qu'on lit ne bouge pas avec elle
+   (references/mouvement.md, « La lecture ») ; la caméra peut dériver derrière lui. */
+.k-mots { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+.k-mots .k-ligne { position: absolute; left: 0; right: 0; white-space: nowrap; }

@@ -13,12 +13,13 @@
     Fond transparent : seuls les blocs se voient. S'adapte au 9:16 (data-width / data-height).
     Le motif revient 2 ou 3 fois dans une vidéo de page, jamais deux fois de suite.
 
-    À REMPLACER : l'id « t01-raccord-pixels » (racine, constante ID, préfixe CSS) par un id unique
-    par raccord (t01-raccord-1, t01-raccord-2…) : deux raccords identiques dans un même index.html
-    se marcheraient dessus. GRAINE : change-la d'un raccord à l'autre (motif différent).
-    Couleurs : celles de sa marque, rien d'autre : les tons sombres sont sa nuit (var(--brand-sombre),
-    nue ou sous un blanc à 5 %) et son premier gris, les tons clairs ses gris clairs
-    (var(--brand-gris-3), var(--brand-gris-4)). Aucune couleur d'accent : c'est voulu.
+    À remplacer : aucun texte (objet EXEMPLE vide) ; l'id « t01-raccord-pixels » (racine, constante
+    ID, préfixe CSS) par un id unique par raccord (t01-raccord-1, t01-raccord-2…) : deux raccords
+    identiques dans un même index.html se marcheraient dessus. GRAINE : change-la d'un raccord à
+    l'autre (motif différent).
+    Couleurs : celles de sa marque, rien d'autre : les tons sombres sont sa nuit (var(--brand-sombre))
+    et ses deux premiers gris (var(--brand-gris-1), var(--brand-gris-2)), les tons clairs ses gris
+    clairs (var(--brand-gris-3), var(--brand-gris-4)). Aucune couleur d'accent : c'est voulu.
   -->
 </head>
 <body>
@@ -38,14 +39,17 @@
 
 <script>
   (function () {
+    var EXEMPLE = {}; // À REMPLACER : cette scène n'affiche aucun texte d'exemple
+
     var ID = "t01-raccord-pixels", D = 1.45, GRAINE = 11;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
 
-    // Tons : trois sombres (sa nuit, sa nuit sous un blanc à 5 %, son premier gris) et deux gris clairs.
-    var TONS = ["var(--brand-sombre)", "linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), var(--brand-sombre)",
-      "var(--brand-gris-1)", "var(--brand-gris-4)", "var(--brand-gris-3)"];
+    // Tons : trois sombres (sa nuit, deux fois plus souvent, puis son premier et son deuxième gris)
+    // et deux gris clairs : seulement ses jetons.
+    var TONS = ["var(--brand-sombre)", "var(--brand-gris-1)", "var(--brand-sombre)", "var(--brand-gris-2)",
+      "var(--brand-gris-4)", "var(--brand-gris-3)"];
 
     var r = K.rng(GRAINE), BLOC = 240, P = BLOC / 2;
     var nc = Math.ceil(L / BLOC), nl = Math.ceil(H / BLOC);
@@ -57,14 +61,14 @@
       var bord = Math.min(c, nc - 1 - c) / Math.max(1, (nc - 1) / 2);
       for (var s = 0; s < 4; s++) {
         var x = ox + c * BLOC + (s % 2) * P, y = oy + l * BLOC + Math.floor(s / 2) * P;
-        var clair = r() < 0.17, ton = clair ? TONS[3 + Math.floor(r() * 2)] : TONS[Math.floor(r() * 3)];
+        var clair = r() < 0.17, ton = clair ? TONS[4 + Math.floor(r() * 2)] : TONS[Math.floor(r() * 4)];
         var e = K.el(mos, "div", "t01-px", null, "left:" + x + "px; top:" + y + "px; width:" + P + "px; height:" + P + "px; background:" + ton + ";");
         var arrivee = 0.02 + bord * 0.5 + r() * 0.1;
         var depart = 1.0 + (l / Math.max(1, nl - 1)) * 0.3 + r() * 0.06;
         K.cacher(e);
         // Un pixel sur cinq passe d'abord par un gris clair : l'arrivée « clignote ».
         if (!clair && r() < 0.2) {
-          var flash = K.el(mos, "div", "t01-px", null, "left:" + x + "px; top:" + y + "px; width:" + P + "px; height:" + P + "px; background:" + TONS[3] + ";");
+          var flash = K.el(mos, "div", "t01-px", null, "left:" + x + "px; top:" + y + "px; width:" + P + "px; height:" + P + "px; background:" + TONS[4] + ";");
           K.cacher(flash);
           tl.set(flash, { opacity: 1 }, arrivee).set(flash, { opacity: 0 }, arrivee + 0.07);
           tl.set(e, { opacity: 1 }, arrivee + 0.07);

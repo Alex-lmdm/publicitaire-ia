@@ -5,103 +5,85 @@
 <template>
 <!--
   Style n°3 · Verre sombre · scène « Le carrousel de cartes » (ce qu'on reçoit).
-  Ce qu'elle montre : un mot seul (« Inclus »), tenu le temps de sa lecture dans la pastille du look
-  cerclée de ta couleur, qui se remplit par un volet ; puis une carte en verre sombre par élément de
-  ton offre (module, bonus, fonction), une toutes les 0,5 s, en gros plan incliné, sur la trame de
-  points : sa tuile d'icône, son nom, son chiffre, la liste qui défile comme un compteur, le
-  bouton « Inclus ». La première se forme en points, les suivantes arrivent en glissant, coupe
-  nette de l'une à l'autre ; la dernière file hors champ jusqu'à la coupe vers la scène suivante.
-  Le carrousel est une rafale : une carte se voit d'un coup d'œil (son nom, son chiffre), elle ne
-  se lit pas. Ce qu'il faut lire se dit dans le mot ou la phrase qui l'annonce, tenu le temps de sa
-  lecture (`studio_motion.py lecture`), ou dans une scène construite dans le style.
-  Durée : 5,1 s pour 5 cartes (2 s pour le mot, 0,5 s par carte, + 0,6 s) : avec un autre nombre
-  de cartes, mets cette durée dans data-duration (ici et sur l'hôte dans index.html). Un mot de
-  plus de 2 mots : allonge T0 de 0,3 s par mot (sa lecture).
+  Ce qu'elle montre : un mot seul, grand, dans la pastille du look cerclée de l'accent, qui s'ouvre,
+  se tient le temps de sa lecture et se remplit de l'accent par un volet ; puis une rafale de cartes
+  en verre sombre, une par élément de l'offre (module, bonus, fonction), une toutes les 0,5 s, en
+  gros plan incliné sur la trame de points : son chiffre dans la tuile de l'accent, son nom à côté.
+  La première se forme en points, les suivantes arrivent en glissant, coupe nette de l'une à
+  l'autre. Les cartes de la rafale sont de la texture (on les voit, on ne les lit pas :
+  data-layout-ignore) ; la dernière se pose en entier au centre et se tient le temps de sa lecture,
+  puis file hors champ. Ce qu'il faut lire se dit dans le mot, dans la dernière carte, ou dans une
+  scène construite dans le style.
+  Durée : la scène la calcule (D dans le script) : la lecture du mot, 0,5 s par carte de la rafale,
+  puis la lecture de la dernière. 6,2 s avec l'objet EXEMPLE (5 cartes) : reporte-la dans
+  data-duration (ici et sur l'hôte dans index.html).
   16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : la carte passe en portrait seule.
-  À remplacer (objet R en tête du script) : le mot, et pour chaque carte : l'icône du kit
-  (K.ic : "play", "gift", "users"…) ou le logo d'un outil de l'offre posé par
-  `studio_motion.py logos` ("logo-notion"), son nom, son sous-titre, son vrai chiffre (nombre de
-  vidéos, durée) et trois lignes réelles (titres de leçons, ce qu'on y trouve). 3 à 6 cartes.
-  Couleurs : celles de la marque, rien d'autre. La nuit est var(--brand-sombre), le verre un noir
-  en transparence avec des reflets blancs, le texte var(--brand-clair), les gris var(--brand-gris-*),
-  un mot à l'accent sur la nuit var(--brand-accent-lisible) ; la tuile et le bouton sont l'accent
-  plein. Les cartes entrent et sortent par des coupes et des glissés, jamais par un fondu de
-  l'accent.
+  À remplacer : l'objet EXEMPLE (le mot ; pour chaque carte, son nom, son vrai chiffre et son unité,
+  et le logo nu d'un outil s'il y en a un). 3 à 6 cartes. Un chiffre absent retire la tuile, un logo
+  absent ne laisse rien : jamais d'icône de remplacement.
+  Couleurs : la nuit var(--brand-sombre), le verre une ombre (noir en transparence) avec des reflets
+  blancs, le texte var(--brand-clair), le gris var(--brand-gris-3) ; la tuile, le cercle et le
+  remplissage de la pastille sont l'accent plein, le texte posé dessus var(--brand-contrast). Rien
+  de l'accent n'entre ni ne sort en fondu ou en flou : coupes, glissés, volets.
   Identifiant : t3k (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3k {
-    /* La palette du look : rien que des couleurs de la marque, du blanc et du noir en transparence. */
     --t3-nuit: var(--brand-sombre);
     --t3-texte: var(--brand-clair);
-    --t3-accent-texte: var(--brand-accent-lisible);
     --t3-verre: rgba(0, 0, 0, 0.42);
     --t3-gris: var(--brand-gris-3);
     --t3-police: var(--brand-font-body);
     background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
-  #t3k .t3k-fond { position: absolute; inset: -2px;
+  /* La lumière de la scène : du blanc très faible, en coin, sur la nuit. */
+  #t3k .t3k-fond { position: absolute; inset: -2px -120px;
     background: radial-gradient(ellipse 75% 60% at 25% 0%, rgba(255, 255, 255, 0.085), transparent 70%),
       radial-gradient(ellipse 50% 50% at 90% 100%, rgba(255, 255, 255, 0.04), transparent 70%), var(--t3-nuit); }
   #t3k .t3k-trame { position: absolute; inset: 0;
     background-image: radial-gradient(circle, rgba(255,255,255,.2) 1.6px, transparent 2.2px); background-size: 15px 15px;
     -webkit-mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); mask-image: linear-gradient(180deg, #000, rgba(0,0,0,.25) 70%, transparent); }
-  #t3k .t3k-mot { position: absolute; left: 0; right: 0; top: 50%; height: 90px; margin-top: -45px; text-align: center; white-space: nowrap;
-    font-size: 64px; font-weight: 600; line-height: 90px; letter-spacing: -0.015em; text-shadow: 0 0 28px rgba(255,255,255,.25); }
-  /* Le mot dans la pastille du look, cerclée de l'accent ; elle se remplit par un volet pendant la
-     tenue (le mot clé surligné d'un bloc plein ; jamais l'accent en transparence). */
-  #t3k .t3k-mot-in { position: relative; display: inline-block; padding: 0 30px; border-radius: 26px; border: 2px solid var(--brand-accent); }
-  #t3k .t3k-mot-plein { position: absolute; inset: -2px; border-radius: 26px; background: var(--brand-accent); color: var(--brand-contrast);
-    display: flex; align-items: center; justify-content: center; text-shadow: none; clip-path: inset(0% 100% 0% 0% round 26px); }
+  /* Le mot, grand (60 % de la largeur, calculé), dans la pastille cerclée de l'accent : tailles en em,
+     la police se règle dans le script. */
+  #t3k .t3k-mot { position: absolute; left: 0; right: 0; top: 50%; height: 1.5em; margin-top: -0.75em; text-align: center; white-space: nowrap;
+    font-size: 64px; font-weight: 600; line-height: 1.5em; letter-spacing: -0.015em; }
+  #t3k .t3k-mot-in { position: relative; display: inline-block; padding: 0 0.45em; border-radius: 0.4em; border: 0.05em solid var(--brand-accent); }
+  #t3k .t3k-mot-plein { position: absolute; inset: -0.05em; border-radius: 0.4em; background: var(--brand-accent); color: var(--brand-contrast);
+    display: flex; align-items: center; justify-content: center; }
+  /* La carte : verre sombre, arête haute éclairée ; sa tuile de l'accent porte le vrai chiffre. */
   #t3k .t3k-carte {
-    position: absolute; left: 50%; top: 50%; width: 1240px; height: 700px; margin: -350px 0 0 -620px; border-radius: 46px; padding: 56px 64px;
+    position: absolute; left: 0; right: 0; top: 50%; width: fit-content; min-width: 760px; max-width: 1400px; height: 330px; margin: -165px auto 0;
+    border-radius: 46px; padding: 50px 80px 50px 50px;
+    display: flex; align-items: center; gap: 48px;
     background: linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.02) 45%, rgba(255,255,255,.04)), var(--t3-verre);
     box-shadow: inset 0 2px 0 rgba(255,255,255,.34), inset 0 0 0 1.5px rgba(255,255,255,.12), 0 70px 140px rgba(0,0,0,.6);
   }
-  #t3k .t3k-arete { position: absolute; left: 60px; right: 60px; top: -2px; height: 4px; border-radius: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.95) 50%, transparent); filter: blur(1.2px); }
-  #t3k .t3k-tete { display: flex; align-items: center; gap: 36px; }
-  #t3k .t3k-tuile { width: 150px; height: 150px; border-radius: 36px; display: grid; place-items: center; flex: none;
+  /* l'arête haute éclairée : un reflet blanc qui peut glisser le long du bord (background-position) */
+  #t3k .t3k-arete { position: absolute; left: 60px; right: 60px; top: -2px; height: 4px; border-radius: 2px; filter: blur(1.2px);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent) no-repeat; background-size: 50% 100%; background-position: 50% 0; }
+  #t3k .t3k-tuile { width: 230px; height: 230px; border-radius: 40px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center;
     background: var(--brand-accent); color: var(--brand-contrast); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
-  #t3k .t3k-tuile svg { width: 74px; height: 74px; }
-  #t3k .t3k-tuile.t3k-logo { background: #fff; }
-  #t3k .t3k-tuile.t3k-logo svg { width: 92px; height: 92px; }
-  #t3k .t3k-nom { font-size: 62px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
-  #t3k .t3k-sous { font-size: 34px; font-weight: 500; color: var(--t3-gris); margin-top: 8px; }
-  #t3k .t3k-chiffre { margin-left: auto; text-align: right; font-size: 58px; font-weight: 700; line-height: 1; }
-  #t3k .t3k-chiffre small { display: block; font-size: 30px; font-weight: 600; color: var(--t3-accent-texte); margin-top: 10px; }
-  #t3k .t3k-pile { position: relative; height: 150px; margin: 36px 0 0 186px; overflow: hidden;
-    -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); mask-image: linear-gradient(180deg, transparent, #000 30%, #000 70%, transparent); }
-  #t3k .t3k-pile-in { position: absolute; left: 0; top: 0; }
-  /* la liste s'estompe en haut et en bas comme un compteur : en clair (le fondu reste un gris) ; seule la
-     ligne du milieu, pleine, prend l'accent (jamais un accent à demi transparent au repos) */
-  #t3k .t3k-pile-in div { height: 50px; line-height: 50px; font-size: 34px; font-weight: 600; color: var(--t3-texte); white-space: nowrap; }
-  #t3k .t3k-pile-in div:nth-child(2) { color: var(--t3-accent-texte); }
-  #t3k .t3k-bas { display: flex; gap: 22px; margin-top: 26px; }
-  #t3k .t3k-bouton { flex: 1.6; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 44px; font-weight: 700;
-    background: var(--brand-accent); color: var(--brand-contrast); }
-  #t3k .t3k-bouton svg { width: 42px; height: 42px; }
-  #t3k .t3k-duree { flex: 1; height: 116px; border-radius: 28px; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 40px; font-weight: 600;
-    background: rgba(255,255,255,.07); color: var(--t3-gris); }
-  #t3k .t3k-duree svg { width: 38px; height: 38px; }
+  #t3k .t3k-chiffre { font-size: 110px; font-weight: 700; line-height: 1; letter-spacing: -0.04em; white-space: nowrap; }
+  #t3k .t3k-unite { font-size: 32px; font-weight: 600; margin-top: 10px; white-space: nowrap; }
+  #t3k .t3k-nom { flex: 1; white-space: nowrap; font-size: 88px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; }
+  #t3k .t3k-logo { height: 120px; flex: none; }
+  #t3k .t3k-logo img { height: 100%; width: auto; display: block; }
   #t3k .t3k-points { position: absolute; inset: 0; border-radius: 46px; opacity: 0; pointer-events: none;
     background-image: radial-gradient(circle, rgba(255,255,255,.75) 1.8px, transparent 2.5px); background-size: 10px 10px; }
-  /* En 9:16, la carte passe en portrait (une mise en page, pas un recadrage) : le chiffre en grand
-     sous le nom, la liste plus grande, le bouton en bas ; elle remplit le centre de l'image. */
-  #t3k.t3k-vertical .t3k-carte { width: 940px; height: 1000px; margin: -500px 0 0 -470px; padding: 64px 60px; }
-  #t3k.t3k-vertical .t3k-tete { flex-wrap: wrap; }
-  #t3k.t3k-vertical .t3k-chiffre { flex-basis: 100%; margin: 60px 0 0; text-align: left; font-size: 170px; letter-spacing: -0.03em;
-    display: flex; align-items: baseline; gap: 24px; }
-  #t3k.t3k-vertical .t3k-chiffre small { display: inline; font-size: 48px; margin: 0; letter-spacing: 0; }
-  #t3k.t3k-vertical .t3k-pile { height: 270px; margin: 50px 0 0; }
-  #t3k.t3k-vertical .t3k-pile-in div { height: 90px; line-height: 90px; font-size: 52px; }
-  #t3k.t3k-vertical .t3k-bas { position: absolute; left: 60px; right: 60px; bottom: 64px; margin: 0; }
+  /* En 9:16, la carte passe en portrait (une mise en page, pas un recadrage) : la tuile en haut, le
+     nom en grand dessous ; elle remplit la largeur. */
+  #t3k.t3k-vertical .t3k-carte { left: 50%; right: auto; width: 940px; min-width: 0; max-width: none; height: 700px; margin: -350px 0 0 -470px; padding: 64px; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 40px; }
+  #t3k.t3k-vertical .t3k-tuile { width: 300px; height: 300px; }
+  #t3k.t3k-vertical .t3k-chiffre { font-size: 150px; }
+  #t3k.t3k-vertical .t3k-unite { font-size: 40px; }
+  #t3k.t3k-vertical .t3k-nom { flex: none; white-space: normal; font-size: 104px; }
+  #t3k.t3k-vertical .t3k-logo { position: absolute; right: 64px; top: 64px; }
 </style>
 
-<div data-composition-id="t3k" data-width="1920" data-height="1080" data-duration="5.1" style="position:absolute; inset:0;">
+<div data-composition-id="t3k" data-width="1920" data-height="1080" data-duration="6.2" style="position:absolute; inset:0;">
   <div id="t3k" class="k-scene">
-    <div class="t3k-fond"></div>
-    <div class="t3k-trame" data-layout-ignore></div>
+    <div class="t3k-fond" id="t3k-fond" data-layout-allow-overflow></div>
+    <div class="t3k-trame" id="t3k-trame" data-layout-ignore></div>
     <!-- La vignette assombrit la nuit seule : posée sous les cartes, elle ne touche jamais l'accent. -->
     <div class="k-vignette"></div>
     <div class="t3k-mot" id="t3k-mot"></div>
@@ -111,82 +93,122 @@
 
 <script>
 (function () {
-  // ---- À remplacer : ce que contient ton offre ----------------------------------------------
-  var R = {
-    mot: "Au programme",
-    cartes: [
-      { icone: "play", nom: "Module 1", sous: "Les bases", chiffre: "12", unite: "vidéos", lignes: ["Leçon 1", "Leçon 2", "Leçon 3"], duree: "45 min" },
-      { icone: "layers", nom: "Module 2", sous: "La méthode", chiffre: "9", unite: "vidéos", lignes: ["Leçon 1", "Leçon 2", "Leçon 3"], duree: "38 min" },
-      { icone: "file-text", nom: "Modèles", sous: "Prêts à copier", chiffre: "20", unite: "fichiers", lignes: ["Modèle 1", "Modèle 2", "Modèle 3"], duree: "" },
-      { icone: "users", nom: "Communauté", sous: "Entraide", chiffre: "24/7", unite: "", lignes: ["Questions", "Retours", "Lives"], duree: "" },
-      { icone: "gift", nom: "Bonus", sous: "Offert avec", chiffre: "3", unite: "bonus", lignes: ["Bonus 1", "Bonus 2", "Bonus 3"], duree: "" }
-    ],
-    bouton: "Inclus"
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json (recoit, bonus), ou la ligne se retire
+    mot: "Au programme",                                   // 1 à 3 mots qui annoncent ce qu'on reçoit
+    cartes: [                                              // 3 à 6 éléments réels ; la DERNIÈRE se lit, les autres passent
+      { nom: "Module 1", chiffre: "10", unite: "vidéos", logo: "" },   // chiffre : son vrai nombre ("" retire la tuile)
+      { nom: "Module 2", chiffre: "8", unite: "vidéos", logo: "" },    // logo : le vrai logo nu d'un outil
+      { nom: "Modèles", chiffre: "20", unite: "fichiers", logo: "" },  //   (assets/logos/…, `studio_motion.py logos`) ; "" : aucun
+      { nom: "Communauté", chiffre: "", unite: "", logo: "" },
+      { nom: "Bonus", chiffre: "3", unite: "", logo: "" }
+    ]
   };
-  // -------------------------------------------------------------------------------------------
-  var PAS = 0.5, T0 = 2.0, D = T0 + R.cartes.length * PAS + 0.6;   // 5,1 s pour 5 cartes : reporte-la en data-duration
+  // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
+  function lecture(texte) {
+    var n = texte.split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length;
+    return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10;
+  }
+  var cartesEx = EXEMPLE.cartes, N = cartesEx.length, lue = cartesEx[N - 1];
+  var PAS = 0.5;                                              // une carte de la rafale toutes les 0,5 s
+  var T0 = 0.3 + lecture(EXEMPLE.mot) + 0.2;                  // le mot : entrée, lecture, sortie
+  var TL = T0 + (N - 1) * PAS;                                // la dernière carte arrive
+  var LU = lecture([lue.chiffre, lue.unite, lue.nom].join(" "));
+  var D = Math.ceil((TL + 0.3 + LU + 0.4) * 10 - 1e-9) / 10;  // 6,2 s avec l'objet EXEMPLE : reporte-la en data-duration
   var $ = function (id) { return document.getElementById(id); };
   var cadre = K.cadre($("t3k")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
   if (vertical) $("t3k").classList.add("t3k-vertical");
-  $("t3k-mot").innerHTML = '<span class="t3k-mot-in">' + R.mot + '<span class="t3k-mot-plein" id="t3k-mot-plein" data-layout-allow-overlap>' + R.mot + "</span></span>";
+
+  // Le mot : sa pastille (le texte et son double plein, superposés exprès)
+  var mot = $("t3k-mot");
+  K.el(mot, "span", "t3k-mot-in", '<span class="t3k-mot-txt" id="t3k-mot-txt">' + EXEMPLE.mot + "</span>").id = "t3k-mot-in";
+  var plein = K.el($("t3k-mot-in"), "span", "t3k-mot-plein", EXEMPLE.mot);
+  plein.id = "t3k-mot-plein";
+  plein.setAttribute("data-layout-allow-overlap", "");
+
+  // Les cartes
   var cam = $("t3k-cam"), cartes = [];
-  R.cartes.forEach(function (c, i) {
-    var logo = c.icone.indexOf("logo-") === 0;
-    var e = K.el(cam, "div", "t3k-carte");
+  cartesEx.forEach(function (c, i) {
+    var e = K.el(cam, "div", "t3k-carte"), texture = i < N - 1;
     e.id = "t3k-c" + i;
     e.setAttribute("data-layout-allow-overflow", "");
-    var lignes = c.lignes.map(function (l) { return "<div>" + l + "</div>"; }).join("");
-    e.innerHTML = '<div class="t3k-arete"></div>' +
-      '<div class="t3k-tete"><div class="t3k-tuile' + (logo ? " t3k-logo" : "") + '">' + (K.ic(c.icone) || K.ic("star")) + "</div>" +
-      '<div><div class="t3k-nom">' + c.nom + '</div><div class="t3k-sous">' + c.sous + "</div></div>" +
-      '<div class="t3k-chiffre">' + c.chiffre + (c.unite ? "<small>" + c.unite + "</small>" : "") + "</div></div>" +
-      '<div class="t3k-pile"><div class="t3k-pile-in">' + lignes + "</div></div>" +
-      '<div class="t3k-bas"><div class="t3k-bouton">' + K.ic("check") + "<span>" + R.bouton + "</span></div>" +
-      (c.duree ? '<div class="t3k-duree">' + K.ic("clock") + "<span>" + c.duree + "</span></div>" : "") + "</div>" +
-      (i === 0 ? '<div class="t3k-points" data-layout-ignore></div>' : "");
+    K.el(e, "div", "t3k-arete");
+    if (c.chiffre) {
+      var tuile = K.el(e, "div", "t3k-tuile");
+      K.el(tuile, "div", "t3k-chiffre", c.chiffre);
+      if (c.unite) K.el(tuile, "div", "t3k-unite", c.unite);
+    }
+    K.el(e, "div", "t3k-nom", c.nom);
+    if (c.logo) {
+      var img = K.el(K.el(e, "div", "t3k-logo"), "img");
+      img.alt = ""; img.src = c.logo;
+      img.onerror = function () { this.parentNode.style.display = "none"; };
+    }
+    // la rafale est de la texture : on la voit, on ne la lit pas
+    if (texture) e.querySelectorAll(".t3k-chiffre, .t3k-unite, .t3k-nom").forEach(function (t) { t.setAttribute("data-layout-ignore", ""); });
+    if (i === 0) K.el(e, "div", "t3k-points").setAttribute("data-layout-ignore", "");
     cartes.push(e);
   });
   K.cacher(cartes);
-  K.cacher(document.querySelectorAll("#t3k .t3k-pile-in div"));
 
-  var tl = gsap.timeline({ paused: true });
-  // 1. Le mot seul, tenu le temps de sa lecture (0 → 2 s) : il entre, se pose, sa pastille se remplit
-  //    de l'accent par un volet au milieu de la tenue, la caméra ne fait qu'une poussée lente.
-  tl.fromTo("#t3k-mot", { opacity: 0, scale: 0.92, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.0);
-  tl.fromTo("#t3k-mot", { y: 0 }, { y: -8, duration: T0 - 0.5, ease: "sine.inOut", immediateRender: false }, 0.3);
-  tl.fromTo("#t3k-mot-plein", { clipPath: "inset(0% 100% 0% 0% round 26px)" }, { clipPath: "inset(0% 0% 0% 0% round 26px)", duration: 0.26, ease: "power3.inOut", immediateRender: false }, (0.3 + T0 - 0.2) / 2 - 0.13);
-  // la pastille se vide par un volet avant que le mot sorte (une couleur pleine ne s'efface jamais en fondu)
-  tl.to("#t3k-mot-plein", { clipPath: "inset(0% 0% 0% 100% round 26px)", duration: 0.16, ease: "power2.in" }, T0 - 0.38);
-  tl.to("#t3k-mot", { opacity: 0, scale: 1.12, filter: "blur(10px)", duration: 0.2, ease: "power2.in" }, T0 - 0.2);
-  // 2. Les cartes : chacune en gros plan, un cadrage différent, toutes les 0,5 s. Coupe nette de
-  //    l'une à l'autre (la carte apparaît d'un coup et finit son glissé) : jamais un fondu, qui
-  //    passerait l'accent du bouton et de la tuile en transparence sur la nuit.
-  var poses = [
-    { rx: 18, ry: -26, rz: -4, x: 250, y: 140, s: 1.42 },
-    { rx: 22, ry: 24, rz: 3, x: 300, y: 200, s: 1.55 },
-    { rx: 16, ry: -22, rz: -6, x: 330, y: 230, s: 1.6 },
-    { rx: 24, ry: 20, rz: 4, x: 280, y: 190, s: 1.5 },
-    { rx: 18, ry: -24, rz: -3, x: 240, y: 160, s: 1.45 }
-  ];
-  cartes.forEach(function (e, i) {
-    var p = poses[i % poses.length], t = T0 + i * PAS, sens = i % 2 ? -1 : 1, derniere = i === cartes.length - 1;
-    // en 9:16, la carte reste dans la zone de texte d'un Reel (y de 300 à 1 440) : un peu plus haut, un peu plus petite
-    if (vertical) { p = { rx: p.rx * 0.8, ry: p.ry * 0.6, rz: p.rz, x: p.x * 0.12, y: -60 + p.y * 0.2, s: p.s * 0.6 }; }
-    tl.set(e, { opacity: 1 }, t);
-    // sans flou : un bouton et une tuile à l'accent flous se mêlent à la nuit (olive), même 0,1 s
-    tl.fromTo(e, { x: p.x + 360 * sens, y: p.y, rotationX: p.rx, rotationY: p.ry + 22 * sens, rotationZ: p.rz, scale: p.s * 0.94 },
-      { x: p.x, rotationY: p.ry, scale: p.s, duration: 0.3, ease: "expo.out", immediateRender: false }, t);
-    tl.to(e, { x: p.x - 60 * sens, y: p.y - 20, duration: PAS - 0.3, ease: "sine.out" }, t + 0.3);
-    tl.fromTo(e.querySelectorAll(".t3k-pile-in div"), { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "back.out(1.6)", stagger: 0.07, immediateRender: false }, t + 0.06);
-    if (!derniere) tl.set(e, { opacity: 0 }, t + PAS);
-    // la dernière file hors champ jusqu'à la coupe vers la scène suivante
-    else tl.to(e, { x: p.x - 360 * sens, y: p.y - 40, duration: D - (t + PAS), ease: "power2.in" }, t + PAS);
-  });
-  // la première carte se forme en points
-  var pts = cartes[0].querySelector(".t3k-points");
-  tl.fromTo(pts, { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T0 + 0.12);
-  tl.fromTo(cam, { x: 0 }, { x: -60, duration: D, ease: "sine.inOut" }, 0);
-  window.__timelines["t3k"] = tl;
+  function construire() {
+    // Le mot occupe 60 % de la largeur en 16:9, 85 % en 9:16 : un mot héros, jamais un petit mot dans le vide.
+    var w = $("t3k-mot-in").offsetWidth;
+    mot.style.fontSize = (64 * Math.min((vertical ? 0.85 : 0.6) * L / w, 0.88 * L / w, vertical ? 3 : 4)).toFixed(1) + "px";
+    var rayon = (parseFloat(mot.style.fontSize) * 0.4).toFixed(1) + "px";
+    var ouvert = "inset(0% 0% 0% 0% round " + rayon + ")";
+    gsap.set("#t3k-mot-in", { clipPath: "inset(0% 50% 0% 50% round " + rayon + ")" });
+    gsap.set("#t3k-mot-plein", { clipPath: "inset(0% 100% 0% 0% round " + rayon + ")" });
+
+    var tl = gsap.timeline({ paused: true });
+    // 1. Le mot (0 → T0) : sa pastille s'ouvre du centre (un volet : l'accent n'entre jamais en
+    //    fondu), il se tient immobile, se remplit de l'accent par un volet au milieu de sa lecture,
+    //    se vide, puis la pastille se referme. Derrière lui, la trame et la lumière glissent.
+    tl.to("#t3k-mot-in", { clipPath: ouvert, duration: 0.3, ease: "expo.out" }, 0.0);
+    tl.fromTo("#t3k-mot-in", { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "expo.out" }, 0.0);
+    var milieu = (0.3 + T0 - 0.2) / 2;
+    tl.to("#t3k-mot-plein", { clipPath: ouvert, duration: 0.26, ease: "power3.inOut" }, milieu - 0.13);
+    // sous la pastille pleine, le mot clair ne se voit plus : il s'éteint le temps qu'elle le couvre
+    tl.set("#t3k-mot-txt", { opacity: 0 }, milieu + 0.13);
+    tl.set("#t3k-mot-txt", { opacity: 1 }, T0 - 0.38);
+    tl.to("#t3k-mot-plein", { clipPath: "inset(0% 0% 0% 100% round " + rayon + ")", duration: 0.16, ease: "power2.in" }, T0 - 0.38);
+    tl.to("#t3k-mot-in", { clipPath: "inset(0% 50% 0% 50% round " + rayon + ")", duration: 0.2, ease: "power2.in" }, T0 - 0.2);
+
+    // 2. La rafale : chaque carte en gros plan, un cadrage différent, toutes les 0,5 s ; coupe nette
+    //    de l'une à l'autre (elle apparaît d'un coup et finit son glissé), sans flou : un bouton ou
+    //    une tuile à l'accent flous se mêlent à la nuit, même 0,1 s.
+    var poses = [
+      { rx: 18, ry: -26, rz: -4, x: 250, y: 140, s: 1.42 },
+      { rx: 22, ry: 24, rz: 3, x: 300, y: 200, s: 1.55 },
+      { rx: 16, ry: -22, rz: -6, x: 330, y: 230, s: 1.6 },
+      { rx: 24, ry: 20, rz: 4, x: 280, y: 190, s: 1.5 }
+    ];
+    cartes.forEach(function (e, i) {
+      var t = T0 + i * PAS, sens = i % 2 ? -1 : 1, derniere = i === N - 1;
+      // la dernière se pose en entier, au centre, à 60 % de la largeur environ ; les autres débordent
+      var p = derniere ? { rx: 14, ry: -12 * sens, rz: -2, x: 0, y: 0, s: Math.max(1, Math.min(1.6, 0.62 * L / e.offsetWidth)) } : poses[i % poses.length];
+      // en 9:16, la carte portrait remplit la largeur, dans la zone de texte d'un Reel
+      if (vertical) p = derniere ? { rx: 12, ry: -8 * sens, rz: -2, x: 0, y: -40, s: 1.03 } : { rx: p.rx * 0.8, ry: p.ry * 0.6, rz: p.rz, x: p.x * 0.12, y: -60 + p.y * 0.2, s: p.s * 0.7 };
+      tl.set(e, { opacity: 1 }, t);
+      tl.fromTo(e, { x: p.x + 360 * sens, y: p.y, rotationX: p.rx, rotationY: p.ry + 22 * sens, rotationZ: p.rz, scale: p.s * 0.94 },
+        { x: p.x, rotationY: p.ry, scale: p.s, duration: 0.3, ease: "expo.out", immediateRender: false }, t);
+      if (!derniere) {
+        tl.to(e, { x: p.x - 60 * sens, y: p.y - 20, duration: PAS - 0.3, ease: "sine.out" }, t + 0.3);
+        tl.set(e, { opacity: 0 }, t + PAS);
+      } else {
+        // la carte lue ne bouge plus pendant sa lecture ; la vie vient du reflet qui passe sur son
+        // arête et de la lumière derrière ; puis elle file hors champ jusqu'à la coupe
+        tl.fromTo(e.querySelector(".t3k-arete"), { backgroundPosition: "0% 0%" }, { backgroundPosition: "100% 0%", duration: LU, ease: "sine.inOut", immediateRender: false }, t + 0.3);
+        tl.to(e, { x: p.x - (vertical ? 1300 : 2200) * sens, y: p.y - 40, duration: D - (t + 0.3 + LU), ease: "power2.in" }, t + 0.3 + LU);
+      }
+    });
+    // la première carte se forme en points
+    tl.fromTo(cartes[0].querySelector(".t3k-points"), { opacity: 1 }, { opacity: 0, duration: 0.3, ease: "power1.in" }, T0 + 0.12);
+    // le monde dérive lentement derrière : la lumière glisse, la trame s'élargit
+    tl.fromTo("#t3k-fond", { x: 0 }, { x: 100, duration: D, ease: "sine.inOut" }, 0);
+    tl.fromTo("#t3k-trame", { scale: 1 }, { scale: 1.05, duration: D, ease: "sine.inOut" }, 0);
+    window.__timelines["t3k"] = tl;
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(construire); else construire();
 })();
 </script>
 </template>

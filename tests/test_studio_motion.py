@@ -418,6 +418,89 @@ class Rythme(unittest.TestCase):
         self.assertTrue(sm.verdict_rythme(ecarts, fin_libre=0.0)["figees"])
 
 
+class Scenes(unittest.TestCase):
+    """Le montage lu dans index.html : des durées variées, peu de coupes franches nues."""
+
+    def index(self, dossier: Path, hotes: list[tuple[float, float, int]]) -> Path:
+        lignes = [f'<div id="s{k}-hote" data-composition-id="s{k}" data-composition-src="compositions/s{k}.html" '
+                  f'data-start="{d}" data-duration="{l}" data-track-index="{piste}"></div>'
+                  for k, (d, l, piste) in enumerate(hotes)]
+        (dossier / "index.html").write_text("<body>\n" + "\n".join(lignes) + "\n</body>", encoding="utf-8")
+        return dossier
+
+    def test_scenes_de_la_piste_principale(self):
+        with tempfile.TemporaryDirectory() as t:
+            projet = self.index(Path(t), [(0, 3.5, 1), (3.5, 6, 1), (9.5, 4, 1), (3.5, 6, 5)])
+            self.assertEqual(sm.scenes_du_projet(projet), [(0.0, 3.5), (3.5, 6.0), (9.5, 4.0)])
+
+    def test_durees_toutes_egales(self):
+        calmes = [0.5] * 200
+        egales = [(i * 4.0, 4.0) for i in range(5)]
+        self.assertTrue(any("durent presque toutes" in p for p in sm.verdict_scenes(calmes, egales)))
+        variees = [(0, 2.5), (2.5, 7.0), (9.5, 3.0), (12.5, 5.5), (18, 2.0)]
+        self.assertEqual(sm.verdict_scenes(calmes, variees), [])
+
+    def test_coupes_franches_nues(self):
+        scenes = [(0, 3.0), (3.0, 4.5), (7.5, 2.5), (10.0, 6.0)]
+        nues = [0.5] * 200
+        for d, _l in scenes[1:]:
+            nues[round(d * 10) - 1] = 90.0            # un saut d'image, rien ne bouge autour
+        self.assertTrue(any("coupes franches nues" in p for p in sm.verdict_scenes(nues, scenes)))
+        portees = [0.5] * 200
+        for d, _l in scenes[1:]:
+            i = round(d * 10) - 1
+            portees[i - 1], portees[i], portees[i + 1] = 45.0, 90.0, 60.0   # un flash, un volet : ça bouge autour
+        self.assertEqual(sm.verdict_scenes(portees, scenes), [])
+
+
+class Cadre(unittest.TestCase):
+    """Le sujet remplit-il l'image ? Mesuré case par case sur le MP4 rendu."""
+
+    def image(self, w: int, h: int, fond=(27, 27, 29), rectangles=()) -> bytes:
+        px = bytearray(bytes(fond) * (w * h))
+        for (x0, y0, x1, y1, couleur) in rectangles:
+            for y in range(y0, y1):
+                for x in range(x0, x1):
+                    i = (y * w + x) * 3
+                    px[i:i + 3] = bytes(couleur)
+        return bytes(px)
+
+    def test_taille_de_lecture(self):
+        self.assertEqual(sm.taille_cadre(1080, 1920), (128, 224))
+        self.assertEqual(sm.taille_cadre(1920, 1080), (224, 128))
+
+    def test_fond_vide_puis_sujet_qui_remplit(self):
+        w, h = 128, 224
+        self.assertEqual(sm.occupation(self.image(w, h), w, h), 0.0)
+        # Une petite pastille au centre : presque vide.
+        petit = self.image(w, h, rectangles=[(56, 104, 72, 120, (255, 238, 0))])
+        self.assertLess(sm.occupation(petit, w, h), sm.OCCUPATION_MIN)
+        # Une fenêtre qui prend les trois quarts de la largeur et la moitié de la hauteur : rempli.
+        grand = self.image(w, h, rectangles=[(16, 56, 112, 168, (245, 245, 245))])
+        self.assertGreater(sm.occupation(grand, w, h), 0.3)
+
+    def test_une_grille_fine_et_une_vignette_ne_comptent_pas(self):
+        w, h = 128, 224
+        grille = [(x, 0, x + 1, h, (40, 40, 42)) for x in range(0, w, 8)]
+        vignette = [(0, 0, w, 12, (14, 14, 15)), (0, h - 12, w, h, (14, 14, 15))]
+        self.assertEqual(sm.occupation(self.image(w, h, rectangles=grille + vignette), w, h), 0.0)
+
+    def test_un_mot_heros_se_tient_seul(self):
+        w, h = 128, 224
+        # Un mot très grand qui traverse l'écran (80 % de la largeur, 9 % de la hauteur) : rempli.
+        heros = self.image(w, h, rectangles=[(12, 100, 115, 120, (255, 255, 255))])
+        self.assertGreaterEqual(sm.occupation(heros, w, h), sm.OCCUPATION_MIN)
+        # Une ligne de petit texte aussi large (3 % de la hauteur) : presque vide.
+        ligne = self.image(w, h, rectangles=[(12, 108, 115, 115, (255, 255, 255))])
+        self.assertLess(sm.occupation(ligne, w, h), sm.OCCUPATION_MIN)
+
+    def test_plages_presque_vides(self):
+        occ = [0.4] * 8 + [0.05] * 6 + [0.4] * 8 + [0.05] * 2 + [0.4] * 4   # 1,5 s vide, puis 0,5 s
+        v = sm.verdict_cadre(occ, fps=4)
+        self.assertEqual([(p["debut"], p["fin"]) for p in v["plages"]], [(2.0, 3.5)])
+        self.assertAlmostEqual(v["mediane"], 0.4)
+
+
 class Musique(unittest.TestCase):
     FPS = 100.0
 

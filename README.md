@@ -78,10 +78,12 @@ dossier Monteur IA ».
 
 ## Contenu
 
-- `.claude/skills/studio/` : la méthode (bienvenue et marque, fiche de l'offre, repérage,
-  structures par but, idées, écriture, supports, voix, rythme, style, kit, recettes, son, revue,
-  livraison) et, dans `styles/`, les 8 styles de motion design (une fiche et des scènes chacun). `.claude/skills/hyperframes-*` : le contrat de composition, les effets et les
-  commandes de HyperFrames (copies de la version 0.8.136, licence Apache 2.0).
+- `.claude/skills/studio/` : la méthode, une référence par étape (bienvenue et marque, fiche de
+  l'offre, repérage, structures par but, idées, écriture, supports, voix, image, mouvement, scènes,
+  kit, contrat d'une composition HyperFrames, son, revue, livraison) et, dans `styles/`, les 8
+  styles de motion design (une fiche et des scènes chacun).
+- `templates/scenes/` : les scènes prêtes, déjà construites et contrôlées en 9:16 et en 16:9, que
+  l'IA remplit avec la vraie matière du client ; `templates/kit/` : les briques de chaque scène.
 - `tools/studio_motion.py` : marque, création des vidéos par support et par format, vérification
   de la fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones,
   planche, rythme, calage de la musique, pose et émergence des sons, mastering, couverture,

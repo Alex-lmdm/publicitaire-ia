@@ -20,8 +20,8 @@ Recommande-en une avec la raison, puis attends.
 | **La preuve en grand** | Le chiffre ou le témoignage le plus fort, puis l'offre | La page a une preuve solide |
 | **La question** | Le problème de l'audience tapé ou dit, l'offre y répond | Audience qui connaît le problème |
 | **Le fait nouveau** | Ce qui a changé (un nouveau modèle, une nouvelle fonction), au centre | Nouveauté, lancement, marché qui bouge |
-| **La vidéo est la démo** | La vidéo qu'on regarde est elle-même ce que l'offre fabrique (« cette story, c'est l'IA qui l'a faite »), puis le geste qui l'a produite | Une offre qui fabrique des contenus, une possibilité que le public n'imaginait pas (Publicitaire IA, 06/11/2026) |
-| **La comparaison** | Les autres options (monteur, agence, faire seul) face à l'offre | Audience qui hésite entre plusieurs solutions |
+| **La vidéo est la démo** | La vidéo qu'on regarde est elle-même ce que l'offre fabrique (« cette story, c'est l'IA qui l'a faite »), puis le geste qui l'a produite | Une offre qui fabrique des contenus, une possibilité que le public n'imaginait pas |
+| **La comparaison** | Les autres options (faire seul, payer un prestataire, une autre méthode) face à l'offre | Audience qui hésite entre plusieurs solutions |
 
 ## Selon ce que le client vend
 
@@ -35,18 +35,18 @@ Recommande-en une avec la raison, puis attends.
 
 ## Le format de la proposition
 
-> Trois idées pour la vidéo de ta page de vente :
+> Trois idées pour la vidéo de ta page de vente (exemple : une formation pour devenir
+> illustrateur freelance) :
 >
-> **1. Avant / après.** « 3 heures sur CapCut pour un seul Reel ? » · « Et si ton IA le montait
-> à ta place ? » Puis le même rush, brut à gauche, monté par ton IA à droite, ce que contient
-> Monteur IA et le prix. Le problème et la solution se comprennent en trois secondes, même sans
-> le son.
+> **1. Avant / après.** « Tes dessins dorment dans un dossier ? » · le même portfolio, vide à
+> gauche, puis rempli de commandes à droite ; les six modules qui y mènent, puis le prix. Le
+> problème et la solution se comprennent en trois secondes, même sans le son.
 >
-> **2. La preuve en grand.** « 3,3 millions de vues » se compte à l'écran, puis la méthode
-> derrière. Ta page a ce chiffre : il porte.
+> **2. La preuve en grand.** « 212 élèves ont décroché un client » se compte à l'écran, leurs
+> messages autour, puis la méthode derrière. Ta page a ce chiffre : il porte.
 >
-> **3. La comparaison.** Un monteur, une agence, ou ton IA : le temps et le prix de chacun, puis
-> l'offre.
+> **3. La comparaison.** Une école d'art, des tutos gratuits, ou ta formation : le temps et le prix
+> de chacun, puis l'offre.
 >
 > Je te conseille la 1 : ta page démarre muette, et elle se comprend sans le son. Le Reel suivra
 > la même idée, en 30 secondes. Réponds 1, 2 ou 3, ou mélange.

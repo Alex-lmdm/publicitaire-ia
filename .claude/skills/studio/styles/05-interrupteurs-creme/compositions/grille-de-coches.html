@@ -5,36 +5,28 @@
   <!--
     STYLE N°5 « INTERRUPTEURS EN CASCADE » · SCÈNE 3 : LA GRILLE DE COCHES (7,7 s pour 5 mots)
 
-    Ce qu'elle montre : une grille de disques blancs cerclés d'un anneau (la fin de la scène 2).
-    Chaque anneau se remplit comme un camembert, en vague de gauche à droite, et devient une
-    pastille cochée. La caméra se rapproche, les deux disques du centre s'effacent et la phrase
-    s'écrit entre eux. Puis les pastilles se réduisent à un point, les disques deviennent des
-    cartes (l'espace de chaque membre, avec son prénom), et la caméra plonge dans une carte qui
-    devient la fenêtre plein écran de la scène 4 (« fenetre-annonce »).
-    Rôle : la preuve que tout le monde est servi (« tout est prêt », « pour chaque élève »).
+    Ce qu'elle montre : une grille de disques blancs cerclés d'un anneau (la fin de la scène 2). La
+    caméra s'approche d'abord (aucun texte encore) ; puis chaque anneau se remplit comme un camembert,
+    en vague de gauche à droite (de haut en bas en 9:16), et devient une pastille cochée : autour du
+    centre, chaque coche coche un vrai élément de l'offre, dont le nom s'écrit dans son disque. Les
+    deux disques du centre s'effacent et la phrase s'écrit entre eux. Une fois la phrase lue, les
+    pastilles se réduisent à un point, les disques deviennent des cartes (l'espace de chaque membre,
+    en miniature), et la caméra plonge dans une carte qui devient la fenêtre plein écran de la
+    scène 4 (« fenetre-annonce »).
+    Rôle : la preuve que tout est servi (« tout est prêt », « pour chaque élève »).
     La phrase se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
-    la caméra s'est approchée avant elle (entre deux intentions), puis ne fait qu'une dérive lente ;
-    autour d'elle, les pastilles respirent en vague. Les cartes et la plongée viennent une fois la
-    phrase lue. Durée : la scène la calcule (D dans le script) : 4,9 s + la lecture de la phrase
-    (7,7 s pour 5 mots, 8,3 s pour 7). Reporte-la dans data-duration (ici et sur l'hôte).
+    la caméra ne fait alors qu'une dérive lente ; autour d'elle, les pastilles respirent deux fois.
+    Durée : la scène la calcule (D dans le script) : 4,9 s + la lecture de la phrase (7,7 s pour
+    5 mots, 8,3 s pour 7). Reporte-la dans data-duration (ici et sur l'hôte).
 
     Format : 16:9. La grille se recalcule seule en 9:16 (change data-width / data-height de la
     racine) ; la plongée vise alors la carte la plus proche du centre.
 
-    À REMPLACER :
-      1. L'id « t05-coches » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. TEXTE (deux lignes, 7 mots au plus : la phrase tient dans le trou du centre de la grille ;
-         une phrase plus longue du script ne se raccourcit pas, elle passe dans une scène construite
-         dans le style) : ce que le client gagne, tiré de OFFRE.json.
-      3. SALUTS : ce que montrent les cartes (prénoms génériques des membres, ou le nom des
-         espaces). La carte où l'on plonge porte SALUTS[0] : c'est aussi le titre de la scène 4.
-      4. ACCUEIL : le texte gris du champ (le même qu'en scène 4).
-      5. Les couleurs du look, en tête du style. La pastille cochée prend l'accent de la marque
-         (la coche, la couleur lisible dessus) ; l'anneau prend la couleur du trait (l'accent, ou
-         l'encre si l'accent est trop pâle sur le clair). Le bouton d'envoi du champ, inactif, est
-         gris (jamais l'accent en transparence).
-      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
-      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque champ dit ce qu'il montre), et l'id
+    « t05-coches » partout (rechercher-remplacer) par l'id de la scène dans index.html. Les couleurs
+    du look, en tête du style : la pastille cochée prend l'accent plein (la coche, la couleur lisible
+    dessus) ; l'anneau, la couleur du trait (l'accent, ou l'encre si l'accent est trop pâle sur le
+    clair) ; le bouton d'envoi inactif est gris. Police des titres : celle de la marque (--t05-titres).
     Ne pas toucher : la place de la grille au début (raccord avec la scène 2) et la fenêtre à la
     fin (raccord avec la scène 4).
   -->
@@ -62,10 +54,12 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1), 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     #t05-coches .t05-pastille { position: absolute; left: 50%; top: 50%; width: 92px; height: 92px; margin: -46px 0 0 -46px; overflow: visible; }
+    /* Le nom de l'élément coché, dans son disque : lu caméra approchée (plus de 28 px à l'image). */
+    #t05-coches .t05-coche-nom { position: absolute; left: 0; right: 0; top: 116px; text-align: center; white-space: nowrap; font: 500 18px/1 var(--t05-texte); letter-spacing: -0.01em; color: var(--t05-encre); }
     #t05-coches .t05-mini { position: absolute; left: 50%; top: 50%; width: 1100px; height: 400px; margin: -200px 0 0 -550px; }
     #t05-coches .t05-titre {
       position: absolute; left: 360px; width: 1200px; text-align: center; white-space: nowrap;
-      font: 400 72px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
+      font: 400 56px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
     }
     #t05-coches .t05-ligne { display: block; }
     #t05-coches .t05-mot { display: inline-block; }
@@ -73,9 +67,9 @@
     #t05-coches .t05-accueil { position: absolute; left: 0; right: 0; top: 60px; text-align: center; white-space: nowrap; font: 400 64px/1.1 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre); }
     #t05-coches .t05-accueil i { display: inline-block; width: 22px; height: 22px; margin-right: 26px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.07); vertical-align: 0.12em; }
     #t05-coches .t05-champ {
-      position: absolute; left: 60px; right: 60px; top: 190px; height: 150px; border-radius: 26px; background: #fff;
+      position: absolute; left: 60px; right: 60px; top: 190px; height: 150px; border-radius: 26px; background: var(--t05-carte);
       box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.06), 0 10px 30px rgba(0, 0, 0, 0.06);
-      font: 400 30px/1 var(--t05-texte); color: var(--t05-gris-texte);
+      font: 400 34px/1 var(--t05-texte); color: var(--t05-gris-texte);
     }
     #t05-coches .t05-champ span { position: absolute; left: 36px; top: 34px; white-space: nowrap; }
     #t05-coches .t05-champ b { position: absolute; left: 34px; bottom: 26px; font: 300 40px/1 var(--t05-texte); color: var(--t05-gris-texte); }
@@ -103,10 +97,16 @@
 
   <script>
     (function () {
+      // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire (ici, une formation
+      // d'exemple : aucun de ces textes n'est un fait).
+      var EXEMPLE = {
+        TEXTE: ["Tout est prêt", "dès le premier jour"],   // ce que le client gagne : deux lignes, 7 mots au plus
+        COCHES: ["Module 1", "Vidéos", "Exercices", "Modèles", "Lives", "Bonus"],   // 6 vrais éléments de l'offre (1 ou 2 mots courts), cochés autour de la phrase
+        SALUTS: ["Bonjour, Léa", "Salut, Karim", "Hello, Sofia", "Bon retour, Hugo", "Coucou, Inès", "Bonjour, Malik"],   // le salut de l'espace de chaque membre ; SALUTS[0] : la carte où l'on plonge, titre de la scène 4
+        ACCUEIL: "Que veux-tu apprendre aujourd'hui ?"      // le texte gris du champ (le même qu'en scène 4)
+      };
       var ID = "t05-coches";
-      var TEXTE = ["Tout est prêt", "dès le premier jour"];
-      var SALUTS = ["Bonjour, Léa", "Salut, Karim", "Hello, Sofia", "Bon retour, Hugo", "Coucou, Inès", "Bonjour, Malik", "Salut, Chloé", "Hello, Nadia", "Bonjour, Tom", "Salut, Jade"];
-      var ACCUEIL = "Que veux-tu apprendre aujourd'hui ?";
+      var TEXTE = EXEMPLE.TEXTE, COCHES = EXEMPLE.COCHES, SALUTS = EXEMPLE.SALUTS, ACCUEIL = EXEMPLE.ACCUEIL;
       // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
       function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
       var FE = 2.4 + 0.07 * (TEXTE[TEXTE.length - 1].split(" ").length - 1) + 0.7;   // la phrase est posée
@@ -117,7 +117,6 @@
       var racine = document.getElementById(ID), cam = $("cam"), grille = $("grille"), titre = $("titre"), fen = $("fenetre");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
       var tl = gsap.timeline({ paused: true });
-      function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
 
       // --- Outils du look (communs aux scènes du style 5) ---------------------------------
       function rvb(c) { var x = document.createElement("canvas").getContext("2d"); x.fillStyle = "#000"; x.fillStyle = c.trim(); var v = x.fillStyle; if (v[0] === "#") return [parseInt(v.substr(1, 2), 16), parseInt(v.substr(3, 2), 16), parseInt(v.substr(5, 2), 16)]; var m = v.match(/[\d.]+/g); return [+m[0], +m[1], +m[2]]; }
@@ -125,14 +124,17 @@
       function contraste(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
       var cs0 = getComputedStyle(racine), ACCENT = cs0.getPropertyValue("--brand-accent").trim();
       var TRAIT = contraste(ACCENT, cs0.getPropertyValue("--brand-clair")) >= 2 ? ACCENT : cs0.getPropertyValue("--t05-encre").trim();
-      var COCHE = cs0.getPropertyValue("--brand-contrast").trim() || "#ffffff";
+      var COCHE = cs0.getPropertyValue("--brand-contrast").trim();
       function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
       // La fenêtre de l'espace membre, dessinée à sa taille finale (1100 × 400) : salut + champ.
-      function fenetre(salut) { return '<div class="t05-mini"><div class="t05-accueil"><i></i><span>' + salut + '</span></div><div class="t05-champ"><span>' + ACCUEIL + "</span><b>+</b><em>" + K.ic("arrow-up") + "</em></div></div>"; }
+      // En miniature dans les cartes, ses textes sont de la texture (data-layout-ignore).
+      function fenetre(salut, texture) { return '<div class="t05-mini"' + (texture ? " data-layout-ignore" : "") + '><div class="t05-accueil"><i></i><span>' + salut + '</span></div><div class="t05-champ"><span>' + ACCUEIL + "</span><b>+</b><em>" + K.ic("arrow-up") + "</em></div></div>"; }
 
       // --- La grille, à la place exacte de la fin de la scène 2 ------------------------------
       var PAS = 235, X0 = 136, Y0 = 70, COLS = 8, LIGNES = 5;
       if (vertical) { X0 = 70; Y0 = 76; COLS = 5; LIGNES = 9; PAS = 235; }
+      // La caméra approchée (Z) : les noms cochés s'y lisent à plus de 28 px.
+      var Z = vertical ? 1.55 : 1.7;
       var cx = L / 2, cy = H / 2, disques = [], centre = [];
       var pastille = '<svg class="t05-pastille" viewBox="0 0 100 100"><g filter="url(#t05-coches-rugueux)">' +
         '<circle class="t05-tarte" cx="50" cy="50" r="21" fill="none" stroke="' + ACCENT + '" stroke-width="42" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 50 50)"/>' +
@@ -140,38 +142,57 @@
         '<path class="t05-coche" d="M31 51 L44 63.5 L69 38" fill="none" stroke="' + COCHE + '" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>';
       for (var c = 0; c < COLS; c++) for (var r = 0; r < LIGNES; r++) {
         var x = X0 + c * PAS, y = Y0 + r * PAS, i = c * LIGNES + r;
-        var e = K.el(grille, "div", "t05-disque", pastille + fenetre(SALUTS[(i + 1) % SALUTS.length]), "left:" + x + "px; top:" + y + "px;");
+        var e = K.el(grille, "div", "t05-disque", pastille + fenetre(SALUTS[(i + 1) % SALUTS.length], true), "left:" + x + "px; top:" + y + "px;");
         gsap.set(e, { xPercent: -50, yPercent: -50 });
         e.setAttribute("data-layout-allow-overflow", "");
         e.dataset.x = x; e.dataset.y = y; e.dataset.c = c; e.dataset.r = r;
         disques.push(e);
       }
       // Les deux disques au plus près du centre s'effacent pour la phrase ; la plongée vise le plus proche.
-      var tries = disques.slice().sort(function (a, b) { return Math.hypot(a.dataset.x - cx, a.dataset.y - cy) - Math.hypot(b.dataset.x - cx, b.dataset.y - cy); });
+      var dist = function (d) { return Math.hypot(d.dataset.x - cx, d.dataset.y - cy); };
+      var tries = disques.slice().sort(function (a, b) { return dist(a) - dist(b); });
       // En 9:16, toute la rangée du milieu (sauf les bords) se libère : la phrase y tient en largeur.
       centre = vertical ? disques.filter(function (d) { return Math.abs(d.dataset.y - tries[0].dataset.y) < 1 && Math.abs(d.dataset.x - cx) < 400; }) : [tries[0], tries[1]];
       var cible = tries[0];
       cible.querySelector(".t05-accueil").lastChild.textContent = SALUTS[0];
       racine.querySelectorAll(".t05-mini").forEach(function (m) { gsap.set(m, { scale: 0.176, opacity: 0 }); });
+      // Les éléments de l'offre : un par disque autour de la phrase (les plus proches), posés dans
+      // l'ordre de lecture (de haut en bas, de gauche à droite).
+      var nommes = tries.filter(function (d) { return centre.indexOf(d) < 0; }).slice(0, COCHES.length)
+        .sort(function (a, b) { return (a.dataset.y - b.dataset.y) || (a.dataset.x - b.dataset.x); });
+      nommes.forEach(function (d, k) {
+        var n = K.el(d, "div", "t05-coche-nom");
+        n.textContent = COCHES[k];
+        if (vertical) n.style.fontSize = "19.5px";
+        K.cacher(n, { y: 6 });
+        d.dataset.nom = "1";
+      });
 
-      // 1. La vague : chaque anneau se remplit, puis la coche se trace
+      // 1. La caméra s'approche d'abord (aucun texte encore), puis la vague : chaque anneau se
+      //    remplit, la coche se trace ; autour du centre, le nom de l'élément coché s'écrit
+      tl.to(cam, { scale: Z, duration: 0.9, ease: "expo.inOut" }, 0.1);
+      var vu = vertical ? H / Z : L / Z, debutVu = (vertical ? cy : cx) - vu / 2;
       disques.forEach(function (d) {
-        // les coches tombent en trois salves, de gauche à droite (en 9:16, de haut en bas)
-        var rang = vertical ? +d.dataset.r / LIGNES : +d.dataset.c / COLS, salve = Math.min(2, Math.floor(rang * 3));
-        var t0 = 0.12 + salve * 0.55 + (vertical ? (+d.dataset.c) : (+d.dataset.r)) * 0.008;
+        if (centre.indexOf(d) >= 0) return;
+        // les coches tombent en trois salves sur ce que la caméra voit, de gauche à droite (en 9:16, de haut en bas)
+        var rang = Math.min(0.999, Math.max(0, ((vertical ? +d.dataset.y : +d.dataset.x) - debutVu) / vu)), salve = Math.floor(rang * 3);
+        var t0 = 0.95 + salve * 0.3 + (vertical ? (+d.dataset.c) : (+d.dataset.r)) * 0.008;
         tl.to(d.querySelector(".t05-tarte"), { attr: { "stroke-dashoffset": 0 }, duration: 0.42, ease: "power1.inOut" }, t0);
         tl.to(d.querySelector(".t05-coche"), { attr: { "stroke-dashoffset": 0 }, duration: 0.22, ease: "power2.out" }, t0 + 0.38);
         if (TRAIT !== ACCENT) tl.to(d.querySelector(".t05-anneau"), { opacity: 0, duration: 0.2, ease: "power1.out" }, t0 + 0.36);
+        if (d.dataset.nom) {
+          // la pastille monte et se resserre, le nom de l'élément s'écrit dessous, d'un coup
+          tl.to(d.querySelector(".t05-pastille"), { y: -27, scale: 0.78, duration: 0.3, ease: "power2.inOut" }, t0 + 0.5);
+          tl.to(d.querySelector(".t05-coche-nom"), { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" }, t0 + 0.62);
+        }
       });
 
-      // 2. La caméra se rapproche avant la phrase (entre deux intentions), le centre se libère, la
-      //    phrase s'écrit ; pendant qu'elle se lit, une dérive lente seulement (Z → Z × 1,05)
-      var Z = vertical ? 1.55 : 1.7;
-      tl.to(cam, { scale: 1.06, duration: 0.6, ease: "expo.inOut" }, 0.25);
-      tl.to(cam, { scale: Z, duration: 0.9, ease: "expo.inOut" }, 1.35);
-      tl.to(cam, { scale: Z * 1.05, duration: X - 2.25, ease: "sine.inOut" }, 2.25);
+      // 2. Le centre se libère, la phrase s'écrit ; pendant qu'elle se lit, une dérive lente
+      //    seulement (Z → Z × 1,05)
+      tl.to(cam, { scale: Z * 1.05, duration: X - 1.0, ease: "sine.inOut" }, 1.0);
       centre.forEach(function (d) { tl.to(d, { scale: 0, duration: 0.45, ease: "power3.in" }, 1.45); });
       var tMots = mots(titre, TEXTE);
+      if (vertical) titre.style.fontSize = "64px";     // vue à ×1,55 : 99 px à l'image (95 px en 16:9, à ×1,7)
       K.cacher(tMots);
       var csT = getComputedStyle(titre);
       document.fonts.load(csT.fontWeight + " " + csT.fontSize + " " + csT.fontFamily).then(suite, suite);
@@ -187,30 +208,33 @@
         });
       }
       function suite() {
-        // La phrase tient dans le trou du centre (réduite si sa police est large)
+        // La phrase tient dans le trou du centre (réduite seulement si la police de la marque est
+        // plus large : une phrase trop longue du script passe dans une scène construite dans le style)
         var large = 0; titre.querySelectorAll(".t05-ligne").forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
-        var maxL = vertical ? 600 : 500;
-        if (large > maxL) titre.style.fontSize = (72 * Math.max(maxL / large, 0.66)).toFixed(1) + "px";
+        var maxL = vertical ? 600 : 520, fs0 = parseFloat(getComputedStyle(titre).fontSize);
+        if (large > maxL) titre.style.fontSize = (fs0 * Math.max(maxL / large, 0.7)).toFixed(1) + "px";
         gsap.set(titre, { left: cx - 600, top: cy - titre.offsetHeight / 2 });
         var lignes = titre.querySelectorAll(".t05-ligne");
         K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.1, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
         K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 2.4, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
-        // pendant la lecture, les pastilles respirent en vague autour de la phrase (une vague de plus,
-        // de gauche à droite : l'interface vit, la caméra non)
-        // (deux respirations de toute la grille ensemble, au tiers et aux deux tiers de la tenue)
+        // pendant la lecture, les pastilles respirent deux fois ensemble, au tiers et aux deux tiers
+        // de la tenue (l'interface vit, la caméra non)
         [FE + (X - FE) / 3, FE + 2 * (X - FE) / 3].forEach(function (tv) {
           disques.forEach(function (d) {
             if (centre.indexOf(d) >= 0) return;
-            tl.fromTo(d.querySelector(".t05-pastille"), { scale: 1 }, { scale: 1.3, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tv);
+            var base = d.dataset.nom ? 0.78 : 1;
+            tl.fromTo(d.querySelector(".t05-pastille"), { scale: base }, { scale: base * 1.3, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, tv);
           });
         });
         K.sortieMots(tl, tMots, X, { y: -6, flou: 12, duree: 0.35, decalage: 0.03 });
 
-        // 3. Les pastilles se réduisent à un point, les disques deviennent des cartes
+        // 3. Les pastilles se réduisent à un point (les noms partent avec elles), les disques
+        //    deviennent des cartes
         disques.forEach(function (d) {
           var dx = (d.dataset.x - cx) * 0.25, dy = (d.dataset.y - cy) * 0.25, t0 = 4.65 + O + Math.hypot(dx, dy) / 4000;
           tl.to(d.querySelector(".t05-pastille"), { scale: 0.16, duration: 0.3, ease: "power2.in" }, t0);
           tl.to(d.querySelector(".t05-pastille"), { scale: 0, duration: 0.18, ease: "power2.in" }, t0 + 0.32);
+          if (d.dataset.nom) tl.to(d.querySelector(".t05-coche-nom"), { opacity: 0, duration: 0.2, ease: "power2.in" }, t0);
           tl.to(d, { x: dx, y: dy, width: 200, height: 200, borderRadius: 48, duration: 0.55, ease: "power3.inOut" }, t0 + 0.2);
           tl.to(d.querySelector(".t05-mini"), { opacity: 1, duration: 0.3, ease: "power1.out" }, t0 + 0.45);
         });
@@ -219,7 +243,7 @@
         // 4. La plongée : la carte visée devient la fenêtre plein écran (raccord scène 4)
         var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
         var ex = cx + S * (wx - cx), ey = cy + S * (wy - cy), cote = 200 * S;
-        fen.innerHTML = fenetre(SALUTS[0]);
+        fen.innerHTML = fenetre(SALUTS[0], false);
         ajusterSalut(racine);
         var miniF = fen.querySelector(".t05-mini");
         // La fenêtre est plein écran dès le départ, découpée (clip-path) à la taille de la carte :

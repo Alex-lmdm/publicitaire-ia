@@ -7,19 +7,25 @@ franchie.
 
 ## Porte 1 : la composition
 
-`npm run check` dans le dossier de la vidéo (contrôles HyperFrames). Corrige toute erreur ; un
-texte net volontairement posé sur une couche floue se marque (`kit.md`, pièges). Puis
-`npm run render`, puis :
+`npm run check` dans le dossier de la vidéo. Zéro erreur ; un texte net volontairement posé sur
+une couche floue se marque (`kit.md`, pièges). Ses avertissements de métier (`craft`) se corrigent
+tous sur un texte qu'on doit lire : `text_below_floor` (texte sous 28 px : agrandis, ou approche la
+caméra d'une interface), `line_unread` (parti avant d'être lu : allonge la tenue), `first_frame_empty`
+(la première image est l'affiche : elle montre déjà le sujet). Puis `npm run render`, puis, depuis
+le projet :
 
 ```bash
 python3 ../../../tools/studio_motion.py rythme exports/page.mp4
+python3 ../../../tools/studio_motion.py cadre exports/page.mp4
 ```
 
-Il doit répondre « ok » : au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian entre
-deux, aucune image vraiment immobile plus de 1,5 s avant l'écran final. Il liste aussi les plus longs creux :
-regarde-les, c'est souvent un raccord qui traîne ou une scène qui démarre vide. Un creux se comble
-par ce que la phrase montre (un logo qui arrive, l'interface qui réagit, un compteur), jamais par
-un recadrage ajouté ([rythme.md](rythme.md)).
+`rythme` doit répondre « ok » : au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian,
+aucune image vraiment immobile plus de 1,5 s avant l'écran final, et des plans de durées variées.
+Il liste les plus longs creux : souvent un raccord qui traîne ou une scène qui démarre vide. Un
+creux se comble par ce que le plan montre, jamais par un recadrage ajouté
+([mouvement.md](mouvement.md)). `cadre` doit répondre « ok » : il relève les instants où l'image
+est presque vide (un petit sujet au milieu d'un grand fond) ; chacun se corrige en approchant la
+caméra, en agrandissant le sujet ou en lui donnant un monde ([image.md](image.md), « Le cadre »).
 
 **Seul le MP4 rendu fait foi.** `check` et `snapshot` téléchargent une police qui manque, le rendu
 non : une police sans fichier passe en Impact ou en police système seulement dans le MP4. Regarde
@@ -52,8 +58,10 @@ vraiment :
   aucune image ne porte plus de 8 mots à lire (hors interface, étiquettes et logos) ; sur toute la
   vidéo, un mot à lire par seconde au plus (`studio_motion.py lecture "<mots du plan 1>" … --duree
   <s>`) ; et la mise en page des sous-titres (une phrase en haut, une petite interface dessous)
-  ne revient pas d'un plan à l'autre. Story v2 refusée le 07/11/2026 : 115 mots en 47 s, « on a
-  l'impression de voir des sous-titres ».
+  ne revient pas d'un plan à l'autre.
+- **Les défauts interdits** ([image.md](image.md)) : passe la liste ligne à ligne sur la planche.
+  Chaque défaut présent (de la liste ou non) s'écrit dans « Interdits de cette vidéo » et se
+  corrige.
 - Le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
   l'ordre, on sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le
   croire, combien et quoi faire. Une réponse manque : la vidéo n'est pas finie. Ce test se refait
@@ -63,21 +71,25 @@ vraiment :
   vraies captures du client et les logos de ses outils gardent leurs couleurs. `studio_motion.py
   palette exports/<vidéo>.mp4` liste les instants hors palette : chacun est une vraie capture, ou
   se corrige.
-- Les fonds alternent (sombre, clair, couleur pleine ; avec un style du catalogue, ceux de sa fiche),
-  aucun écran ne fait vide.
+- Le fond change quand le film change de temps, avec une cause visible (avec un style du catalogue,
+  les fonds de sa fiche) ; aucun écran ne fait vide.
 - Aucune image clé dont le seul sujet est une forme ou un aplat (un disque, un carré, une case
   vide) pendant plus d'une seconde, hors carte de fin et transition : la forme porte une vraie
-  matière, ou elle s'en va ([style.md](style.md), « Aucune image inventée »).
-- Sur une planche serrée des cinq premières secondes et des tenues de phrase, la caméra ne fait
-  qu'une dérive lente : aucun recadrage sec pendant qu'on lit ([rythme.md](rythme.md), « La caméra »).
+  matière, ou elle s'en va ([image.md](image.md), « La vraie matière »).
+- Le cadre : sur chaque image clé, le sujet occupe au moins 40 % de la largeur ou de la hauteur ; rien
+  n'est tout petit au milieu d'un grand fond ; en vertical, la mise en page est recomposée, pas
+  rétrécie.
+- Sur une planche serrée des cinq premières secondes et des tenues de phrase, un texte posé ne
+  bouge plus et la caméra ne recadre pas pendant qu'on lit ([mouvement.md](mouvement.md), « La
+  caméra »).
 - Les raccords : la dernière case d'une scène et la première de la suivante se ressemblent.
 - Boucle de section : la dernière image raccorde avec la première, sans saut.
 
 ## Porte 3 : le relecteur neuf, puis la revue critique
 
-Tu connais le script : tu ne peux pas être le spectateur froid de ta propre vidéo (story refusée
-du 06/11/2026 : « on n'a rien compris », ce que la revue de son auteur n'avait pas vu). La
-compréhension se juge donc par **une IA qui n'a pas fait la vidéo**.
+Tu connais le script : tu ne peux pas être le spectateur froid de ta propre vidéo (son auteur ne
+voit pas ce qu'un inconnu ne comprend pas). La compréhension se juge donc par **une IA qui n'a pas
+fait la vidéo**.
 
 **1. La relecture à froid.**
 
@@ -139,13 +151,13 @@ avec une phrase de justification, sur ces dix critères :
    suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
 8. **Marque** : ses couleurs et seulement elles (plus noir, blanc, gris), ses polices, une seule
    couleur d'accent ; aucune image inventée. Une teinte dérivée (un brun, un orangé tirés de son
-   jaune), c'est 4 au plus.
+   accent), c'est 4 au plus.
 9. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
-10. **Le niveau** ([recettes.md](recettes.md), « Le niveau par défaut ») : chaque plan a son moment
-    signature, de la profondeur (perspective, flou de distance, ombres), un sujet qui remplit le
-    cadre, une caméra qui voyage entre les plans. Des petits éléments centrés sur un grand fond
-    vide, ou des plans à plat posés les uns après les autres, c'est 5 au plus : propre ne suffit
-    pas (demande du client du 07/11/2026 : « par défaut, des choses assez dingues »).
+10. **Le niveau** ([image.md](image.md), « Le cadre ») : chaque plan a son moment signature, de la
+    profondeur (perspective, flou de distance, ombres), un sujet qui remplit le cadre, une caméra
+    qui voyage entre les plans, des courbes et des entrées variées ([mouvement.md](mouvement.md)).
+    Des petits éléments centrés sur un grand fond vide, ou des plans à plat posés les uns après les
+    autres, c'est 5 au plus : propre ne suffit pas, le seuil est « on la regarde deux fois ».
 
 Tout critère à 7 ou moins se corrige, puis on refait le rendu et la planche, jusqu'à 8 ou plus
 partout. Liste toujours les trois plus gros défauts, même si tout est à 8. Si le client a donné

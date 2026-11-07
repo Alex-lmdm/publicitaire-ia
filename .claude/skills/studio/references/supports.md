@@ -48,17 +48,17 @@ stricte), et centre le texte un peu à gauche.
 **Sticker lien d'une story** (ouverture, relance, dernier jour, ou toute story qui renvoie vers
 un lien) : réserve la bande `x 190 → 890, y 1180 → 1420`, fond calme, rien d'important dedans
 **pendant toute la story** (le sticker reste affiché du début à la fin, pas seulement sur l'écran
-final : essai du 06/11/2026, une ligne de chiffres et un prix passaient dessous), et une phrase
+final), et une phrase
 courte juste au-dessus à la fin (« Touche le lien. »). Dis au client où le poser. Ne dessine
 jamais sa place (un cadre en pointillés, un rectangle vide) : sans le sticker, le spectateur voit
-une flèche qui montre un vide (relecture à froid de la story refusée, 06/11/2026).
+une flèche qui montre un vide.
 
 ## Ce qui change selon le support
 
 - **Page de vente (`page`)** : la vidéo démarre souvent en muet et en boucle, et l'économie
   d'énergie de l'iPhone peut bloquer la lecture automatique. Donc la **première image affiche
-  déjà la promesse** (c'est aussi l'affiche), et chaque idée se lit à l'écran. Si la vidéo a une
-  voix, des sous-titres incrustés en plus.
+  déjà la promesse** (c'est aussi l'affiche), et chaque idée se comprend sans le son : ce qu'on
+  voit et ses quelques mots. Si la vidéo a une voix, des sous-titres incrustés en plus.
 - **Section (`section`)** : une seule fonction, aucune piste son (`-an` à l'export), la dernière
   image raccorde avec la première. Fichier léger : vise moins de 0,5 Mo par seconde.
 - **Pub (`pub`, `fil`)** : la proposition est lisible avant 3 s ; le prix n'apparaît pas (il fait
@@ -68,10 +68,10 @@ une flèche qui montre un vide (relecture à froid de la story refusée, 06/11/2
   chiffré pèsent plus qu'une ambiance. Le texte du post porte l'appel à l'action.
 - **Reel, TikTok** : la vente arrive à la fin seulement. Le mot-clé de l'écran final est celui
   de la légende.
-- **Story** : souvent regardée sans le son et quittée d'un geste : la première phrase dit tout de
-  suite de quoi on parle et pour qui, chaque phrase se lit entière, et chaque story se comprend
-  seule (le spectateur n'a pas vu les autres). Une story de lancement est un vrai script
-  ([structures.md](structures.md), section 6), pas une suite de mots.
+- **Story** : souvent regardée sans le son et quittée d'un geste : le premier plan dit tout de
+  suite de quoi on parle et pour qui, chaque mot reste le temps d'être lu, et chaque story se
+  comprend seule (le spectateur n'a pas vu les autres). Une story de lancement est un vrai film
+  ([structures.md](structures.md), section 6), pas une suite de mots ni une suite de phrases.
 
 ## Sous-titres et texte (quand il y a une voix)
 

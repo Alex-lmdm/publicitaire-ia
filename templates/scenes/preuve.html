@@ -1,0 +1,250 @@
+<!-- Scène prête « L'éventail des vrais résultats, puis le grand chiffre » (prouver : scenes.md,
+     recettes 19 et 20). Ses vraies captures arrivent une à une en éventail 3D ; sous chacune, une
+     pastille compte jusqu'à son vrai chiffre, avec son contexte. Puis les pastilles s'envolent, les
+     captures s'écartent et passent au flou, et le total compte au centre en énorme, avec son repère
+     dont la clé se surligne. Se met en page seule en 9:16 (éventail en quinconce) et en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne doit
+     rester), donne à data-duration la durée demandée (`check` la signale), puis `npm run check` et
+     3 images. Pour la poser deux fois, remplace partout « preuve » par un autre identifiant. -->
+<template>
+  <style>
+    #preuve .pre-carte { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform, filter; }
+    #preuve .pre-matiere {
+      position: absolute; inset: 0; border-radius: 26px; overflow: hidden; background: var(--k-blanc); box-shadow: var(--k-ombre);
+    }
+    #preuve .pre-matiere img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+    /* La carte neutre, quand il n'y a pas encore de capture : une capture reconstruite, simple. */
+    #preuve .pre-faux { position: absolute; inset: 0; padding: 7% 8%; font-family: "Inter", var(--brand-font-body); color: var(--k-encre); }
+    #preuve .pre-faux-tete { display: flex; align-items: center; gap: 0.5em; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
+    #preuve .pre-faux-tete i { flex: none; width: 1.5em; height: 1.5em; border-radius: 50%; background: var(--brand-gris-4); }
+    #preuve .pre-faux-sous { margin-top: 0.2em; font-weight: 600; color: var(--brand-gris-2); white-space: nowrap; }
+    #preuve .pre-faux-graph { position: absolute; left: 8%; right: 8%; display: flex; align-items: flex-end; gap: 4%; }
+    #preuve .pre-faux-graph b { flex: 1; border-radius: 8px 8px 3px 3px; background: var(--brand-gris-4); }
+    #preuve .pre-faux-graph b:last-child { background: var(--k-encre); }
+    #preuve .pre-faux-ligne { position: absolute; left: 8%; height: 4.5%; border-radius: 99px; background: var(--k-clair); }
+    #preuve .pre-etiquette { position: absolute; left: 0; display: flex; flex-direction: column; align-items: center; will-change: transform; }
+    #preuve .pre-pastille {
+      display: flex; align-items: center; justify-content: center; border-radius: 999px; white-space: nowrap;
+      background: var(--brand-accent); color: var(--brand-contrast);
+      font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+    }
+    /* Le contexte du chiffre : une étiquette sombre et pleine, lisible sur une capture comme sur le fond. */
+    #preuve .pre-contexte {
+      margin-top: 10px; padding: 0.24em 0.62em 0.3em; border-radius: 0.5em; background: var(--k-noir-2);
+      font-family: var(--brand-font-body); font-weight: 700; color: var(--k-blanc); white-space: nowrap; letter-spacing: -0.01em;
+    }
+    #preuve .pre-appui { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.06; color: var(--k-blanc); white-space: nowrap; }
+    #preuve.pre-clair .pre-appui { color: var(--k-encre); }
+    #preuve .pre-total {
+      position: absolute; left: 0; right: 0; text-align: center; color: var(--brand-accent-lisible, var(--brand-accent));
+      font-variant-numeric: tabular-nums;
+    }
+    #preuve.pre-clair .pre-total { color: var(--k-encre); }
+    #preuve .pre-repere { position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.025em; color: var(--k-blanc); }
+    #preuve.pre-clair .pre-repere { color: var(--k-encre); }
+  </style>
+  <div data-composition-id="preuve" data-width="1080" data-height="1920" data-duration="6.5" style="position:absolute; inset:0;">
+    <div id="preuve" class="k-scene">
+      <div id="preuve-fond" class="k-fond k-fond-sombre"></div>
+      <div class="k-scene3d"><div class="k-camera" id="preuve-cam"></div></div>
+      <div class="k-vignette" id="preuve-vignette"></div>
+      <div class="k-mots" id="preuve-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "preuve";
+
+      // À REMPLACER : chaque chiffre, contexte et capture vient de OFFRE.json ou de sources/ (une
+      // carte sans son vrai chiffre fait trou : demande ceux qui manquent). Rien n'est arrondi vers
+      // le haut ; ce qui n'existe pas se met à null.
+      var CONTENU = {
+        fond: "sombre",                          // "sombre" (sa nuit) ou "clair"
+        appui: "Leurs ventes, le premier mois",  // la ligne d'appui pendant l'éventail (3 à 6 mots), ou null
+        ratio: 1.25,                             // hauteur / largeur de ses captures (1,25 : un portrait ; 2 : un écran de téléphone)
+        resultats: [                             // 3 à 5 vrais résultats, dans l'ordre où ils arrivent
+          // image : "assets/images/<sa capture>.png" ; sans elle, une carte neutre (titre, sous-titre)
+          // tient sa place pour les essais, jamais dans une vidéo livrée.
+          { image: null, carte: ["Léa M.", "Ventes · mars"], chiffre: 2340, format: "+{} €", contexte: "Léa, 1er mois" },
+          { image: null, carte: ["Karim B.", "Ventes · avril"], chiffre: 1180, format: "+{} €", contexte: "Karim, 6 semaines" },
+          { image: null, carte: ["Sofia R.", "Ventes · avril"], chiffre: 3050, format: "+{} €", contexte: "Sofia, 1er mois" },
+          { image: null, carte: ["Hugo T.", "Ventes · mai"], chiffre: 960, format: "+{} €", contexte: "Hugo, 3 semaines" }
+        ],
+        total: { a: 7530, format: "{} €", repere: "de ventes en 30 jours", cle: "30 jours" },   // le total, son repère, la clé surlignée (ou null)
+        zone: null                               // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam"), mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      // La durée donnée : celle de sa racine, ou, une fois montée, celle de son hôte (HyperFrames
+      // retire data-duration de la racine intérieure au montage).
+      var duree = (function (e) { for (; e && e.getAttribute; e = e.parentElement) { var d = parseFloat(e.getAttribute("data-duration")); if (d > 0) return d; } return 30; })(racine);
+      var zone = CONTENU.zone || (V ? [0.16, 0.25] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var clair = CONTENU.fond === "clair";
+      if (clair) {
+        racine.classList.add("pre-clair");
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-clair";
+        document.getElementById(ID + "-vignette").className = "k-vignette-claire";
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de signes (un
+      // chiffre est plus large qu'une lettre : `chasse`) ; aucune mesure à l'écran.
+      var taillePour = function (texte, largeur, mini, maxi, chasse) {
+        return Math.max(mini, Math.min(maxi, largeur / ((chasse || 0.56) * Math.max(4, String(texte).length))));
+      };
+      var px = function (n) { return Math.round(n) + "px"; };
+      // Un nombre lisible : arrondi vers le bas, les milliers séparés d'une espace insécable.
+      var nombre = function (v) { return String(Math.floor(v + 1e-9)).replace(/\B(?=(\d{3})+(?!\d))/g, " "); };
+      var formater = function (format, v) { return String(format || "{}").replace("{}", nombre(v)); };
+
+      // --- La ligne d'appui : en haut, pendant l'éventail ------------------------------------
+      var tl = gsap.timeline({ paused: true });
+      var appui = String(CONTENU.appui || "").trim(), hA = 0, motsA = [];
+      if (appui) {
+        var fA = taillePour(appui, V ? 0.86 * L : 0.6 * L, 56, 72), deux = V && appui.length > 22;
+        var milieu = appui.indexOf(" ", Math.floor(appui.length / 2) - 3);
+        var lignesA = deux && milieu > 0 ? [appui.slice(0, milieu), appui.slice(milieu + 1)] : [appui];
+        fA = Math.max(56, Math.min(fA, taillePour(lignesA.reduce(function (a, l) { return l.length > a.length ? l : a; }, ""), V ? 0.86 * L : 0.6 * L, 56, 72)));
+        hA = fA * 1.06 * lignesA.length;
+        var blocA = K.el(mots, "div", "pre-appui", null, "left:" + px(V ? 0.07 * L : 0.06 * L) + "; top:" + px(haut) + "; font-size:" + px(fA) + ";");
+        lignesA.forEach(function (l) {
+          var e = K.el(blocA, "div", null);
+          l.split(/\s+/).forEach(function (m, k, tous) {
+            var s = K.el(e, "span", "k-mot");
+            s.textContent = m + (k < tous.length - 1 ? " " : "");
+            motsA.push(s);
+          });
+        });
+      }
+
+      // --- L'éventail : la place de chaque carte ---------------------------------------------
+      // 16:9 : en arc, côte à côte, le milieu devant. 9:16 : en quinconce (une carte haute, une
+      // basse), les hautes devant, pour que chaque pastille reste lisible.
+      var res = (CONTENU.resultats || []).slice(0, 5), n = res.length, ratio = CONTENU.ratio || 1.25;
+      var fPast = V ? 54 : 56, fCtx = V ? 32 : 32, hEtiq = fPast * 1.7 + 10 + fCtx * 1.8;
+      var y0 = haut + hA + (V ? 56 : 48), place = bas - y0;
+      var dy = V && n > 2 ? Math.min(300, place * 0.3) : 0;
+      var hC = place - dy - hEtiq + fPast * 0.85, lC = hC / ratio;
+      var largeurUtile = V ? 0.96 * L : 0.9 * L, recouvre = V ? (n > 2 ? 0.5 : 0.9) : 0.84;
+      lC = Math.min(lC, largeurUtile / (1 + recouvre * (n - 1)));
+      if (V && n > 2) lC = Math.max(lC, largeurUtile / (1 + 0.5 * (n - 1)));
+      hC = Math.min(hC, lC * ratio);
+      var pasX = n > 1 ? (largeurUtile - lC) / (n - 1) : 0, x0 = (L - largeurUtile) / 2;
+      var cartes = res.map(function (rs, i) {
+        var k = i - (n - 1) / 2, haute = i % 2 === 0;
+        var p = {
+          x: x0 + i * pasX, y: y0 + (V ? (haute ? 0 : dy) : k * k * 16) + (V ? 0 : (place - hEtiq - hC + fPast * 0.85) / 2),
+          z: V ? (haute ? 40 : -40) : -Math.abs(k) * 50, rz: V ? (haute ? -3 : 3) + k * 1.2 : k * 4, ry: V ? -k * 6 : -k * 10
+        };
+        var c = K.el(cam, "div", "pre-carte k-plan", null, "width:" + px(lC) + "; height:" + px(hC) + ";");
+        var mat = K.el(c, "div", "pre-matiere");
+        mat.setAttribute("data-layout-ignore", "");   // la capture est une matière : elle passera au flou
+        if (rs.image) {
+          var img = K.el(mat, "img");
+          img.src = rs.image;
+          img.alt = "";
+        } else {
+          var f = K.el(mat, "div", "pre-faux", null, "font-size:" + px(lC * 0.075) + ";"), carte = rs.carte || [];
+          K.el(f, "div", "pre-faux-tete", "<i></i>").appendChild(document.createTextNode(carte[0] || ""));
+          K.el(f, "div", "pre-faux-sous", null, "padding-left:2em;").textContent = carte[1] || "";
+          var graph = K.el(f, "div", "pre-faux-graph", null, "top:36%; height:34%;"), r = K.rng(31 + i * 7);
+          for (var b = 0; b < 7; b++) K.el(graph, "b", null, null, "height:" + Math.round(28 + 72 * (b / 6) * (0.55 + 0.45 * r())) + "%;");
+          K.el(f, "div", "pre-faux-ligne", null, "top:78%; width:72%;");
+          K.el(f, "div", "pre-faux-ligne", null, "top:86%; width:48%;");
+        }
+        // La pastille et son contexte, posées sous la carte, à cheval sur son bord.
+        var texteFinal = formater(rs.format, rs.chiffre || 0);
+        var etiq = K.el(c, "div", "pre-etiquette", null, "top:" + px(hC - fPast * 0.85) + "; width:" + px(lC) + ";");
+        var past = K.el(etiq, "div", "pre-pastille", null,
+          "font-size:" + px(fPast) + "; height:" + px(fPast * 1.7) + "; width:" + px(texteFinal.length * fPast * 0.62 + fPast * 1.2) + ";");
+        var chiffre = K.el(past, "span");
+        var ctx = rs.contexte ? K.el(etiq, "div", "pre-contexte", null, "font-size:" + px(fCtx) + ";") : null;
+        if (ctx) ctx.textContent = rs.contexte;
+        gsap.set(c, { x: p.x, y: p.y, z: p.z, rotation: p.rz, rotationY: p.ry, transformOrigin: "50% 60%" });
+        return { el: c, etiq: etiq, past: past, chiffre: chiffre, ctx: ctx, p: p, k: k, rs: rs };
+      });
+
+      // --- Le temps : les cartes arrivent une à une, chaque pastille compte -------------------
+      // La première est là dès l'image 0, au centre et en grand (l'affiche), sa pastille compte ;
+      // puis elle part à sa place et les suivantes jaillissent dans les leurs, une par temps.
+      var pas = 0.42, tEtiq = 0.12, tPlace = 0.55;
+      cartes.forEach(function (c, i) {
+        var ti = i === 0 ? -0.04 : tPlace + 0.3 + (i - 1) * pas, p = c.p;
+        if (i === 0) {
+          var yCentre = V ? y0 + dy / 2 : p.y;
+          tl.fromTo(c.el, { x: (L - lC) / 2, y: yCentre + 40, z: 200, scale: 1.12, rotation: -2, rotationY: 0, rotationX: -8 },
+            { x: (L - lC) / 2, y: yCentre, z: 90, scale: 1.12, rotation: -2, rotationY: 0, rotationX: 0, duration: 0.55, ease: "expo.out" }, 0);
+          tl.to(c.el, { x: p.x, y: p.y, z: p.z, scale: 1, rotation: p.rz, rotationY: p.ry, duration: 0.5, ease: "power3.inOut" }, tPlace);
+        } else {
+          K.cacher(c.el);
+          tl.set(c.el, { opacity: 1 }, ti);
+          tl.fromTo(c.el, { y: p.y + H * 0.28, z: p.z + 380, rotationX: -32, rotation: p.rz + 10 },
+            { y: p.y, z: p.z, rotationX: 0, rotation: p.rz, duration: 0.62, ease: "expo.out", immediateRender: false }, ti);
+        }
+        K.claque(tl, c.past, Math.max(0.06, ti + tEtiq), { de: 0.45, duree: 0.38, ease: "back.out(1.8)" });
+        K.compteur(tl, c.chiffre, 0, c.rs.chiffre || 0, Math.max(0.06, ti + tEtiq), 0.75, duree, function (v) { return formater(c.rs.format, v); }, "expo.out");
+        if (c.ctx) K.entreeMots(tl, c.ctx, Math.max(0.1, ti + tEtiq + 0.12), { y: 18, flou: 8, duree: 0.4 });
+      });
+
+      // --- Le grand chiffre : les pastilles s'envolent, les captures s'écartent au flou -------
+      var tDernier = n > 1 ? tPlace + 0.3 + (n - 2) * pas + tEtiq : tEtiq;
+      var tEcart = Math.max(tDernier + 1.25, motsA.length ? lecture(appui) + 0.1 : 0);
+      if (motsA.length) K.sortieMots(tl, motsA, tEcart - 0.1, { decalage: 0.03 });
+      cartes.forEach(function (c, i) {
+        tl.to(c.etiq, { scale: 0, y: -40, duration: 0.2, ease: "power3.in" }, tEcart + i * 0.03);
+        var sens = c.k === 0 ? (i % 2 ? 1 : -1) * 0.3 : c.k;
+        // La nuit et le flou, une fois les pastilles parties (assombrie, la couleur d'accent virerait à
+        // l'olive) : le chiffre se lira sur du sombre (sur le fond clair, les captures restent claires). Le flou part d'un état net explicite : sans lui,
+        // GSAP part d'une luminosité nulle (des cartes noires).
+        tl.fromTo(c.el, { filter: "blur(0px) brightness(1)" }, { filter: "blur(14px) brightness(" + (clair ? 1 : 0.38) + ")", duration: 0.38, ease: "power2.out", immediateRender: false }, tEcart + 0.3);
+        tl.to(c.el, { x: c.p.x + sens * (V ? 150 : 210), y: c.p.y + (V ? (i % 2 ? 90 : -90) : 30), z: c.p.z - 240, rotationY: c.p.ry * 1.8, duration: 0.75, ease: "power2.inOut" }, tEcart + 0.12);
+        // Puis elles continuent de s'écarter lentement derrière le chiffre (le monde vit).
+        tl.to(c.el, { x: c.p.x + sens * ((V ? 150 : 210) + 40), duration: 2.4, ease: "sine.out" }, tEcart + 0.8);
+      });
+      var tot = CONTENU.total || {}, totalFinal = formater(tot.format, tot.a || 0);
+      var em = totalFinal.split("").reduce(function (a, ch) { return a + (/[\s\u00a0]/.test(ch) ? 0.26 : /[.,]/.test(ch) ? 0.3 : 0.6); }, 0);
+      var fTot = Math.max(150, Math.min(V ? 330 : 340, (V ? 0.86 : 0.66) * L / Math.max(2.4, em)));
+      var fRep = taillePour(tot.repere || "x", V ? 0.86 * L : 0.6 * L, 52, 72);
+      var hBloc = fTot * 1.0 + 30 + fRep * 1.2, yTot = (V ? (haut + bas) / 2 : H / 2) - hBloc / 2;
+      var total = K.el(mots, "div", "k-heros pre-total", null, "top:" + px(yTot) + "; font-size:" + px(fTot) + "; line-height:1;");
+      var tTotal = tEcart + 0.52;
+      K.claque(tl, total, tTotal, { de: 1.5, duree: 0.45 });
+      K.compteur(tl, total, 0, tot.a || 0, tTotal, 1.15, duree, function (v) { return formater(tot.format, v); }, "expo.out");
+      var t = tTotal + 1.2;
+      if (tot.repere) {
+        var rep = K.el(mots, "div", "pre-repere", null, "top:" + px(yTot + fTot * 1.0 + 30) + "; font-size:" + px(fRep) + "; line-height:1.2;");
+        var repTexte = String(tot.repere), cle = tot.cle && repTexte.indexOf(tot.cle) >= 0 ? String(tot.cle) : "";
+        var avant = cle ? repTexte.slice(0, repTexte.indexOf(cle)).trim() : repTexte, apres = cle ? repTexte.slice(repTexte.indexOf(cle) + cle.length).trim() : "";
+        var morceaux = [];
+        if (avant) avant.split(/\s+/).forEach(function (m) { morceaux.push(K.el(rep, "span", "k-mot", null, "margin:0 0.13em;")); morceaux[morceaux.length - 1].textContent = m; });
+        var elCle = cle ? K.el(rep, "span", "k-mot", null, "margin:0 0.13em;") : null;
+        if (elCle) { elCle.textContent = cle; morceaux.push(elCle); }
+        if (apres) apres.split(/\s+/).forEach(function (m) { morceaux.push(K.el(rep, "span", "k-mot", null, "margin:0 0.13em;")); morceaux[morceaux.length - 1].textContent = m; });
+        var tRep = tTotal + 0.4;
+        K.entreeMots(tl, morceaux, tRep, { decalage: 0.07 });
+        // La clé du repère se surligne d'un bloc plein, une fois lue (son encre change d'un coup).
+        if (elCle) {
+          K.surligner(tl, elCle, tRep + 1.0);
+          tl.set(elCle, { color: K.jeton("--brand-contrast") || "#151515" }, tRep + 1.12);
+        }
+        // Le chiffre se lit avec son repère : un mot de plus que le repère, depuis l'arrivée du chiffre.
+        t = Math.max(t, tTotal + lecture("1 " + repTexte), tRep + lecture(repTexte));
+      }
+
+      // La caméra : une dérive lente du monde derrière les mots (les mots, eux, ne bougent pas).
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.04, duration: t, ease: "sine.inOut" }, 0);
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

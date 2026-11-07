@@ -24,14 +24,14 @@ propose-la en dernier.
 
 - Une nouvelle vidéo : écris le texte d'après `PLAN.md`, scène par scène. Pour une vidéo de page
   qu'il veut avec voix off dès le départ, le texte peut venir **avant** le plan : il se valide, la
-  voix se génère, puis le plan se cale sur ses mots (essai du 03/11/2026 : plus naturel pour une
+  voix se génère, puis le plan se cale sur ses mots (plus naturel pour une
   courte VSL, la voix porte la structure).
 - Une vidéo déjà faite : pars de ses scènes et de leurs durées (`PLAN.md` et `npx hyperframes
   timeline` dans son projet). La voix suit l'ordre des scènes ; une scène trop courte pour sa phrase
   s'allongera (étape 3), elle ne se bourre pas de mots.
 - Phrases de 12 mots au plus, une idée par phrase, des mots qu'il dirait vraiment. Durée : environ
   2,5 mots par seconde pour sa voix, mais **3 mots par seconde pour une voix Google AI Studio**
-  (essai du 03/11/2026 : 131 mots en 41 s avec « rythme soutenu », au lieu des 52 s estimées) ;
+  (131 mots en 41 s avec « rythme soutenu », au lieu des 52 s estimées) ;
   pour une vidéo de page, le ton dit « rythme posé ». L'écran ne recopie pas la voix mot pour mot : il garde le mot clé, le chiffre, le nom
   de l'offre. Mêmes règles que `ecriture.md`, et rien qui ne soit dans `OFFRE.json`.
 - Range-le dans `work/voix.txt` (dans le projet de la vidéo), montre-le-lui en entier avec sa durée
@@ -60,7 +60,7 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
 4. Une phrase qui sonne mal : corrige-la dans le texte, il ne régénère que ce bloc sur le site.
 5. Pour qu'il choisisse à l'oreille, propose **deux ou trois voix** générées avec le même texte et le
    même ton (Nika, Koda, Tavi), rangées dans `assets/audio/prises/`, et vérifie chacune par la
-   transcription (E) avant de la lui faire écouter : sur l'essai du 03/11/2026, Koda collait
+   transcription (E) avant de la lui faire écouter : lors d'un essai, Koda collait
    « Publicitaire IA » en « Publicitéria » et disait les questions comme des affirmations.
    Si tu pilotes toi-même le navigateur intégré, il te faut sa connexion Google : il se connecte,
    jamais toi. Le bouton Download y range le fichier dans ses Téléchargements sous le nom
@@ -154,7 +154,7 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    ```
 
    Il garde les mots de `work/voix.txt` et prend à la transcription le temps de chaque mot ; la
-   transcription brute reste dans `assets/audio/transcript-brut.json`. Piège vu le 03/11/2026 sur une
+   transcription brute reste dans `assets/audio/transcript-brut.json`. Piège vu sur une
    voix Google AI Studio en français (Nika) : Parakeet écrivait des mots en anglais (« It's » pour
    « C'est », « And that video? ») et sautait des passages entiers (120 mots reconnus sur 131) ;
    sans `voix caler`, des animations se calaient sur des mots absents.
@@ -174,7 +174,7 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    silencedetect=n=-40dB:d=0.3 -f null -`, une phrase entre deux pauses) et sur `work/voix.txt`.
 
 3. **Les respirations.** Une voix de synthèse ne laisse presque aucune pause (aucune d'une seconde
-   sur l'essai du 03/11/2026). Ouvre-en une de 1,5 s juste avant la phrase du pivot (sur une page de
+   lors d'un essai). Ouvre-en une de 1,5 s juste avant la phrase du pivot (sur une page de
    vente, 1 s en Reel), et une d'environ 1 s quand le résultat s'affiche : la musique entre dans ce
    trou au lieu de couvrir le nom de l'offre (son.md, « Sous une voix off »).
 
@@ -197,8 +197,8 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   écart mesuré sur le morceau, baissée pendant la parole et remontée dans les respirations (son.md,
   « Sous une voix off ») ; le mélange entier est amené au niveau des Reels. Avec une voix,
   moins de bruitages : les gestes forts (clic, coche, impact sur le nom et le prix), et une frappe
-  de clavier sur chaque phrase tapée importante, une prise différente à chaque fois (retour client
-  du 03/11/2026 : « un tout petit peu plus de SFX, sans en abuser »).
+  de clavier sur chaque phrase tapée importante, une prise différente à chaque fois (retour du créateur :
+  « un tout petit peu plus de SFX, sans en abuser »).
   Une vidéo déjà sonorisée : refais la liste complète et relance `sons` avec `--ecraser`.
 - Des sous-titres incrustés en plus si le support se regarde muet (story, pub dans le fil).
 - Puis rendu, revue et export comme toute vidéo ([revue.md](revue.md)).

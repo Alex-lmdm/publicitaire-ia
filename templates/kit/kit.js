@@ -55,6 +55,16 @@
     return (racine && lire(racine)) || { largeur: 1920, hauteur: 1080 };
   };
 
+  // La durée donnée à une scène : celle de sa racine, ou, une fois montée, celle de son hôte dans
+  // index.html (HyperFrames retire data-duration de la racine intérieure au montage). 0 si aucune.
+  K.duree = function (el) {
+    for (var n = el; n && n.getAttribute; n = n.parentElement) {
+      var d = parseFloat(n.getAttribute("data-duration"));
+      if (d > 0) return d;
+    }
+    return 0;
+  };
+
   // La valeur d'un jeton de la marque (`--brand-gris-2`), pour un tween de couleur : GSAP
   // n'interpole pas une variable CSS.
   K.jeton = function (nom) {

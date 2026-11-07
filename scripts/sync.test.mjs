@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import {
   resoudreBlocs, remplir, genererInstructions, copierSkills, lireProduit, tamponner, lancerEtapes, messageIncomplet,
+  retirerPerimes, RETIRES,
 } from "./sync.mjs";
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -142,4 +143,24 @@ test("un dossier incomplet le dit et sort en erreur", (t) => {
     process.platform === "win32" ? ["/c", "node scripts/sync.mjs || exit 0"] : ["-c", "node scripts/sync.mjs || exit 0"],
     { cwd: dir, encoding: "utf8" });
   assert.equal(npm.status, 0, "la commande du postinstall ne casse pas npm ci");
+});
+
+test("une mise à jour par archive ne laisse aucun fichier retiré du produit, ni ne touche au reste", (t) => {
+  const dir = dossierDeTest(t);
+  const vieux = path.join(dir, ".claude", "skills", "hyperframes-cli");
+  fs.mkdirSync(vieux, { recursive: true });
+  fs.writeFileSync(path.join(vieux, "SKILL.md"), "---\nname: hyperframes-cli\n---\n");
+  const ref = path.join(dir, ".claude", "skills", "studio", "references");
+  fs.mkdirSync(ref, { recursive: true });
+  fs.writeFileSync(path.join(ref, "rythme.md"), "ancien");
+  fs.writeFileSync(path.join(ref, "mouvement.md"), "nouveau");
+  fs.mkdirSync(path.join(dir, "videos", "Ma vidéo"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "videos", "Ma vidéo", "rythme.md"), "au client");
+  retirerPerimes(dir);
+  assert.equal(fs.existsSync(vieux), false);
+  assert.equal(fs.existsSync(path.join(ref, "rythme.md")), false);
+  assert.equal(fs.readFileSync(path.join(ref, "mouvement.md"), "utf8"), "nouveau");
+  assert.equal(fs.readFileSync(path.join(dir, "videos", "Ma vidéo", "rythme.md"), "utf8"), "au client");
+  // Aucun chemin retiré ne vise ce qui appartient au client.
+  for (const r of RETIRES) assert.ok(!/^(videos|marque|assets\/(sfx|musiques))\b/.test(r), r);
 });

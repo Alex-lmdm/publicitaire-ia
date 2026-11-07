@@ -5,34 +5,28 @@
 <template>
 <!--
   Style n°7 · Phrase tapée · scène « L'orbite » (la promesse finale, puis le logo et l'appel).
-  Ce qu'elle montre : la carte de ton offre posée DANS une phrase, sur l'ardoise ; les mots
-  s'écartent, trois orbites en pointillés se dessinent autour d'elle et les logos de ses outils,
-  des points et deux étiquettes s'y mettent à tourner ; chaque outil « se connecte » (un liseré
-  de l'accent) et quatre fois les orbites passent à l'accent, le temps d'un battement ; la caméra
-  recule : ses autres systèmes (ses autres modules, bonus ou offres, s'il en a) apparaissent
-  autour, le fond passe à la nuit, tout passe au flou et la conclusion se tape au centre. Coupe
-  sur fond clair : un point d'encre se contracte, devient ton logo, ton nom sort, et la pastille
-  d'appel en capitales se pose dessous.
-  Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
-  la phrase autour de la carte (pendant qu'elle se lit, la capture de la carte se dévoile), la ligne
-  de la carte pendant l'orbite (la caméra n'y fait qu'une poussée lente, sans recadrage sec), la
-  conclusion tapée, puis l'écran final 3 s.
-  Durée : la scène la calcule (D dans le script) : 14,4 s avec les textes d'exemple (4 mots autour
-  de la carte, 3 dans la conclusion) ; +0,3 s par mot de plus. Reporte-la dans data-duration (ici
-  et sur l'hôte).
-  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe
-  au-dessus et au-dessous de la carte, les orbites prennent toute la largeur, deux autres systèmes
-  tournent déjà en haut et en bas de l'image, les autres arrivent avec le recul).
-  À remplacer (objet R en tête du script) : les deux morceaux de la phrase, la carte (nom, une
-  ligne vraie, la ligne du bas, et sa vraie capture "assets/images/…" ; sans capture, la carte
-  porte son logo et ses mots, jamais un aperçu dessiné), les logos de ses outils (posés par
-  `studio_motion.py logos` ; un logo absent est retiré), les deux étiquettes, ses autres systèmes
-  (de vrais noms ; [] : le recul se fait sur l'orbite seule), la conclusion, ton logo
-  (brand/logo.svg ou .png ; "" sans logo), ton nom, l'appel de la pastille (avec ta vraie adresse).
-  Couleurs : seulement celles de ta marque (brand/tokens.css) : l'ardoise (un de ses gris) puis
-  sa nuit, son clair, l'accent plein (curseur, liserés, orbites qui battent, pastille), des
-  blancs et des noirs en transparence. Jamais d'accent en halo ni en transparence. Les logos et
-  la capture gardent leurs vraies couleurs.
+  Ce qu'elle montre : la carte de ton offre (sa vraie capture et son nom) posée DANS une phrase, sur
+  l'ardoise ; les mots s'écartent, trois orbites en pointillés se dessinent autour d'elle et sa
+  vraie matière s'y met à tourner (les logos de ses outils, ses captures, au besoin deux mots en
+  étiquette) ; chaque outil « se connecte » (un liseré de l'accent) et quatre fois les orbites
+  passent à l'accent, le temps d'un battement ; la caméra recule : ses autres systèmes (ses autres
+  modules, bonus ou offres, s'il en a) apparaissent autour, le fond passe à la nuit, tout passe au
+  flou et la conclusion se tape au centre. Coupe sur fond clair : un point d'encre se contracte et
+  devient ton logo, ton nom sort, et la pastille d'appel en capitales se pose dessous.
+  Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`)
+  et ne bouge pas pendant qu'on le lit : la phrase autour de la carte (la capture de la carte se
+  dévoile), la ligne de la carte pendant l'orbite (seuls les anneaux font une poussée lente), la
+  conclusion tapée, puis l'écran final 3 s. Une orbite sans objet ne se dessine pas.
+  Durée : la scène la calcule (D dans le script) : 15,2 s avec l'objet EXEMPLE ; +0,3 s par mot de
+  plus. Reporte-la dans data-duration (ici et sur l'hôte).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe au-dessus et
+  au-dessous de la carte, les orbites prennent toute la largeur, ses captures tournent en haut et
+  en bas, ses autres systèmes arrivent avec le recul).
+  À remplacer : l'objet EXEMPLE en tête du script (chaque champ y est décrit).
+  Couleurs : seulement les jetons de ta marque (brand/tokens.css) : l'ardoise (un de ses gris) puis
+  sa nuit, son clair, l'accent plein (curseur, liserés, orbites qui battent, pastille), du blanc
+  en transparence pour le trait fin des orbites et du noir pour les ombres. Jamais d'accent en halo
+  ni en transparence. Les logos et les captures gardent leurs vraies couleurs.
   Identifiant : t7o (préfixe de tous les id et classes de la scène).
 -->
 <style>
@@ -50,71 +44,71 @@
   #t7o .t7o-plan { position: absolute; inset: 0; z-index: 1; }
   #t7o #t7o-p2 { z-index: 2; }
   #t7o .t7o-fond { position: absolute; inset: 0; background: var(--t7-ardoise); }
+  /* le recul passe à la nuit : sa couleur posée par-dessus l'ardoise, jamais un filtre sur la marque */
+  #t7o .t7o-nuit { position: absolute; inset: 0; background: var(--t7-nuit); opacity: 0; }
   #t7o .t7o-monde { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
   #t7o .t7o-voile { position: absolute; inset: 0; background: var(--t7-nuit); opacity: 0; z-index: 4; }
   #t7o .t7o-systeme { position: absolute; left: 0; top: 0; width: 0; height: 0; }
   #t7o .t7o-anneau { position: absolute; left: 0; top: 0; width: 0; height: 0; }
-  #t7o .t7o-cercle { position: absolute; border-radius: 50%; border: 2px dashed rgba(255,255,255,.2); }
+  #t7o .t7o-cercle { position: absolute; border-radius: 50%; border: 2px dashed rgba(255,255,255,.22); }
   /* Le battement : l'orbite passe d'un coup à l'accent plein (un trait fin, jamais un halo). */
   #t7o .t7o-cercle[data-on="1"] { border: 3px solid var(--brand-accent); }
   #t7o .t7o-item { position: absolute; display: grid; place-items: center; }
-  #t7o .t7o-tuile { width: 100%; height: 100%; border-radius: 26%; background: rgba(255,255,255,.1); display: grid; place-items: center; color: var(--t7-clair);
-    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12); }
+  /* un logo de ses outils, comme une icône d'appli : sur une tuile claire */
+  #t7o .t7o-tuile { width: 100%; height: 100%; border-radius: 26%; background: var(--t7-clair); display: grid; place-items: center; color: var(--t7-encre);
+    box-shadow: 0 10px 24px rgba(0,0,0,.30); }
   #t7o .t7o-tuile svg { width: 60%; height: 60%; }
-  #t7o .t7o-point { width: 100%; height: 100%; border-radius: 50%; }
-  #t7o .t7o-point-1 { background: var(--t7-clair); }
-  #t7o .t7o-point-2 { background: rgba(255,255,255,.42); }
-  #t7o .t7o-point-3 { background: transparent; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
-  #t7o .t7o-etiquette { white-space: nowrap; padding: 8px 14px; border-radius: 10px; font-family: var(--brand-font-body); font-size: 17px; font-weight: 600;
-    background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14); color: var(--t7-texte); display: flex; align-items: center; gap: 8px; }
-  #t7o .t7o-etiquette i { width: 12px; height: 12px; border-radius: 4px; background: var(--t7-clair); }
-  #t7o .t7o-carte { position: absolute; left: 0; top: 0; width: 300px; border-radius: 22px; background: var(--t7-clair); padding: 14px 14px 20px;
-    box-shadow: 0 0 0 10px rgba(255,255,255,.08), 0 30px 70px rgba(0,0,0,.35); color: var(--t7-encre); font-family: var(--brand-font-body); }
+  /* une de ses vraies captures en orbite */
+  #t7o .t7o-image { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; background: var(--t7-clair); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+  #t7o .t7o-image img { width: 100%; height: 100%; object-fit: cover; object-position: left top; display: block; }
+  #t7o .t7o-etiquette { white-space: nowrap; padding: 10px 20px; border-radius: 14px; font-family: var(--brand-font-body); font-size: 32px; font-weight: 600;
+    background: var(--t7-clair); color: var(--t7-encre); box-shadow: 0 10px 24px rgba(0,0,0,.30); }
+  #t7o .t7o-carte { position: absolute; left: 0; top: 0; width: 420px; border-radius: 26px; background: var(--t7-clair); padding: 16px 16px 24px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.35); color: var(--t7-encre); font-family: var(--brand-font-body); }
   #t7o .t7o-carte[data-on="1"] { box-shadow: 0 0 0 6px var(--brand-accent), 0 30px 70px rgba(0,0,0,.35); }
-  #t7o .t7o-apercu { height: 168px; border-radius: 12px; overflow: hidden; position: relative; background: rgba(0,0,0,.05); }
+  #t7o .t7o-apercu { height: 218px; border-radius: 14px; overflow: hidden; position: relative; }
   #t7o .t7o-apercu img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left top; }
-  #t7o .t7o-marque { width: 58px; height: 58px; margin: 8px 8px 0; }
+  #t7o .t7o-marque { width: 84px; height: 84px; margin: 10px 10px 0; }
   #t7o .t7o-marque img { width: 100%; height: 100%; object-fit: contain; }
-  #t7o .t7o-carte h5 { font-size: 27px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; margin: 18px 8px 8px; }
-  #t7o .t7o-carte.t7o-sans-capture h5 { font-size: 34px; margin-top: 20px; }
-  #t7o .t7o-carte p { font-size: 18px; line-height: 1.35; color: var(--brand-gris-2); margin: 0 8px; }
-  #t7o .t7o-carte small { display: block; margin: 16px 8px 0; font-size: 16px; color: var(--brand-gris-2); }
-  #t7o .t7o-mini { position: absolute; left: 0; top: 0; width: 280px; padding: 30px 26px; border-radius: 22px; background: var(--t7-clair); color: var(--t7-encre);
-    font-family: var(--brand-font-body); font-size: 34px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; text-align: center;
-    box-shadow: 0 0 0 10px rgba(255,255,255,.08), 0 30px 70px rgba(0,0,0,.35); }
+  #t7o .t7o-carte h5 { font-size: 42px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; margin: 20px 10px 6px; white-space: nowrap; }
+  #t7o .t7o-carte p { font-size: 36px; line-height: 1.25; color: var(--brand-gris-2); margin: 0 10px; white-space: nowrap; }
+  #t7o .t7o-mini { position: absolute; left: 0; top: 0; width: 300px; padding: 34px 26px; border-radius: 24px; background: var(--t7-clair); color: var(--t7-encre);
+    font-family: var(--brand-font-body); font-size: 40px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; text-align: center;
+    box-shadow: 0 30px 70px rgba(0,0,0,.35); }
   #t7o .t7o-ligne { position: absolute; left: 0; right: 0; top: 50%; height: 160px; margin-top: -80px; z-index: 5;
     font-size: 96px; font-weight: 500; letter-spacing: -0.045em; white-space: nowrap; line-height: 160px; }
-  #t7o .t7o-gauche { position: absolute; right: calc(50% + 122px); top: 0; }
-  #t7o .t7o-droite { position: absolute; left: calc(50% + 122px); top: 0; }
+  #t7o .t7o-gauche { position: absolute; right: calc(50% + 196px); top: 0; }
+  #t7o .t7o-droite { position: absolute; left: calc(50% + 196px); top: 0; }
   #t7o .t7o-gauche span, #t7o .t7o-droite span { display: inline-block; }
+  #t7o .t7o-gauche span[data-on="1"], #t7o .t7o-droite span[data-on="1"] { color: var(--brand-accent-lisible); }
   #t7o .t7o-conclusion { position: absolute; left: 0; right: 0; top: 50%; height: 140px; margin-top: -70px; text-align: center; z-index: 6;
     font-size: 104px; font-weight: 500; letter-spacing: -0.045em; line-height: 140px; white-space: nowrap; text-shadow: 0 6px 40px rgba(0,0,0,.35); }
   #t7o .t7o-caret { display: inline-block; width: 0.07em; height: 0.8em; margin-left: 0.04em; vertical-align: -0.06em; background: var(--brand-accent); }
   #t7o .t7o-clair { background: var(--t7-clair); color: var(--t7-encre); }
+  /* le point d'encre : il ne sert qu'à devenir le logo (sans logo, il n'existe pas) */
   #t7o .t7o-encre { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: var(--t7-encre); }
-  #t7o .t7o-signe { position: absolute; left: 0; right: 0; top: 50%; height: 180px; margin-top: -150px; display: flex; align-items: center; justify-content: center; gap: 34px; }
-  #t7o .t7o-logo { width: 150px; height: 150px; display: grid; place-items: center; flex: none; }
+  #t7o .t7o-signe { position: absolute; left: 0; right: 0; top: 50%; display: flex; align-items: center; justify-content: center; }
+  #t7o .t7o-logo { display: grid; place-items: center; flex: none; }
   #t7o .t7o-logo img { width: 100%; height: 100%; object-fit: contain; }
   #t7o .t7o-nom-boite { overflow: hidden; padding: 0 6px; }
-  #t7o .t7o-nom { font-size: 150px; font-weight: 600; letter-spacing: -0.05em; white-space: nowrap; line-height: 1.2; }
-  #t7o .t7o-pastille { position: absolute; left: 50%; top: 50%; margin-top: 110px; transform: translateX(-50%); white-space: nowrap; padding: 12px 24px;
-    background: var(--brand-accent); color: var(--brand-contrast); font-family: var(--t7-police-pastille); font-size: 30px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
-  #t7o .t7o-pixels { position: absolute; inset: 0; }
+  #t7o .t7o-nom { font-weight: 600; letter-spacing: -0.05em; white-space: nowrap; line-height: 1.2; }
+  #t7o .t7o-pastille { position: absolute; left: 50%; top: 50%; transform: translateX(-50%); white-space: nowrap; padding: 12px 26px;
+    background: var(--brand-accent); color: var(--brand-contrast); font-family: var(--t7-police-pastille); font-size: 34px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
 </style>
 
-<div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="14.4" style="position:absolute; inset:0;">
+<div data-composition-id="t7o" data-width="1920" data-height="1080" data-duration="15.2" style="position:absolute; inset:0;">
   <div id="t7o" class="k-scene">
     <div class="t7o-plan" id="t7o-p1">
-      <div class="t7o-fond" id="t7o-fond"></div>
+      <div class="t7o-fond"></div>
+      <div class="t7o-nuit" id="t7o-nuit"></div>
       <div class="t7o-monde" id="t7o-monde"></div>
       <div class="t7o-voile" id="t7o-voile"></div>
       <div class="t7o-ligne" id="t7o-ligne"><div class="t7o-gauche" id="t7o-gauche" data-layout-allow-overflow></div><div class="t7o-droite" id="t7o-droite" data-layout-allow-overflow></div></div>
       <div class="t7o-conclusion" id="t7o-conclusion"><span id="t7o-conclusion-texte"></span><span class="t7o-caret" id="t7o-caret"></span></div>
     </div>
     <div class="t7o-plan t7o-clair" id="t7o-p2">
-      <svg class="t7o-pixels" id="t7o-pixels" aria-hidden="true" data-layout-allow-overflow></svg>
       <div class="t7o-encre" id="t7o-encre"></div>
-      <div class="t7o-signe" id="t7o-signe"><div class="t7o-logo" id="t7o-logo"></div><div class="t7o-nom-boite"><div class="t7o-nom" id="t7o-nom"></div></div></div>
+      <div class="t7o-signe" id="t7o-signe"><div class="t7o-logo" id="t7o-logo"></div><div class="t7o-nom-boite" data-layout-allow-overflow><div class="t7o-nom" id="t7o-nom"></div></div></div>
       <div class="t7o-pastille" id="t7o-pastille"></div>
     </div>
   </div>
@@ -122,198 +116,221 @@
 
 <script>
 (function () {
-  // ---- À remplacer --------------------------------------------------------------------------
-  var R = {
-    avant: "Au centre,", apres: "ton offre.",
-    // la carte de l'offre ; capture : sa vraie capture ("assets/images/…"), sinon "" (son logo et ses mots)
-    carte: { nom: "Ton offre", texte: "Ce qu'elle fait pour toi, en une ligne.", bas: "12 modules · 3 bonus", capture: "" },
-    logos: ["logo-claude", "logo-chatgpt", "logo-instagram", "logo-tiktok", "logo-youtube", "logo-linkedin"],
-    etiquettes: ["Module 2", "Bonus"],
-    autres: ["Module 1", "Module 3", "Bonus", "Groupe", "Modèles", "Lives", "Outils", "Coaching"],   // ses autres systèmes (vrais noms) ; [] : aucun
-    conclusion: "Tout s'organise autour.",
-    logo: "brand/logo.svg",            // son fichier dans brand/ (logo.svg ou .png) ; "" : le nom seul
-    nom: "Ton offre",
-    appel: "Rejoins-la sur tonsite.fr"
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+    avant: "Tout tourne", apres: "autour d'elle.",   // la phrase, de part et d'autre de la carte
+    // la carte de l'offre : son nom, une ligne vraie (lue pendant l'orbite), sa vraie capture
+    // ("assets/images/…" ; "" : son logo à la place)
+    carte: { nom: "Ta formation", texte: "Tes outils réunis.", capture: "assets/images/capture-1.png" },
+    // en orbite : les logos de ses outils (posés par `studio_motion.py logos` ; un absent se retire),
+    // ses vraies captures (modules, pages), et au besoin deux mots en étiquette (comptés dans les
+    // 8 mots du plan, avec la carte)
+    logos: ["logo-notion", "logo-slack", "logo-google-drive", "logo-zoom", "logo-canva", "logo-gmail"],
+    images: ["assets/images/capture-2.png", "assets/images/capture-3.png"],
+    etiquettes: [],
+    // ses autres systèmes, vus au recul (ses vrais modules, bonus ou offres) ; [] : le recul se fait
+    // sur l'orbite seule
+    autres: ["Module 1", "Module 2", "Module 3", "Groupe", "Modèles", "Bonus"],
+    conclusion: "Rien ne manque.",
+    logo: "brand/logo.png",            // son fichier dans brand/ (logo.svg ou .png) ; "" : le nom seul
+    nom: "Ta formation",
+    appel: "Rejoins-la sur tonsite.fr" // le texte du bouton sous la vidéo, ou son adresse
   };
-  // -------------------------------------------------------------------------------------------
   // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
   // moins ; l'écran final 3 s.
   function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
-  var nApres = R.apres.split(" ").length;
-  var XP = 0.6 + 0.12 * (nApres - 1) + 0.45 + lecture([R.avant, R.apres]);   // la phrase autour de la carte, lue
-  var O = XP - 1.45;                                                          // l'orbite attend (1,75 s + O)
-  var O2 = O + 6.1 + lecture(R.conclusion) - 6.55;                            // le point d'encre attend la conclusion lue
-  var D = Math.ceil((8.4 + O2 + 3) * 10 - 1e-9) / 10;                         // la pastille d'appel, puis 3 s
+  var nApres = EXEMPLE.apres.split(" ").length;
+  var E1 = 0.6 + 0.12 * (nApres - 1) + 0.45;                                      // la phrase posée
+  var XP = E1 + lecture([EXEMPLE.avant, EXEMPLE.apres, EXEMPLE.carte.nom]);       // la phrase et le nom de la carte, lus
+  var OB = XP + 0.3;                                                               // les orbites s'ouvrent
+  var RE = OB + Math.max(2.55, 1.0 + lecture([EXEMPLE.carte.texte].concat(EXEMPLE.etiquettes)));   // la ligne de la carte lue : le recul
+  var XC = RE + 1.8 + lecture(EXEMPLE.conclusion);                                 // la conclusion tapée, lue
+  var D = Math.ceil((XC + 1.85 + 3) * 10 - 1e-9) / 10;                             // le logo, le nom, la pastille, puis 3 s
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7o");
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
-  var css = getComputedStyle(racine);
-  var C = function (n, d) { return (css.getPropertyValue(n) || "").trim() || d; };
-  var r = K.rng(11), monde = $("t7o-monde");
+  var monde = $("t7o-monde");
+  var accent = K.jeton("--brand-accent") || "currentColor";   // la couleur de la marque, lue dans brand/tokens.css
   // Un logo posé ici et dans une autre scène : ses identifiants internes (découpes, dégradés)
   // deviennent propres à chaque copie, sinon il renvoie à la copie cachée et disparaît.
   var copies = 0, logo = function (n) { copies++; return K.ic(n).replace(/(id="|url\(#|href="#)([^")]+)/g, "$1$2-t7o" + copies); };
-  var logos = R.logos.filter(function (n) { return !!K.ic(n); });          // un logo absent : retiré
-  var point = function (t, i) { return { t: t, html: '<div class="t7o-point t7o-point-' + (1 + i % 3) + '"></div>' }; };
+  var logos = EXEMPLE.logos.filter(function (n) { return !!K.ic(n); });          // un logo absent : retiré
+  var tuile = function (n, t) { return { w: t, h: t, html: '<div class="t7o-tuile">' + logo(n) + "</div>" }; };
 
   function carte(parent, c) {
-    var e = K.el(parent, "div", "t7o-carte" + (c.capture ? "" : " t7o-sans-capture"));
+    var e = K.el(parent, "div", "t7o-carte");
     if (c.capture) { var ap = K.el(e, "div", "t7o-apercu"), im = K.el(ap, "img"); im.alt = ""; im.src = c.capture; }
-    else if (R.logo) { var mq = K.el(e, "div", "t7o-marque"), lg = K.el(mq, "img"); lg.alt = ""; lg.src = R.logo; lg.onerror = function () { mq.remove(); }; }
-    // textes serrés de la carte : la galaxie tourne, leurs boîtes se touchent sans que le texte se chevauche
-    [K.el(e, "h5", null, c.nom), c.texte ? K.el(e, "p", null, c.texte) : null, c.bas ? K.el(e, "small", null, c.bas) : null].forEach(function (t) { if (t) t.setAttribute("data-layout-allow-overlap", ""); });
+    else if (EXEMPLE.logo) { var mq = K.el(e, "div", "t7o-marque"), lg = K.el(mq, "img"); lg.alt = ""; lg.src = EXEMPLE.logo; lg.onerror = function () { mq.remove(); }; }
+    K.el(e, "h5", null, c.nom);
+    if (c.texte) K.el(e, "p", "t7o-carte-ligne", c.texte);
     return e;
   }
-  // Un anneau : un cercle en pointillés et des objets posés dessus, qui tourneront ensemble.
-  function anneau(sys, rayon, objets, depart) {
+  // Un anneau : un cercle en pointillés et sa vraie matière posée dessus, qui tourneront ensemble.
+  // `angles` : où poser chaque objet (en radians) ; sans lui, répartis tout autour.
+  function anneau(sys, rayon, objets, depart, angles) {
     var a = K.el(sys, "div", "t7o-anneau");
     var cercle = K.el(a, "div", "t7o-cercle", null, "left:" + -rayon + "px; top:" + -rayon + "px; width:" + 2 * rayon + "px; height:" + 2 * rayon + "px;");
     var items = objets.map(function (o, i) {
-      var ang = (depart || 0) + (i / objets.length) * Math.PI * 2;
-      var it = K.el(a, "div", "t7o-item", o.html, "width:" + o.t + "px; height:" + o.t + "px; left:" + (Math.cos(ang) * rayon - o.t / 2) + "px; top:" + (Math.sin(ang) * rayon - o.t / 2) + "px;");
-      if (o.w) { it.style.width = "auto"; it.style.left = (Math.cos(ang) * rayon) + "px"; it.style.transform = "translate(-50%, 0)"; }
+      var ang = angles ? angles[i] : (depart || 0) + (i / objets.length) * Math.PI * 2, x = Math.cos(ang) * rayon, y = Math.sin(ang) * rayon;
+      var it = K.el(a, "div", "t7o-item", o.html, o.w ? "width:" + o.w + "px; height:" + o.h + "px; left:" + (x - o.w / 2) + "px; top:" + (y - o.h / 2) + "px;"
+        : "left:" + x + "px; top:" + y + "px;");
+      if (!o.w) gsap.set(it, { xPercent: -50, yPercent: -50 });   // une étiquette : centrée sur sa place
       return it;
     });
     return { el: a, cercle: cercle, items: items };
+  }
+  // L'anneau du dehors : ses captures et ses étiquettes, posées là où l'image a de la place (de
+  // part et d'autre de la carte en 16:9, au-dessus et au-dessous en 9:16), pour qu'elles restent
+  // dans le cadre en tournant.
+  function dehors() {
+    var objets = EXEMPLE.images.map(function (src) { return { w: 230, h: 130, html: '<div class="t7o-image"><img alt="" src="' + src + '"></div>' }; })
+      .concat(EXEMPLE.etiquettes.map(function (m) { return { html: '<div class="t7o-etiquette">' + m + "</div>" }; }));
+    // un côté puis l'autre ; sur chaque côté, des places qui encadrent l'axe (l'anneau tourne de
+    // 30° sur la scène : elles le traversent sans sortir de l'image)
+    var axe = vertical ? Math.PI / 2 : 0, ECARTS = [-0.25, -0.75, 0.25, 0.7];
+    var angles = objets.map(function (o, i) { return axe + (i % 2 ? Math.PI : 0) + ECARTS[Math.floor(i / 2) % ECARTS.length]; });
+    return { objets: objets, angles: angles };
   }
   function systeme(x, y, principal, nom) {
     var sys = K.el(monde, "div", "t7o-systeme", null, "left:" + x + "px; top:" + y + "px;");
     var anneaux = [];
     if (principal) {
-      anneaux.push(anneau(sys, 290, logos.slice(0, 4).map(function (n) { return { t: 66, html: '<div class="t7o-tuile">' + logo(n) + "</div>" }; }), 0.4));
-      var second = logos.slice(4).map(function (n) { return { t: 58, html: '<div class="t7o-tuile">' + logo(n) + "</div>" }; });
-      for (var i = 0; second.length < 6; i++) second.push(point(14 + (i % 3) * 5, i));
-      anneaux.push(anneau(sys, 420, second, 1.1));
-      var ext = [];
-      for (var j = 0; j < 18; j++) ext.push(j === 4 || j === 13 ? { t: 30, w: true, html: '<div class="t7o-etiquette"><i></i>' + R.etiquettes[j === 4 ? 0 : 1] + "</div>" } : point(9 + (j % 3) * 3, j));
-      anneaux.push(anneau(sys, 560, ext, 0.2));
-      var c = carte(sys, R.carte); c.id = "t7o-carte";
+      var dedans = logos.slice(0, 4).map(function (n) { return tuile(n, 70); }), milieu = logos.slice(4, 10).map(function (n) { return tuile(n, 62); }), d = dehors();
+      if (dedans.length) anneaux.push(anneau(sys, 310, dedans, 0.4));
+      if (milieu.length) anneaux.push(anneau(sys, 450, milieu, 1.1));
+      if (d.objets.length) anneaux.push(anneau(sys, 620, d.objets, 0, d.angles));
+      var c = carte(sys, EXEMPLE.carte); c.id = "t7o-carte";
     } else {
-      anneaux.push(anneau(sys, 230, [0, 1, 2, 3, 4].map(function (i) { return point(16 + (i % 2) * 6, i); }), r() * 6));
-      anneaux.push(anneau(sys, 360, [0, 1, 2, 3, 4, 5, 6, 7, 8].map(function (i) { return point(10 + (i % 3) * 3, i + 1); }), r() * 6));
-      var mini = K.el(sys, "div", "t7o-mini", nom); mini.style.transform = "translate(-50%, -50%) scale(0.8)";
-      mini.setAttribute("data-layout-allow-overlap", "");
+      anneaux.push(anneau(sys, 250, [], 0));
+      // un autre système : son nom, vu de loin et dans le flou pendant le recul (la texture du recul,
+      // jamais lu : la conclusion se lit par-dessus)
+      var mini = K.el(sys, "div", "t7o-mini", nom); mini.style.transform = "translate(-50%, -50%)";
+      mini.setAttribute("data-layout-ignore", "");
     }
     return { el: sys, anneaux: anneaux };
   }
   var centre = systeme(0, 0, true);
-  // Ses autres systèmes : de vrais noms seulement. En 9:16, les deux premiers tournent déjà au bord haut et au bord bas.
-  var places = vertical ? [[0, -1180], [0, 1180], [-620, -2300], [600, 2350], [0, -3300], [0, 3300], [-1350, 250], [1350, -250]]
+  // Ses autres systèmes : de vrais noms seulement, hors du cadre pendant l'orbite, dans le cadre au recul.
+  var places = vertical ? [[0, -1260], [0, 1260], [-700, -2300], [700, 2350], [-1300, 300], [1300, -300], [0, -3300], [0, 3300]]
     : [[-1650, -900], [1620, -880], [-1700, 920], [1680, 900], [-2450, 20], [2420, -30], [-60, -1320], [40, 1320]];
-  var autres = R.autres.map(function (n, i) { return systeme(places[i % places.length][0], places[i % places.length][1], false, n); });
+  var autres = EXEMPLE.autres.slice(0, places.length).map(function (n, i) { return systeme(places[i][0], places[i][1], false, n); });
   // La phrase autour de la carte
-  R.avant.split(" ").forEach(function (m) { K.el($("t7o-gauche"), "span", null, m + "&nbsp;"); });
-  R.apres.split(" ").forEach(function (m) { K.el($("t7o-droite"), "span", null, "&nbsp;" + m); });
+  EXEMPLE.avant.split(" ").forEach(function (m) { K.el($("t7o-gauche"), "span", null, m + "&nbsp;"); });
+  EXEMPLE.apres.split(" ").forEach(function (m) { K.el($("t7o-droite"), "span", null, "&nbsp;" + m); });
   if (vertical) {
     $("t7o-gauche").style.cssText = "position:absolute; left:0; right:0; top:-330px; text-align:center;";
     $("t7o-droite").style.cssText = "position:absolute; left:0; right:0; top:330px; text-align:center;";
-    $("t7o-conclusion").style.fontSize = "76px";
+    $("t7o-conclusion").style.fontSize = "84px";
   }
-  // fin : logo, nom, pastille, poussière de pixels (noirs transparents)
-  if (R.logo) $("t7o-logo").innerHTML = '<img src="' + R.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t7o-logo").style.display = "none";
-  $("t7o-nom").textContent = R.nom; $("t7o-pastille").textContent = R.appel;
-  $("t7o-nom").style.fontSize = Math.min(150, Math.round((0.84 * L - (R.logo ? 190 : 0)) / (R.nom.length * 0.58))) + "px";
-  var svg = $("t7o-pixels"), NS = "http://www.w3.org/2000/svg";
-  svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
-  for (var g = 0; g < 10; g++) {
-    var gx = (g % 2 ? 0.75 + r() * 0.25 : r() * 0.25) * L, gy = (0.62 + r() * 0.38) * H;
-    for (var k = 0; k < 26; k++) {
-      var q = document.createElementNS(NS, "rect"), cote = 8 + Math.round(r() * 3);
-      q.setAttribute("x", Math.round((gx + (r() - 0.5) * 200) / 14) * 14); q.setAttribute("y", Math.round((gy + (r() - 0.5) * 140) / 14) * 14);
-      q.setAttribute("width", cote); q.setAttribute("height", cote); q.setAttribute("fill", "rgba(0,0,0," + (0.03 + r() * 0.06).toFixed(3) + ")");
-      svg.appendChild(q);
-    }
-  }
+  // La fin : le logo et le nom occupent ensemble 60 à 90 % de la largeur (environ 0,55 em par lettre
+  // en graisse 600 ; le logo prend la hauteur du nom), la pastille d'appel dessous.
+  var aLogo = !!EXEMPLE.logo;
+  var fn = Math.round(Math.min(0.24 * H, (0.72 * L - (aLogo ? 34 : 0)) / (EXEMPLE.nom.length * 0.55 + (aLogo ? 1 : 0))));
+  if (aLogo) $("t7o-logo").innerHTML = '<img src="' + EXEMPLE.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t7o-logo").style.display = "none";
+  $("t7o-logo").style.cssText += "width:" + fn + "px; height:" + fn + "px; margin-right:" + (aLogo ? 34 : 0) + "px;";
+  $("t7o-nom").textContent = EXEMPLE.nom; $("t7o-nom").style.fontSize = fn + "px";
+  $("t7o-signe").style.cssText = "height:" + Math.round(fn * 1.3) + "px; margin-top:" + -Math.round(fn * 1.0) + "px;";
+  $("t7o-pastille").textContent = EXEMPLE.appel;
+  $("t7o-pastille").style.marginTop = Math.round(fn * 0.5) + "px";
+  $("t7o-encre").style.display = aLogo ? "" : "none";
+  gsap.set("#t7o-encre", { y: -Math.round(fn * 0.35) });
 
   // États de départ
   var gauche = $("t7o-gauche").children, droite = $("t7o-droite").children, laCarte = $("t7o-carte");
+  var ligneCarte = laCarte.querySelector(".t7o-carte-ligne");
   gsap.set(laCarte, { xPercent: -50, yPercent: -50 });
   K.cacher([gauche, droite, laCarte, "#t7o-conclusion", "#t7o-p2", "#t7o-pastille"]);
-  centre.anneaux.forEach(function (a) { K.cacher(a.cercle); K.cacher(a.items); });
-  gsap.set(monde, { scale: vertical ? 0.95 : 1 });
-  var tl = gsap.timeline({ paused: true });
+  if (ligneCarte) K.cacher(ligneCarte);
+  centre.anneaux.forEach(function (a) { K.cacher(a.cercle); if (a.items.length) K.cacher(a.items); });
   var s0 = vertical ? 0.95 : 1;
+  gsap.set(monde, { scale: s0 });
+  var tl = gsap.timeline({ paused: true });
 
-  // 1. La carte dans la phrase (0 → 1,45 s)
+  // 1. La carte dans la phrase : sa capture se dévoile de haut en bas (une page qui se charge), son
+  //    nom monte ; les mots puis le nom se lisent, ils s'allument un à un sans bouger de place
   tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
-  tl.fromTo(laCarte, { opacity: 0, scale: 0.55, rotation: -4 }, { opacity: 1, scale: 0.62, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.3);
+  tl.fromTo(laCarte, { opacity: 0, scale: 0.6, rotation: -4 }, { opacity: 1, scale: 0.75, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.3);
   tl.fromTo(droite, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.6);
-  // pendant que la phrase se lit, la carte se remplit : sa capture se dévoile de haut en bas (une page
-  // qui se charge), puis ses lignes montent ; la caméra ne bouge pas, la carte grandit à peine
-  var apercu = laCarte.querySelector(".t7o-apercu, .t7o-marque"), lignesCarte = laCarte.querySelectorAll("h5, p, small");
-  if (apercu) tl.fromTo(apercu, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power2.out", immediateRender: false }, 1.15);
-  tl.fromTo(lignesCarte, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", stagger: 0.12, immediateRender: false }, 1.45);
-  tl.fromTo(laCarte, { scale: 0.62 }, { scale: 0.72, duration: XP - 0.85, ease: "sine.inOut", immediateRender: false }, 0.85);
+  var apercu = laCarte.querySelector(".t7o-apercu, .t7o-marque");
+  if (apercu) tl.fromTo(apercu, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power2.out", immediateRender: false }, 0.5);
+  tl.fromTo(laCarte.querySelector("h5"), { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, 0.8);
   var motsPhrase = Array.prototype.slice.call(gauche).concat(Array.prototype.slice.call(droite));
   motsPhrase.forEach(function (m, i) {
-    var t = 1.25 + i * Math.min(0.35, (XP - 1.6) / Math.max(1, motsPhrase.length));
-    tl.to(m, { color: C("--brand-accent-lisible", "#ffffff"), duration: 0.01 }, t);
+    var t = E1 + 0.1 + i * Math.min(0.35, (XP - E1 - 0.6) / Math.max(1, motsPhrase.length));
+    tl.set(m, { attr: { "data-on": "1" } }, t);
     tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
-    tl.to(m, { color: C("--brand-clair", "#ffffff"), duration: 0.01 }, t + 0.38);
+    tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
 
-  // 2. Les mots s'écartent, les orbites se dessinent et tournent (1,45 → 4,3 s)
+  // 2. Les mots s'écartent, la carte grandit et sa ligne monte ; les orbites se dessinent et tournent
   tl.to(gauche, { opacity: 0, x: vertical ? 0 : -160, y: vertical ? -120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
   tl.to(droite, { opacity: 0, x: vertical ? 0 : 160, y: vertical ? 120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
-  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, 1.5 + O);
+  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, XP + 0.05);
+  if (ligneCarte) tl.fromTo(ligneCarte, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, OB + 0.3);
   centre.anneaux.forEach(function (a, i) {
-    tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 1.75 + O + i * 0.14);
+    tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, OB + i * 0.14);
     a.items.forEach(function (it, j) {
-      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, 1.95 + O + i * 0.18 + j * 0.035);
+      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, OB + 0.2 + i * 0.18 + j * 0.035);
     });
   });
-  // la rotation : chaque anneau à sa vitesse, les objets restent droits
-  var tours = [100, -64, 38];
+  // la rotation : chaque anneau à sa vitesse (celui du dehors, qui porte ses captures, lentement), les
+  // objets restent droits
+  var tours = centre.anneaux.length === 3 ? [100, -64, 30] : [100, -64];
   function rotation(a, deg, t0) {
     tl.fromTo(a.el, { rotation: 0 }, { rotation: deg, duration: D - t0, ease: "sine.inOut" }, t0);
     if (a.items.length) tl.fromTo(a.items, { rotation: 0 }, { rotation: -deg, duration: D - t0, ease: "sine.inOut" }, t0);
   }
-  centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], 1.75 + O); });
-  autres.forEach(function (s, i) { s.anneaux.forEach(function (a, j) { rotation(a, (j ? -1 : 1) * (40 + i * 6), 0); }); });
+  centre.anneaux.forEach(function (a, i) { rotation(a, tours[i], OB); });
+  autres.forEach(function (s, i) { s.anneaux.forEach(function (a) { rotation(a, 40 + i * 6, 0); }); });
 
   // Les outils se connectent à l'offre, un par un (un liseré plein de l'accent) ; quatre fois, les
   // orbites et la carte passent d'un coup à l'accent, le temps d'un battement (un temps fort que
   // l'œil et `rythme` voient ; jamais un halo).
   var cercles = centre.anneaux.map(function (a) { return a.cercle; });
-  [2.6 + O, 3.2 + O, 3.8 + O, 4.1 + O].forEach(function (t) {   // un battement par paire d'outils connectés, et le dernier
+  var pas = (RE - OB - 1.2) / 3;
+  [0, 1, 2, 3].forEach(function (k) {
+    var t = OB + 0.85 + k * pas;
     tl.set(cercles.concat([laCarte]), { attr: { "data-on": "1" } }, t);
     tl.set(cercles.concat([laCarte]), { attr: { "data-on": "0" } }, t + 0.16);
   });
-  var accent = C("--brand-accent", "currentColor");       // la couleur de la marque, lue dans brand/tokens.css
-  var connectes = centre.anneaux[0].items.concat(centre.anneaux[1].items.filter(function (it) { return it.querySelector(".t7o-tuile"); }).slice(0, 2));
+  var connectes = centre.anneaux.length ? centre.anneaux[0].items.concat(centre.anneaux.length > 1 ? centre.anneaux[1].items.slice(0, 2) : []) : [];
   connectes.forEach(function (it, i) {
-    var t = 2.6 + O + i * 0.3, tuile = it.firstChild;
+    var t = OB + 0.85 + i * Math.min(0.3, (RE - OB - 1.2) / Math.max(1, connectes.length)), tu = it.firstChild;
     tl.fromTo(it, { scale: 1 }, { scale: 1.28, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
-    tl.fromTo(tuile, { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 0px " + accent },
-      { boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.12), 0 0 0 5px " + accent, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
+    tl.fromTo(tu, { boxShadow: "0 10px 24px rgba(0,0,0,0.30), 0 0 0 0px " + accent },
+      { boxShadow: "0 10px 24px rgba(0,0,0,0.30), 0 0 0 5px " + accent, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
   });
-  // pendant que les outils se connectent, la ligne de la carte se lit : la caméra ne fait qu'une
-  // poussée lente (×1 → ×1,12, sine.inOut), jamais un recadrage sec ; la vie vient des connexions
-  tl.fromTo(monde, { scale: s0 }, { scale: s0 * 1.12, duration: 2.55, ease: "sine.inOut", immediateRender: false }, 1.75 + O);
+  // pendant que la ligne de la carte se lit, la carte ne bouge pas : seuls les anneaux font une
+  // poussée lente (×1 → ×1,05, sine.inOut), jamais un recadrage ; la vie vient des connexions
+  centre.anneaux.forEach(function (a) { tl.fromTo(a.el, { scale: 1 }, { scale: 1.05, duration: RE - OB, ease: "sine.inOut", immediateRender: false }, OB); });
+
   // 3. Une fois la carte lue, la caméra recule, le fond passe à la nuit, tout passe au flou, la
   //    conclusion se tape et se tient le temps de sa lecture (les orbites tournent toujours)
-  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, 4.3 + O);
-  tl.to("#t7o-fond", { backgroundColor: C("--t7-nuit", "#202022"), duration: 1.4, ease: "power1.inOut" }, 4.5 + O);
-  tl.to(monde, { filter: "blur(6px)", duration: 0.7, ease: "power2.inOut" }, 5.35 + O);
-  tl.to("#t7o-voile", { opacity: 0.55, duration: 0.7, ease: "power2.inOut" }, 5.35 + O);   // un voile de la nuit, jamais un filtre sur la marque
-  tl.set("#t7o-conclusion", { opacity: 1 }, 5.45 + O);
-  K.taper(tl, $("t7o-conclusion-texte"), R.conclusion, 5.5 + O, 6.1 + O, D);
-  tl.to(monde, { scale: s0 * 0.31, duration: 6.55 + O2 - 5.9 - O, ease: "sine.inOut" }, 5.9 + O);
-  for (var cl = 6.3 + O, kc = 0; cl < 6.45 + O2; cl += 0.5, kc++) tl.set("#t7o-caret", { opacity: kc % 2 ? 1 : 0 }, cl);
+  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, RE);
+  // les mots de la carte (et les étiquettes) ont été lus : ils s'effacent dès le recul, la carte
+  // garde sa capture (un mot qui rapetisse sous la conclusion ne se lit plus et la gênerait)
+  var motsCarte = Array.prototype.slice.call(laCarte.querySelectorAll("h5, p")).concat(Array.prototype.slice.call(document.querySelectorAll("#t7o .t7o-etiquette")));
+  tl.to(motsCarte, { opacity: 0, duration: 0.3, ease: "power2.in" }, RE + 0.1);
+  tl.to("#t7o-nuit", { opacity: 1, duration: 1.4, ease: "power1.inOut" }, RE + 0.2);
+  tl.to(monde, { filter: "blur(6px)", duration: 0.7, ease: "power2.inOut" }, RE + 1.05);
+  tl.to("#t7o-voile", { opacity: 0.55, duration: 0.7, ease: "power2.inOut" }, RE + 1.05);   // un voile de la nuit, jamais un filtre sur la marque
+  tl.set("#t7o-conclusion", { opacity: 1 }, RE + 1.15);
+  K.taper(tl, $("t7o-conclusion-texte"), EXEMPLE.conclusion, RE + 1.2, RE + 1.8, D);
+  tl.to(monde, { scale: s0 * 0.345, duration: XC - RE - 1.6, ease: "sine.inOut" }, RE + 1.6);   // une dérive de 4 % derrière la conclusion
+  for (var cl = RE + 2.0, kc = 0; cl < XC - 0.1; cl += 0.5, kc++) tl.set("#t7o-caret", { opacity: kc % 2 ? 1 : 0 }, cl);
 
-  // 4. Le point d'encre sur fond clair, puis le logo, le nom et l'appel (6,55 → 9,6 s)
-  tl.set("#t7o-p2", { opacity: 1 }, 6.55 + O2);
-  tl.set("#t7o-p1", { opacity: 0 }, 6.55 + O2);
-  tl.fromTo("#t7o-encre", { scale: 1, borderRadius: "50%" }, { scale: 0.42, duration: 0.55, ease: "power3.inOut" }, 6.55 + O2);
-  tl.to("#t7o-encre", { borderRadius: "46% 54% 40% 60%", duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 6.65 + O2);
-  var aLogo = !!R.logo;
-  tl.to("#t7o-encre", { scale: aLogo ? 2.4 : 0, opacity: 0, duration: 0.35, ease: "power2.in" }, 7.1 + O2);
-  if (aLogo) tl.fromTo("#t7o-logo", { opacity: 0, scale: 0.3, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 7.15 + O2);
+  // 4. Coupe sur fond clair : le point d'encre se contracte et devient le logo ; le nom sort de
+  //    derrière lui (sans logo, il monte du flou) ; la pastille se dévoile ; l'écran final se tient 3 s
+  tl.set("#t7o-p2", { opacity: 1 }, XC);
+  tl.set("#t7o-p1", { opacity: 0 }, XC);
+  if (aLogo) {
+    tl.fromTo("#t7o-encre", { scale: 1, borderRadius: "50%" }, { scale: 0.42, duration: 0.55, ease: "power3.inOut" }, XC);
+    tl.to("#t7o-encre", { borderRadius: "46% 54% 40% 60%", duration: 0.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, XC + 0.1);
+    tl.to("#t7o-encre", { scale: 2.4, opacity: 0, duration: 0.35, ease: "power2.in" }, XC + 0.55);
+    tl.fromTo("#t7o-logo", { opacity: 0, scale: 0.3, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, XC + 0.6);
+  }
   tl.fromTo("#t7o-nom", aLogo ? { xPercent: -100, y: 0, opacity: 0, filter: "blur(0px)" } : { xPercent: 0, y: 40, opacity: 0, filter: "blur(12px)" },
-    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, (aLogo ? 7.45 : 7.2) + O2);
-  tl.fromTo("#t7o-pastille", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, 7.95 + O2);
-  tl.fromTo("#t7o-pixels rect", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "none", stagger: 0.004 }, 7.3 + O2);
-  tl.fromTo("#t7o-signe", { scale: 1 }, { scale: 1.04, duration: D - 7.2 - O2, ease: "sine.out" }, 7.2 + O2);
+    { xPercent: 0, y: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, XC + (aLogo ? 0.9 : 0.15));
+  tl.fromTo("#t7o-pastille", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.45, ease: "power3.out" }, XC + 1.4);
   window.__timelines["t7o"] = tl;
 })();
 </script>

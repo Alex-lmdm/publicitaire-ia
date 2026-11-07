@@ -6,7 +6,10 @@
  *   2. le style de la marque (brand/) et l'accueil de l'app HyperFrames, par l'outil Python
  *      (`studio_motion.py style`, seul propriétaire de la marque) ;
  *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl ;
- *   4. la copie des skills pour Codex (.claude/skills/ -> .agents/skills/).
+ *   4. la copie des skills pour Codex (.claude/skills/ -> .agents/skills/) ;
+ *   5. le retrait des fichiers du produit qu'une version a supprimés : une mise à jour par archive
+ *      recopie par-dessus sans rien effacer, et des consignes périmées restées en place
+ *      contrediraient la méthode.
  *
  * Lancé par `npm install` / `npm ci` (postinstall) et par `npm run sync`. Ne touche jamais aux
  * vidéos du client ni à sa marque. Node pur, zéro dépendance, cross-platform.
@@ -192,6 +195,27 @@ export function copierSkills(racine = ROOT) {
   return true;
 }
 
+// ---------------------------------------------------------------------------
+// 5. Les fichiers retirés du produit (jamais un fichier du client : seulement ces chemins exacts)
+// ---------------------------------------------------------------------------
+export const RETIRES = [
+  // 0.9.0 : les skills HyperFrames remplacés par references/composition.md du skill studio.
+  ".claude/skills/hyperframes-core",
+  ".claude/skills/hyperframes-animation",
+  ".claude/skills/hyperframes-cli",
+  // 0.9.0 : style.md, rythme.md et recettes.md devenus image.md, mouvement.md et scenes.md.
+  ".claude/skills/studio/references/style.md",
+  ".claude/skills/studio/references/rythme.md",
+  ".claude/skills/studio/references/recettes.md",
+];
+
+export function retirerPerimes(racine = ROOT) {
+  const retires = RETIRES.filter((r) => fs.existsSync(path.join(racine, r)));
+  for (const r of retires) fs.rmSync(path.join(racine, r), { recursive: true, force: true, maxRetries: 3 });
+  if (retires.length) log(`  retiré  ${retires.length} fichiers périmés d'une version précédente`);
+  return true;
+}
+
 /** Lance les étapes une à une : une étape qui échoue (false ou exception) n'empêche pas les
  *  suivantes. Rend la liste des étapes en échec. */
 export function lancerEtapes(etapes) {
@@ -213,6 +237,7 @@ function main() {
   const produit = lireProduit();
   log(`🔄 ${produit.nom} ${produit.version} : préparation du dossier\n`);
   const echecs = lancerEtapes([
+    ["fichiers périmés", () => retirerPerimes()],
     ["GSAP", () => copierGsap()],
     ["style et accueil", () => genererStyle()],
     ["consignes CLAUDE.md et AGENTS.md", () => genererInstructions()],

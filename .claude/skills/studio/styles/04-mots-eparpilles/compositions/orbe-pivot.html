@@ -7,33 +7,32 @@
     l'après), 16:9
 
     Ce qu'elle montre : plein cadre, sa couleur pleine (la même qu'à la fin de mots-objets.html) ;
-    la phrase pivot s'écrit au centre, un mot à la fois, et la couleur bat à chaque mot ; pendant
-    qu'on la lit, la couleur se resserre en un grand disque autour d'elle (la phrase reste
+    la phrase pivot s'écrit au centre, un mot à la fois, et chaque mot tombe d'une pulsation
+    d'échelle (rien ne voile sa couleur) ; pendant qu'on la lit, la couleur se resserre en un grand disque autour d'elle (la phrase reste
     immobile, entière, dedans), trois anneaux fins apparaissent, son mot clé se surligne d'un bloc
     de sa nuit ; puis la phrase sort, le disque se resserre encore et porte sa vraie matière (son
     vrai logo, le nom de l'offre sous lui), bat deux fois, et s'ouvre jusqu'à remplir l'écran : la
     scène messages-verre.html commence sur sa couleur pleine.
     Le disque n'est jamais un sujet vide : avec LOGO ou NOM, il les porte, tenu le temps de lire le
     nom ; sans eux, il n'est qu'une transition (resserré puis rouvert en moins d'une seconde).
-    Exemple : le pivot de la story d'ouverture de Publicitaire IA (« Il y a une quatrième option. »,
-    la phrase de sa page, puis son logo et son nom).
 
     Les durées suivent la lecture : la phrase complète reste le temps de la lire (0,3 s par mot +
     0,8 s, jamais moins de 1,5 s : `studio_motion.py lecture`), le nom aussi. La scène calcule ses
     instants : sa durée est FIN, que la console affiche (« t04-orbe dure … s ») ; reporte-la dans D
     et dans data-duration, ici et sur son hôte dans index.html. Aucune caméra : la vie vient de la
-    couleur qui se resserre, du mot clé, des anneaux et des battements.
+    couleur qui se resserre, du mot clé, des anneaux et des battements du disque (la phrase, elle,
+    ne bouge plus une fois écrite).
 
-    À remplacer :
+    À remplacer : l'objet EXEMPLE (en tête du script).
       1. L'identifiant « t04-orbe » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. PIVOT : la phrase de bascule, courte et complète (« | » coupe la ligne : deux lignes de
+      2. pivot : la phrase de bascule, courte et complète (« | » coupe la ligne : deux lignes de
          700 px au plus, pour tenir dans le grand disque). Elle dit que le problème appartient au
          passé, ou qu'une autre voie existe, sans promettre un résultat.
-      3. CLE : le mot clé de la phrase (tel qu'écrit), surligné pendant la tenue ; "" sans.
-      4. LOGO : son vrai logo, posé dans le disque ("brand/logo.png" ; un logo rond ou carré) ; ""
-         sans logo. NOM : le nom de l'offre, sous le disque (dans le disque s'il n'y a pas de logo) ;
-         "" sans nom. Sans l'un ni l'autre, le disque n'est qu'une transition de moins d'une
-         seconde : jamais un disque seul tenu à l'écran.
+      3. cle : le mot clé de la phrase (tel qu'écrit), surligné pendant la tenue ; "" sans.
+      4. logo : son vrai logo, posé dans le disque (un fichier du projet, "brand/logo.png" ; un logo
+         rond ou carré) ; "" sans logo. nom : le nom de l'offre, sous le disque (dans le disque s'il
+         n'y a pas de logo) ; "" sans nom. Sans l'un ni l'autre, le disque n'est qu'une
+         transition de moins d'une seconde : jamais un disque seul tenu à l'écran.
     Couleurs : celles de sa marque, rien d'autre : le disque est sa couleur pleine, sans lueur ni
     dégradé ; la nuit autour est sa couleur sombre ; les anneaux, un blanc en transparence ; la
     phrase posée sur sa couleur est en var(--brand-contrast), son mot clé en var(--brand-clair) sur
@@ -49,11 +48,10 @@
     }
     #t04-orbe .t04-orbe-anneau { position: absolute; left: 960px; top: 540px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.22); }
     #t04-orbe .t04-orbe-disque { position: absolute; inset: 0; overflow: hidden; background: var(--brand-accent); }
-    #t04-orbe .t04-orbe-pouls { position: absolute; inset: 0; background: #ffffff; }
     #t04-orbe .t04-orbe-texte {
       position: absolute; left: 0; right: 0; top: 540px; transform: translateY(-50%); z-index: 5;
       display: flex; flex-direction: column; align-items: center;
-      font-family: var(--brand-font-body); font-weight: 400; font-size: 76px; line-height: 1.16; letter-spacing: -0.02em; color: var(--brand-contrast);
+      font-family: var(--brand-font-body); font-weight: 400; font-size: 88px; line-height: 1.16; letter-spacing: -0.02em; color: var(--brand-contrast);
     }
     #t04-orbe .t04-orbe-texte div { white-space: nowrap; }
     #t04-orbe .t04-orbe-texte span { display: inline-block; position: relative; margin: 0 0.12em; }
@@ -61,22 +59,20 @@
     /* Le bloc du mot clé passe avant ses lettres (positionnées) : il reste dessous, sans z-index négatif. */
     #t04-orbe .t04-orbe-bloc { position: absolute; left: -0.12em; right: -0.12em; top: 0.06em; bottom: 0.02em; background: var(--t04-nuit); transform-origin: 0 50%; }
     #t04-orbe .t04-orbe-texte span[data-cle="1"] { color: var(--brand-clair); }
-    #t04-orbe .t04-orbe-logo { position: absolute; left: 960px; top: 540px; width: 270px; height: 270px; margin: -135px 0 0 -135px; z-index: 6; border-radius: 50%; overflow: hidden; }
+    #t04-orbe .t04-orbe-logo { position: absolute; left: 960px; top: 540px; width: 380px; height: 380px; margin: -190px 0 0 -190px; z-index: 6; border-radius: 50%; overflow: hidden; }
     #t04-orbe .t04-orbe-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
     #t04-orbe .t04-orbe-nom {
       position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; z-index: 6;
       font-family: var(--brand-font-display); font-weight: 600; line-height: 1; letter-spacing: -0.02em;
     }
-    #t04-orbe .t04-orbe-nom.dessous { top: 760px; font-size: 60px; color: var(--brand-clair); }
+    #t04-orbe .t04-orbe-nom.dessous { top: 820px; font-size: 60px; color: var(--brand-clair); }
     #t04-orbe .t04-orbe-nom.dedans { top: 516px; font-size: 46px; color: var(--brand-contrast); }
   </style>
 
-  <div data-composition-id="t04-orbe" data-width="1920" data-height="1080" data-duration="7.5" style="position:absolute; inset:0;">
+  <div data-composition-id="t04-orbe" data-width="1920" data-height="1080" data-duration="7.2" style="position:absolute; inset:0;">
     <div id="t04-orbe" class="k-scene">
       <div id="t04-orbe-anneaux" data-layout-allow-overflow></div>
-      <div class="t04-orbe-disque" id="t04-orbe-disque" data-layout-allow-overflow>
-        <div class="t04-orbe-pouls" id="t04-orbe-pouls"></div>
-      </div>
+      <div class="t04-orbe-disque" id="t04-orbe-disque" data-layout-allow-overflow></div>
       <div class="t04-orbe-texte" id="t04-orbe-texte"></div>
       <div class="t04-orbe-logo" id="t04-orbe-logo"></div>
       <div class="t04-orbe-nom" id="t04-orbe-nom"></div>
@@ -85,12 +81,17 @@
 
   <script>
     (function () {
+      // Exemple fictif : la bascule d'un logiciel de prise de rendez-vous.
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json (son nom, sa phrase), ou la ligne se retire
+        pivot: "Il existe une|autre façon.", cle: "autre",
+        logo: "brand/logo.png", nom: "Ton offre"
+      };
+
       window.__timelines = window.__timelines || {};
-      var D = 7.5, ID = "t04-orbe", tl = gsap.timeline({ paused: true });
+      var D = 7.2, ID = "t04-orbe", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
-      var PIVOT = "Il y a une|quatrième option.", CLE = "quatrième";
-      var LOGO = "brand/logo.png", NOM = "Publicitaire IA";
-      var CX = 960, CY = 540, R_GRAND = 430, R_ORBE = 175, ANNEAUX = [470, 680, 1000], CADENCE = 0.3;
+      var PIVOT = EXEMPLE.pivot, CLE = EXEMPLE.cle, LOGO = EXEMPLE.logo, NOM = EXEMPLE.nom;
+      var CX = 960, CY = 540, R_GRAND = 430, R_ORBE = 240, ANNEAUX = [470, 680, 1000], CADENCE = 0.3;
 
       function lire(texte) {
         var n = texte.trim().split(/\s+/).filter(function (m) { return /[\p{L}\p{N}_]/u.test(m); }).length;
@@ -103,13 +104,14 @@
         var ligne = K.el(texte, "div");
         l.trim().split(/\s+/).forEach(function (w) { var s = K.el(ligne, "span"); s.dataset.mot = w; K.el(s, "b", null, w); mots.push(s); });
       });
-      K.cacher(mots);
-      mots.forEach(function (s, k) { tl.set(s, { opacity: 1 }, 0.15 + k * CADENCE); });
-      var complet = 0.15 + (mots.length - 1) * CADENCE + 0.05, sortie = complet + lire(PIVOT.replace(/\|/g, " "));
-      // À chaque mot, la couleur bat une fois (un éclair blanc très bref, qui s'éteint en 0,35 s).
-      var pouls = $("pouls");
-      K.cacher(pouls);
-      mots.forEach(function (s, k) { tl.fromTo(pouls, { opacity: 0.14 }, { opacity: 0, duration: 0.35, ease: "power2.out", immediateRender: false }, 0.15 + k * CADENCE); });
+      // Chaque mot paraît d'un coup (un sombre fondu sur son jaune ferait de l'olive) et tombe d'une
+      // pulsation d'échelle (×1,16 → ×1 en 0,3 s) : la phrase bat à chaque mot, jamais sa couleur.
+      K.cacher(mots, { scale: 1.16 });
+      mots.forEach(function (s, k) {
+        tl.set(s, { opacity: 1 }, 0.15 + k * CADENCE);
+        tl.to(s, { scale: 1, duration: 0.3, ease: "power3.out" }, 0.15 + k * CADENCE);
+      });
+      var complet = 0.15 + (mots.length - 1) * CADENCE + 0.3, sortie = complet + lire(PIVOT.replace(/\|/g, " "));
 
       // Pendant la lecture : la couleur se resserre en un grand disque autour de la phrase (elle reste
       // entière dedans), les anneaux apparaissent, le mot clé se surligne d'un bloc de sa nuit, le
@@ -144,24 +146,25 @@
       tl.set(mots, { opacity: 0 }, sortie);
 
       // Puis le disque porte sa vraie matière : son logo dedans, le nom de l'offre dessous (ou dedans
-      // sans logo), tenus le temps de lire le nom ; il bat deux fois, puis s'ouvre sur l'après.
+      // sans logo), qui arrivent pendant qu'il se resserre (il n'est jamais vide), tenus le temps de
+      // lire le nom ; il bat deux fois, puis s'ouvre sur l'après.
       var logo = $("logo"), nom = $("nom"), ouverture, FIN;
       if (LOGO || NOM) {
-        tl.to(disque, { clipPath: cercle(R_ORBE), duration: 0.6, ease: "expo.out" }, sortie + 0.15);
+        tl.to(disque, { clipPath: cercle(R_ORBE), duration: 0.6, ease: "expo.out" }, sortie);
         var pose = sortie + 0.8;
         ouverture = pose + Math.max(1.5, lire(NOM || ""));
-        if (LOGO) {
+        if (LOGO) {   // un fichier du projet : sans lui, le disque resterait vide (retire alors LOGO)
           var img = K.el(logo, "img"); img.alt = ""; img.src = LOGO;
           gsap.set(logo, { scale: 0 });
-          tl.to(logo, { scale: 1, duration: 0.45, ease: "back.out(1.8)" }, sortie + 0.35);
+          tl.to(logo, { scale: 1, duration: 0.45, ease: "back.out(1.8)" }, sortie + 0.1);
           tl.to(logo, { scale: 0, duration: 0.3, ease: "power2.in" }, ouverture);
         } else logo.remove();
         if (NOM) {
           nom.textContent = NOM;
           nom.className = "t04-orbe-nom " + (LOGO ? "dessous" : "dedans");
           K.cacher(nom);
-          tl.set(nom, { opacity: 1 }, sortie + 0.5);
-          tl.fromTo(nom, { y: 24, scale: 0.94 }, { y: 0, scale: 1, duration: 0.5, ease: "expo.out", immediateRender: false }, sortie + 0.5);
+          tl.set(nom, { opacity: 1 }, sortie + 0.25);
+          tl.fromTo(nom, { y: 24, scale: 0.94 }, { y: 0, scale: 1, duration: 0.5, ease: "expo.out", immediateRender: false }, sortie + 0.25);
           tl.set(nom, { opacity: 0 }, ouverture);
         } else nom.remove();
         bat(pose + 0.35, 1.04, 0.2, 0.22);

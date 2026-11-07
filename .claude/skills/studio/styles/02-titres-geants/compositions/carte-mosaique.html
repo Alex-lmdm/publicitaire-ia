@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°2 · TITRES GÉANTS · SCÈNE « CARTE ET MOSAÏQUE » (le produit à l'écran), 6,6 s, 16:9
+    STYLE N°2 · TITRES GÉANTS · SCÈNE « CARTE ET MOSAÏQUE » (le produit à l'écran), 6,9 s, 16:9
 
     Ce qu'elle montre : sur la nuit de la marque, la caméra part tout près du coin arrondi d'une
     carte (son trait de marque, deux repères, un point d'accent) et recule ; le point file au centre
@@ -11,48 +11,48 @@
     son produit). La carte se construit par couches : la bande du nom s'ouvre depuis le centre, les
     repères se tracent (deux traits pleins, deux pointillés, quatre points), le nom de l'offre
     s'écrit en voix légère dans la bande, sa marque dessous. Pendant que le nom se lit, la bande
-    change trois fois de palette sur les temps. Puis la caméra recule : six cartes arrivent de la
-    droite, en mosaïque autour de la première, chacune avec un morceau de son vrai produit ; la vie
-    continue (une liste se coche, un chiffre monte, le curseur clique le bouton).
+    change trois fois de palette sur les temps. Puis la caméra recule (sa marque se retire) : six
+    cartes arrivent de la droite, en mosaïque autour de la première, chacune avec un morceau de son
+    vrai produit ; la vie continue (une liste se coche, un chiffre monte, le curseur clique le
+    bouton).
 
-    La vraie matière, dans cet ordre (style.md, « Aucune image inventée ») : une vraie capture,
-    son interface reconstruite, un vrai chiffre de OFFRE.json, puis ses mots. Le point d'accent
-    n'est qu'une transition (moins d'une seconde) vers la capture ; une forme seule n'est jamais le
-    sujet d'une carte.
+    La vraie matière, dans cet ordre (image.md, « La vraie matière ») : une vraie capture, son
+    interface reconstruite, un vrai chiffre de OFFRE.json, puis ses mots. Le point d'accent n'est
+    qu'une transition (moins d'une seconde) vers la capture ; chaque carte porte une matière, jamais
+    un aplat seul : une carte sans matière n'est pas posée.
+    Mosaïque à ×0,44 : le texte d'une carte y fait au moins 64 px (28 px à l'écran) ; on n'y lit
+    que le nom, un chiffre et son contexte (8 mots au plus à l'image, hors bouton et liste).
 
-    La lecture (rythme.md) : le nom et sa marque restent lecture(NOM + MARQUE) une fois posés
-    (0,3 s par mot + 0,8 s, jamais moins de 1,5 s) avant que la caméra recule : la scène place le
-    recul seule. Pendant cette tenue, la caméra ne fait qu'une dérive lente. data-duration (ici et
-    sur l'hôte dans index.html) = l'instant du recul + 2,5 s (la console le rappelle s'il manque).
+    La lecture (mouvement.md, « La lecture ») : le nom et sa marque restent lecture(nom + marque)
+    une fois posés (0,3 s par mot + 0,8 s, jamais moins de 1,5 s) avant que la caméra recule : la
+    scène place le recul seule. Pendant cette tenue, la caméra ne fait qu'une dérive lente.
+    data-duration (ici et sur l'hôte dans index.html) = l'instant du recul + 2,8 s (la mosaïque se
+    lit) ; la console le rappelle s'il manque.
 
     Couleurs : celles de la marque, rien d'autre. Quatre fonds de carte (accent, clair, gris,
     sombre), chacun avec son encre (classes pal-*) ; la nuit est --brand-sombre. Ses vraies
     captures gardent leurs couleurs. Aucun paysage, aucune illustration, aucune teinte dérivée de
     l'accent, aucun accent en transparence.
 
-    À remplacer :
-      1. L'identifiant « t02-carte » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. NOM (le nom de l'offre, 1 à 3 mots : il se réduit seul s'il déborde de la bande) et MARQUE
-         (le nom de sa marque, sous la bande ; "" pour aucun), en tête du script.
-      3. CARTES : la grande (hero) puis les six de la mosaïque, avec la vraie matière du client.
-         La grande porte TOUJOURS une vraie matière : image, une vraie capture du dossier
-         assets/images (sa page, son produit, son espace de formation, un résultat), que le cercle
-         découvre ; cadrage (facultatif) : la partie montrée, en object-position ("50% 0%" : le
-         haut). Avec une image, la bande du nom descend au tiers bas pour laisser voir la capture.
-         Sans aucune capture (rare : c'est la question du repérage), la grande garde ses mots dans
-         la bande, sur son fond.
-         Les six autres, en descendant l'échelle : image (une vraie capture, avec cadrage) ;
-         ui "bouton" (le vrai libellé du bouton de sa page, que le curseur clique) ; ui "liste"
-         (les vrais titres de ses modules, qui se cochent) ; ui "chiffre" (un vrai chiffre de la
-         fiche qui monte : a, de, avant, apres, decimales, et texte : son contexte en 2 à 5 mots) ;
-         ui "mot" (un mot ou une phrase courte de sa page, une carte au plus). ui "aplat" (la couleur
-         seule) ne sert que de cadre : une ou deux petites cartes au plus, coupées par le bord,
-         jamais la grande. fond : "accent", "clair", "gris" ou "sombre" (le fond d'une carte, et le
-         cadre d'une capture). Les chemins d'exemple (sa-page.jpg, son-produit.jpg…) n'existent
-         pas : `npm run check` refuse la scène (erreur 404) tant qu'ils ne pointent pas sur ses
-         vraies captures. Jamais une interface inventée, un faux lecteur, une icône de décor,
-         un paysage, ni une étiquette technique (rayon, police, code couleur : réservées à une
-         vidéo qui parle de design).
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque valeur vient de OFFRE.json ou de sa
+    vraie matière, ou sa ligne se retire), puis l'identifiant « t02-carte » partout (racine, scène,
+    préfixe des ids, clé de la timeline) et data-duration.
+      nom : le nom de l'offre (1 à 3 mots : il se réduit seul s'il déborde de la bande) ; marque :
+        le nom de sa marque, sous la bande ("" : aucun).
+      cartes : la grande, puis les six de la mosaïque, dans l'ordre des places (PLACES, hors
+        d'EXEMPLE : leur position et leur fond). La grande porte TOUJOURS une vraie capture
+        (image, du dossier assets/images : sa page, son produit, son espace de formation, un
+        résultat), que le cercle découvre ; cadrage (facultatif) : la partie montrée, en
+        object-position ("50% 0%" : le haut) ; la bande du nom descend alors au tiers bas. Sans
+        aucune capture (rare : c'est la question du repérage), la grande garde ses mots dans la
+        bande, sur son fond. Les six autres, en descendant l'échelle : image (une vraie capture,
+        avec cadrage) ; ui "bouton" (le vrai libellé du bouton de sa page, que le curseur clique) ;
+        ui "liste" (les vrais titres de ses modules, qui se cochent) ; ui "chiffre" (un vrai
+        chiffre de la fiche qui monte : a, de, avant, apres, decimales, et texte : son contexte en
+        2 ou 3 mots) ; ui "mot" (un mot de sa page, une carte au plus). Les chemins d'exemple
+        (sa-page.jpg…) n'existent pas : `npm run check` refuse la scène (erreur 404) tant qu'ils ne
+        pointent pas sur ses vraies captures. Jamais une interface inventée, un faux lecteur, une
+        icône de décor, un paysage, ni une étiquette technique (rayon, police, code couleur).
     Polices : var(--brand-font-display) pour le nom, les mots et les chiffres ; var(--brand-font-body)
     pour la liste et les contextes.
   -->
@@ -108,7 +108,7 @@
     #t02-carte .t02-carte-point { position: absolute; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; background: var(--brand-accent); z-index: 5; }
     #t02-carte .t02-carte-coin { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--brand-clair); box-shadow: 0 0 0 2px var(--t02-nuit); z-index: 4; }
 
-    /* Les cartes de la mosaïque : une capture, le bouton, une liste, un chiffre, un mot, un aplat. */
+    /* Les cartes de la mosaïque : une capture, le bouton, une liste, un chiffre, un mot. */
     #t02-carte .t02-carte-mot {
       position: absolute; left: 0; right: 0; top: 50%; text-align: center; white-space: nowrap;
       font-family: var(--brand-font-display); font-weight: 600; font-size: 170px; line-height: 1;
@@ -121,13 +121,13 @@
     }
     #t02-carte .t02-carte-contexte {
       position: absolute; left: 0; right: 0; top: 70%; text-align: center; white-space: nowrap;
-      font-family: var(--brand-font-body); font-weight: 600; font-size: 62px; letter-spacing: -0.01em; color: var(--c-encre);
+      font-family: var(--brand-font-body); font-weight: 600; font-size: 66px; letter-spacing: -0.01em; color: var(--c-encre);
     }
     /* La liste se cale à droite de sa carte : une carte coupée par le bord gauche la montre entière. */
     #t02-carte .t02-carte-liste { position: absolute; left: 330px; right: 110px; }
     #t02-carte .t02-carte-ligne {
-      display: flex; align-items: center; gap: 30px; height: 124px; white-space: nowrap;
-      font-family: var(--brand-font-body); font-weight: 600; font-size: 50px; color: var(--c-encre);
+      display: flex; align-items: center; gap: 30px; height: 140px; white-space: nowrap;
+      font-family: var(--brand-font-body); font-weight: 600; font-size: 66px; color: var(--c-encre);
     }
     #t02-carte .t02-carte-ligne + .t02-carte-ligne { border-top: 2px solid var(--c-trait); }
     #t02-carte .t02-carte-coche { width: 64px; height: 64px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 3px var(--c-trait); display: grid; place-items: center; color: var(--brand-contrast); }
@@ -138,14 +138,14 @@
       position: absolute; left: 50%; top: 50%; height: 156px; border-radius: 999px; overflow: hidden;
       display: flex; align-items: center; justify-content: center; padding: 0 78px;
       background: var(--brand-clair); color: var(--brand-sombre); white-space: nowrap;
-      font-family: var(--brand-font-display); font-weight: 600; font-size: 58px; letter-spacing: -0.02em;
+      font-family: var(--brand-font-display); font-weight: 600; font-size: 66px; letter-spacing: -0.02em;
     }
     #t02-carte .t02-carte-bouton .remplir { position: absolute; inset: 0; border-radius: 999px; background: var(--brand-accent); transform-origin: 0 50%; }
     #t02-carte .t02-carte-bouton span { position: relative; }
     #t02-carte .t02-carte-bouton[data-etat="plein"] span { color: var(--brand-contrast); }
   </style>
 
-  <div data-composition-id="t02-carte" data-width="1920" data-height="1080" data-duration="6.6" style="position:absolute; inset:0;">
+  <div data-composition-id="t02-carte" data-width="1920" data-height="1080" data-duration="6.9" style="position:absolute; inset:0;">
     <div id="t02-carte" class="k-scene">
       <div class="k-scene3d"><div class="k-camera" id="t02-carte-cam"></div></div>
       <div class="t02-carte-repere" id="t02-carte-rh" style="left:0; top:858px; width:1920px; height:2px;"></div>
@@ -156,6 +156,22 @@
 
   <script>
     (function () {
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+        nom: "Ta formation",   // le nom de l'offre, en voix légère dans la bande (exemple : une formation)
+        marque: "Ta marque",   // le nom de sa marque, sous la bande ("" : aucun)
+        // La grande carte, puis les six de la mosaïque (ordre des PLACES). Ces chemins montrent où
+        // vont SES captures ; les modules et le chiffre (12 leçons) sont des exemples à remplacer.
+        cartes: [
+          { image: "assets/images/sa-page.jpg", cadrage: "50% 0%" },
+          { ui: "bouton", texte: "Je commence" },
+          { image: "assets/images/son-produit.jpg", cadrage: "50% 30%" },
+          { ui: "liste", lignes: ["Les bases", "La méthode", "Les outils", "Le lancement"] },
+          { image: "assets/images/une-lecon.jpg", cadrage: "50% 0%" },
+          { ui: "chiffre", de: 0, a: 12, apres: " leçons", texte: "en vidéo" },
+          { image: "assets/images/un-resultat.jpg", cadrage: "50% 50%" }
+        ]
+      };
+
       var ID = "t02-carte", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cam = $("cam");
@@ -166,26 +182,31 @@
         for (; n; n = n.parentElement) {
           if (n.getAttribute && n.getAttribute("data-composition-id") === ID && parseFloat(n.getAttribute("data-duration")) > 0) v.push(parseFloat(n.getAttribute("data-duration")));
         }
-        return v.length ? Math.min.apply(null, v) : 6.6;
+        return v.length ? Math.min.apply(null, v) : 6.9;
       })();
 
-      // ---------- Ce qu'on remplace ----------
-      var NOM = "Ton offre";      // le nom de l'offre, en voix légère dans la bande (il se réduit seul)
-      var MARQUE = "Ta marque";   // le nom de sa marque, sous la bande ("" : rien)
-      // La grande carte (hero), au centre, puis la mosaïque autour (centre de chaque carte, dans
-      // l'espace de la caméra). La grande porte toujours une vraie capture (image) ; les autres
-      // descendent l'échelle : image, bouton, liste, chiffre, puis un mot ; un aplat n'est qu'un
-      // cadre (une ou deux cartes coupées au plus). Ces chemins montrent où vont SES captures.
-      var CARTES = [
-        { nom: "hero", x: 960, y: 540, fond: "accent", image: "assets/images/sa-page.jpg", cadrage: "50% 0%" },
-        { nom: "c1", x: 180, y: -370, fond: "gris", ui: "bouton", texte: "Je commence" },
-        { nom: "c2", x: 1740, y: -370, fond: "clair", image: "assets/images/son-produit.jpg", cadrage: "50% 30%" },
-        { nom: "c3", x: -600, y: 540, fond: "clair", ui: "liste",
-          lignes: ["Module 1 · Les bases", "Module 2 · La méthode", "Module 3 · Les outils", "Module 4 · Le lancement"] },
-        { nom: "c4", x: 2520, y: 540, fond: "gris", ui: "aplat" },
-        { nom: "c5", x: 180, y: 1450, fond: "sombre", ui: "chiffre", de: 0, a: 4, apres: " modules", texte: "à suivre pas à pas" },
-        { nom: "c6", x: 1740, y: 1450, fond: "clair", image: "assets/images/un-resultat.jpg", cadrage: "50% 50%" }
+      // ---------- Le mouvement : la place et le fond de chaque carte ----------
+      // La grande (hero) au centre, puis la mosaïque autour (centre de chaque carte, dans l'espace
+      // de la caméra) ; c3 et c4 sont coupées par les bords. fond : "accent", "clair", "gris" ou
+      // "sombre" (le fond d'une carte, et le cadre d'une capture).
+      var PLACES = [
+        { nom: "hero", x: 960, y: 540, fond: "accent" },
+        { nom: "c1", x: 180, y: -370, fond: "gris" },
+        { nom: "c2", x: 1740, y: -370, fond: "clair" },
+        { nom: "c3", x: -600, y: 540, fond: "clair" },
+        { nom: "c4", x: 2520, y: 540, fond: "gris" },
+        { nom: "c5", x: 180, y: 1450, fond: "sombre" },
+        { nom: "c6", x: 1740, y: 1450, fond: "clair" }
       ];
+      // La matière de chaque carte, dans l'ordre des places (voir EXEMPLE) ; une carte sans matière
+      // n'est pas posée.
+      var CARTES = PLACES.map(function (p, i) { return Object.assign({}, EXEMPLE.cartes[i] || {}, p); })
+        .filter(function (c, i) {
+          if (c.image || (c.ui && c.ui !== "aplat")) return true;
+          if (!i) console.warn(ID + " : la grande carte n'a pas de capture (image) : elle garde ses mots dans la bande.");
+          return !i;
+        });
+      var NOM = EXEMPLE.nom, MARQUE = EXEMPLE.marque;
 
       // La lecture : 0,3 s par mot + 0,8 s, jamais moins de 1,5 s (studio_motion.py lecture).
       var lecture = function (t) {
@@ -196,7 +217,7 @@
       var NOM_POSE = 1.4 + 0.09 * (mots - 1) + 0.55, SIGNE_POSE = MARQUE ? 2.07 : 0;
       var POSE = Math.max(NOM_POSE, SIGNE_POSE);
       var RECUL = Math.max(3.6, Math.ceil((POSE + lecture(NOM + " " + MARQUE)) * 10) / 10);
-      if (D + 1e-6 < RECUL + 2.3) console.warn(ID + " : data-duration trop courte, il faut " + (RECUL + 2.5).toFixed(1) + " s (recul à " + RECUL.toFixed(1) + " s)");
+      if (D + 1e-6 < RECUL + 2.8) console.warn(ID + " : data-duration trop courte, il faut " + (RECUL + 2.8).toFixed(1) + " s (recul à " + RECUL.toFixed(1) + " s)");
 
       // Ce qui dépend du temps sans tween possible (la découpe du cercle) : fonctions pures du temps.
       var aJour = [], horloge = { t: 0 };
@@ -234,7 +255,7 @@
           gsap.set(c.chiffre, { yPercent: -50 });
           if (c.texte) { c.contexte = K.el(d, "div", "t02-carte-contexte", c.texte); gsap.set(c.contexte, { yPercent: -50 }); }
         } else if (c.ui === "liste") {
-          var liste = K.el(d, "div", "t02-carte-liste", null, "top:" + (415 - c.lignes.length * 62) + "px;");
+          var liste = K.el(d, "div", "t02-carte-liste", null, "top:" + (415 - c.lignes.length * 70) + "px;");
           c.coches = c.lignes.map(function (t) {
             var l = K.el(liste, "div", "t02-carte-ligne");
             var ch = K.el(l, "span", "t02-carte-coche", K.ic("check"));
@@ -332,6 +353,8 @@
       tl.to(gv, { scaleY: 0, duration: 0.3, ease: "power2.in" }, RECUL);
       tl.to(gh, { scaleX: 0, duration: 0.3, ease: "power2.in" }, RECUL);
       tl.to(pts, { scale: 0, duration: 0.25, ease: "power2.in" }, RECUL);
+      // Sa marque se retire au recul : déjà lue, elle passerait sous 28 px dans la mosaïque.
+      if (signe) tl.to(signe, { opacity: 0, y: 16, duration: 0.25, ease: "power2.in" }, RECUL);
 
       // ---------- La mosaïque : les autres cartes arrivent de la droite ----------
       // Elles partent hors champ (au moins 1 400 px à droite) et glissent sous la grande, sans
@@ -372,20 +395,27 @@
       // Le nom et les mots se mesurent une fois les polices chargées.
       var cs = getComputedStyle(titre);
       document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
+      // La largeur d'un texte (et non de sa boîte, qui fait toute la carte), sans transformation.
+      function largeur(el, texte) {
+        var s = K.el(el, "span", null, null, "position:absolute; left:0; top:0; visibility:hidden; white-space:nowrap;");
+        s.textContent = texte != null ? texte : el.textContent;
+        var w = s.offsetWidth; el.removeChild(s); return w;
+      }
       function finir() {
         // Le nom tient dans la bande ; un mot géant, un chiffre et son contexte tiennent dans leur carte.
         var maxNom = zone.offsetWidth - 80;
         if (titre.scrollWidth > maxNom) titre.style.fontSize = (156 * maxNom / titre.scrollWidth).toFixed(1) + "px";
-        avec("mot").forEach(function (c) { if (c.mot.scrollWidth > 1300) c.mot.style.fontSize = (170 * 1300 / c.mot.scrollWidth).toFixed(1) + "px"; });
+        // Un mot géant ou un chiffre trop large se réduit (il reste très au-dessus de 28 px à l'écran) ;
+        // un contexte, un libellé ou une ligne de liste trop longs se coupent : jamais sous 64 px.
+        var MAX = 1300;
+        avec("mot").forEach(function (c) { var w = largeur(c.mot); if (w > MAX) c.mot.style.fontSize = (170 * MAX / w).toFixed(1) + "px"; });
         avec("chiffre").forEach(function (c) {
-          // Mesuré à sa valeur finale (le compteur part de « de »).
-          var avant = c.chiffre.textContent;
-          c.chiffre.textContent = chiffreFormat(c)(c.a);
-          if (c.chiffre.scrollWidth > 1300) c.chiffre.style.fontSize = (230 * 1300 / c.chiffre.scrollWidth).toFixed(1) + "px";
-          c.chiffre.textContent = avant;
-          if (c.contexte && c.contexte.scrollWidth > 1300) c.contexte.style.fontSize = (62 * 1300 / c.contexte.scrollWidth).toFixed(1) + "px";
+          var w = largeur(c.chiffre, chiffreFormat(c)(c.a));   // mesuré à sa valeur finale
+          if (w > MAX) c.chiffre.style.fontSize = (230 * MAX / w).toFixed(1) + "px";
+          if (c.contexte && largeur(c.contexte) > MAX) console.warn(ID + " : le contexte du chiffre est trop long, coupe des mots");
         });
-        avec("bouton").forEach(function (c) { if (c.bouton.offsetWidth > 1300) c.bouton.style.fontSize = (58 * 1300 / c.bouton.offsetWidth).toFixed(1) + "px"; });
+        avec("bouton").forEach(function (c) { if (c.bouton.offsetWidth > MAX) console.warn(ID + " : le libellé du bouton est trop long, coupe des mots"); });
+        avec("liste").forEach(function (c) { c.coches.forEach(function (ch) { if (ch.parentNode.scrollWidth > ch.parentNode.offsetWidth + 1) console.warn(ID + " : une ligne de la liste est trop longue, coupe des mots"); }); });
         aJour.forEach(function (f) { f(0); });
         window.__timelines[ID] = tl;
       }

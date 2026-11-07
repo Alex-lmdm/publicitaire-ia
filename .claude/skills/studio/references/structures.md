@@ -17,8 +17,8 @@ Quatre lois communes à toutes les structures :
    connaître le produit. À la fin, un inconnu doit savoir ce que c'est, pour qui, quel problème ça
    règle, comment ça marche (en une phrase), pourquoi le croire, et quoi faire maintenant (le
    test du spectateur froid, [ecriture.md](ecriture.md)). Une story d'ouverture qui enchaîne
-   « C'est ouvert », un chiffre et un prix sans dire ce qui ouvre est un échec (essai du
-   06/11/2026, refusé par le créateur : « on n'a rien compris »).
+   « C'est ouvert », un chiffre et un prix sans dire ce qui ouvre est un échec : on n'y comprend
+   rien.
 2. **Le contexte d'abord, puis le pivot.** Dans les premières secondes, le spectateur sait de quoi
    on parle, pour qui, et ce qu'il gagne à rester (le problème qu'on règle, le résultat, le fait
    nouveau). Une annonce (« C'est ouvert ») peut ouvrir, à condition que l'écran suivant dise ce
@@ -27,30 +27,30 @@ Quatre lois communes à toutes les structures :
    la fait monter ; le « comment » se montre en deux ou trois gestes, avec une phrase qui dit ce
    qu'on voit. Une fonctionnalité ne se présente jamais seule : toujours le problème qu'elle
    supprime et ce qu'on obtient.
-4. **Montrer et dire.** Sans voix (le cas par défaut), c'est le texte qui raconte : l'image prouve
-   ce que dit la phrase, elle ne la remplace pas. La démonstration vient avant l'argument, et une
-   phrase courte dit ce qu'elle montre.
+4. **Montrer, puis quelques mots.** Sans voix (le cas par défaut), l'image raconte et les mots
+   ponctuent : chaque plan se comprend par ce qu'il montre ET ses quelques mots (un mot héros, au
+   besoin une ligne d'appui). La démonstration vient avant l'argument.
 
-Chaque bloc ci-dessous devient au moins une phrase du script ([ecriture.md](ecriture.md), « Le
-script ») : on écrit le script, le client le valide, puis on fabrique les scènes.
+Chaque bloc ci-dessous devient au moins un plan du film ([ecriture.md](ecriture.md), « Le
+film ») : on écrit le script, le client le valide, puis on fabrique les scènes.
 
 ## 1. Vendre l'offre : vidéo de page de vente (60 à 120 s, `page`)
 
 C'est une VSL courte en motion design : elle tourne souvent en lecture automatique muette en haut
-de la page, donc **chaque idée se lit à l'écran**, voix ou pas : une phrase courte par écran
-(sans voix), ou les mots clés de la voix et ses sous-titres (avec voix).
-Chaque bloc est une ou deux recettes de `recettes.md`, reliées par des raccords d'objet ; le
-motif des chapitres annonce chaque fonction.
+de la page, donc **chaque idée se comprend sans le son** : ce qu'on voit et ses quelques mots (sans
+voix), ou les mots clés de la voix et ses sous-titres (avec voix). Chaque bloc est une ou deux
+scènes de [scenes.md](scenes.md), reliées par des raccords d'objet ; le motif des chapitres annonce
+chaque fonction ou chaque étape.
 
-Durées repères pour 60 à 75 s : la corvée 8 s, le pivot et le nom 5 s, la démo dans l'outil
-9 s, deux ou trois fonctions en chapitres 5 à 8 s chacune, l'écran coupé 5 s, la preuve 8 s,
-l'offre 8 s, le prix 4 s, le final cliqué 6 s.
+Durées repères pour 60 à 75 s : le problème 8 s, le pivot et le nom 5 s, la démonstration 9 s,
+deux ou trois fonctions ou étapes en chapitres 5 à 8 s chacune, l'avant / après 5 s, la preuve 8 s,
+l'offre 8 s, le prix 4 s, la fin 6 s.
 
 | Part | Bloc | Rôle | Fiche |
 |---|---|---|---|
-| 0–12 % | **Le vrai problème, montré** | La corvée que vit l'audience, en image et chiffrée (la timeline chargée, le chrono qui file). Sur la première image, déjà quelque chose de fort : c'est l'affiche si la lecture est bloquée | `probleme`, `public` |
-| 12–20 % | **Le pivot et le nom** | Ce qui a changé (l'outil qu'elle connaît déjà, son IA) et le nom de l'offre en plein écran à la couleur de la marque | `mecanisme`, `nouveaute`, `promesse` |
-| 20–45 % | **Le mécanisme montré** | L'offre en action dans sa vraie interface, puis deux ou trois fonctions en chapitres, chacune avec le problème qu'elle supprime | `mecanisme`, `recoit` |
+| 0–12 % | **Le vrai problème, montré** | Ce que vit l'audience, en image et chiffré (l'outil pénible, le temps ou l'argent perdu). Sur la première image, déjà quelque chose de fort : c'est l'affiche si la lecture est bloquée | `probleme`, `public` |
+| 12–20 % | **Le pivot et le nom** | Ce qui change pour elle (la nouvelle façon de faire) et le nom de l'offre en plein écran à la couleur de la marque | `mecanisme`, `nouveaute`, `promesse` |
+| 20–45 % | **Le mécanisme montré** | L'offre en action dans sa vraie matière (son interface, son espace de formation, le déroulé de l'accompagnement), puis deux ou trois fonctions ou étapes en chapitres, chacune avec le problème qu'elle supprime | `mecanisme`, `recoit` |
 | 45–58 % | **La preuve** | Pour d'autres (idéalement des gens comme eux), puis atteignable pour toi. Un chiffre découpé en morceaux crédibles | `preuves` |
 | 58–74 % | **L'offre** | « Voici ce qui se passe quand tu rejoins » : 3 bénéfices au plus, chacun avec son résultat | `recoit`, `bonus` |
 | 74–85 % | **Prix et garantie** | Le prix recadré (ce que ça coûte de ne pas le faire, ou ce que ça rapporte), la garantie si la page en a une | `prix`, `garantie` |
@@ -65,9 +65,9 @@ final. L'appel à l'action est le bouton de la page, juste sous la vidéo : la f
 | Part | Bloc | Rôle |
 |---|---|---|
 | 0–10 % | **Accroche** | Pour qui et ce qu'il gagne, compris en deux secondes (le résultat, ou le problème nommé) |
-| 10–25 % | **Le problème** | Une image du problème et sa phrase (l'outil d'avant, son coût) |
-| 25–35 % | **Ce que c'est** | Le nom de l'offre et ce qu'elle fait, en une phrase |
-| 35–65 % | **La démonstration** | Ce que l'offre fait, à l'écran, en deux ou trois gestes, chacun avec sa phrase |
+| 10–25 % | **Le problème** | Une image du problème et ses quelques mots (la façon d'avant, son coût) |
+| 25–35 % | **Ce que c'est** | Le nom de l'offre et ce qu'elle fait, montré en un plan |
+| 35–65 % | **La démonstration** | Ce que l'offre fait, à l'écran, en deux ou trois gestes, chacun avec ses quelques mots |
 | 65–85 % | **Une preuve** | Un seul chiffre ou un seul témoignage, avec son contexte (quoi, pour qui) |
 | 85–100 % | **Appel à l'action** | « Commente MOT », tenu au moins 3 s |
 
@@ -134,17 +134,15 @@ story a le temps : un segment de story dure jusqu'à 60 s, on n'écrit pas une s
 
 C'est la vidéo qui présente le produit le jour où il sort : un vrai script de vente, lu sans le son.
 Le format « C'est ouvert → le deal → la fenêtre » ne marche qu'après plusieurs jours de
-prélancement qui ont déjà posé le problème, l'histoire et les preuves : seul, il ne dit rien (la
-story refusée du 06/11/2026 le reprenait). **Par défaut, l'audience est froide** ; la version
+prélancement qui ont déjà posé le problème, l'histoire et les preuves : seul, il ne dit rien. **Par défaut, l'audience est froide** ; la version
 chaude se prend seulement si le client a fait un prélancement, ou pour ses clients existants.
 
-**Avant la structure, classe l'offre** (retour du client du 06/11/2026, sur Publicitaire IA) :
-- elle **soulage une douleur que l'audience a vécue**, dure et récurrente (« 3 heures sur CapCut
-  pour monter un Reel ») : le diagnostic ci-dessous ;
-- elle **rend possible ce que l'audience n'imaginait même pas faire** (des vidéos animées de niveau
-  studio pour son offre) : aucun problème à réveiller, l'audience n'y pensait pas. Prends **la
-  nouveauté montrée**, plus bas. Lui chercher une douleur donne des accroches qui sonnent faux
-  (le week-end sur Canva, le devis à 1 500 €, refusés le 06/11/2026).
+**Avant la structure, classe l'offre** :
+- elle **soulage une douleur que l'audience a vécue**, dure et récurrente (trois heures chaque
+  semaine sur sa compta, des clients qui ne reviennent pas) : le diagnostic ci-dessous ;
+- elle **rend possible ce que l'audience n'imaginait même pas faire** seule : aucun problème à
+  réveiller, l'audience n'y pensait pas. Prends **la nouveauté montrée**, plus bas. Lui chercher
+  une douleur donne des accroches qui sonnent faux.
 
 **Audience froide (par défaut, 35 à 50 s) : le diagnostic.** Assez long pour poser le contexte,
 assez dense pour qu'on ne passe pas à la story suivante : la moitié des gens tapent pour avancer
@@ -152,29 +150,29 @@ dès qu'une intro traîne, d'où une première phrase qui dit tout de suite de q
 
 | Part | Bloc | Ce que le spectateur se dit | Fiche |
 |---|---|---|---|
-| 0–10 % | **La scène vécue** | « C'est moi. » Une situation factuelle qu'il reconnaît d'un coup : un objet concret, son outil, un temps ou un prix tiré de la page (« Un week-end sur Canva pour une seule pub vidéo ? ») ; jamais une question vague, ni une question à laquelle il répond « non » | `probleme`, `public` |
-| 10–20 % | **Ce que ça coûte** | « Ça me coûte. » Ses options d'aujourd'hui et leur vrai coût (se filmer, payer quelqu'un, y passer un week-end) | `alternatives`, `probleme` |
-| 20–35 % | **L'autre option, et pourquoi elle marche** | « Ah, c'est donc ça. » « Il y a une autre option », tout de suite après les options qui échouent, puis ce qui la rend différente (une vidéo qui vend demande deux métiers : elle fait les deux). La cause glissée entre les options et la nouvelle option dilue le message (retour du client du 06/11/2026) | `mecanisme` |
+| 0–10 % | **La scène vécue** | « C'est moi. » Une situation factuelle qu'il reconnaît d'un coup : un objet concret, son outil, un temps ou un prix tiré de la page (« Un dimanche entier sur ta compta ? ») ; jamais une question vague, ni une question à laquelle il répond « non » | `probleme`, `public` |
+| 10–20 % | **Ce que ça coûte** | « Ça me coûte. » Ses options d'aujourd'hui et leur vrai coût (le faire seul, payer quelqu'un, y passer ses soirées) | `alternatives`, `probleme` |
+| 20–35 % | **L'autre option, et pourquoi elle marche** | « Ah, c'est donc ça. » « Il y a une autre option », tout de suite après les options qui échouent, puis ce qui la rend différente. Une explication glissée entre les options et la nouvelle option dilue le message | `mecanisme` |
 | 35–60 % | **Ce que c'est, et comment ça marche** | « Je vois, c'est simple. » Le nom et ce qu'il fait en une phrase, puis deux ou trois étapes montrées dans la vraie interface, chacune avec sa phrase | `promesse`, `mecanisme`, `recoit` |
 | 60–75 % | **La preuve mesurée** | « Ça a vraiment marché. » Le repère d'abord (une pub, son budget), puis le résultat, son contexte (quelle offre, quand) et sa traduction simple | `preuves` |
 | 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » C'est ouvert ; ce qu'on reçoit et quand on y accède ; le prix, la vraie échéance et le prix d'après | `nouveaute`, `recoit`, `bonus`, `prix`, `dates`, `echeances` |
 | 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » « Touche le lien. » et ce qui attend derrière, au-dessus de la bande du sticker | `cta` |
 
 **Une possibilité nouvelle (35 à 50 s) : la nouveauté montrée.** Une croyance qui n'existe pas
-encore ne se crée pas par des mots : il faut la faire voir (Alen Sultanic, swipe du coffre
-Obsidian du client). On montre d'abord, on dit ensuite.
+encore ne se crée pas par des mots : il faut la faire voir (Alen Sultanic). On montre d'abord, on
+dit ensuite.
 
 | Part | Bloc | Ce que le spectateur se dit | Fiche |
 |---|---|---|---|
-| 0–15 % | **La preuve qu'on voit** | « Attends, c'est possible ? » La chose elle-même, à l'écran : la vidéo est sa propre démonstration (« Cette story, je ne l'ai ni filmée ni montée. ») ou le résultat montré avant d'être expliqué | `preuves` (média), `nouveaute` |
-| 15–35 % | **Le seul geste** | « C'est tout ? » Ce qu'il faut faire, dans des mots qu'il connaît (installer, coller un lien), et ce qui en sort. Un mot nouveau au plus (« vidéo animée » plutôt que « motion design ») | `mecanisme` |
-| 35–55 % | **Pour lui** | « Je vois ce que j'en ferais. » Ce que ça fabrique pour son offre à lui : ses formats, son produit, ses couleurs | `recoit`, `public` |
+| 0–15 % | **La preuve qu'on voit** | « Attends, c'est possible ? » La chose elle-même, à l'écran : le résultat montré avant d'être expliqué, ou la vidéo qui est sa propre démonstration quand l'offre fabrique des contenus | `preuves` (média), `nouveaute` |
+| 15–35 % | **Le seul geste** | « C'est tout ? » Ce qu'il faut faire, dans des mots qu'il connaît (s'inscrire, installer, coller un lien), et ce qui en sort. Un mot nouveau au plus | `mecanisme` |
+| 35–55 % | **Pour lui** | « Je vois ce que j'en ferais. » Ce que ça donne dans sa situation à lui | `recoit`, `public` |
 | 55–75 % | **La preuve mesurée** | « Et ça vend. » Un cas réel, la dépense à côté du résultat : une preuve, jamais l'accroche (un revenu en accroche attire les acheteurs les plus volatils) | `preuves` |
 | 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » Dire aussi ce que ça demande (l'installation, l'abonnement à son IA) : chaque « sans » réveille le « trop beau pour être vrai » | `prix`, `dates`, `recoit` |
 | 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » | `cta` |
 
-Jamais contre les prestataires qu'on remplace (motion designers, agences) : on leur donne raison,
-puis on montre la nouvelle façon.
+Jamais contre les prestataires qu'on remplace (agences, freelances, autres méthodes) : on leur
+donne raison, puis on montre la nouvelle façon.
 
 **Audience chaude (après un prélancement, ou ses clients ; 30 à 45 s).** « C'est ouvert » et le
 résultat en une phrase (0–10 %) → le rappel du problème, de la solution et du mécanisme, en trois
@@ -182,10 +180,10 @@ ou quatre phrases (10–40 %) → la preuve (40–55 %) → ce qu'on reçoit et 
 a une (55–75 %) → le prix, la date, le prix d'après et le geste (75–100 %). Même chaude, elle redit
 ce que c'est : on ne saute jamais le rappel.
 
-Une douzaine à une quinzaine de phrases à l'écran, une par écran, tenues le temps de les lire
-([rythme.md](rythme.md)). Elles peuvent se poser sur une vraie matière qui dure (sa capture, son
-interface, sa pub qui tourne) : c'est souvent ce que font les stories d'un créateur, quatre à huit
-écrans de texte sur une capture.
+Huit à dix plans, chacun avec 0 à 8 mots, et au plus un mot à lire par seconde sur toute la story
+(35 à 45 mots pour 40 s) : c'est l'image qui raconte ([ecriture.md](ecriture.md)). La matière qui
+dure (sa capture, son interface, sa pub qui tourne) porte le plan, en grand ; les mots s'y posent.
+Jamais une phrase par écran au-dessus d'une petite capture : ce sont des sous-titres.
 
 ### Les autres publications
 

@@ -4,33 +4,34 @@
 <body>
 <template>
 <!--
-  Style n°7 · Phrase tapée · scène « Le désordre éparpillé » (le problème qu'on range).
+  Style n°7 · Phrase tapée · scène « Le désordre rangé » (le problème qu'on range).
   Ce qu'elle montre : sur fond clair, une grande phrase se tape, s'efface et se retape (trois fins
   successives) ; à chaque fin, un groupe d'objets surgit autour d'elle en profondeur : SA vraie
-  matière (ses captures, les logos de ses outils) et des mots en pilule, quelques formes pleines à
-  ses couleurs. Puis tout se change en points, se resserre vers le centre et s'éteint, et la
-  conclusion apparaît en écriture de points.
+  matière (ses captures, les logos de ses outils) et quelques mots en pilule. Puis la phrase
+  s'efface et tout se range d'un coup : chaque objet file vers le centre, se redresse, devient net
+  et prend sa place dans des rangs nets (ses captures au-dessus, ses outils et ses mots
+  au-dessous), pendant que la conclusion se tape à la place de la phrase.
   Chaque version de la phrase se tient le temps de sa lecture (0,3 s par mot + 0,8 s :
-  `studio_motion.py lecture`) avant d'être effacée, la conclusion aussi ; pendant qu'on lit, la
-  matière surgit et dérive autour de la phrase, la caméra ne fait qu'un lent recul (6 %).
-  Durée : la scène la calcule (D dans le script) : 10,3 s avec les textes d'exemple (trois versions
-  de 3 mots, une conclusion de 3) ; reporte-la dans data-duration (ici et sur l'hôte).
-  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe à
-  la ligne, les objets se répartissent au-dessus et au-dessous).
-  À remplacer (objet R en tête du script) : le début de la phrase et ses trois fins, ce qui
-  surgit à chaque fin (groupes : 7, 6 et 8 objets au plus), la conclusion en points. Un groupe
-  mêle, dans l'ordre voulu :
-    - "logo-capcut" : le logo d'un de ses outils, posé par `studio_motion.py logos` (un logo absent
+  `studio_motion.py lecture`) avant d'être effacée, la conclusion aussi ; la phrase ne bouge pas
+  pendant qu'on la lit : la matière surgit et dérive autour d'elle, la caméra ne fait qu'un lent
+  recul (6 %) derrière elle.
+  8 mots à lire au plus à l'écran : la phrase et les mots en pilule de tous les groupes ensemble
+  (ils restent jusqu'au rangement), puis la conclusion et ces mêmes pilules.
+  Durée : la scène la calcule (D dans le script) : 10,1 s avec l'objet EXEMPLE (trois versions de
+  3 mots, une conclusion de 3) ; reporte-la dans data-duration (ici et sur l'hôte).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe à la ligne, les
+  objets se répartissent au-dessus et au-dessous, les rangs passent à la ligne).
+  À remplacer : l'objet EXEMPLE en tête du script. Un groupe mêle, dans l'ordre voulu :
+    - "logo-notion" : le logo d'un de ses outils, posé par `studio_motion.py logos` (un logo absent
       est retiré, jamais remplacé par une icône) ;
-    - { img: "assets/images/capture.png", format: "16:9" } : une de ses vraies captures (sa page,
+    - { img: "assets/images/capture-1.png", format: "16:9" } : une de ses vraies captures (sa page,
       un post, une miniature, un fichier réel) ;
-    - "Montage" : un mot de son sujet, en pilule (claire, ou sombre si le mot commence par « / ») ;
-    - "●" : un disque plein de l'accent ; "▬" : une pilule pleine de sa nuit (des formes, rien
-      d'autre).
-  Jamais de faux document, de faux dossier ni de fausse note : sans vraie matière, des mots.
-  Couleurs : seulement celles de ta marque (brand/tokens.css) : son clair en fond, sa nuit pour
-  l'encre et les pilules sombres, l'accent plein pour les disques. Captures et logos gardent leurs
-  vraies couleurs ; ombres et traits en noir transparent.
+    - "Factures" : un mot de son sujet, en pilule (claire, ou sombre si le mot commence par « / »).
+  Jamais de faux document, de faux dossier, de fausse note ni de forme sans sujet : sans vraie
+  matière, moins d'objets.
+  Couleurs : seulement les jetons de ta marque (brand/tokens.css) : son clair en fond, sa nuit pour
+  l'encre et les pilules sombres. Captures et logos gardent leurs vraies couleurs ; ombres et
+  filets en noir transparent.
   Identifiant : t7e (préfixe de tous les id et classes de la scène).
 -->
 <style>
@@ -45,64 +46,53 @@
     font-size: 136px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; white-space: nowrap; }
   #t7e .t7e-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.07em; background: var(--t7-encre); }
   #t7e .t7e-obj { position: absolute; will-change: transform, filter; }
-  /* Au moment de se défaire, chaque objet passe à travers une trame de points. */
-  #t7e .t7e-obj[data-pix="1"] { -webkit-mask-image: radial-gradient(circle, #000 58%, transparent 64%); -webkit-mask-size: 10px 10px;
-    mask-image: radial-gradient(circle, #000 58%, transparent 64%); mask-size: 10px 10px; }
   #t7e .t7e-tuile { width: 100%; height: 100%; border-radius: 24%; background: var(--t7-clair); display: grid; place-items: center; color: var(--t7-encre);
     box-shadow: 0 14px 34px rgba(0,0,0,.12), inset 0 0 0 1.5px rgba(0,0,0,.06); }
   #t7e .t7e-tuile svg { width: 56%; height: 56%; }
-  #t7e .t7e-image { width: 100%; height: 100%; border-radius: 14px; overflow: hidden; background: rgba(0,0,0,.04);
+  #t7e .t7e-image { width: 100%; height: 100%; border-radius: 14px; overflow: hidden; background: var(--brand-gris-4);
     box-shadow: 0 16px 40px rgba(0,0,0,.14), inset 0 0 0 1.5px rgba(0,0,0,.06); }
   #t7e .t7e-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
   #t7e .t7e-mot { height: 100%; display: inline-flex; align-items: center; padding: 0 0.85em; border-radius: 0.6em; white-space: nowrap;
     background: var(--t7-clair); color: var(--t7-encre); font-family: var(--brand-font-body); font-weight: 500; letter-spacing: -0.01em;
     box-shadow: 0 8px 22px rgba(0,0,0,.10), inset 0 0 0 1.5px rgba(0,0,0,.07); }
   #t7e .t7e-mot.t7e-sombre { background: var(--t7-encre); color: var(--t7-clair); box-shadow: 0 8px 22px rgba(0,0,0,.18); }
-  #t7e .t7e-disque { width: 100%; height: 100%; border-radius: 50%; background: var(--brand-accent); }
-  #t7e .t7e-barrette { width: 100%; height: 100%; border-radius: 999px; background: var(--t7-encre); }
-  #t7e .t7e-points { position: absolute; left: 0; right: 0; top: 50%; height: 360px; margin-top: -180px; text-align: center; z-index: 21; }
-  #t7e .t7e-points-texte { display: inline-block; margin-top: 108px; font-size: 150px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; white-space: nowrap;
-    color: var(--t7-encre);
-    -webkit-mask-image: radial-gradient(circle, #000 52%, transparent 60%); -webkit-mask-size: 9px 9px; mask-image: radial-gradient(circle, #000 52%, transparent 60%); mask-size: 9px 9px; }
-  #t7e .t7e-cadre { position: absolute; width: 12px; height: 12px; background: var(--t7-encre); }
 </style>
 
-<div data-composition-id="t7e" data-width="1920" data-height="1080" data-duration="10.3" style="position:absolute; inset:0;">
+<div data-composition-id="t7e" data-width="1920" data-height="1080" data-duration="10.1" style="position:absolute; inset:0;">
   <div id="t7e" class="k-scene">
     <div class="t7e-fond"></div>
     <div class="k-scene3d"><div class="k-camera" id="t7e-cam"><div id="t7e-objets" style="position:absolute; inset:0"></div></div></div>
     <div class="t7e-phrase" id="t7e-phrase"><span id="t7e-texte"></span><span class="t7e-caret" id="t7e-caret"></span></div>
-    <div class="t7e-points" id="t7e-points" data-layout-allow-overlap><div class="t7e-points-texte" id="t7e-points-texte"></div></div>
   </div>
 </div>
 
 <script>
 (function () {
-  // ---- À remplacer --------------------------------------------------------------------------
-  var R = {
-    debut: "Rassemble tes",
-    fins: ["idées.", "fichiers.", "outils."],
-    // Ce qui surgit à chaque fin (voir l'en-tête) : ses logos, ses captures, des mots, des formes.
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+    debut: "Rassemble tes",                    // le début de la phrase, qui reste
+    fins: ["notes.", "fichiers.", "outils."],  // ses trois fins, tapées tour à tour
+    // ce qui surgit à chaque fin (voir l'en-tête) : ses captures, ses logos, quelques mots
+    // (5 mots en pilule au plus sur toute la scène : ils restent à l'écran avec la phrase)
     groupes: [
-      ["Script", "●", "/Idée de vidéo", "Miniature", "Relancer lundi", "●"],
-      ["Montage", "/Sous-titres", "●", "Musique", "▬", "/Formats"],
-      ["logo-claude", "logo-chatgpt", "logo-instagram", "logo-tiktok", "logo-youtube", "logo-linkedin", "logo-capcut", "logo-facebook"]
+      ["Notes", { img: "assets/images/capture-1.png", format: "16:9" }, "/Relances", { img: "assets/images/miniature-1.jpg", format: "9:16" }],
+      [{ img: "assets/images/capture-2.png", format: "16:9" }, "Factures", { img: "assets/images/capture-3.png", format: "16:9" }, "/Agenda"],
+      ["logo-notion", "logo-slack", "logo-google-drive", "logo-gmail", "logo-zoom", "logo-canva"]
     ],
-    fin: "Tout devient clair."
+    fin: "Tout est rangé."                     // la conclusion, tapée pendant que tout se range
   };
-  // -------------------------------------------------------------------------------------------
   // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
   function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
   // Chaque version : sa frappe [début, fin], sa tenue (sa lecture), puis l'effacement de sa fin.
   var etapes = [], efface = [], tv = 0.1;
-  R.fins.forEach(function (f, k) {
+  EXEMPLE.fins.forEach(function (f, k) {
     var frappe = k ? 0.35 : 0.65;
     etapes.push([tv, tv + frappe]);
-    var lue = tv + frappe + lecture(R.debut + " " + f);
-    if (k < R.fins.length - 1) { efface.push([lue, lue + 0.2]); tv = lue + 0.45; } else tv = lue;
+    var lue = tv + frappe + lecture(EXEMPLE.debut + " " + f);
+    if (k < EXEMPLE.fins.length - 1) { efface.push([lue, lue + 0.2]); tv = lue + 0.45; } else tv = lue;
   });
-  var Op = tv - 3.35;                                       // les points et la conclusion attendent la dernière lecture
-  var D = Math.ceil((4.5 + Op + lecture(R.fin)) * 10 - 1e-9) / 10;   // 10,3 s avec les textes d'exemple
+  var T = tv;                                                   // la dernière version lue : tout se range
+  var C0 = T + 0.35, C1 = C0 + 0.6;                             // la phrase s'efface, la conclusion se tape
+  var D = Math.ceil((C1 + lecture(EXEMPLE.fin)) * 10 - 1e-9) / 10;   // 10,1 s avec l'objet EXEMPLE
   var $ = function (id) { return document.getElementById(id); };
   var racine = $("t7e");
   var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L, echelle = vertical ? 0.78 : 1;
@@ -116,19 +106,18 @@
   // Un logo posé ici et dans une autre scène : ses identifiants internes (découpes, dégradés)
   // deviennent propres à chaque copie, sinon il renvoie à la copie cachée et disparaît.
   var copies = 0, logo = function (n) { copies++; return K.ic(n).replace(/(id="|url\(#|href="#)([^")]+)/g, "$1$2-t7e" + copies); };
-  // Un objet : son contenu et sa boîte (largeur, hauteur) pour une taille donnée.
+  // Un objet : son contenu, sa sorte (image, logo, mot) et sa boîte (largeur, hauteur) pour une taille donnée.
   function fabriquer(o, taille) {
     if (typeof o === "object" && o.img) {
       var f = (o.format || "16:9").split(":").map(Number), ratio = f[0] / f[1];
       var w = ratio >= 1 ? taille * 1.45 : taille * 1.45 * ratio, h = ratio >= 1 ? taille * 1.45 / ratio : taille * 1.45;
-      return { html: '<div class="t7e-image"><img alt="" src="' + o.img + '"></div>', w: w, h: h };
+      return { html: '<div class="t7e-image"><img alt="" src="' + o.img + '"></div>', w: w, h: h, sorte: "image" };
     }
-    if (/^logo-/.test(o)) return K.ic(o) ? { html: '<div class="t7e-tuile">' + logo(o) + "</div>", w: taille, h: taille } : null;
-    if (o === "●") return { html: '<div class="t7e-disque"></div>', w: taille * 0.4, h: taille * 0.4 };
-    if (o === "▬") return { html: '<div class="t7e-barrette"></div>', w: taille * 0.9, h: taille * 0.26 };
-    var sombre = o.charAt(0) === "/", mot = sombre ? o.slice(1) : o, corps = Math.round(16 + taille * 0.12);
+    if (/^logo-/.test(o)) return K.ic(o) ? { html: '<div class="t7e-tuile">' + logo(o) + "</div>", w: taille, h: taille, sorte: "logo" } : null;
+    // un mot à lire : 30 px au moins, quelle que soit la taille de sa place
+    var sombre = o.charAt(0) === "/", mot = sombre ? o.slice(1) : o, corps = Math.max(30, Math.round(16 + taille * 0.12));
     return { html: '<div class="t7e-mot' + (sombre ? " t7e-sombre" : "") + '" style="font-size:' + corps + 'px">' + mot + "</div>", w: null, h: corps * 2.2,
-      estime: corps * (0.6 * mot.length + 1.7), texte: true };
+      estime: corps * (0.6 * mot.length + 1.7), sorte: "mot" };
   }
   // Le placement : chaque objet prend sa place prévue, sinon la plus proche (en spirale) qui ne couvre
   // ni la phrase ni un mot déjà posé (et, pour un mot, aucun objet) ; un mot reste entier dans
@@ -137,11 +126,11 @@
   var libre = vertical ? { x0: 0, x1: L, y0: 0.37 * H, y1: 0.63 * H } : { x0: 0.13 * L, x1: 0.87 * L, y0: 0.36 * H, y1: 0.64 * H };
   var chevauche = function (a, b, m) { return a.x0 < b.x1 + m && a.x1 > b.x0 - m && a.y0 < b.y1 + m && a.y1 > b.y0 - m; };
   function placer(cx, cy, w, h, texte, flou) {
-    var d = 10 + flou * 5;                         // sa dérive (plus bas) : il lui faut cette place de chaque côté
+    var d = 10 + flou * 5, m = bord + 34 + flou * 14;   // sa dérive (plus bas) : il lui faut cette place de chaque côté
     for (var rayon = 0; rayon <= 560; rayon += 40) {
       for (var k = 0, n = rayon ? 12 : 1; k < n; k++) {
         var a = (k / n) * Math.PI * 2, x = cx + Math.cos(a) * rayon, y = cy + Math.sin(a) * rayon * 0.7;
-        if (texte) { x = Math.max(bord + w / 2, Math.min(L - bord - w / 2, x)); y = Math.max(bord + h / 2, Math.min(H - bord - h / 2, y)); }
+        if (texte) { x = Math.max(m + w / 2, Math.min(L - m - w / 2, x)); y = Math.max(bord + 18 + h / 2, Math.min(H - bord - 18 - h / 2, y)); }
         var b = { x0: x - w / 2 - d, x1: x + w / 2 + d, y0: y - h / 2, y1: y + h / 2, texte: texte };
         if (chevauche(b, libre, 0)) continue;
         if (placees.some(function (p) { return (p.texte || texte) && chevauche(b, p, 14); })) continue;
@@ -151,7 +140,7 @@
     placees.push({ x0: cx - w / 2, x1: cx + w / 2, y0: cy - h / 2, y1: cy + h / 2, texte: texte });
     return [cx, cy];
   }
-  R.groupes.forEach(function (liste, g) {
+  EXEMPLE.groupes.forEach(function (liste, g) {
     var places = PLACES[g % PLACES.length], k = 0;
     liste.forEach(function (o) {
       if (k >= places.length) return;
@@ -160,39 +149,77 @@
       if (!b) return;                               // un logo absent : l'objet est retiré
       k++;
       if (vertical) { var t = fx; fx = 0.08 + fy * 0.84; fy = t < 0.5 ? 0.06 + t * 0.62 : 0.94 - (1 - t) * 0.62; }
-      var xy = placer(fx * L, fy * H, b.w || b.estime, b.h, !!b.texte, +p[3]);
+      var flou = b.sorte === "mot" ? 0 : +p[3];     // un mot se lit : jamais flou ; une capture ou un logo peut l'être (la profondeur)
+      var xy = placer(fx * L, fy * H, b.w || b.estime, b.h, b.sorte === "mot", flou);
       var e = K.el(hote, "div", "t7e-obj", b.html, "left:" + xy[0] + "px; top:" + xy[1] + "px; width:" + (b.w ? b.w + "px" : "max-content") + "; height:" + b.h + "px;");
-      e.setAttribute("data-pix", "0"); e.dataset.flou = p[3]; e.dataset.rot = p[4]; e.dataset.cx = xy[0]; e.dataset.cy = xy[1];
+      e.dataset.flou = flou; e.dataset.rot = p[4]; e.dataset.cx = xy[0]; e.dataset.cy = xy[1];
+      e.dataset.sorte = b.sorte; e.dataset.w = b.w || b.estime; e.dataset.h = b.h;
       groupes[g].push(e); tous.push(e);
     });
   });
   // Chaque objet est placé par son centre.
   tous.forEach(function (e) { gsap.set(e, { xPercent: -50, yPercent: -50, filter: "blur(" + e.dataset.flou + "px)", rotation: +e.dataset.rot }); });
-  $("t7e-points-texte").textContent = R.fin;
-  if (vertical) { $("t7e-phrase").style.whiteSpace = "normal"; $("t7e-phrase").style.fontSize = "112px"; $("t7e-phrase").style.padding = "0 60px"; $("t7e-points-texte").style.fontSize = "96px"; $("t7e-points-texte").style.whiteSpace = "normal"; }
-  // le cadre de points autour de la conclusion
-  [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]].forEach(function (c) {
-    K.el($("t7e-points"), "div", "t7e-cadre", null, "left:calc(50% + " + (c[0] * (vertical ? 440 : 760)) + "px - 6px); top:" + (180 + c[1] * 150 - 6) + "px;");
+  if (vertical) { $("t7e-phrase").style.whiteSpace = "normal"; $("t7e-phrase").style.fontSize = "112px"; $("t7e-phrase").style.padding = "0 60px"; }
+
+  // Le rangement : trois rangs nets, chacun dans sa bande du cadre (les captures au-dessus de la
+  // phrase, les outils puis les mots au-dessous). Un rang trop long passe à la ligne ; les captures et
+  // les logos rapetissent pour tenir dans leur bande, les mots gardent leur taille (lisibles).
+  var ecart = vertical ? 24 : 28, largeur = 0.86 * L;
+  var BANDES = vertical
+    ? { image: [0.05 * H, 0.35 * H], logo: [0.65 * H, 0.79 * H], mot: [0.82 * H, 0.95 * H] }
+    : { image: [0.05 * H, 0.33 * H], logo: [0.67 * H, 0.81 * H], mot: [0.84 * H, 0.96 * H] };
+  var plafond = { image: vertical ? 300 : 260, logo: vertical ? 130 : 120 };
+  function lignes(objets, hauteur) {               // les objets en lignes de `largeur` au plus, à la hauteur donnée
+    var out = [[]], l = 0;
+    objets.forEach(function (e) {
+      var w = +e.dataset.w * hauteur / +e.dataset.h;
+      if (out[out.length - 1].length && l + ecart + w > largeur) { out.push([]); l = 0; }
+      out[out.length - 1].push({ e: e, w: w }); l += (l ? ecart : 0) + w;
+    });
+    return out;
+  }
+  ["image", "logo", "mot"].forEach(function (sorte) {
+    var objets = tous.filter(function (e) { return e.dataset.sorte === sorte; });
+    if (!objets.length) return;
+    var bande = BANDES[sorte], haut = bande[1] - bande[0], h, rangs;
+    // les mots prennent tous la taille du plus petit d'entre eux (30 px au moins, voir fabriquer)
+    if (sorte === "mot") { h = Math.min.apply(null, objets.map(function (e) { return +e.dataset.h; })); rangs = lignes(objets, h); }
+    else {
+      for (h = plafond[sorte]; h > 40; h -= 4) { rangs = lignes(objets, h); if (rangs.length * h + (rangs.length - 1) * ecart <= haut) break; }
+    }
+    var total = rangs.length * h + (rangs.length - 1) * ecart, y = (bande[0] + bande[1]) / 2 - total / 2 + h / 2;
+    rangs.forEach(function (rang) {
+      var lr = rang.reduce(function (s, o) { return s + o.w; }, 0) + (rang.length - 1) * ecart, x = L / 2 - lr / 2;
+      rang.forEach(function (o) {
+        var e = o.e;
+        e.dataset.tx = x + o.w / 2; e.dataset.ty = y; e.dataset.ts = h / +e.dataset.h;
+        x += o.w + ecart;
+      });
+      y += h + ecart;
+    });
   });
 
   // États de départ
-  K.cacher(tous); K.cacher("#t7e-points");
+  if (tous.length) K.cacher(tous);
   var tl = gsap.timeline({ paused: true });
 
   // 1. La phrase se tape, se tient le temps de sa lecture, s'efface et se retape ; chaque fin fait
-  //    surgir son groupe, qui dérive autour d'elle pendant qu'on la lit
+  //    surgir son groupe, qui dérive autour d'elle pendant qu'on la lit. Après la dernière lecture,
+  //    elle s'efface et la conclusion se tape à sa place.
   K.texteSelon(tl, $("t7e-texte"), D, function (t) {
-    var base = R.debut + " ";
+    var base = EXEMPLE.debut + " ", derniere = base + EXEMPLE.fins[EXEMPLE.fins.length - 1];
     if (t < etapes[0][0]) return "";
-    if (t < etapes[0][1]) { var tout = base + R.fins[0]; return tout.slice(0, Math.max(1, Math.round(tout.length * (t - etapes[0][0]) / (etapes[0][1] - etapes[0][0])))); }
-    for (var k = 0; k < R.fins.length; k++) {
-      var fin = R.fins[k], ef = efface[k], suiv = etapes[k + 1];
+    if (t >= C0) return EXEMPLE.fin.slice(0, Math.round(EXEMPLE.fin.length * Math.min(1, (t - C0) / (C1 - C0))));
+    if (t >= T) return derniere.slice(0, Math.round(derniere.length * (1 - (t - T) / (C0 - T))));
+    if (t < etapes[0][1]) { var tout = base + EXEMPLE.fins[0]; return tout.slice(0, Math.max(1, Math.round(tout.length * (t - etapes[0][0]) / (etapes[0][1] - etapes[0][0])))); }
+    for (var k = 0; k < EXEMPLE.fins.length; k++) {
+      var fin = EXEMPLE.fins[k], ef = efface[k], suiv = etapes[k + 1];
       if (!ef || t < ef[0]) return base + fin;
       if (t < ef[1]) return base + fin.slice(0, Math.round(fin.length * (1 - (t - ef[0]) / (ef[1] - ef[0]))));
       if (t < suiv[0]) return base;
-      if (t < suiv[1]) { var f2 = R.fins[k + 1]; return base + f2.slice(0, Math.round(f2.length * (t - suiv[0]) / (suiv[1] - suiv[0]))); }
+      if (t < suiv[1]) { var f2 = EXEMPLE.fins[k + 1]; return base + f2.slice(0, Math.round(f2.length * (t - suiv[0]) / (suiv[1] - suiv[0]))); }
     }
-    return base + R.fins[R.fins.length - 1];
+    return derniere;
   });
   groupes.forEach(function (g, i) {
     var t = etapes[Math.min(i, etapes.length - 1)][0] + (i ? 0.1 : 0.2);
@@ -200,39 +227,33 @@
       // les objets d'un groupe surgissent en deux salves pendant la tenue de leur version (la moitié
       // tout de suite, l'autre 0,7 s plus tard) : la vie de la lecture
       var moitie = Math.ceil(g.length / 2), salve = j < moitie ? 0 : 1, k = salve ? j - moitie : j;
-      tl.fromTo(e, { opacity: 0, scale: 0.4, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(1.7)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
+      tl.fromTo(e, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.7)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
     });
   });
-  tous.forEach(function (e, i) {      // dérive lente, plus ample pour les objets flous (proches)
-    var a = 34 + (+e.dataset.flou) * 14, sens = i % 2 ? 1 : -1, dy = (i % 3 - 1) * 18;
-    tl.fromTo(e, { x: -a * sens, y: -dy, rotation: -2 * sens }, { x: a * sens, y: dy, rotation: 2 * sens, duration: 3.05 + Op, ease: "sine.inOut", immediateRender: false }, 0.3);
+  var derives = tous.map(function (e, i) {      // dérive lente, plus ample pour les objets flous (proches)
+    var a = 34 + (+e.dataset.flou) * 14, sens = i % 2 ? 1 : -1, dy = (i % 3 - 1) * 18, rot = +e.dataset.rot;
+    tl.fromTo(e, { x: -a * sens, y: -dy, rotation: rot - 2 * sens }, { x: a * sens, y: dy, rotation: rot + 2 * sens, duration: T - 0.3, ease: "sine.inOut", immediateRender: false }, 0.3);
+    return { x: a * sens, y: dy, rotation: rot + 2 * sens };
   });
-  tl.fromTo("#t7e-cam", { scale: 1.06 }, { scale: 1, duration: 3.4 + Op, ease: "sine.inOut" }, 0);
-  // le curseur clignote pendant chaque tenue
+  tl.fromTo("#t7e-cam", { scale: 1.06 }, { scale: 1, duration: T, ease: "sine.inOut" }, 0);
+  // le curseur clignote pendant chaque tenue, et pendant celle de la conclusion
   etapes.forEach(function (e, k) {
-    var fin = k < efface.length ? efface[k][0] : 3.35 + Op;
+    var fin = k < efface.length ? efface[k][0] : T;
     for (var tc = e[1] + 0.2, kc = 0; tc < fin - 0.1; tc += 0.4, kc++) tl.set("#t7e-caret", { opacity: kc % 2 ? 1 : 0 }, tc);
     tl.set("#t7e-caret", { opacity: 1 }, fin);
   });
+  for (var tc2 = C1 + 0.2, kc2 = 0; tc2 < D - 0.1; tc2 += 0.4, kc2++) tl.set("#t7e-caret", { opacity: kc2 % 2 ? 1 : 0 }, tc2);
 
-  // 2. Tout passe en points et se resserre vers le centre (3,4 → 4,3 s)
+  // 2. Tout se range : chaque objet file vers sa place dans les rangs (vers le centre d'abord), se
+  //    redresse et devient net, groupe après groupe ; puis les rangs se tiennent pendant la lecture
+  //    de la conclusion
   tous.forEach(function (e, i) {
-    var cx = +e.dataset.cx, cy = +e.dataset.cy, t = 3.35 + Op + (i % 6) * 0.04;
-    tl.set(e, { attr: { "data-pix": "1" } }, t);
-    tl.to(e, { x: (L / 2 - cx) * 0.75, y: (H / 2 - cy) * 0.75, scale: 0.25, opacity: 0, duration: 0.7, ease: "power3.in" }, t + 0.1);
-  });
-  tl.to("#t7e-phrase", { opacity: 0, filter: "blur(10px)", scale: 0.96, duration: 0.3, ease: "power2.in" }, 3.4 + Op);
-
-  // 3. La conclusion en points, tenue le temps de sa lecture (une poussée lente)
-  tl.fromTo("#t7e-points", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 4.05 + Op);
-  tl.fromTo("#t7e .t7e-cadre", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)", stagger: 0.04 }, 4.15 + Op);
-  tl.fromTo("#t7e-points-texte", { scaleX: 1.06 }, { scaleX: 1, duration: 1.0, ease: "expo.out" }, 4.05 + Op);
-  tl.fromTo("#t7e-points", { y: 0 }, { y: -8, duration: D - 4.5 - Op, ease: "sine.inOut", immediateRender: false }, 4.5 + Op);
-  // pendant sa lecture, les points du cadre scintillent deux fois (la poussière de pixels du look)
-  var cadres = document.querySelectorAll("#t7e .t7e-cadre");
-  [0.55, 1.15].forEach(function (dt) {
-    if (4.5 + Op + dt > D - 0.3) return;
-    tl.to(cadres, { opacity: 0.15, duration: 0.08, ease: "none", stagger: { each: 0.03, yoyo: true, repeat: 1 } }, 4.5 + Op + dt);
+    var t = T + 0.05 + (i % 7) * 0.035, de = derives[i];
+    tl.fromTo(e, { x: de.x, y: de.y, rotation: de.rotation, scale: 1, filter: "blur(" + e.dataset.flou + "px)" },
+      { x: +e.dataset.tx - +e.dataset.cx, y: +e.dataset.ty - +e.dataset.cy, rotation: 0, scale: +e.dataset.ts, filter: "blur(0px)",
+        duration: 0.75, ease: "power3.inOut", immediateRender: false }, t);
+    // arrivé à sa place, un petit tassement : le rang se pose
+    tl.fromTo(e, { scaleY: +e.dataset.ts }, { scaleY: +e.dataset.ts * 0.94, duration: 0.09, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t + 0.75);
   });
   window.__timelines["t7e"] = tl;
 })();

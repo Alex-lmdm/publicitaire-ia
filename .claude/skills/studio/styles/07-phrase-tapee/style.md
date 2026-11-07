@@ -1,344 +1,252 @@
 # Style n°7 · Phrase tapée · d'après Zaro (https://x.com/ZaroAI_/status/2070084796378747316)
 
-**Ce qu'on voit :** des phrases courtes qui se tapent sur deux lignes derrière un gros curseur de
-frappe à la couleur de la marque, en alternance avec des interfaces claires et nettes (une barre de
-demande, une fenêtre où arrive sa vraie matière) ; ses captures, les logos de ses outils et des mots
-éparpillés qui se changent en points, puis l'offre au centre d'orbites où tournent ses outils, et
-ses autres systèmes quand la caméra recule. Tout aux seules couleurs de sa marque.
+**Ce qu'on voit :** des phrases courtes qui se tapent derrière un gros curseur de frappe à la
+couleur de la marque, en alternance avec des interfaces claires et nettes (une barre de demande,
+une fenêtre où arrive sa vraie matière) ; ses captures, les logos de ses outils et quelques mots
+éparpillés autour d'une phrase retapée, qui se rangent d'un coup en rangs nets ; puis l'offre au
+centre d'orbites où tournent ses outils, et ses autres modules quand la caméra recule.
 **Souvent utile pour :** lancer un logiciel ou une formation, montrer « tout ce qui tourne autour »
 d'une offre (ses outils, ses modules, ses bonus).
-
-**D'après :** X · Zaro · vidéo de lancement · 68 s · 16:9 (1920 × 1080, 30 images/s).
-**Mesures de l'original (`studio_motion.py reference`) :** 1,56 événement par seconde, écart
-médian 0,30 s entre deux événements, 16 coupes franches (presque toutes avec un changement de
-fond), 4,4 s d'image figée au total. Musique à 104 battements par minute (un temps toutes les
-0,58 s), un silence net à 4,5 s puis l'entrée franche à 5,0 s.
-**Mesures de l'essai du kit refait le 06/11/2026** (les 4 scènes bout à bout, 48,9 s, marque LMDM,
-avec ses vraies images et les logos de ses outils, chaque texte tenu le temps de sa lecture, aucun
-recadrage pendant une lecture) : `rythme` « ok », 0,88 événement par seconde en 16:9 et 0,71 en
-9:16 (écart médian 0,70 s), aucune image figée ; `palette` « ok » (ses images tombent sans fondu).
-L'essai d'avant (28,6 s, 1,48 événement par seconde) tenait ses phrases 0,3 à 0,9 s : trop vite
-pour les lire.
-
-> On reprend la grammaire de la vidéo (phrases tapées, alternance des fonds, interfaces claires,
-> objets éparpillés, orbite, recul, point final), jamais son contenu : ni ses textes, ni son logo,
-> ni son produit, ni les logos d'applis qu'elle montre, ni ses images, ni ses couleurs, ni sa
-> musique. Tout passe aux couleurs et aux polices de la marque du client : ce sont SES outils qui
-> gravitent et SA vraie matière qui se montre.
+**D'après :** X · Zaro · vidéo de lancement · 68 s · 16:9.
 
 ## 1. Le rythme
 
-- **Une phrase, puis une preuve à l'écran, en alternance.** Chaque idée tient en deux lignes tapées
-  (une phrase complète, 8 mots conseillés) sur un fond uni, puis une coupe franche montre la chose
-  dans une interface claire. Une coupe toutes les 4 s en moyenne, presque toujours avec un
-  changement de fond.
+- **Une phrase, puis une preuve à l'écran, en alternance.** Chaque idée tient en une phrase tapée
+  (une ou deux lignes, 8 mots au plus) sur un fond uni, puis une coupe franche montre la chose dans
+  une interface claire. Une coupe toutes les 4 s en moyenne, presque toujours avec un changement de
+  fond.
 - **La frappe donne la cadence :** une ligne tapée en 0,7 à 0,9 s, la seconde aussitôt après, puis
-  la phrase se tient le temps de sa lecture (`studio_motion.py lecture` : 0,3 s par mot + 0,8 s, 2 s
-  au moins pour l'accroche) avant la coupe. Les scènes calculent ces tenues et leur durée (D dans le
-  script, à reporter en `data-duration`). Dans les interfaces, un geste toutes les 0,3 à 0,5 s (une
-  carte qui tombe, un clic, une icône qui surgit).
-- **Un silence avant le nom** (0,3 à 0,5 s de vide, musique coupée), puis l'entrée franche sur le mot
-  géant.
-- **Chez toi :** grille de 0,5 s. Pendant qu'une phrase se lit, la caméra ne fait qu'une dérive ou
-  une poussée lente (3 à 12 % sur la tenue, sine.inOut), jamais un recadrage sec. La vie vient de ce
-  que la phrase montre : les mots qui s'allument bondissent un peu, la vignette change, sa vraie
-  page glisse au-dessus de la barre, la matière surgit autour de la phrase retapée, les outils
-  « se connectent » sur les orbites qui battent quatre fois, les grappes de pixels battent la
-  mesure. En 9:16, ces gestes fins pèsent moins : la matière éparpillée surgit en deux salves par
-  tenue pour rester lisible par `rythme` ; s'il en manque, ajoute de la vraie matière qui bouge,
-  jamais un recadrage.
+  la phrase se tient le temps de sa lecture avant la coupe (2 s au moins pour l'accroche ;
+  [mouvement.md](../../references/mouvement.md), « La lecture »). Les
+  scènes calculent ces tenues et leur durée (`D` dans le script, à reporter en `data-duration`).
+  Dans les interfaces, un geste toutes les 0,3 à 0,5 s (une carte qui tombe, un clic, un logo qui
+  surgit).
+- **Un silence avant le nom** (0,3 à 0,5 s de nuit vide, musique coupée), puis l'entrée franche sur
+  le mot géant.
+- **Chez toi :** grille de 0,5 s. Une phrase posée ne bouge plus : la vie vient de ce qu'elle
+  montre (ses mots qui s'allument, la vignette qui change d'image, sa page jointe qui défile, la
+  matière qui surgit autour de la phrase retapée, les orbites qui battent) ; s'il en manque, de la
+  vraie matière qui bouge, jamais un recadrage.
 
 ## 2. Les gestes signature et leur place
 
-La structure vient de la vidéo du client, jamais de l'original ([../README.md](../README.md),
-« Appliquer un style ») : chaque scène de son plan prend le geste qui sert son rôle, les autres se
-construisent dans la grammaire des sections 3 à 7. Au moins trois gestes par vidéo (deux sous
-15 s) ; le détail de chaque mouvement est en section 5.
-
 | Geste | Ce qu'on voit | Il sert à | Dans le kit |
 |---|---|---|---|
-| La phrase et ses objets | une phrase mot à mot avec une vignette (ses vraies images, ou des mots) et une pastille glissées dans la ligne ; la suite s'allume mot à mot à l'accent | accroche, promesse | `t7-accroche` |
-| Le mot géant sur l'aplat | un silence, un mot géant tapé sur l'aplat plein de l'accent, des grappes de pixels qui battent la mesure, puis le logo net et le nom sur fond clair | le nom de l'offre, temps fort | `t7-accroche` (fin) |
-| La phrase sur deux lignes | deux lignes tapées sur l'ardoise derrière le gros curseur de couleur, un clignement, coupe franche | toute phrase clé, titre de chapitre | `t7-phrase` (début) |
-| La demande envoyée | une demande tapée dans une barre, les logos de ses outils empilés, le clic sur envoyer, la fenêtre du résultat qui se remplit de ses vraies images | solution, démonstration de son interface | `t7-phrase` |
-| Le désordre réduit en points | une phrase retapée trois fois, sa matière et ses mots qui surgissent, tout qui passe en points et file au centre | le problème rangé, ce qu'on remplace | `t7-eparpille` |
-| L'orbite et le recul | la carte de l'offre au centre, ses outils en orbite qui se connectent, le recul sur ses autres systèmes | promesse, outils et intégrations, ce qu'on reçoit | `t7-orbite` |
-| Le point d'encre | sur fond clair, un point qui devient le logo, le nom qui sort, la pastille d'appel | appel, fin | `t7-orbite` (fin) |
+| La phrase et ses objets | une phrase mot à mot avec une vignette (ses vraies images qui défilent) et une pastille glissées dans la ligne ; la suite s'allume mot à mot à l'accent | accroche, promesse | `t7-accroche` |
+| Le mot géant sur l'aplat | un silence, un mot géant tapé sur l'aplat plein de l'accent, puis le logo net et le nom sur fond clair | le nom de l'offre, temps fort | `t7-accroche` (fin) |
+| La phrase sur deux lignes | deux lignes tapées sur l'ardoise derrière le gros curseur de couleur, leurs mots qui s'allument, coupe franche | toute phrase clé, titre de chapitre | `t7-phrase` (début) |
+| La demande envoyée | une demande tapée dans une barre, sa vraie page jointe au-dessus, les logos de ses outils empilés, le clic sur envoyer, la fenêtre du résultat qui se remplit de ses vraies images | solution, démonstration de son interface | `t7-phrase` |
+| Le désordre rangé | une phrase retapée trois fois, sa matière (captures, logos, quelques mots) qui surgit autour ; tout file vers le centre et se range d'un coup en rangs nets, la conclusion tapée à la place de la phrase | le problème rangé, ce qu'on remplace | `t7-eparpille` |
+| L'orbite et le recul | la carte de l'offre dans la phrase, puis au centre de trois orbites où tournent ses outils et ses captures, qui se connectent ; le recul sur ses autres modules, la conclusion tapée | promesse, outils et intégrations, ce qu'on reçoit | `t7-orbite` |
+| Le point d'encre | sur fond clair, un point qui se contracte et devient le logo, le nom qui sort, la pastille d'appel | appel, fin | `t7-orbite` (fin) |
 
 **Pour montrer son produit** : la demande envoyée ouvre une fenêtre claire où arrive sa vraie
-matière (ses images du résultat qui tombent en cascade, ou la capture de son produit qui se
-dévoile) ; une conversation se montre dans la même fenêtre, ses réponses tapées. Toute phrase clé
-se tape sur deux lignes derrière le gros curseur. Vidéo du haut de la page de Publicitaire IA
-(03/11/2026) : la phrase et ses objets, le mot géant, le désordre réduit en points, l'orbite et le
-point d'encre viennent du kit ; le dossier déposé sur Claude et la conversation dans Claude ont été
-construits pour son cas, dans ce style.
-
-### L'original, pour mémoire
-
-Scène par scène, un exemple et pas un plan à suivre (ses couleurs, ses images et ses textes
-restent les siens : on n'en garde que les gestes) :
-
-| Scène de l'original (temps approximatifs) | Rôle | Ce qui s'y passe | Dans le kit |
-|---|---|---|---|
-| 0 → 2,5 s | accroche | une phrase mot à mot sur fond presque noir, avec deux objets glissés dans la ligne (une vignette qui change, une pastille avec son curseur en pixels) | `t7-accroche` |
-| 2,5 → 4,5 s | accroche | la suite de la phrase ; ses mots s'allument tour à tour à la couleur d'accent ; poussière de pixels | `t7-accroche` |
-| 4,5 → 8,5 s | nom | un silence ; un mot géant tapé sur un nuage de la couleur d'accent ; coupe sur fond clair : le logo devient net, le nom sort | `t7-accroche` |
-| 8,5 → 13 s | solution | deux lignes tapées sur un taupe ; coupe : la barre de demande où la phrase se tape, clic sur envoyer | `t7-phrase` |
-| 13 → 20 s | démonstration | la fenêtre du produit se construit ; une relance tapée dans le chat | `t7-phrase` (la fenêtre) |
-| 20 → 28 s | fonction | deux lignes tapées, des pastilles en pixels avec leurs curseurs ; une carte de liste entourée de contours en écho | non construit |
-| 28 → 39 s | preuve | glisser-déposer dans un tableau, des graphiques ; « simple / puissant » en écran coupé sombre et clair, un schéma de flux | non construit |
-| 39 → 44 s | problème rangé | une grande phrase retapée trois fois ; à chaque fin, des icônes d'applis, des notes et des fichiers surgissent ; tout se change en points ; la conclusion en écriture de points | `t7-eparpille` |
-| 44 → 59 s | démonstration | les fichiers, les connexions, une grande question tapée, la réponse, la liste des sources qui défile, le téléphone | non construit |
-| 59 → 65 s | promesse | la carte du produit DANS une phrase ; orbites en pointillés, outils qui tournent ; recul sur une galaxie de systèmes, conclusion tapée | `t7-orbite` |
-| 65 → 68,5 s | appel | coupe sur fond clair : un point d'encre se contracte et devient le logo ; pastille d'appel en capitales | `t7-orbite` |
+matière ; une conversation s'y montre, ses réponses tapées. Une scène d'interface que le kit n'a
+pas (un fichier glissé, un tableau, la liste des sources) se construit avec les mêmes briques :
+fond clair, cartes blanches, barre de demande, phrase tapée, coupe franche.
 
 ### Des enchaînements qui marchent
 
-Des points de départ quand le plan s'y prête, jamais une obligation.
-
-Pour une vidéo de page (60 à 90 s) : `t7-accroche` → `t7-phrase` → (une démonstration de ton
-produit dans la même fenêtre claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel :
-`t7-phrase` → `t7-orbite`.
+Des points de départ quand le plan s'y prête, jamais une obligation. Pour une vidéo de page (60 à
+90 s) : `t7-accroche` → `t7-phrase` → (une démonstration de son produit dans la même fenêtre
+claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel : `t7-phrase` → `t7-orbite`.
 
 ## 3. Les fonds et les couleurs
 
-Les couleurs viennent de sa marque, et seulement d'elle ([style.md](../../references/style.md),
-« La palette ») : sa nuit, un de ses gris, son clair, son accent plein, du blanc et du noir en
-transparence pour les ombres, les filets et la poussière de pixels. Ses captures et les logos de
-ses outils gardent leurs vraies couleurs.
+Les couleurs viennent de sa marque, et seulement d'elle ([image.md](../../references/image.md),
+« La palette ») ; ses captures et les logos de ses outils gardent leurs vraies couleurs.
 
-| Dans l'original | Son rôle | Avec la marque du client |
-|---|---|---|
-| Noir chaud | l'ouverture, le recul de l'orbite | la nuit : `var(--brand-sombre)` |
-| Taupe chaud | les phrases tapées sur deux lignes, l'orbite | l'ardoise : `var(--brand-gris-1)`, son gris le plus sombre |
-| Nuage de lavande | le mot géant | l'aplat plein de l'accent, `var(--brand-accent)` ; le mot et les grappes de pixels en `var(--brand-contrast)` |
-| Blanc cassé chaud | les interfaces, les objets éparpillés, le logo | son clair : `var(--brand-clair)` |
-| Blanc cassé | le texte sur le noir et le taupe | `var(--brand-clair)` |
-| Lavande | le curseur de frappe, les mots qui s'allument, la pastille, les liserés | `var(--brand-accent)` plein, texte posé dessus en `var(--brand-contrast)` ; les mots qui s'allument sur la nuit en `var(--brand-accent-lisible)` |
-| Gris clair | la 2e ligne d'une phrase, les mots d'appui | `var(--brand-gris-4)` sur l'ardoise, `var(--brand-gris-3)` sur la nuit (contraste de 4,5:1 au moins) |
-| Encre | texte sur fond clair, bouton d'envoi, point final | `var(--brand-sombre)` |
-| Blanc pur | cartes, barre de demande, fenêtres | `var(--brand-clair)`, filets et ombres en noir transparent |
+| Rôle dans ce style | Avec la marque du client |
+|---|---|
+| L'ouverture, le recul de l'orbite | la nuit : `var(--brand-sombre)` |
+| Les phrases tapées sur deux lignes, l'orbite | l'ardoise : `var(--brand-gris-1)`, son gris le plus sombre |
+| Le mot géant | l'aplat plein `var(--brand-accent)`, le mot en `var(--brand-contrast)` |
+| Les interfaces, les objets éparpillés, le logo, la carte et les tuiles de l'orbite | son clair : `var(--brand-clair)`, filets et ombres en noir transparent |
+| Le texte sur la nuit et sur l'ardoise | `var(--brand-clair)` |
+| Le curseur de frappe, la pastille, les liserés, les orbites qui battent | `var(--brand-accent)` plein, texte posé dessus en `var(--brand-contrast)` |
+| Les mots qui s'allument sur la nuit ou l'ardoise | `var(--brand-accent-lisible)` |
+| La 2e ligne d'une phrase, les mots d'appui | `var(--brand-gris-4)` sur l'ardoise, `var(--brand-gris-3)` sur la nuit |
+| Le texte sur fond clair, le bouton d'envoi, le point d'encre | l'encre : `var(--brand-sombre)` |
+| Le trait des orbites | un pointillé fin de blanc transparent |
 
-**Sur n'importe quelle marque, claire ou sombre**, les jetons s'en chargent : sur une marque
-claire, la nuit est son texte (sa couleur la plus sombre) et le clair son fond ; l'ardoise et les
-gris se placent entre les deux. Jamais `var(--brand-bg)` ni `var(--brand-text)` dans ce look (sur
-une marque claire, la nuit deviendrait claire et le texte noir sur gris). Tout texte garde un
-contraste d'au moins 4,5:1.
-
-**Jamais une teinte tirée de l'accent** (essai du 03/11/2026, story refusée du 06/11/2026) : ni
-`oklch(from …)`, ni `color-mix` avec l'accent, ni l'accent en transparence, en nuage ou en halo,
-ni un mot qui passe par un mélange de l'accent et du blanc. Les mots s'allument d'un coup ; les
-orbites battent en passant d'un coup à l'accent plein ; le recul s'assombrit sous un voile de la
-nuit, jamais par un filtre sur les couleurs de la marque.
-
-**Quatre fonds qui alternent par coupe franche** (la nuit, l'aplat de l'accent, le clair,
-l'ardoise) : c'est la respiration du look, comme le veut le studio. Sur fond clair, l'accent ne sert
-qu'en **aplat** (la pastille, un disque, une vignette) : jamais en texte ni en trait fin, illisible
-avec un accent clair (jaune) ; le curseur de frappe y passe à l'encre.
+- **Jamais `var(--brand-bg)` ni `var(--brand-text)` dans ce look** : sur une marque claire, la nuit
+  deviendrait claire et le texte noir sur gris.
+- **Les mots s'allument d'un coup** à l'accent plein, jamais par un mélange de l'accent et du
+  blanc ; les orbites battent en passant d'un coup à l'accent plein ; le recul passe à la nuit (sa
+  couleur posée par-dessus l'ardoise) et s'assombrit sous un voile de cette nuit, jamais par un
+  filtre sur les couleurs de la marque.
+- **Quatre fonds qui alternent par coupe franche** (la nuit, l'aplat de l'accent, le clair,
+  l'ardoise) : c'est la respiration du look. Sur fond clair, l'accent ne sert qu'en **aplat** (la
+  pastille) : jamais en texte ni en trait fin, illisible avec un accent clair (un jaune) ; le
+  curseur de frappe y passe à l'encre.
 
 ## 4. La typographie
 
 - **Police :** une grotesque neutre à l'espacement très serré, moyenne (500) pour les phrases,
-  demi-grasse (600) pour le nom. La marque n'impose rien : **Inter Tight** (libre ; ou Inter à
-  −4,5 %). Dans le kit : `var(--brand-font-display)` pour les phrases (`--t7-police`),
-  `var(--brand-font-body)` pour les interfaces. L'écriture en points : la même police passée au
-  crible d'une trame de points (pas de police en plus ; **Doto**, libre, si on veut la vraie).
+  demi-grasse (600) pour le nom, grasse (700) pour le mot géant. Dans le kit :
+  `var(--brand-font-display)` pour les phrases (`--t7-police`), `var(--brand-font-body)` pour les
+  interfaces. La marque n'impose rien : **Inter Tight** (libre) s'en approche.
 - **Casse et alignement :** casse de la phrase, un point final à chaque phrase ; deux lignes
-  empilées serrées, la première pleine, la seconde grise ; centré. Espacement −4,5 %. La pastille
+  empilées serrées, la première pleine, la seconde grise ; centré ; espacement −4,5 %. La pastille
   d'appel en capitales espacées de 14 % (une police à chasse fixe si la marque en a une :
   `--t7-police-pastille`).
 - **Le curseur de frappe** est une barre épaisse (7 % de la taille du texte, 82 % de sa hauteur).
+- **Le mot géant et le nom de la fin** (avec son logo, qui prend la hauteur du nom) occupent 60 à
+  90 % de la largeur : les scènes calculent leur taille d'après leur longueur.
 
 | Élément | 1920 × 1080 | 1080 × 1920 |
 |---|---|---|
-| Phrase d'ouverture avec ses objets | 104 px | 92 px, sur deux lignes |
-| Suite qui s'allume | 116 px | 100 px |
-| Mot géant sur l'aplat | 270 px | 200 px |
+| Phrase d'ouverture avec ses objets | 104 px, pastille 42 px | 92 px, sur deux lignes |
+| Suite qui s'allume | 116 px | 100 px, à la ligne |
+| Mot géant sur l'aplat | 540 px pour 5 lettres (la moitié de la hauteur au plus) | 314 px pour 5 lettres |
 | Deux lignes tapées | 124 px | 96 px |
 | Demande dans la barre | 40 px | 50 px, sur deux lignes |
-| Grande phrase retapée | 136 px | 112 px, à la ligne |
-| Mots éparpillés en pilule | 28 à 44 px | 26 à 37 px |
-| Écriture en points | 150 px | 96 px |
+| Adresse de la page jointe ; titre et sous-titre de la fenêtre | 30 px ; 52 et 32 px | 30 px ; 60 et 36 px |
+| Grande phrase retapée, conclusion du rangement | 136 px | 112 px, à la ligne |
+| Mots en pilule (éparpillés, puis rangés à la taille du plus petit) | 34 à 44 px | 30 à 38 px |
 | Phrase autour de la carte | 96 px | 96 px, au-dessus et au-dessous |
-| Conclusion sur le recul | 104 px | 76 px |
-| Nom (sans logo) | 150 px au plus, ajusté à sa longueur | ~105 px pour 15 lettres |
-| Pastille d'appel | 30 px | 30 px |
+| Nom et ligne de la carte (affichés à l'échelle de l'orbite) | 42 et 36 px (36 et 31 px affichés) | 42 et 36 px (34 et 29 px affichés) |
+| Étiquettes en orbite | 32 px | 32 px |
+| Conclusion sur le recul | 104 px | 84 px |
+| Pastille d'appel | 34 px | 34 px |
 
 ## 5. Les mouvements signature
 
-1. **La phrase tapée sur deux lignes** (`t7-phrase`, et le mot géant de `t7-accroche`, la
-   conclusion de `t7-orbite`) : frappe par petits groupes de lettres (`K.taper`), une ligne en
-   0,75 s, la seconde 0,3 s après ; le curseur de frappe passe à la ligne suivante et clignote ;
-   la phrase se tient le temps de sa lecture, ses mots s'allument tour à tour à l'accent en
+1. **La phrase tapée** (`t7-phrase`, le mot géant de `t7-accroche`, les conclusions de
+   `t7-eparpille` et `t7-orbite`) : frappe par petits groupes de lettres (`K.taper`), une ligne en
+   0,75 s, la seconde 0,3 s après ; le curseur passe à la ligne suivante et clignote ; la phrase se
+   tient le temps de sa lecture sans bouger, ses mots s'allument tour à tour à l'accent en
    bondissant de 14 px, puis coupe.
-2. **Les objets dans la ligne** (`t7-accroche`) : les mots montent un à un (0,3 s d'écart, 0,45 s,
-   expo.out, flou 8 px → 0) ; la vignette et la pastille surgissent dans la phrase (back.out(2.2)) ;
-   la vignette change d'un coup toutes les 0,45 s avec un petit rebond ; puis les mots de la suite
-   s'allument tour à tour, d'un coup, à la couleur d'accent (0,32 s d'écart) en sautant de 14 px.
-   Sur l'aplat, les grappes de pixels s'allument d'un coup sur les temps, puis s'éteignent.
-3. **La demande envoyée** (`t7-phrase`) : la caméra recule sur la barre (×1,18 → 1 en 1,7 s ;
-   ×1,04 en 9:16 : son apparition), la demande se tape en 0,85 s et se tient le temps de sa
-   lecture ; pendant ce temps, sa vraie page (le lien de la demande, `R.lien`) glisse au-dessus de
-   la barre et défile d'un écran au suivant, les logos empilés surgissent un à un, puis le
-   curseur clique sur envoyer (enfoncement 0,08 s, back.out(3)), la barre s'envole (0,45 s,
-   power3.in), la fenêtre arrive floue (0,7 s, expo.out), son titre, puis ses vraies images tombent
-   (0,12 s d'écart, back.out(1.6)), ou sa capture se dévoile de haut en bas (0,8 s).
-4. **Le désordre réduit en points** (`t7-eparpille`) : la phrase se tape, se tient le temps de sa
-   lecture, s'efface lettre à lettre et se retape (trois fins, chacune lue) ; à chaque fin, un groupe
-   d'objets surgit en profondeur en deux salves pendant la tenue (back.out(1.7), 0,7 s entre les
-   deux), quelques-uns flous, et dérive autour de la phrase ; chacun prend sa place prévue, ou la plus proche qui
-   ne couvre ni la phrase ni un mot ; puis chaque objet passe en points (trame de 10 px) et file vers
-   le centre en rétrécissant (0,7 s, power3.in) ; la conclusion apparaît en écriture de points dans
-   un cadre de points.
-5. **L'orbite et le recul** (`t7-orbite`) : trois cercles en pointillés s'ouvrent autour de la
-   carte (0,7 s, expo.out, 0,14 s d'écart), les objets surgissent dessus (0,035 s d'écart) ; chaque
-   anneau tourne à sa vitesse (100°, −64°, 38° sur la scène, sine.inOut) et les objets restent
-   droits ; les outils « se connectent » un par un (liseré plein de l'accent, 0,3 s d'écart) et trois
-   fois (quatre dans le kit) les orbites et la carte passent d'un coup à l'accent plein (0,16 s) ; la ligne de la carte
-   se lit pendant ce temps : la caméra ne fait qu'une poussée lente (×1 → ×1,12, sine.inOut, sans
-   recadrage sec). Une fois la carte lue, elle recule à ×0,36 en 1,6 s (expo.inOut) sur ses autres
-   systèmes, le fond passe de l'ardoise à la nuit, tout passe au flou (6 px) sous un voile de la
-   nuit (55 %) pendant que la conclusion se tape et se tient le temps de sa lecture. Avant
-   l'orbite, la phrase autour de la carte se tient sa lecture : la capture de la carte se dévoile,
-   ses mots s'allument un à un.
-6. **Le point d'encre** (`t7-orbite`) : coupe sur fond clair, un point qui se contracte et se
-   déforme (0,55 s), devient le logo (ou s'efface s'il n'y en a pas) ; le nom sort de derrière lui
-   (0,6 s, expo.out) ; la pastille se dévoile de gauche à droite (0,45 s) ; la poussière de pixels
-   apparaît dans les coins.
+2. **Les objets dans la ligne** (`t7-accroche`) : le premier morceau est là dès la première image,
+   les autres montent un à un (0,3 s d'écart, 0,45 s, expo.out, flou 8 px → 0) ; la vignette et la
+   pastille surgissent dans la phrase (back.out(2.2)) ; la vignette change d'image d'un coup toutes
+   les 0,45 s avec un petit rebond, le petit curseur clique deux fois la pastille ; puis les mots
+   de la suite s'allument tour à tour, d'un coup, à l'accent (0,32 s d'écart) en sautant de 14 px.
+3. **La demande envoyée** (`t7-phrase`) : la caméra recule sur la barre pendant que la demande se
+   tape (×1,18 → 1 en 1 s ; ×1,04 en 9:16), puis ne fait qu'une dérive de 2 % ; sa page jointe se
+   dévoile au-dessus et défile, les logos surgissent un à un, le curseur clique sur envoyer
+   (back.out(3)), la barre s'envole (0,45 s, power3.in), la fenêtre arrive floue (0,7 s, expo.out),
+   puis ses images tombent (0,12 s d'écart, back.out(1.6)) ou sa capture se dévoile (0,8 s).
+4. **Le désordre rangé** (`t7-eparpille`) : la phrase se tape, se tient, s'efface lettre à lettre
+   et se retape (trois fins, chacune lue) ; à chaque fin, un groupe d'objets surgit en deux salves
+   (back.out(1.7), 0,7 s d'écart) et dérive autour d'elle, à une place qui ne couvre ni la phrase
+   ni un mot ; captures et logos parfois flous, jamais un mot. Puis la phrase s'efface et tout se
+   range d'un coup : chaque objet file vers sa place dans trois rangs nets (captures au-dessus,
+   outils puis mots au-dessous ; 0,75 s, power3.inOut), se redresse, devient net et se tasse en se
+   posant, pendant que la conclusion se tape à la place de la phrase.
+5. **L'orbite et le recul** (`t7-orbite`) : la carte se pose dans la phrase, sa capture se dévoile
+   de haut en bas ; les mots s'écartent, trois cercles en pointillés s'ouvrent autour d'elle (0,7 s,
+   expo.out) et sa matière surgit dessus : ses outils sur les deux premiers, ses captures (et deux
+   étiquettes au plus) sur le dernier, là où l'image a de la place ; une orbite sans objet ne se
+   dessine pas. Chaque anneau tourne à sa vitesse (100°, −64°, 30°, sine.inOut), les objets restent
+   droits ; les outils « se connectent » un par un (liseré plein de l'accent) et quatre fois les
+   orbites et la carte passent d'un coup à l'accent plein (0,16 s). Pendant que la ligne de la carte
+   se lit, la carte ne bouge pas : seuls les anneaux poussent lentement (×1,05). Puis ses mots
+   s'effacent, la caméra recule à ×0,36 en 1,6 s (expo.inOut) sur ses autres systèmes, le fond passe
+   à la nuit, tout passe au flou (6 px) sous un voile de la nuit (55 %), et la conclusion se tape.
+6. **Le point d'encre** (`t7-orbite`) : coupe sur fond clair, un point d'encre se contracte et se
+   déforme (0,55 s) puis devient le logo (sans logo, pas de point : le nom monte du flou) ; le nom
+   sort de derrière lui (0,6 s, expo.out) ; la pastille se dévoile de gauche à droite (0,45 s) ;
+   l'écran final se tient 3 s.
 
 ## 6. Les transitions
 
-- **Dans l'original :** la coupe franche sur un temps de la musique, presque toujours avec un
-  changement de fond (noir → nuage → clair → taupe → clair…). À l'intérieur d'une scène : la barre
-  qui recule pour laisser venir la fenêtre, les objets qui se défont en points, le recul avec flou,
-  le point qui devient le logo. Aucun fondu enchaîné.
-- **Dans le kit :** les coupes sont dans les scènes (nuit → aplat → clair dans `t7-accroche`,
-  ardoise → clair dans `t7-phrase`, ardoise → nuit → clair dans `t7-orbite`) et entre elles,
-  toujours sur un temps et avec un changement de fond : `t7-accroche` finit sur le clair du nom,
-  `t7-phrase` commence sur l'ardoise ; `t7-phrase` finit sur la fenêtre claire, `t7-eparpille`
-  reste clair mais change de cadrage ; `t7-eparpille` finit sur l'écriture en points, `t7-orbite`
-  commence sur l'ardoise.
+- **La coupe franche sur un temps de la musique**, presque toujours avec un changement de fond
+  (nuit → aplat → clair → ardoise → clair…). À l'intérieur d'une scène : la barre qui s'envole pour
+  laisser venir la fenêtre, la matière qui se range, le recul avec flou, le point qui devient le
+  logo. Aucun fondu enchaîné.
+- **Dans le kit :** les coupes sont dans les scènes (nuit → aplat → clair, ardoise → clair,
+  ardoise → nuit → clair) et entre elles : `t7-accroche` finit sur le clair, `t7-phrase` commence
+  sur l'ardoise et finit sur le clair, `t7-eparpille` reste clair mais change de cadrage,
+  `t7-orbite` commence sur l'ardoise.
 
 ## 7. Le produit à l'écran
 
-- **Dans l'original :** la vraie interface du logiciel, en clair, reconstruite à grande échelle
-  (barre latérale, tableaux, cartes), des cartes extraites (une liste, les sources), et la barre de
-  demande qui le pilote. Le produit est la carte au centre de l'orbite.
-- **Chez toi :** la barre de demande montre ce qu'on demande vraiment à son produit (ou la question
-  que se pose son client) ; la fenêtre montre **sa vraie matière** : ses images du résultat
-  (`R.cartes`, de vraies miniatures, de vraies pages) ou la capture de son produit (`R.capture`),
-  dans `assets/images/`. Sans elles, la fenêtre ne s'ouvre pas (la scène s'arrête à 4,4 s) : jamais
-  de cartes vides ni de squelette. La carte de l'orbite porte son offre (sa capture, sinon son logo,
-  son nom, une ligne vraie) ; les logos sont ceux des outils que l'offre utilise vraiment, posés par
-  `studio_motion.py logos` (montrés ici comme des icônes d'applis, sur une tuile blanche ou
-  translucide ; un logo absent est retiré, jamais remplacé par une icône) ; ses autres systèmes sont
-  ses vrais modules, bonus ou offres, ou il n'y en a pas.
+- La barre de demande montre ce qu'on demande vraiment à son produit (ou la question que se pose
+  son client) ; la fenêtre montre **sa vraie matière** : ses images du résultat (`cartes`, de vraies
+  miniatures, de vraies pages) ou la capture de son produit (`capture`), dans `assets/images/`. Sans
+  elles, la fenêtre ne s'ouvre pas : jamais de cartes vides ni de squelette.
+- La carte de l'orbite porte son offre (sa capture, sinon son logo, puis son nom et une ligne
+  vraie) ; les logos sont ceux des outils que l'offre utilise vraiment, posés par
+  `studio_motion.py logos` et montrés comme des icônes d'applis, sur une tuile claire (la grammaire
+  de l'original) ; ses autres systèmes sont ses vrais modules, bonus ou offres, ou il n'y en a pas.
+- La vignette de l'ouverture et les objets éparpillés sont sa vraie matière : sans elle, la
+  vignette se retire et la phrase éparpillée a moins d'objets ; jamais un faux document, un
+  caractère ni une forme posés comme objets.
 
 ## 8. Le son
 
-- **Dans l'original :** une électro-pop entraînante vers 104 par minute, 4,5 s d'introduction, un
-  silence net puis l'entrée franche sur le mot géant (5,0 s) ; une pulsation forte et régulière
-  (chaque temps marqué) ; un passage plus calme pendant la recherche dans les fichiers ; fondu sur
-  le logo.
-- **Avec une voix off sur une page** : ambiance Tech minimale ou Premium et calme, et la musique sous
-  la voix (son.md, « Sous une voix off ») ; la batterie entre dans une respiration ouverte dans la
-  voix avant le nom, jamais sous lui.
-- **Chez toi :** ambiance « Lancement énergique » ; entrée franche calée sur le mot géant
-  (`musiques prendre … --a <instant de l'aplat>`), et un silence de la musique calé sur la nuit
-  que le kit laisse juste avant (0,4 s avant le mot géant de `t7-accroche` : 6,83 → 7,23 s avec les textes d'exemple). Bruitages, un par geste : frappe
-  de clavier par groupe (pas une par lettre) sur chaque phrase tapée, petits pops pour les objets de
-  la ligne et les objets éparpillés, clic sur envoyer, souffle quand la fenêtre arrive, grain
-  numérique quand tout passe en points, souffle long sur le recul, un impact doux sur le logo.
-- **Ambiance proposée** à la page des styles et des musiques (`musiques choisir --style 7`) : « Lancement énergique », jamais imposée (une ambiance qu'il demande passe devant).
+- **L'original :** une électro-pop vers 104 par minute, chaque temps marqué, un silence net puis
+  l'entrée franche sur le mot géant, un fondu sur le logo.
+- **Chez toi :** ambiance « Lancement énergique », proposée à la page des styles et des musiques
+  (`musiques choisir --style 7`), jamais imposée (une ambiance qu'il demande passe devant). Entrée
+  franche calée sur le mot géant (`musiques prendre … --a <instant de l'aplat>`), et un silence de
+  la musique calé sur la nuit que le kit laisse juste avant (0,4 s avant le mot géant de
+  `t7-accroche` : 6,2 → 6,6 s avec l'objet `EXEMPLE`).
+- **Avec une voix off sur une page** : ambiance « Tech minimale » ou « Premium et calme », la
+  musique sous la voix ([son.md](../../references/son.md), « Sous une voix off ») ; la batterie
+  entre dans une respiration de la voix avant le nom, jamais sous lui.
+- **Bruitages, un par geste :** frappe de clavier par groupe (pas une par lettre) sur chaque phrase
+  tapée, petits pops pour les objets de la ligne et les objets éparpillés, clic sur envoyer, souffle
+  quand la fenêtre arrive, un glissement quand tout se range, souffle long sur le recul, un impact
+  doux sur le logo.
 
 ## 9. L'ouverture et la fin
 
-- **Les 3 premières secondes :** la nuit de sa marque, poussière de pixels, la phrase mot à mot avec
-  ses deux objets dans la ligne, puis la suite dont les mots s'allument. Lisible dès 0,5 s.
+- **Les 3 premières secondes :** la nuit de sa marque, le premier mot déjà là sur la toute
+  première image, la phrase qui se pose avec ses deux objets dans la ligne, puis la suite dont les
+  mots s'allument. Lisible dès 0,5 s.
 - **La fin :** le point d'encre sur fond clair qui devient le logo, le nom, la pastille d'appel en
-  capitales sur l'accent, tenue 3 s (l'écran final) avec la poussière de pixels dans les coins. En page de
-  vente, la pastille reprend le texte du bouton situé sous la vidéo.
-
-## Ce qui ne se fera pas à l'identique
-
-- **Les images de l'original** (ses vignettes, ses notes, ses fichiers, ses captures du logiciel,
-  ses icônes d'applis) ne se refont pas : la vignette, les objets éparpillés, la fenêtre et la carte
-  prennent sa vraie matière (ses captures, ses miniatures, ses photos, les logos de ses outils), ou
-  des mots et des formes pleines à ses couleurs. Jamais un faux document, un faux dossier, une
-  fausse note, un squelette de carte, une icône de remplacement ni une galaxie décorative.
-- **Ses couleurs** (le noir, le taupe et le blanc cassé chauds, la lavande) → celles de sa marque
-  seulement : sa nuit, son ardoise, son clair, son accent plein (section 3).
-- **Le nuage de lavande du mot géant** → l'aplat plein de son accent, avec des grappes de pixels
-  pleines à la couleur du texte posé dessus ; jamais un nuage de l'accent mêlé de blanc.
-- **L'éclat de l'orbite** (un halo de couleur derrière la carte) → les orbites et la carte qui
-  passent d'un coup à l'accent plein, le temps d'un battement.
-- **Les logos d'applis de l'original** → ceux des outils du client (`studio_motion.py logos`) ; une
-  marque absente des registres se demande au client, jamais redessinée.
-- **Les icônes en pixel-art et les pastilles en points avec leurs curseurs** (la scène des
-  « agents ») → seulement la pastille de l'ouverture et son curseur en pixels.
-- **La police matricielle** → la police de la marque vue à travers une trame de points (même effet de
-  loin, lettres pleines de près).
-- **La lavande sur fond clair** (curseur, liserés) → l'accent seulement en aplat sur le clair.
-- **La police à chasse fixe de la pastille** → la police de la marque en capitales espacées.
-- **La galaxie** (des dizaines de systèmes en vraie profondeur) → ses autres systèmes, de vrais
-  noms, dans un même plan et un flou d'ensemble ; sans eux, le recul se fait sur l'orbite seule.
-- **Les scènes d'interface en action** (relance dans le chat, tableau glissé, graphiques, écran coupé,
-  schéma de flux, fichiers, liste des sources qui défile, téléphone) : non construites dans le kit ;
-  elles se refont avec les mêmes briques et sa vraie matière (fond clair, cartes blanches, barre de
-  demande, phrase tapée, coupe franche).
+  capitales sur l'accent, tenue 3 s (l'écran final). En page de vente, la pastille reprend le texte
+  du bouton situé sous la vidéo.
 
 ## Sur une autre offre
 
 C'est un look : il se monte sur n'importe quelle offre. Ce qui suivait le logiciel s'adapte.
 
-- **Formation :** la phrase d'ouverture dit ce que contient l'offre (« Des vidéos [vignette] et des
-  [pastille] modèles », la vignette montrant ses vraies miniatures) ; la barre porte la question que
-  se pose l'élève ; la fenêtre montre l'espace de formation (vraie capture) ; les objets éparpillés
-  sont le désordre de son sujet (ses captures, ses outils, des mots) ; l'orbite met la formation au
-  centre, ses outils et ses modules autour.
+- **Formation :** la phrase d'ouverture dit ce que contient l'offre, la vignette montre ses vraies
+  miniatures ; la barre porte la question de l'élève, la fenêtre l'espace de formation ; les objets
+  éparpillés sont le désordre de son sujet ; l'orbite met la formation au centre, ses outils et ses
+  modules autour.
 - **Coaching :** la phrase dit l'accompagnement ; la barre, la question du client ; la fenêtre, le
-  plan ou l'agenda réel ; l'orbite met le coaching au centre, ses séances, ses outils et ses
-  ressources autour.
+  plan ou l'agenda réel ; l'orbite, ses séances, ses outils et ses ressources autour du coaching.
 - **Logiciel :** le plus proche de l'original : la barre pilote le produit, la fenêtre est sa vraie
   interface, les objets éparpillés sont les outils qu'il relie, l'orbite montre ses intégrations.
-- **Toujours :** les phrases tapées en deux lignes derrière le curseur de couleur, l'alternance des
-  quatre fonds par coupe franche, les interfaces claires, le désordre réduit en points, l'orbite et
-  le recul, le point d'encre qui devient le logo.
+- **Toujours :** les phrases tapées derrière le curseur de couleur, l'alternance des quatre fonds
+  par coupe franche, les interfaces claires, le désordre rangé, l'orbite et le recul, le point
+  d'encre qui devient le logo.
 
 ## En vertical et en carré
 
-- **9:16 (les quatre scènes essayées bout à bout, marque LMDM, 06/11/2026) :** passe la racine de
-  chaque scène à 1080 × 1920, elle se remet en page seule. La phrase d'ouverture passe sur deux
-  lignes ; les deux lignes tapées à 96 px ; la barre de demande prend 1 000 px de large, la demande
-  passe sur deux lignes à 50 px et la caméra n'y recule que de ×1,04 ; la fenêtre du résultat passe
-  en portrait (1 000 × 1 460 px) et ses images s'y rangent en grille (deux colonnes pour du 9:16) ;
-  les objets éparpillés se répartissent au-dessus et au-dessous de la phrase, qui passe à la ligne,
-  chacun à une place qui ne couvre ni la phrase ni un mot ; l'orbite est à ×0,95 (toute la
-  largeur), les mots au-dessus et au-dessous de la carte, deux de ses autres systèmes tournent déjà
-  au bord haut et au bord bas, les autres arrivent avec le recul ; le nom s'ajuste à sa longueur.
-- **4:5 et 1:1 :** même règle (racine à 1080 × 1350 ou 1080 × 1080) ; garde les trois anneaux dans le
-  cadre et au moins un tiers de l'image libre autour de la phrase éparpillée.
+- **9:16 :** passe la racine de chaque scène à 1080 × 1920, elle se remet en page seule (tailles en
+  section 4). Les phrases passent à la ligne à la même taille ; le mot géant et le nom suivent la
+  largeur ; la barre de demande prend 1 000 px, la caméra n'y recule que de ×1,04 ; la fenêtre du
+  résultat passe en portrait (1 000 × 1 460 px) ; les objets éparpillés se répartissent au-dessus et
+  au-dessous de la phrase, leurs rangs passent à la ligne ; l'orbite prend toute la largeur (×0,95),
+  la phrase au-dessus et au-dessous de la carte, ses captures tournent en haut et en bas.
+- **4:5** (racine à 1080 × 1350) prend la même mise en page verticale. **En 1:1**, les scènes
+  gardent leur mise en page 16:9 : vérifie la planche, une phrase trop large passe à la ligne.
 
 ## Les compositions du kit
 
 Chaque scène est une sous-composition 16:9 prête à copier dans `compositions/` puis à monter dans
-`index.html` (sa durée en `data-duration`, bout à bout sur la piste 1). Tout ce qui change d'une
-offre à l'autre est dans l'objet `R` en tête du script ; les couleurs ne viennent que de
-`var(--brand-*)`. Les logos nommés (`logo-claude`…) doivent d'abord être posés dans le projet par
-`studio_motion.py logos <projet> <noms>` : un nom absent est retiré de la scène, jamais remplacé par
-une icône. Les images (`assets/images/…`) sont ses vraies captures, miniatures ou photos.
+`index.html` (sa durée en `data-duration`, bout à bout sur la piste 1). Ses textes, ses images et
+ses noms d'exemple sont dans l'objet `EXEMPLE` en tête du script (chaque champ y est décrit) ; les
+couleurs ne viennent que de `var(--brand-*)`. Les logos nommés (`logo-notion`…) se posent d'abord
+dans le projet par `studio_motion.py logos <projet> <noms>` : un nom absent est retiré de la scène.
+Les images (`assets/images/…`) sont ses vraies captures, miniatures ou photos.
 
-| Fichier | Durée | Ce qu'elle montre | Ce qu'on remplace (objet `R`) |
+| Fichier | Durée (objet `EXEMPLE`) | Ce qu'elle montre | Ce qu'on remplace dans `EXEMPLE` |
 |---|---|---|---|
-| `compositions/t7-accroche.html` | 3,3 s + la lecture de ses quatre textes (11,8 s avec les textes d'exemple) | la phrase mot à mot avec une vignette et une pastille dans la ligne, la suite qui s'allume, le silence, le mot géant tapé sur l'aplat de l'accent, le logo et le nom sur fond clair | les morceaux de la phrase (`[carte]` et `[pastille]` placent les objets), les mots gris, ce que montre la vignette (ses vraies images, sinon des mots), les mots de la pastille, la suite, le mot géant, le logo (`brand/logo.svg` ou `.png`, "" sans logo), le nom |
-| `compositions/t7-phrase.html` | 12,5 s avec une fenêtre (9,2 s sans, avec les textes d'exemple) | deux lignes tapées sur l'ardoise ; la barre de demande tapée, les logos empilés, le clic sur envoyer ; la fenêtre du résultat qui se remplit de sa vraie matière | les deux lignes, la demande, ses logos (3 au plus), le lien de la demande (`lien` : sa vraie page, une ou deux captures, et son adresse), le titre et le sous-titre de la fenêtre, ses images du résultat (`cartes` et leur `format`) ou la capture de son produit (`capture`) |
-| `compositions/t7-eparpille.html` | 10,3 s (trois versions de 3 mots, une conclusion de 3) | une grande phrase retapée trois fois, sa matière (captures, logos) et des mots qui surgissent, tout qui se change en points, la conclusion en écriture de points | le début et les trois fins, les trois groupes (`groupes` : ses logos, ses images `{ img, format }`, des mots, des formes pleines `●` et `▬`), la conclusion |
-| `compositions/t7-orbite.html` | 14,4 s avec les textes d'exemple | la carte de l'offre dans la phrase, les trois orbites et les outils qui tournent (les orbites qui battent à l'accent à chaque connexion), le recul sur ses autres systèmes, la conclusion tapée, le point d'encre, le logo, le nom, la pastille d'appel | les deux morceaux de la phrase, la carte (nom, ligne, bas, sa capture), les logos, les deux étiquettes, ses autres systèmes (de vrais noms, ou `[]`), la conclusion, le logo, le nom, l'appel (avec sa vraie adresse) |
+| `compositions/t7-accroche.html` | 11,2 s | la phrase et ses objets, la suite qui s'allume, le silence, le mot géant, le logo et le nom | `phrase` (ses morceaux ; `[carte]` et `[pastille]` y placent les objets), `gris` (les morceaux gris), `vignettes` (ses vraies images ; `[]` retire la vignette), `pastille` (un mot ; `""` la retire), `suite`, `geant`, `logo` (`brand/logo.svg` ou `.png` ; `""` sans logo), `nom` |
+| `compositions/t7-phrase.html` | 12,2 s avec une fenêtre (8,9 s sans) | les deux lignes tapées, la demande envoyée, la fenêtre du résultat | `ligne1` et `ligne2`, `demande`, `logos` (3 au plus), `lien` (`img` : sa page en une ou deux captures, `adresse`), `titre` et `sousTitre` de la fenêtre, `cartes` et leur `format` (ses images du résultat) ou `capture` (la capture de son produit) |
+| `compositions/t7-eparpille.html` | 10,1 s (trois fins de 3 mots, une conclusion de 3) | le désordre rangé | `debut`, `fins` (trois), `groupes` (ses logos, ses captures `{ img, format }`, des mots en pilule : 5 au plus sur la scène, ils restent avec la phrase), `fin` (la conclusion) |
+| `compositions/t7-orbite.html` | 15,2 s | la carte dans la phrase, l'orbite et le recul, la conclusion tapée, le point d'encre, le nom, la pastille d'appel | `avant` et `apres` (la phrase), `carte` (`nom`, `texte`, `capture`), `logos`, `images` (ses captures en orbite), `etiquettes` (deux mots au plus, ou `[]`), `autres` (ses autres systèmes, de vrais noms, ou `[]`), `conclusion`, `logo`, `nom`, `appel` |
 
-Chaque scène tient ses textes le temps de leur lecture et calcule sa durée (`D` dans le script) :
-reporte-la dans `data-duration`, ici et sur l'hôte (+0,3 s par mot de plus). Une phrase du script
-plus longue que ce qu'une mise en page prend ne se raccourcit jamais : elle passe sur deux lignes
-plus petites, ou dans une scène construite dans le style.
+Chaque scène calcule sa durée (`D` dans le script) : reporte-la dans `data-duration`, ici et sur
+l'hôte (+0,3 s par mot de plus). Les mots de la carte comptent dans les 8 mots de leur image. Une
+phrase du script plus longue que ce qu'une mise en page prend passe sur deux lignes à la même
+taille, ou dans une scène construite dans le style.
 
 Identifiants préfixés `t7a`, `t7p`, `t7e`, `t7o` : si tu montes deux fois la même scène, change le
 préfixe partout dans la copie.

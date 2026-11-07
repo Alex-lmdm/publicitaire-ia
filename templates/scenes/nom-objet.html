@@ -1,0 +1,321 @@
+<!-- Scène prête « Le nom sur l'objet » (le pivot et le nom : scenes.md, recette 6).
+     L'objet de l'offre (un dossier, un carnet, une carte de membre, l'icône de son app, ou sa vraie
+     image) grandit depuis un point ; son nom claque lettre par lettre en très grand, une ligne d'appui
+     dit ce qu'elle fait ; l'objet s'ouvre, ce qu'il contient en jaillit un instant (ses vrais
+     éléments, qui se cochent), puis retombe. Sortie : l'objet se resserre en nœud pendant que la
+     nuit pousse l'aplat (raccord vers la scène « schema »), ou un volet de nuit couvre tout. Se met en
+     page seule en 9:16 et en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (environ 3,9 s avec une ligne
+     d'appui de 5 mots et des éléments de 2 mots ; plus longue, l'objet se tient et la sortie finit
+     sur la dernière image ; trop courte, `check` relève des mots partis avant d'être lus et la
+     console de l'aperçu dit la durée à mettre), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « nomobjet » par un autre identifiant. -->
+<template>
+  <style>
+    /* Les couleurs de l'objet selon le fond : rien de transparent ni d'ombre sombre sur l'aplat. */
+    #nomobjet {
+      --nob-dos: var(--brand-gris-1); --nob-face: var(--brand-sombre); --nob-icone: var(--brand-accent);
+      --nob-encre: var(--brand-contrast); --nob-appui: var(--brand-contrast); --nob-ombre: none;
+    }
+    #nomobjet.nob-sombre {
+      --nob-face: var(--brand-accent); --nob-icone: var(--brand-contrast);
+      --nob-encre: var(--brand-clair); --nob-appui: var(--brand-gris-4); --nob-ombre: var(--k-ombre);
+    }
+    #nomobjet.nob-clair { --nob-encre: var(--k-encre); --nob-appui: var(--brand-gris-2); --nob-ombre: var(--k-ombre-claire); }
+    #nomobjet .nob-objet { position: absolute; transform-style: preserve-3d; will-change: transform; }
+    #nomobjet .nob-dos, #nomobjet .nob-face, #nomobjet .nob-contenu { position: absolute; left: 0; top: 0; }
+    #nomobjet .nob-dos > div { position: absolute; background: var(--nob-dos); }
+    #nomobjet .nob-dos > .nob-pages { background: var(--brand-gris-4); }
+    #nomobjet .nob-face {
+      background: var(--nob-face); color: var(--nob-icone); box-shadow: var(--nob-ombre);
+      display: grid; place-items: center; overflow: hidden; transform-origin: 50% 100%;
+    }
+    #nomobjet .nob-face svg { display: block; }
+    #nomobjet .nob-face img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    #nomobjet .nob-elastique { position: absolute; top: 0; bottom: 0; background: var(--nob-icone); }
+    #nomobjet .nob-feuille {
+      position: absolute; background: var(--brand-clair); color: var(--k-encre); border-radius: 22px;
+      display: flex; align-items: flex-start; white-space: nowrap; will-change: transform;
+      font-family: var(--brand-font-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1;
+      box-shadow: inset 0 0 0 2px var(--brand-gris-4);
+    }
+    #nomobjet .nob-puce { flex: none; display: grid; place-items: center; border-radius: 12px; background: var(--brand-accent); color: var(--brand-contrast); }
+    #nomobjet .nob-puce svg { width: 68%; height: 68%; }
+    #nomobjet .nob-nom { color: var(--nob-encre); }
+    #nomobjet .nob-appui {
+      position: absolute; font-family: var(--brand-font-body); font-weight: 600; letter-spacing: -0.01em;
+      color: var(--nob-appui); white-space: nowrap; line-height: 1.2;
+    }
+    #nomobjet .nob-volet { position: absolute; inset: -2px; }
+  </style>
+  <div data-composition-id="nomobjet" data-width="1080" data-height="1920" data-duration="3.9" style="position:absolute; inset:0;">
+    <div id="nomobjet" class="k-scene">
+      <div id="nomobjet-fond" class="k-fond k-fond-accent"></div>
+      <div class="k-scene3d" id="nomobjet-espace"><div class="k-camera" id="nomobjet-cam"></div></div>
+      <div class="k-mots" id="nomobjet-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "nomobjet";
+
+      // À REMPLACER : chaque texte et image vient de OFFRE.json ou de sources/ ; ce qui n'existe pas
+      // pour son offre se met à null (le temps correspondant disparaît).
+      var CONTENU = {
+        fond: "accent",                 // "accent" (l'aplat de sa couleur), "sombre" (sa nuit) ou "clair"
+        objet: "dossier",               // l'objet de l'offre : "dossier", "carnet", "carte" (de membre), "app" (son icône) ou "image"
+        icone: "book-open",             // posée sur l'objet : une icône du kit ou son logo ajouté (« logo-… ») ; null : aucune
+        image: null,                    // objet "image" : "assets/images/<sa vraie couverture, sa boîte>.png"
+        ratio: 1.33,                    // objet "image" : sa largeur divisée par sa hauteur
+        nom: "Le Fournil",              // le nom de l'offre, tel qu'il s'écrit (1 à 3 mots)
+        appui: "Ton pain maison, sans échec",            // ce qu'elle fait (3 à 6 mots), ou null
+        contenu: ["18 vidéos", "Fiches recettes", "Live mensuel"],   // ce qu'il contient : 2 à 4 vrais éléments (1 à 3 mots)
+        depart: null,                   // [x, y] d'où il grandit (le point cliqué de la scène d'avant) ; null : il est déjà là, il se pose
+        sortie: "noeud",                // "noeud" : il se resserre en nœud, la nuit pousse l'aplat ; "volet" : la nuit couvre tout ; null : il reste
+        noeud: null,                    // sortie "noeud" : [x, y] où il se pose (le nœud de la scène suivante) ; null : le centre
+        zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
+      var mots = document.getElementById(ID + "-mots"), espace = document.getElementById(ID + "-espace");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      var duree = K.duree(racine) || 30;   // une fois montée : la durée de son hôte dans index.html
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H, sombre = CONTENU.fond === "sombre";
+      if (sombre || CONTENU.fond === "clair") {
+        racine.classList.add("nob-" + CONTENU.fond);
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-" + CONTENU.fond;
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var nMots = function (texte) { return String(texte).trim().split(/\s+/).length; };
+      var lecture = function (texte) { return Math.max(1.5, 0.8 + 0.3 * nMots(texte)); };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+      // Un texte tient sur une ou deux lignes, coupé à l'espace le plus proche du milieu.
+      var decouper = function (texte, maxCars) {
+        texte = String(texte).trim();
+        if (texte.length <= maxCars || texte.indexOf(" ") < 0) return [texte];
+        var milieu = texte.length / 2, coupe = -1;
+        for (var i = 0; i < texte.length; i++) {
+          if (texte[i] === " " && (coupe < 0 || Math.abs(i - milieu) < Math.abs(coupe - milieu))) coupe = i;
+        }
+        return [texte.slice(0, coupe), texte.slice(coupe + 1)];
+      };
+      var plusLong = function (l) { return l.reduce(function (a, b) { return b.length > a.length ? b : a; }, ""); };
+
+      // --- Les formes : leur hauteur (en part de leur largeur), leur poche (la part du haut où ce
+      // qu'elles contiennent se voit déjà : le dos d'un dossier dépasse de sa face), leurs feuilles.
+      var FORMES = {
+        dossier: { rapport: 0.84, poche: 0.36, feuille: 0.84 }, carnet: { rapport: 1.3, poche: 0, feuille: 0.84 },
+        carte: { rapport: 0.63, poche: 0, feuille: 0.8 }, app: { rapport: 1, poche: 0, feuille: 0.92 },
+        image: { rapport: 1 / (CONTENU.ratio || 1.33), poche: 0, feuille: 0.84 }
+      };
+      var genre = FORMES[CONTENU.objet] && (CONTENU.objet !== "image" || CONTENU.image) ? CONTENU.objet : "dossier";
+      var forme = FORMES[genre];
+
+      // --- La mise en page ----------------------------------------------------------------
+      // 9:16 : une colonne calée à gauche (l'objet, son nom, l'appui), centrée dans la zone.
+      // 16:9 : l'objet à gauche, le nom et l'appui à droite.
+      var elements = (CONTENU.contenu || []).filter(Boolean).slice(0, 4), n = elements.length;
+      var fS = V ? 44 : 40, bande = Math.round(fS * 2.1);
+      var col = V ? { x: 0.08 * L, l: 0.84 * L } : { x: 0.53 * L, l: 0.41 * L };
+      var lignesNom = decouper(CONTENU.nom, V ? 12 : 10);
+      var fNom = taillePour(plusLong(lignesNom), col.l, V ? 120 : 104, V ? 250 : 210), hNom = fNom * 0.98 * lignesNom.length;
+      var fA = V ? 62 : 56;
+      var lignesAppui = CONTENU.appui ? decouper(CONTENU.appui, Math.floor(col.l / (0.58 * fA))) : [];
+      var blocTexte = hNom + (lignesAppui.length ? 0.34 * fNom + fA * 1.2 * lignesAppui.length : 0);
+      var ecart = V ? 0.3 * fNom : 0, dispo = V ? bas - haut - blocTexte - ecart : bas - haut;
+      // La plus grande taille qui laisse jaillir ce qu'il contient sans sortir de la zone.
+      var dep = n * bande, h = dispo;
+      if (forme.poche * h < dep) h = (dispo - dep) / (1 - forme.poche);
+      h = Math.min(h, (V ? 0.84 * L : 0.42 * L) * forme.rapport);
+      var w = h / forme.rapport, depasse = Math.max(0, dep - forme.poche * h), ob = {}, yNom;
+      if (V) {
+        ob.x = col.x;
+        ob.y = haut + (bas - haut - depasse - h - ecart - blocTexte) / 2 + depasse;
+        yNom = ob.y + h + ecart;
+      } else {
+        ob.x = 0.06 * L + (0.44 * L - w) / 2;
+        ob.y = haut + (bas - haut - depasse - h) / 2 + depasse;
+        yNom = Math.max(haut, Math.min(bas - blocTexte, ob.y + (forme.poche * h + h) / 2 - blocTexte / 2));   // face à sa face
+      }
+
+      // --- L'objet : son dos, ce qu'il contient (coupé à son bas, libre au-dessus), sa face -------
+      var px = function (x, y, l, ha) { return "left:" + x + "px; top:" + y + "px; width:" + l + "px; height:" + ha + "px;"; };
+      var objet = K.el(cam, "div", "nob-objet k-plan", null, px(ob.x, ob.y, w, h));
+      var dos = K.el(objet, "div", "nob-dos", null, px(0, 0, w, h));
+      var contenu = K.el(objet, "div", "nob-contenu", null, px(0, 0, w, h) + " clip-path:polygon(-150% -400%, 250% -400%, 250% 100%, -150% 100%);");
+      var face = K.el(objet, "div", "nob-face");
+      var r = Math.round(w * 0.045), haute = forme.poche * h, tIcone = 0, arrondi = r + "px;", elastique = null;
+      if (genre === "dossier") {
+        K.el(dos, "div", null, null, px(0.06 * w, 0, 0.34 * w, 0.14 * h) + " border-radius:" + r + "px " + r + "px 0 0;");
+        K.el(dos, "div", null, null, px(0, 0.07 * h, w, 0.93 * h) + " border-radius:" + arrondi);
+        tIcone = Math.min(0.42 * (h - haute), 0.3 * w);
+      } else if (genre === "carnet") {
+        arrondi = r * 0.5 + "px " + r + "px " + r + "px " + r * 0.5 + "px;";
+        K.el(dos, "div", "nob-pages", null, px(0.03 * w, 0.02 * h, w, h) + " border-radius:" + arrondi);
+        elastique = K.el(face, "div", "nob-elastique", null, "left:" + 0.78 * w + "px; width:" + 0.07 * w + "px;");
+        tIcone = 0.46 * w;
+      } else if (genre === "carte") { arrondi = r * 1.4 + "px;"; tIcone = 0.42 * h; }
+      else if (genre === "app") { arrondi = 0.23 * w + "px;"; tIcone = 0.56 * w; }
+      face.setAttribute("style", px(0, haute, w, h - haute) + " border-radius:" + arrondi + (genre === "image" ? " background:var(--brand-clair);" : ""));
+      gsap.set(contenu, { z: 2 });
+      gsap.set(face, { z: 4 });
+      if (genre === "image") {
+        var img = K.el(face, "img");
+        img.src = CONTENU.image;
+        img.alt = "";
+      } else if (CONTENU.icone) {
+        K.el(face, "div", null, K.ic(CONTENU.icone), "width:" + tIcone + "px; height:" + tIcone + "px;" +
+          (genre === "carte" ? " position:absolute; left:" + 0.1 * w + "px; top:" + (h - tIcone) / 2 + "px;" : ""));
+      }
+
+      // Ce qu'il contient : des feuilles rangées de l'arrière (la plus haute) à l'avant ; chacune
+      // montre son étiquette dans la bande qui dépasse de la suivante.
+      var lF = Math.min(V ? 0.9 * L : 0.44 * L, Math.max(forme.feuille * w,
+        elements.reduce(function (m, e) { return Math.max(m, String(e).length * 0.6 * fS); }, 0) + fS * 2.4));
+      var ROT = [-3.4, 2.6, -1.8, 3], pad = (bande - fS * 1.1) / 2;
+      var feuilles = elements.map(function (texte, k) {
+        var y0 = haute - (n - k) * bande, x = (w - lF) / 2 + (k % 2 ? 1 : -1) * 0.03 * w;
+        var f = K.el(contenu, "div", "nob-feuille", null, px(x, y0, lF, h - y0) +
+          " padding:" + pad + "px " + fS * 0.6 + "px 0; gap:" + fS * 0.4 + "px; font-size:" + fS + "px;");
+        var puce = K.el(f, "span", "nob-puce", K.ic("check"), "width:" + fS * 1.1 + "px; height:" + fS * 1.1 + "px;");
+        var libelle = K.el(f, "span", null, null, "display:block; padding-top:" + fS * 0.05 + "px;");
+        libelle.textContent = texte;
+        gsap.set(f, { y: h + 12 - y0, transformOrigin: "50% 100%" });
+        K.cacher(f);
+        gsap.set(puce, { scale: 0 });
+        // L'étiquette ne se montre qu'une fois sortie de l'objet : cachée derrière sa face, elle serait
+        // un texte sombre sur sombre pour `check`. `libre` : le déplacement sous lequel elle est dehors.
+        gsap.set(libelle, { visibility: "hidden" });
+        return { el: f, puce: puce, libelle: libelle, rot: ROT[k % 4], repos: h + 12 - y0, libre: haute - y0 - pad - fS * 1.15 };
+      });
+
+      // --- Le nom et la ligne d'appui, posés au-dessus de la caméra -----------------------------
+      var noeud = CONTENU.noeud || [L / 2, V ? (haut + bas) / 2 : H / 2];
+      var blocNom = K.el(mots, "div", "k-heros nob-nom", null, "position:absolute; " + px(col.x, yNom, col.l, hNom) +
+        " font-size:" + fNom + "px; line-height:0.98;");
+      var lettres = [];
+      lignesNom.forEach(function (l) {
+        var e = K.el(blocNom, "div", null, null, "display:block;");
+        e.textContent = l;
+        lettres = lettres.concat(K.lettres(e));
+      });
+      var blocAppui = lignesAppui.length ? K.el(mots, "div", "nob-appui", null,
+        "left:" + col.x + "px; top:" + (yNom + hNom + 0.34 * fNom) + "px; width:" + col.l + "px; font-size:" + fA + "px;") : null;
+      lignesAppui.forEach(function (l) { K.el(blocAppui, "div", null).textContent = l; });
+      // L'appui s'ouvre comme un volet, de gauche à droite (rien n'entre en fondu sur l'aplat).
+      if (blocAppui) gsap.set(blocAppui, { clipPath: "polygon(-2% -30%, -2% -30%, -2% 130%, -2% 130%)" });
+      // À la sortie, les textes se ramassent vers le nœud : leur origine est ce point.
+      var textes = [blocNom, blocAppui].filter(Boolean);
+      textes.forEach(function (b) {
+        gsap.set(b, { transformOrigin: (noeud[0] - parseFloat(b.style.left)) + "px " + (noeud[1] - parseFloat(b.style.top)) + "px" });
+      });
+
+      var tl = gsap.timeline({ paused: true });
+
+      // L'objet grandit depuis le point cliqué, ou se pose (il est là dès la première image : l'affiche).
+      var depart = CONTENU.depart || [ob.x + w / 2, ob.y + h];
+      var origine = [depart[0] - ob.x, depart[1] - ob.y];
+      gsap.set(objet, { transformOrigin: origine[0] + "px " + origine[1] + "px" });
+      tl.fromTo(objet, { scale: CONTENU.depart ? 0.12 : 0.8, rotationX: 18, rotationY: V ? -8 : 14, rotation: -6 },
+        { scale: 1, rotationX: 6, rotationY: V ? -3 : 6, rotation: 0, duration: 0.8, ease: "expo.out" }, 0);
+
+      // Son nom claque lettre par lettre (la première dès l'image 0) ; elles grandissent (de < 1) :
+      // deux lettres voisines ne se chevauchent jamais.
+      var pas = Math.min(0.05, 0.42 / Math.max(1, lettres.length));
+      K.claque(tl, lettres, 0, { de: 0.6, y: 0.1 * fNom, duree: 0.4, decalage: pas, ease: "expo.out" });
+      var tNom = (lettres.length - 1) * pas + 0.4, tA = Math.max(0.45, tNom - 0.1), finAppui = tA;
+      if (blocAppui) {
+        tl.to(blocAppui, { clipPath: "polygon(-2% -30%, 102% -30%, 102% 130%, -2% 130%)", duration: 0.45, ease: "power3.inOut" }, tA);
+        finAppui = tA + 0.3 + lecture(CONTENU.appui);
+      }
+
+      // Le moment signature : l'objet s'ouvre, ce qu'il contient en jaillit et se coche, puis retombe.
+      // L'étiquette apparaît en franchissant le bord (l'instant se lit sur la courbe elle-même).
+      var franchit = function (courbe, de, a, libre, monte) {
+        var e = gsap.parseEase(courbe);
+        for (var i = 0; i <= 200; i++) {
+          var y = de + (a - de) * e(i / 200);
+          if (monte ? y <= libre : y > libre) return i / 200;
+        }
+        return 1;
+      };
+      var tOuvre = tA + 0.3, tRepos = tOuvre;
+      if (n) {
+        var ouvrir = genre === "dossier" ? { rotationX: -28 } : { y: 0.03 * h }, fermer = genre === "dossier" ? { rotationX: 0 } : { y: 0 };
+        tl.to(face, Object.assign({ duration: 0.42, ease: "power3.out" }, ouvrir), tOuvre);
+        feuilles.forEach(function (f, k) {
+          var tk = tOuvre + 0.04 + k * 0.08;
+          tl.set(f.el, { opacity: 1 }, tk);
+          tl.to(f.el, { y: 0, rotation: f.rot, duration: 0.55, ease: "back.out(1.15)" }, tk);
+          tl.set(f.libelle, { visibility: "visible" }, tk + 0.55 * franchit("back.out(1.15)", f.repos, 0, f.libre, true));
+          tl.fromTo(f.puce, { scale: 0 }, { scale: 1, duration: 0.32, ease: "back.out(2.2)", immediateRender: false }, tk + 0.45 + (n - 1 - k) * 0.1);
+        });
+        // Les étiquettes se lisent dès le milieu de leur montée ; elles retombent de l'avant à l'arrière.
+        var tRetombe = tOuvre + 0.25 + Math.max.apply(null, elements.map(lecture));
+        feuilles.slice().reverse().forEach(function (f, k) {
+          var tf = tRetombe + k * 0.04;
+          tl.to(f.el, { y: f.repos, rotation: 0, duration: 0.28, ease: "power3.in" }, tf);
+          tl.set(f.libelle, { visibility: "hidden" }, tf + 0.28 * franchit("power3.in", 0, f.repos, f.libre, false));
+        });
+        var tFerme = tRetombe + 0.1 + (n - 1) * 0.04;
+        tl.to(face, Object.assign({ duration: 0.24, ease: "power2.in" }, fermer), tFerme);
+        // Il les reçoit : un petit tassement, puis il se repose (la sortie peut partir pendant ce temps).
+        tl.to(objet, { scaleY: 0.95, scaleX: 1.025, duration: 0.09, ease: "power2.out" }, tFerme + 0.22);
+        tl.to(objet, { scaleY: 1, scaleX: 1, duration: 0.4, ease: "back.out(2.4)" }, tFerme + 0.31);
+        tRepos = tFerme + 0.32;
+      }
+
+      // --- La sortie ------------------------------------------------------------------------
+      // Elle finit sur la dernière image (si la scène a plus de temps, l'objet se tient plus longtemps) :
+      // la scène suivante part en plein mouvement, jamais d'une image arrêtée.
+      var tS = Math.max(tNom + lecture(CONTENU.nom), finAppui, tRepos), dS = { noeud: 0.6, volet: 0.5 }[CONTENU.sortie] || 0;
+      if (dS && duree > tS + dS) tS = duree - dS;
+      var t = tS;
+      var nuit = function (devant) {
+        var v = K.el(null, "div", "nob-volet k-fond k-fond-sombre", null, devant ? "z-index:80;" : "");
+        racine.insertBefore(v, devant ? null : espace);
+        v.setAttribute("data-layout-ignore", "");
+        gsap.set(v, { x: L + 8 });
+        return v;
+      };
+      if (CONTENU.sortie === "noeud") {
+        // Les textes se ramassent dans le nœud, l'objet s'y resserre, la nuit pousse l'aplat derrière lui.
+        tl.to(textes, { scale: 0, duration: 0.3, ease: "power3.in" }, tS);
+        var sN = (V ? 0.36 * L : 0.2 * L) / w;
+        tl.to(objet, { x: noeud[0] - ob.x - origine[0] - sN * (w / 2 - origine[0]), y: noeud[1] - ob.y - origine[1] - sN * (h / 2 - origine[1]),
+          scale: sN, rotationX: 0, rotationY: 0, duration: 0.55, ease: "power3.in" }, tS + 0.05);
+        if (!sombre) {
+          tl.to(nuit(false), { x: 0, duration: 0.55, ease: "power3.in" }, tS + 0.05);
+          // Quand le bord de la nuit passe sous lui, l'objet prend d'un coup les couleurs de la nuit
+          // (sa face à l'accent) : il arrive dans la scène suivante comme son nœud.
+          if (genre !== "image") {
+            var tBord = tS + 0.05 + 0.55 * 0.8;
+            tl.set(face, { backgroundColor: K.jeton("--brand-accent"), color: K.jeton("--brand-contrast") }, tBord);
+            if (elastique) tl.set(elastique, { backgroundColor: K.jeton("--brand-contrast") }, tBord);
+          }
+        }
+        t = tS + 0.6;
+      } else if (CONTENU.sortie === "volet") {
+        tl.to(nuit(true), { x: 0, duration: 0.5, ease: "power3.in" }, tS);
+        t = tS + 0.5;
+      }
+
+      // La caméra : une dérive lente du monde derrière les mots (les mots, eux, ne bougent pas).
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.025, duration: t, ease: "sine.inOut" }, 0);
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

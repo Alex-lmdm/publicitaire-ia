@@ -163,7 +163,8 @@ tout seul ; une archive ou un dossier rangé ailleurs se donne en argument. Ou `
   n'est perdu. »). Puis `git merge --ff-only origin/main`. S'il refuse, ne force rien : diagnostic
   en trois lignes.
 - **Pas de `.git/`** : télécharge l'archive de l'étape 0 dans un dossier temporaire, décompresse-la,
-  puis copie ses fichiers dans le dossier : **recopie par-dessus, n'efface rien**. Si le client a
+  puis copie ses fichiers dans le dossier : **recopie par-dessus, n'efface rien** (les fichiers que
+  la nouvelle version a retirés du produit, `npm ci` les enlève tout seul). Si le client a
   déjà son propre `.claude/settings.json`, fusionne-le avec le nouveau : ses réglages restent, ceux
   de la nouvelle version s'ajoutent.
 

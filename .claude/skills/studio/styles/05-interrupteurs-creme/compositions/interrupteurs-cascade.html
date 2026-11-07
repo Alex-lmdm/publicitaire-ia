@@ -5,44 +5,27 @@
   <!--
     STYLE N°5 « INTERRUPTEURS EN CASCADE » · SCÈNE 1 : LES INTERRUPTEURS EN CASCADE (7,4 s pour 6 mots)
 
-    Ce qu'elle montre : un panneau de réglages de l'offre, vu de très près sur un papier clair. Une
-    main clique l'interrupteur maître, les sept interrupteurs s'allument en cascade ; la caméra
-    s'approche lentement et suit la cascade sans à-coup (aucun recadrage sec dans les cinq
-    premières secondes). Elle recule : le panneau part au bord gauche et la phrase s'écrit au
-    centre (c'est son apparition). La phrase se tient alors le temps de sa lecture : la caméra ne
-    fait qu'une dérive lente, et la vie vient de ce qu'elle montre : le trait à main levée entoure
-    les mots clés, les disques des membres arrivent en vague à droite, puis le trait repart par le haut (il revient dans la scène 2, « trait-qui-relie »). La caméra
-    ne revient au plan large qu'une fois la phrase lue, pendant qu'elle sort.
-    Durée : la scène tient la phrase le temps de sa lecture (0,3 s par mot + 0,8 s :
-    `studio_motion.py lecture`) et en déduit sa durée : 4,8 s + la lecture de la phrase (7,4 s pour
-    6 mots, 7,7 s pour 7, 8 s pour 8). Reporte-la dans data-duration (ici et sur l'hôte).
-    Rôle : l'accroche d'une annonce (nouveau module, bonus, fonction), ou la démonstration « un
-    clic suffit ».
+    Ce qu'elle montre : le panneau de réglages de l'offre, vu de près sur un papier clair : tout le
+    panneau à l'image, chaque réglage lisible. Une main clique l'interrupteur maître, les autres
+    s'allument en cascade ; la caméra ne fait qu'une dérive lente (aucun coup de caméra au clic).
+    Elle recule d'un coup, entre le panneau et la phrase : le panneau reste en témoin au bord, la
+    phrase s'écrit au centre. Pendant sa lecture, une dérive lente seulement, et la vie vient de ce
+    qu'elle montre : le trait à main levée entoure ses mots clés, les disques des membres surgissent,
+    les mots clés se surlignent d'un bloc plein, puis le trait repart par le haut (il revient dans
+    la scène 2, « trait-qui-relie »). La caméra revient au plan large pendant que la phrase sort.
+    Durée : 4,8 s + la lecture de la phrase (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
+    7,4 s pour 6 mots, 8 s pour 8. Reporte-la dans data-duration (ici et sur l'hôte).
+    Rôle : l'accroche d'une annonce (un module, un bonus, une fonction), ou « un clic suffit ».
 
     Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine (1080 × 1920) :
     la scène se remet en page seule (panneau en haut, phrase au milieu, membres en bas).
 
-    À REMPLACER :
-      1. L'id « t05-cascade » partout (rechercher-remplacer) par l'id de la scène (s1, s2…), le même
-         que l'hôte dans index.html.
-      2. L'onglet (« Ton offre ») et l'interrupteur maître (« Tout activer ») : le nom de l'offre ou
-         de la partie annoncée.
-      3. Les RANGS (tableau en tête du script) : les vrais éléments de l'offre (modules, bonus,
-         fonctions), 5 à 7, avec une icône du kit (K.ic). Si l'offre branche des outils, leurs vrais
-         logos (studio_motion.py logos), comme l'original.
-      4. La phrase (les deux span.t05-ligne du HTML, 8 mots au plus : la mise en page n'en prend
-         pas davantage entre le panneau et les membres ; une phrase plus longue du script ne se
-         raccourcit pas, elle passe dans une scène construite dans le style) et les mots que le
-         trait entoure (le span.t05-cle) : ce que la vidéo annonce, tiré de OFFRE.json.
-      5. Les couleurs : celles de la marque, rien d'autre (variables en tête du style) : le papier
-         (--t05-papier, un gris très clair tiré de son clair et de son gris le plus clair), les
-         cartes (son clair), l'encre (sa couleur sombre), ses gris. L'interrupteur allumé et les
-         icônes prennent l'accent plein ; le trait aussi, sauf si l'accent est trop pâle sur le clair
-         (jaune, pastel) : il passe alors à l'encre, tout seul. Jamais l'accent en transparence.
-      Police des titres : celle de la marque (--t05-titres). Marque sans police imposée : la serif
-      du look (Source Serif 4), mode d'emploi dans style.md, section 4.
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque champ dit ce qu'il montre), et l'id
+    « t05-cascade » partout (rechercher-remplacer) par l'id de la scène, le même que l'hôte dans
+    index.html. Les couleurs sont celles de la marque (variables --t05-* en tête du style, qui ne
+    font que nommer ses jetons) ; la police des titres, celle de la marque (--t05-titres).
     Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2), et la
-    caméra : pendant que la phrase se lit, une dérive lente seulement, jamais un recadrage ajouté.
+    caméra : pendant que la phrase se lit, une dérive lente seulement.
   -->
 </head>
 <body>
@@ -77,9 +60,9 @@
     #t05-cascade .t05-rang {
       position: absolute; left: 55px; right: 55px; height: 60px; margin-top: -30px;
       display: flex; align-items: center; gap: 16px; white-space: nowrap;
-      font: 400 26px/1 var(--t05-texte); color: var(--t05-encre);
+      font: 400 28px/1 var(--t05-texte); color: var(--t05-encre);
     }
-    #t05-cascade .t05-tete { font-size: 29px; font-weight: 500; letter-spacing: -0.01em; }
+    #t05-cascade .t05-tete { font-size: 30px; font-weight: 500; letter-spacing: -0.01em; }
     #t05-cascade .t05-filet { position: absolute; left: 55px; right: 55px; height: 1.5px; background: rgba(0, 0, 0, 0.12); }
     #t05-cascade .t05-ico {
       width: 36px; height: 36px; border-radius: 9px; flex: none; display: grid; place-items: center;
@@ -95,7 +78,7 @@
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07);
     }
     #t05-cascade .t05-bille {
-      position: absolute; left: 3px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: #fff;
+      position: absolute; left: 3px; top: 3px; width: 30px; height: 30px; border-radius: 50%; background: var(--t05-carte);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.12);
     }
     #t05-cascade .t05-membre {
@@ -106,13 +89,15 @@
     #t05-cascade .t05-membre svg { width: 50%; height: 50%; }
     #t05-cascade .t05-titre {
       position: absolute; width: 1200px; text-align: center; white-space: nowrap;
-      font: 400 72px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
+      font: 400 80px/1.16 var(--t05-titres); letter-spacing: -0.02em; color: var(--t05-encre);
     }
     #t05-cascade .t05-ligne { display: block; }
     #t05-cascade .t05-mot, #t05-cascade .t05-cle { display: inline-block; }
-    /* Les mots clés, surlignés d'un bloc plein pendant la lecture (l'accent, ou l'encre s'il est trop pâle), jamais en transparence. */
-    #t05-cascade .t05-cle { position: relative; z-index: 0; }
-    #t05-cascade .t05-bloc { position: absolute; left: -0.18em; right: -0.38em; top: 0.02em; bottom: -0.06em; background: var(--brand-accent); z-index: -1; border-radius: 0.1em; }
+    /* Les mots clés, surlignés d'un bloc plein pendant la lecture (l'accent, ou l'encre s'il est trop
+       pâle), jamais en transparence. Un peu d'air avant eux : le trait les entoure sans toucher le mot voisin. */
+    #t05-cascade .t05-cle { position: relative; z-index: 0; margin-left: 0.45em; }
+    #t05-cascade .t05-cle .t05-mot { position: relative; z-index: 1; }
+    #t05-cascade .t05-bloc { position: absolute; left: -0.18em; right: -0.18em; top: 0.02em; bottom: -0.06em; background: var(--brand-accent); z-index: 0; border-radius: 0.1em; }
     #t05-cascade .t05-traits { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
     #t05-cascade .t05-traits path { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
     #t05-cascade .t05-main { position: absolute; left: 0; top: 0; width: 100px; height: 115px; margin: -5px 0 0 -40px; z-index: 80; }
@@ -122,9 +107,9 @@
   <div data-composition-id="t05-cascade" data-width="1920" data-height="1080" data-duration="7.4" style="position:absolute; inset:0;">
     <div id="t05-cascade" class="k-scene">
       <div class="t05-cam" id="t05-cascade-cam" data-layout-allow-overflow>
-        <div class="t05-onglet" id="t05-cascade-onglet" data-layout-allow-overflow><span id="t05-cascade-onglet-ic"></span><span>Ton offre</span></div>
+        <div class="t05-onglet" id="t05-cascade-onglet" data-layout-allow-overflow><span id="t05-cascade-onglet-ic"></span><span id="t05-cascade-onglet-nom"></span></div>
         <div class="t05-panneau" id="t05-cascade-panneau" data-layout-allow-overflow>
-          <div class="t05-rang t05-tete" style="top:76px;"><span>Tout activer</span>
+          <div class="t05-rang t05-tete" style="top:76px;"><span id="t05-cascade-maitre-nom"></span>
             <div class="t05-inter" id="t05-cascade-maitre"><div class="t05-plein"></div><div class="t05-bille"></div></div>
           </div>
           <div class="t05-filet" style="top:132px;"></div>
@@ -132,8 +117,7 @@
         </div>
         <div id="t05-cascade-membres"></div>
         <div class="t05-titre" id="t05-cascade-titre">
-          <span class="t05-ligne"><span class="t05-mot">Tout</span> <span class="t05-mot">ton</span> <span class="t05-mot">programme</span></span>
-          <span class="t05-ligne"><span class="t05-mot">en</span> <span class="t05-cle"><span class="t05-mot">un</span> <span class="t05-mot">clic</span></span></span>
+          <span id="t05-cascade-lignes"></span>
           <svg class="t05-traits" id="t05-cascade-traits" width="10" height="10" data-layout-allow-overflow>
             <defs>
               <filter id="t05-cascade-rugueux" x="-20%" y="-20%" width="140%" height="140%">
@@ -151,24 +135,43 @@
 
   <script>
     (function () {
+      // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire (ici, une formation
+      // d'exemple : aucun de ces textes n'est un fait).
+      var EXEMPLE = {
+        ONGLET: "Ton offre",                       // l'onglet du panneau : le nom de l'offre ou de la partie annoncée ("" : pas d'onglet)
+        MAITRE: "Tout activer",                    // l'interrupteur maître
+        RANGS: [                                   // 5 à 7 vrais éléments de l'offre : [icône du kit, son nom], ou le vrai logo d'un outil branché
+          ["book-open", "Module 1 · Les bases"],
+          ["play", "Les vidéos"],
+          ["list-checks", "Les exercices"],
+          ["file-text", "Les modèles"],
+          ["users", "La communauté"],
+          ["calendar", "Les lives"],
+          ["gift", "Les bonus"]
+        ],
+        PHRASE: ["Tout ton programme", "en un clic"],   // ce que la vidéo annonce : deux lignes, 8 mots au plus
+        ENTOURE: "un clic"                         // les mots de la 2e ligne que le trait entoure
+      };
       var ID = "t05-cascade";
       // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
       function lecture(n) { return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
-      // Les éléments de l'offre, de haut en bas : [icône du kit, texte]. 5 à 7 rangs.
-      var RANGS = [
-        ["book-open", "Module 1 · Les bases"],
-        ["play", "Les vidéos"],
-        ["list-checks", "Les exercices"],
-        ["file-text", "Les modèles"],
-        ["users", "La communauté"],
-        ["calendar", "Les lives"],
-        ["gift", "Les bonus"]
-      ];
+      var RANGS = EXEMPLE.RANGS;
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cam = $("cam"), panneau = $("panneau"), onglet = $("onglet");
       var titre = $("titre"), svg = $("traits"), boucle = $("boucle");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
       var tl = gsap.timeline({ paused: true });
+      $("onglet-nom").textContent = EXEMPLE.ONGLET;
+      $("maitre-nom").textContent = EXEMPLE.MAITRE;
+      // La phrase, mot par mot ; les mots à entourer (dans la dernière ligne) dans un span.t05-cle.
+      $("lignes").outerHTML = EXEMPLE.PHRASE.map(function (l, n) {
+        var ms = l.split(" "), cle = n === EXEMPLE.PHRASE.length - 1 ? EXEMPLE.ENTOURE.split(" ") : [], k = -1;
+        for (var i = 0; cle.length && i + cle.length <= ms.length; i++) if (ms.slice(i, i + cle.length).join(" ") === cle.join(" ")) { k = i; break; }
+        var m = function (x) { return '<span class="t05-mot">' + x + "</span>"; };
+        if (k < 0) return '<span class="t05-ligne">' + ms.map(m).join(" ") + "</span>";
+        return '<span class="t05-ligne">' + ms.slice(0, k).map(m).join(" ") + (k ? " " : "") + '<span class="t05-cle"' + (k ? "" : ' style="margin-left:0"') + ">" + cle.map(m).join(" ") + "</span>" + (k + cle.length < ms.length ? " " + ms.slice(k + cle.length).map(m).join(" ") : "") + "</span>";
+      }).join("");
+      if (!EXEMPLE.ONGLET) onglet.style.display = "none";
       // La phrase : ses deux lignes posées à FE, tenues le temps de leur lecture, sorties à X.
       var lignes = titre.querySelectorAll(".t05-ligne");
       var n2 = lignes[1].querySelectorAll(".t05-mot").length;
@@ -195,7 +198,7 @@
         var e = K.el(hote, "div", "t05-main");
         e.id = ID + "-main";
         e.setAttribute("data-layout-allow-overflow", "");
-        e.innerHTML = '<svg viewBox="0 0 40 46"><path d="M13 5C13 3.3 14.3 2 16 2C17.7 2 19 3.3 19 5L19 16.5C19.6 16.2 20.3 16 21 16C22.7 16 24 17.2 24.3 18.6C24.9 18.2 25.6 18 26.4 18C28 18 29.3 19.2 29.6 20.6C30.2 20.2 30.9 20 31.6 20C33.5 20 35 21.5 35 23.4L35 31C35 37.1 30.1 42 24 42L21.6 42C18.6 42 15.8 40.6 14 38.2L6.3 28.3C5.2 26.9 5.5 24.9 6.9 23.9C8.2 22.9 10 23.1 11 24.3L13 26.8Z" fill="#fff" stroke="#151515" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 16.5V24M24.3 18.6V25M29.6 20.6V26" fill="none" stroke="#151515" stroke-width="1.5" stroke-linecap="round"/></svg>';
+        e.innerHTML = '<svg viewBox="0 0 40 46"><path d="M13 5C13 3.3 14.3 2 16 2C17.7 2 19 3.3 19 5L19 16.5C19.6 16.2 20.3 16 21 16C22.7 16 24 17.2 24.3 18.6C24.9 18.2 25.6 18 26.4 18C28 18 29.3 19.2 29.6 20.6C30.2 20.2 30.9 20 31.6 20C33.5 20 35 21.5 35 23.4L35 31C35 37.1 30.1 42 24 42L21.6 42C18.6 42 15.8 40.6 14 38.2L6.3 28.3C5.2 26.9 5.5 24.9 6.9 23.9C8.2 22.9 10 23.1 11 24.3L13 26.8Z" style="fill: var(--brand-clair); stroke: var(--brand-sombre);" stroke-width="1.7" stroke-linejoin="round"/><path d="M19 16.5V24M24.3 18.6V25M29.6 20.6V26" fill="none" style="stroke: var(--brand-sombre);" stroke-width="1.5" stroke-linecap="round"/></svg>';
         gsap.set(e.querySelector("svg"), { transformOrigin: "40% 4%" });
         return e;
       }
@@ -219,16 +222,19 @@
       gsap.set(panneau, { left: P.x, top: P.y });
       gsap.set(onglet, { left: P.x - 332, top: P.y + 76 - 44 });
       if (vertical) titre.style.fontSize = "84px";
-      gsap.set(titre, { left: T.x - 600, top: T.y - 79 });
+      gsap.set(titre, { left: T.x - 600, top: T.y - 93 });
       if (vertical) gsap.set(onglet, { opacity: 0 });
 
-      // L'interrupteur maître en gros plan, puis le recul : caméra (échelle, x, y) calculée pour que
-      // l'interrupteur maître tombe au même endroit de l'image qu'à l'origine.
+      // Le gros plan : tout le panneau à l'image, vu de près (chaque réglage se lit à plus de 28 px,
+      // le panneau prend la moitié du cadre ou plus), puis le recul. GP : le point du panneau posé
+      // en VG de l'image (en 9:16, l'interrupteur maître ; en 16:9, le milieu du panneau).
       var maitre = { x: P.x + 632 - 86, y: P.y + 76 };
-      var s0 = vertical ? 1.45 : 1.68;
-      var vise = vertical ? { x: 820, y: 430 } : { x: 1628, y: 307 };
-      var cam0 = { scale: s0, x: vise.x - L / 2 - s0 * (maitre.x - L / 2), y: vise.y - H / 2 - s0 * (maitre.y - H / 2) };
-      gsap.set(cam, cam0);
+      var s0 = vertical ? 1.45 : 1.5;
+      var GP = vertical ? [maitre.x, maitre.y] : [P.x + 316, P.y + 368], VG = vertical ? [820, 430] : [1326, 540];
+      gsap.set(cam, vers(s0, GP, VG));
+      // l'interrupteur maître à l'image au moment du clic (la caméra a déjà un peu dérivé)
+      var sClic = s0 * (1 + 0.04 * gsap.parseEase("sine.inOut")((0.95 - 0.05) / 2.1));
+      var vise = { x: VG[0] + sClic * (maitre.x - GP[0]), y: VG[1] + sClic * (maitre.y - GP[1]) };
 
       // Les rangs
       var hoteRangs = $("rangs"), inters = [];
@@ -257,13 +263,11 @@
       tl.to(hand, { x: L + 160, y: my + 260, duration: 0.6, ease: "power3.in" }, 2.05);
 
       // --- Le recul : le panneau part au bord, la phrase arrive ------------------------------
-      // Les cinq premières secondes se lisent sur une image stable : la caméra s'approche lentement,
-      // suit la cascade sans à-coup (aucun coup de caméra au clic), puis recule pour révéler la
-      // phrase (son apparition). Pendant que la phrase se lit, une dérive lente seulement (3,5 %) ;
-      // elle ne revient au plan large qu'une fois la phrase lue, pendant qu'elle sort (raccord scène 2).
-      var M = [maitre.x, maitre.y], V = [vise.x, vise.y];
-      recadre(0.05, s0 * 1.04, M, V, 1.35, "sine.inOut");
-      recadre(1.4, s0 * 1.04, M, [vise.x, vise.y - (vertical ? 90 : 160)], 0.75, "sine.inOut");
+      // Pendant qu'on lit les réglages, une dérive lente seulement (4 %, sine.inOut : aucun coup de
+      // caméra au clic, la main et les interrupteurs font le geste), puis un seul recul net, entre le
+      // panneau et la phrase. Pendant que la phrase se lit, une dérive lente (3,5 %) ; la caméra ne
+      // revient au plan large qu'une fois la phrase lue, pendant qu'elle sort (raccord scène 2).
+      recadre(0.05, s0 * 1.04, GP, VG, 2.1, "sine.inOut");
       tl.to(cam, { scale: 1, x: 0, y: 0, duration: 1.0, ease: "expo.inOut" }, 2.15);
       recadre(3.15, 1.035, [L / 2, H / 2], [L / 2 + (vertical ? 0 : 40), H / 2 + (vertical ? 30 : 0)], X - 3.2, "sine.inOut");
       recadre(X - 0.05, 1, [L / 2, H / 2], [L / 2, H / 2], 0.75, "expo.inOut");
@@ -284,13 +288,21 @@
       document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(construireTrait, construireTrait);
       function construireTrait() {
         // Une phrase trop large pour tenir entre le panneau et les membres se réduit.
-        var large = 0; lignes.forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, d.offsetLeft + d.offsetWidth - ms[0].offsetLeft); });
+        // (position d'un mot dans la phrase, même quand il est dans les mots clés)
+        var posX = function (el) { var v = 0; while (el && el !== titre) { v += el.offsetLeft; el = el.offsetParent; } return v; };
+        var large = 0; lignes.forEach(function (l) { var ms = l.querySelectorAll(".t05-mot"), d = ms[ms.length - 1]; large = Math.max(large, posX(d) + d.offsetWidth - posX(ms[0])); });
+        // (Elle ne rattrape qu'une police de marque plus large : une phrase trop longue du script ne
+        // se réduit pas, elle passe dans une scène construite dans le style.)
         var maxL = vertical ? L - 120 : 900;
         var fs0 = parseFloat(getComputedStyle(titre).fontSize);
         if (large > maxL) titre.style.fontSize = (fs0 * Math.max(maxL / large, 0.7)).toFixed(1) + "px";
+        gsap.set(titre, { top: T.y - titre.offsetHeight / 2 });
         var cleEl = titre.querySelector(".t05-cle");
+        if (!cleEl) { window.__timelines[ID] = tl; return; }   // rien à entourer : la phrase seule
         var x = cleEl.offsetLeft, y = cleEl.offsetTop, w = cleEl.offsetWidth, h = cleEl.offsetHeight; // relatifs à la phrase (son parent positionné)
-        var cx = x + w / 2, cy = y + h * 0.6, rx = w / 2 + 36, ry = h * 0.42 + 10, rng = K.rng(11), pts = [];
+        // la boucle passe dans l'air laissé avant les mots clés, sans toucher le mot voisin
+        var fsT = parseFloat(getComputedStyle(titre).fontSize), marge = Math.min(36, 0.4 * fsT);
+        var cx = x + w / 2, cy = y + h * 0.6, rx = w / 2 + marge, ry = h * 0.46 + 10, rng = K.rng(11), pts = [];
         // Entrée par la gauche sous la ligne (points 0 et 1), un tour complet avec un peu de
         // recouvrement (points 2 à 18), puis la queue qui continue de tourner et file hors de l'image
         // par le haut à droite (elle revient dans la scène 2).
@@ -302,7 +314,7 @@
         }
         // La queue passe à droite de la phrase (jamais à travers), puis monte hors de l'image.
         var mots1 = lignes[0].querySelectorAll(".t05-mot"), dernier = mots1[mots1.length - 1];
-        var droite = Math.max(dernier.offsetLeft + dernier.offsetWidth, cx + rx) + 70;
+        var droite = Math.max(posX(dernier) + dernier.offsetWidth, cx + rx) + 70;
         pts.push([cx + rx * 0.75, cy + ry * 1.25], [droite, cy + ry * 0.3], [droite + 70, y - 150], [droite + 10, -titre.offsetTop - 240]);
         boucle.setAttribute("d", chemin(pts));
         boucle.setAttribute("stroke", couleurTrait());

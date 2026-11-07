@@ -11,8 +11,7 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   la table « quel son pour quoi » dans `assets/sfx/sons-par-situation.md`) ; sinon ses propres MP3.
   Les 22 sons de démarrage du dossier
   (`assets/sfx/starter/`, index « à utiliser quand… » dans `sounds.md`, licence CC0) en dernier
-  recours : dans une vidéo de motion design, ils sonnent bon marché (retour du créateur,
-  12/10/2026) ; peu nombreux et bien placés, ils restent mieux que le silence.
+  recours : dans une vidéo de motion design, ils sonnent bon marché (retour du créateur) ; peu nombreux et bien placés, ils restent mieux que le silence.
 - **Musique** : toute vidéo en a une, c'est elle qui la porte (sans voix, les bruitages seuls
   sonnent maigres). Dans cet ordre : le morceau qu'il a donné (un fichier glissé ici, ou `musique`
   de `marque.json`, rangé dans `marque/`) ; sinon ses **musiques de lancement** (35 morceaux offerts
@@ -195,8 +194,8 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
 
 ### Sous une voix off
 
-Recherche du 03/11/2026 (normes de diffusion, tests d'écoute, studios d'explainer, plateformes) et
-essai de la vidéo de vente de Publicitaire IA. Oui, une musique sous toute voix off, mais une musique
+D'après une recherche (normes de diffusion, tests d'écoute, studios d'explainer, plateformes) et
+un essai sur une vraie vidéo de vente. Oui, une musique sous toute voix off, mais une musique
 qui travaille **en dessous** :
 
 - **L'écart, réglé tout seul par `sons`.** Pendant que la voix parle, la musique se tient à **18 LU**
@@ -224,7 +223,7 @@ qui travaille **en dessous** :
   (les plateformes réencodent le fichier).
 - **Un aperçu fait à la main** (un mélange ffmpeg pour faire écouter des musiques sous la voix) passe
   la voix mono en stéréo par `pan=stereo|c0=c0|c1=c0`, jamais `aformat` : `aformat` la joue 3 dB plus
-  bas que le rendu et fausse l'écart (essai du 03/11/2026 : des aperçus à 10 LU, trop forts).
+  bas que le rendu et fausse l'écart (des aperçus à 10 LU, trop forts).
 
 ## Les bruitages
 
@@ -234,7 +233,7 @@ qui travaille **en dessous** :
   6 s. Une série (les coches, les formats qui arrivent, les clics d'une démo) alterne deux ou trois
   sons voisins de la famille (`click-mouse-click`, `starter-click-mouse`, `click-mac-single`,
   `click-mouse-deep` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `starter-pop-mouth`). Ne répète
-  pas un son marquant (impact, riser, cha-ching). Retour du client du 07/11/2026 : « on répète le
+  pas un son marquant (impact, riser, cha-ching). Retour du créateur : « on répète le
   même bruitage plusieurs fois d'affilée, c'est un peu chiant ».
 - **Les sons qui trompent** : certains noms du pack cachent une rafale. `click-short-snap` n'est pas
   un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic

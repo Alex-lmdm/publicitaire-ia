@@ -623,7 +623,7 @@ def cmd_verifier(_a) -> None:
         ("dossier complet", (r / "produit.json").is_file() and (r / "tools" / "marque.py").is_file()),
         ("Python 3.9 ou plus", python_ok),
         ("skill studio", (r / ".claude" / "skills" / "studio" / "SKILL.md").is_file()),
-        ("skills HyperFrames", all((r / ".claude" / "skills" / s / "SKILL.md").is_file() for s in SKILLS_HYPERFRAMES)),
+        ("contrat des compositions", (r / ".claude" / "skills" / "studio" / "references" / "composition.md").is_file()),
         ("instructions de l'agent (CLAUDE.md, AGENTS.md)", (r / "CLAUDE.md").is_file() and (r / "AGENTS.md").is_file()),
         ("gabarits et kit des vidéos", (r / "templates" / "projet" / "index.html.tpl").is_file()
          and (r / "templates" / "kit" / "kit.js").is_file()),
@@ -660,9 +660,6 @@ def cmd_verifier(_a) -> None:
     print("ok" if ok else "à corriger")
     if not ok:
         sys.exit(1)
-
-
-SKILLS_HYPERFRAMES = ("hyperframes-core", "hyperframes-animation", "hyperframes-cli")
 
 
 def cmd_supports(_a) -> None:
@@ -1637,14 +1634,15 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
             "## Brief\n\n(le lien de sa page, l'objectif précis, le public, les supports, ses réponses et préférences, ce que la vidéo doit faire faire)\n",
             "## Repérage\n\n(l'univers de sa page, les surfaces à montrer, les logos, la matière qui manque : references/reperage.md)\n",
             "## Structure et angle retenus\n\n(à remplir après le choix du client)\n",
-            "## Script\n\n(les phrases à l'écran, numérotées, avec ce qu'on voit et leur tenue ; validé par le client "
-            "avant le style et la musique : references/ecriture.md, « Le script »)\n",
+            "## Script\n\n(le film en plans numérotés : ce qu'on voit se passer, puis les mots à l'écran (0 à 8), leur "
+            "tenue et la clé de OFFRE.json ; validé par le client avant le style et la musique : references/ecriture.md, "
+            "« Le film »)\n",
             "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
         lo, hi = s["ideal"]
         plan.append(f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {s['son']})\n\n"
-                    "| Temps | Bloc | Recette | À l'écran (texte exact) | Clé de OFFRE.json | Mouvement | Raccord | Son |\n"
+                    "| Temps | Bloc | Scène et moment signature | Ce qu'on voit | Mots à l'écran | Clé de OFFRE.json | Raccord | Son |\n"
                     "|---|---|---|---|---|---|---|---|\n")
     # Les défauts trouvés à la revue, une ligne chacun : relus avant chaque retouche, pour qu'une
     # correction n'en défasse pas une autre (d'après la liste d'interdits d'HyperFrames).
@@ -2242,6 +2240,71 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
             "figees": figees, "creux": creux[:5], "problemes": problemes}
 
 
+# Les scènes d'un film se suivent à des durées variées (une rafale courte, une démonstration longue) :
+# des plans tous de la même durée font un diaporama (onetake, « rhythm.md »). Et au plus un tiers des
+# raccords sont des coupes franches nues (un saut d'image sans rien qui bouge de part et d'autre) :
+# les autres passent par un objet, un flash, un volet (references/mouvement.md, « Les transitions »).
+DUREES_VARIATION_MIN = 0.25   # écart type / moyenne des durées des scènes, à partir de 4 scènes
+COUPE_NUE_PIC = 25.0          # écart d'image (0-255) d'un saut franc
+COUPE_NUE_VOISINS = 0.35      # un saut est nu quand les images voisines bougent moins que ça, en part du pic
+COUPES_NUES_MAX = 1 / 3
+
+
+def scenes_du_projet(projet: Path) -> list[tuple[float, float]]:
+    """(début, durée) des scènes de la piste principale d'index.html, dans l'ordre."""
+    try:
+        source = (projet / "index.html").read_text(encoding="utf-8")
+    except OSError:
+        return []
+    hotes = []
+    for m in re.finditer(r"<div\b[^>]*\bdata-composition-(?:src|file)=[^>]*>", source):
+        balise = m.group(0)
+
+        def attribut(nom: str) -> str | None:
+            t = re.search(rf'\b{nom}="([^"]*)"', balise)
+            return t.group(1) if t else None
+        try:
+            debut, duree = float(attribut("data-start") or ""), float(attribut("data-duration") or "")
+        except ValueError:
+            continue
+        hotes.append((attribut("data-track-index") or "0", debut, duree))
+    if not hotes:
+        return []
+    pistes: dict[str, int] = {}
+    for piste, _d, _l in hotes:
+        pistes[piste] = pistes.get(piste, 0) + 1
+    principale = max(pistes, key=pistes.get)
+    return sorted((d, l) for piste, d, l in hotes if piste == principale)
+
+
+def verdict_scenes(ecarts: list[float], scenes: list[tuple[float, float]], fps: int = RYTHME_FPS) -> list[str]:
+    """Les problèmes de montage : durées trop égales, trop de coupes franches nues."""
+    problemes = []
+    durees = [l for _d, l in scenes]
+    if len(durees) >= 4:
+        moyenne = sum(durees) / len(durees)
+        ecart_type = (sum((l - moyenne) ** 2 for l in durees) / len(durees)) ** 0.5
+        if moyenne and ecart_type / moyenne < DUREES_VARIATION_MIN:
+            problemes.append(f"les {len(durees)} scènes durent presque toutes {moyenne:.1f} s : varie (une rafale "
+                             "courte, une démonstration longue), sinon on dirait un diaporama")
+    raccords = [d for d, _l in scenes if d > 0]
+    nues = []
+    for d in raccords:
+        i = round(d * fps) - 1                       # ecarts[i] : de l'image i à l'image i + 1
+        fenetre = range(max(0, i - 1), min(len(ecarts), i + 2))
+        if not fenetre:
+            continue
+        pic = max(fenetre, key=lambda k: ecarts[k])
+        voisins = [ecarts[k] for k in (pic - 1, pic + 1) if 0 <= k < len(ecarts)]
+        if ecarts[pic] >= COUPE_NUE_PIC and all(x < COUPE_NUE_VOISINS * ecarts[pic] for x in voisins):
+            nues.append(d)
+    if raccords and len(nues) / len(raccords) > COUPES_NUES_MAX:
+        problemes.append(f"{len(nues)} raccords sur {len(raccords)} sont des coupes franches nues (à "
+                         + ", ".join(f"{d:.1f} s" for d in nues) + ") : au plus un tiers ; les autres passent "
+                         "par un objet qui devient le suivant, un flash, un volet")
+    return problemes
+
+
 def cmd_rythme(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -2249,12 +2312,17 @@ def cmd_rythme(a) -> None:
     meta = meta_de(Path(a.video)) or {}
     fin = FIN_LIBRE if not (SUPPORTS.get(meta.get("support") or "", {}).get("boucle")) else 0.0
     try:
-        v = verdict_rythme(ecarts_images(ffmpeg, Path(a.video)), fin_libre=fin)
+        ecarts = ecarts_images(ffmpeg, Path(a.video))
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    v = verdict_rythme(ecarts, fin_libre=fin)
+    projet = projet_de(Path(a.video))
+    scenes = scenes_du_projet(projet) if projet else []
+    if scenes:
+        v["problemes"] += verdict_scenes(ecarts, scenes)
     print(f"• {v['duree']:.1f} s · {v['evenements_par_s']:.2f} événement par seconde (≥ {EVENEMENTS_MIN:.1f}) · "
           f"écart médian {v['ecart_median']:.2f} s (≤ {ECART_MEDIAN_MAX}) · image figée : "
-          f"{sum(l for _d, l in v['figees']):.1f} s")
+          f"{sum(l for _d, l in v['figees']):.1f} s" + (f" · {len(scenes)} scènes" if scenes else ""))
     if v["creux"]:
         print("  plus longs creux à regarder : " + ", ".join(f"{d:.1f} s (+{l:.1f} s)" for d, l in v["creux"]))
     if v["problemes"]:
@@ -2398,6 +2466,115 @@ def cmd_palette(a) -> None:
               f"({', '.join(pl['couleurs'])})")
     print("→ chacun de ces instants est une vraie capture du client ou le logo d'un outil (ils gardent leurs "
           "couleurs) ; sinon il se corrige : jamais de teinte tirée de l'accent, ni d'image inventée.")
+    sys.exit(1)
+
+
+# ---------------------------------------------------------------------------
+# Le cadre, mesuré sur le MP4 rendu : le sujet remplit-il l'image ? Le défaut n°1 des vidéos
+# générées est un petit sujet au milieu d'un grand fond vide (liste des défauts interdits d'HyperFrames ;
+# relevé à l'audit du 07/11/2026 sur des vidéos qui respectaient pourtant la règle écrite). Chaque
+# image se découpe en cases ; une case est occupée quand assez de ses pixels s'écartent nettement du
+# fond (la couleur la plus fréquente de l'image) : une grille fine, une vignette ou un dégradé doux
+# restent sous l'écart, un texte, une interface, une capture ou un objet le dépassent.
+# ---------------------------------------------------------------------------
+CADRE_FPS, CADRE_GRAND_COTE, CADRE_CASE = 4, 224, 16
+CADRE_ECART = 32          # écart (0-255, sur le canal le plus éloigné) au-delà duquel un pixel n'est plus le fond
+CADRE_PART_CASE = 0.03    # part des pixels d'une case qui doit s'écarter du fond pour qu'elle soit occupée
+OCCUPATION_MIN = 0.15     # part des cases occupées sous laquelle l'image est presque vide
+# … sauf un mot héros : un bandeau qui couvre au moins 60 % de la largeur et 6 % de la hauteur (un mot
+# très grand qui traverse l'écran se tient seul ; une ligne de petit texte, non).
+HEROS_LARGEUR, HEROS_HAUTEUR = 0.6, 0.06
+CADRE_PLAGE_MIN = 1.0     # un instant presque vide se signale s'il dure au moins ça (s)
+
+
+def taille_cadre(largeur: int, hauteur: int) -> tuple[int, int]:
+    """La taille de lecture : le grand côté à CADRE_GRAND_COTE, les deux multiples d'une case."""
+    if largeur >= hauteur:
+        return CADRE_GRAND_COTE, max(CADRE_CASE, round(CADRE_GRAND_COTE * hauteur / largeur / CADRE_CASE) * CADRE_CASE)
+    return max(CADRE_CASE, round(CADRE_GRAND_COTE * largeur / hauteur / CADRE_CASE) * CADRE_CASE), CADRE_GRAND_COTE
+
+
+def occupation(img: bytes, w: int, h: int) -> float:
+    """Part des cases de l'image (rgb24, w × h) qui portent quelque chose d'autre que le fond ; un mot
+    héros (un bandeau assez large et assez haut) compte comme une image remplie."""
+    comptes: dict[int, int] = {}
+    for i in range(0, w * h * 3, 3):
+        cle = (img[i] >> 3) << 10 | (img[i + 1] >> 3) << 5 | (img[i + 2] >> 3)
+        comptes[cle] = comptes.get(cle, 0) + 1
+    fond = max(comptes, key=comptes.get)
+    fr, fg, fb = ((fond >> 10) & 31) * 8 + 4, ((fond >> 5) & 31) * 8 + 4, (fond & 31) * 8 + 4
+    cx, cy = w // CADRE_CASE, h // CADRE_CASE
+    cases, colonnes, rangs = [0] * (cx * cy), [0] * w, [0] * h
+    for p in range(w * h):
+        i = p * 3
+        if max(abs(img[i] - fr), abs(img[i + 1] - fg), abs(img[i + 2] - fb)) > CADRE_ECART:
+            x, y = p % w, p // w
+            colonnes[x] += 1
+            rangs[y] += 1
+            if x // CADRE_CASE < cx and y // CADRE_CASE < cy:
+                cases[(y // CADRE_CASE) * cx + x // CADRE_CASE] += 1
+    seuil = CADRE_PART_CASE * CADRE_CASE * CADRE_CASE
+    part = sum(1 for c in cases if c >= seuil) / max(1, len(cases))
+    if part < OCCUPATION_MIN and _etendue(colonnes) >= HEROS_LARGEUR and _etendue(rangs) >= HEROS_HAUTEUR:
+        return OCCUPATION_MIN
+    return part
+
+
+def _etendue(histogramme: list[int]) -> float:
+    """La part de l'axe qui contient 90 % de ce qui n'est pas le fond (5 % ôtés de chaque côté)."""
+    total = sum(histogramme)
+    if not total:
+        return 0.0
+    cumul, bas, haut = 0, None, None
+    for i, n in enumerate(histogramme):
+        cumul += n
+        if bas is None and cumul >= 0.05 * total:
+            bas = i
+        if haut is None and cumul >= 0.95 * total:
+            haut = i
+    return (haut - bas + 1) / len(histogramme)
+
+
+def verdict_cadre(occupations: list[float], fps: int = CADRE_FPS) -> dict:
+    """Les plages où l'image est presque vide, et l'occupation médiane."""
+    plages, debut = [], None
+    for i, occ in enumerate(occupations + [1.0]):
+        if occ < OCCUPATION_MIN:
+            debut = i if debut is None else debut
+        elif debut is not None:
+            if (i - debut) / fps >= CADRE_PLAGE_MIN:
+                plages.append({"debut": round(debut / fps, 1), "fin": round(i / fps, 1),
+                               "occupation": round(min(occupations[debut:i]), 2)})
+            debut = None
+    trie = sorted(occupations)
+    return {"images": len(occupations), "mediane": round(trie[len(trie) // 2], 2) if trie else 0.0,
+            "plages": plages}
+
+
+def cmd_cadre(a) -> None:
+    ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
+    if not ffmpeg or not ffprobe:
+        sys.exit("ERREUR : ffmpeg ou ffprobe introuvable.")
+    video = Path(a.video)
+    flux = next((f for f in _sonder(ffprobe, video).get("streams", []) if f.get("codec_type") == "video"), None)
+    if not flux:
+        sys.exit("ERREUR : aucune image dans ce fichier.")
+    w, h = taille_cadre(int(flux["width"]), int(flux["height"]))
+    try:
+        images = images_rgb(ffmpeg, video, fps=CADRE_FPS, taille=(w, h))
+    except RuntimeError as e:
+        sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    v = verdict_cadre([occupation(img, w, h) for img in images])
+    print(f"• le sujet occupe {v['mediane'] * 100:.0f} % de l'image en général (presque vide sous "
+          f"{OCCUPATION_MIN * 100:.0f} %)")
+    if not v["plages"]:
+        print("ok : aucun instant presque vide (regarde quand même la planche : remplir n'est pas montrer).")
+        return
+    for pl in v["plages"]:
+        print(f"✗ {pl['debut']:.1f} → {pl['fin']:.1f} s : l'image est presque vide ({pl['occupation'] * 100:.0f} % "
+              "occupé) : un petit sujet au milieu d'un grand fond")
+    print("→ approche la caméra, agrandis le sujet, ou donne-lui un monde (sa page derrière, ses résultats "
+          "autour) : references/image.md, « Le cadre ».")
     sys.exit(1)
 
 
@@ -3644,7 +3821,7 @@ def cmd_livrer(a) -> None:
 # Les fichiers et dossiers que chaque commande lit : absents, on le dit tout de suite, au lieu d'une
 # « vidéo muette » ou d'une erreur Python brute plus loin.
 ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
-           "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "planche": ("video",), "relecture": ("video",), "musique": ("entree",),
+           "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "cadre": ("video",), "planche": ("video",), "relecture": ("video",), "musique": ("entree",),
            "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
            "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
            "livrer": ("dossier",)}
@@ -3769,6 +3946,9 @@ def main(argv: list[str] | None = None) -> None:
     pa = s.add_parser("palette", help="Vérifie que le MP4 reste dans les couleurs de la marque (plus noir, blanc et gris).")
     pa.add_argument("video")
     pa.set_defaults(f=cmd_palette)
+    ca = s.add_parser("cadre", help="Relève les instants où l'image est presque vide (un petit sujet au milieu d'un grand fond).")
+    ca.add_argument("video")
+    ca.set_defaults(f=cmd_cadre)
     pl = s.add_parser("planche", help="Planche de contrôle avec les zones dessinées.")
     pl.add_argument("video")
     pl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")

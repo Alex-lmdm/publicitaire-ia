@@ -832,8 +832,8 @@ TOKENS = """/* Style de la marque : FICHIER GÉNÉRÉ depuis marque.json par `st
   --brand-gris-3: {gris_3};
   --brand-gris-4: {gris_4};
 
-  --brand-font-display: "{titres}", "Arial Narrow", Impact, sans-serif;
-  --brand-font-body: "{corps}", "Avenir Next", Arial, system-ui, sans-serif;
+  --brand-font-display: "{titres}", sans-serif;
+  --brand-font-body: "{corps}", Arial, sans-serif;
   --brand-font-mono: ui-monospace, "Courier New", monospace;
 
   --brand-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);

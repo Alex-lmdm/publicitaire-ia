@@ -3,29 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°1 « CARTES PIXELS » · SCÈNE 1 : LE BRUIT (le problème) · 5,5 s
+    STYLE N°1 « CARTES PIXELS » · SCÈNE : LE BRUIT (le problème) · 5,5 s
     Ce que la scène montre : sur la grille claire, une carte de discussion sombre. La question du
     prospect se tape dans le champ, part dans une bulle, la réponse arrive... et derrière elle un mur
-    de cartes grises et floues se lève (le bruit : mille conseils qui se contredisent), pendant que
-    la caméra pousse vers la carte. Une étiquette blanche dit le problème en 3 mots.
+    de cartes grises et floues se lève (le bruit : mille conseils qui se contredisent). Une étiquette
+    blanche dit le problème en 2 à 4 mots. Caméra : un recul d'entrée, un seul recadrage quand la
+    question part (entre deux phrases), puis une dérive lente (5 %) pendant la lecture.
     Format : 16:9 (1920 × 1080) par défaut ; en 9:16, mets data-width="1080" data-height="1920"
-    ici et sur l'hôte : la mise en page vertical se règle seule (classe t01-vertical).
+    ici et sur l'hôte : la mise en page verticale se règle seule (classe t01-vertical).
     Sortie : la scène finit pleine de bruit. Pose t01-raccord-pixels par-dessus la coupe.
 
-    À REMPLACER :
-     1. L'id « t01-bruit » (racine : data-composition-id et id de .k-scene, constante ID du script,
-        préfixe des sélecteurs CSS) par l'id de la scène, et data-duration si tu changes D.
-     2. QUESTION : la question que se pose le prospect (celle de la page de vente, sinon du client).
-     3. REPONSE : 3 lignes courtes, une réponse qui noie le prospect (jamais un chiffre inventé).
-     4. BRUIT : 10 à 14 phrases que le prospect entend partout dans le domaine de l'offre, chacune
-        avec 1 ou 2 mots en <b> (ils ressortent plus foncés). Rien de vrai à prouver : c'est le décor.
-     5. Les textes de l'étiquette : ETIQUETTE (« [ 01 · LE PROBLÈME ] ») et TITRE (2 à 4 mots ;
-        le dernier mot porte le surlignage à la couleur de la marque).
-    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée
-    (noir à 3 %), la grille et les cases des noirs en transparence ; la carte sombre est sa nuit
-    (var(--brand-sombre)), ses bulles et son champ des blancs en transparence posés dessus ; l'accent
-    est var(--brand-accent), toujours plein. Un accent clair (jaune...) est détecté : les traits
-    passent à l'encre, l'accent reste en aplat.
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t01-bruit » (racine :
+    data-composition-id et id de .k-scene, constante ID, préfixe des sélecteurs CSS).
+    Tailles : la question, la réponse et l'étiquette font 28 à 30 px au moins (le plancher de
+    lecture) ; « Réponse », l'invite du champ, le mur de bruit et la frappe dans le champ (un geste :
+    la question se lit dans sa bulle, 4 s) sont de la texture (data-layout-ignore).
+    Couleurs : celles de sa marque, rien d'autre : le papier est son clair (var(--brand-clair)) à
+    peine grisé par un noir à 3 %, la grille des noirs en transparence ; la carte sombre est sa nuit
+    (var(--brand-sombre)), sa bulle, sa réponse et son champ ses gris (var(--brand-gris-1) et 2) ;
+    l'accent est var(--brand-accent), toujours plein.
   -->
 </head>
 <body>
@@ -43,55 +39,57 @@
     background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
   #t01-bruit .t01-case { position: absolute; width: 178px; height: 178px; background: rgba(0, 0, 0, 0.032); }
   #t01-bruit .t01-sol { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; overflow: hidden;
-    font: 400 15px/18px var(--t01-mono); color: rgba(0, 0, 0, 0.13); white-space: pre; letter-spacing: 3px; }
-  /* Le mur de bruit, derrière la carte. */
+    font: 400 15px/18px var(--t01-mono); color: var(--brand-gris-4); white-space: pre; letter-spacing: 3px; }
+  /* Le mur de bruit, derrière la carte (de la texture : flou, jamais lu). */
   #t01-bruit .t01-mur { position: absolute; left: 0; top: 0; }
   #t01-bruit .t01-bruit { position: absolute; width: 430px; height: 168px; border-radius: 20px; padding: 22px 26px; overflow: hidden;
-    background: #fbfbfb; box-shadow: 0 0 0 1px #ededed, 0 10px 30px rgba(0,0,0,.05);
-    font: 400 20px/30px "Inter", var(--brand-font-body); color: #a9a9a9; letter-spacing: -0.01em; }
-  #t01-bruit .t01-bruit b { font-weight: 500; color: #5f5f5f; }
+    background: var(--brand-clair); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.05);
+    font: 400 20px/30px "Inter", var(--brand-font-body); color: var(--brand-gris-3); letter-spacing: -0.01em; }
+  #t01-bruit .t01-bruit b { font-weight: 500; color: var(--brand-gris-2); }
   /* La carte de discussion sombre. */
-  #t01-bruit .t01-carte { position: absolute; left: 50%; top: 50%; width: 700px; height: 430px; margin: -195px 0 0 -350px;
-    border-radius: 26px; background: var(--t01-encre); box-shadow: 0 40px 80px rgba(0,0,0,.22), 0 10px 24px rgba(0,0,0,.18);
-    font-family: "Inter", var(--brand-font-body); color: #fff; overflow: hidden; }
-  #t01-bruit .t01-bulle { position: absolute; top: 28px; right: 28px; max-width: 470px; padding: 15px 20px; border-radius: 16px;
-    background: rgba(255, 255, 255, 0.22); font: 500 22px/1.3 "Inter", var(--brand-font-body); color: #fff; white-space: nowrap; }
-  #t01-bruit .t01-qui { position: absolute; left: 30px; top: 112px; display: flex; align-items: center; gap: 10px;
-    font: 600 18px/1 "Inter", var(--brand-font-body); color: rgba(255, 255, 255, 0.62); }
-  #t01-bruit .t01-pix { width: 16px; height: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  #t01-bruit .t01-carte { position: absolute; left: 50%; top: 50%; width: 900px; height: 540px; margin: -250px 0 0 -450px;
+    border-radius: 30px; background: var(--t01-encre); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.22), 0 10px 24px rgba(0, 0, 0, 0.18);
+    font-family: "Inter", var(--brand-font-body); color: var(--brand-clair); overflow: hidden; }
+  #t01-bruit .t01-bulle { position: absolute; top: 30px; right: 30px; max-width: 640px; padding: 18px 26px; border-radius: 20px;
+    background: var(--brand-gris-2); font: 500 30px/1.25 "Inter", var(--brand-font-body); color: var(--brand-clair); white-space: nowrap; }
+  #t01-bruit .t01-qui { position: absolute; left: 34px; top: 132px; display: flex; align-items: center; gap: 12px;
+    font: 600 22px/1 "Inter", var(--brand-font-body); color: var(--brand-gris-4); }
+  #t01-bruit .t01-pix { width: 18px; height: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
   #t01-bruit .t01-pix i { display: block; background: var(--brand-accent); }
-  #t01-bruit .t01-points { position: absolute; left: 32px; top: 152px; display: flex; gap: 7px; }
-  #t01-bruit .t01-points i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, 0.45); display: block; }
-  #t01-bruit .t01-rep { position: absolute; left: 30px; right: 30px; top: 146px; padding: 16px 18px; border-radius: 14px;
-    background: rgba(255, 255, 255, 0.1); font: 400 21px/31px "Inter", var(--brand-font-body); color: #ececec; }
-  #t01-bruit .t01-rep div { height: 31px; white-space: nowrap; }
-  #t01-bruit .t01-champ { position: absolute; left: 20px; right: 20px; bottom: 20px; height: 62px; border-radius: 16px;
-    background: rgba(255, 255, 255, 0.14); display: flex; align-items: center; padding: 0 20px;
-    font: 400 21px/1 "Inter", var(--brand-font-body); color: #fff; }
-  #t01-bruit .t01-place { position: absolute; left: 20px; top: 21px; color: rgba(255, 255, 255, 0.66); }
+  #t01-bruit .t01-points { position: absolute; left: 36px; top: 184px; display: flex; gap: 8px; }
+  #t01-bruit .t01-points i { width: 11px; height: 11px; border-radius: 50%; background: var(--brand-gris-3); display: block; }
+  #t01-bruit .t01-rep { position: absolute; left: 34px; right: 34px; top: 176px; padding: 18px 24px; border-radius: 18px;
+    background: var(--brand-gris-1); font: 400 30px/44px "Inter", var(--brand-font-body); color: var(--brand-clair); }
+  #t01-bruit .t01-rep div { height: 44px; white-space: nowrap; }
+  #t01-bruit .t01-champ { position: absolute; left: 24px; right: 24px; bottom: 24px; height: 86px; border-radius: 20px;
+    background: var(--brand-gris-1); display: flex; align-items: center; padding: 0 26px;
+    font: 400 30px/1 "Inter", var(--brand-font-body); color: var(--brand-clair); }
+  #t01-bruit .t01-place { position: absolute; left: 26px; top: 28px; color: var(--brand-gris-4); }
   #t01-bruit .t01-tape { position: relative; white-space: nowrap; }
-  #t01-bruit .t01-envoi { position: absolute; right: 12px; top: 12px; width: 38px; height: 38px; border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4); color: var(--t01-encre); padding: 9px; }
+  #t01-bruit .t01-envoi { position: absolute; right: 16px; top: 16px; width: 54px; height: 54px; border-radius: 50%; overflow: hidden;
+    background: var(--brand-gris-3); color: var(--t01-encre); }
+  #t01-bruit .t01-envoi i { position: absolute; inset: 0; background: var(--brand-clair); opacity: 0; }
+  #t01-bruit .t01-envoi svg { position: absolute; left: 50%; top: 50%; width: 28px; height: 28px; margin: -14px 0 0 -14px; }
   /* L'étiquette du problème, en haut à gauche, sur la grille. */
-  #t01-bruit .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
-    letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
+  #t01-bruit .t01-label { position: absolute; left: 96px; top: 66px; font: 500 28px/1 var(--t01-mono);
+    letter-spacing: .14em; color: var(--brand-gris-2); white-space: pre; z-index: 40; }
   #t01-bruit .t01-titre { position: absolute; left: 96px; top: 112px; z-index: 40; display: flex; align-items: baseline; gap: 18px;
-    padding: 20px 30px 24px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px rgba(0,0,0,.08);
+    padding: 20px 30px 24px; border-radius: 18px; background: var(--brand-clair); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 18px 40px rgba(0, 0, 0, 0.08);
     font-family: var(--brand-font-display); font-size: 66px; line-height: 1; letter-spacing: -0.03em; white-space: pre; }
-  #t01-bruit .t01-leger { font-weight: 400; color: #8a8a8a; }
-  #t01-bruit .t01-fort { font-weight: 700; color: var(--t01-encre); padding: 4px 12px 8px; margin: -4px 0 -8px; border-radius: 10px;
+  #t01-bruit .t01-leger { font-weight: 400; color: var(--brand-gris-2); }
+  #t01-bruit .t01-fort { font-weight: 700; padding: 4px 12px 8px; margin: -4px 0 -8px; border-radius: 10px;
     background: var(--brand-accent); color: var(--brand-contrast); }
   /* Vertical (9:16) : la même scène remise en page. */
-  #t01-bruit.t01-vertical .t01-carte { width: 880px; height: 520px; margin: -230px 0 0 -440px; }
-  #t01-bruit.t01-vertical .t01-bulle { font-size: 26px; max-width: 600px; }
-  #t01-bruit.t01-vertical .t01-rep { font-size: 25px; line-height: 36px; top: 160px; }
-  #t01-bruit.t01-vertical .t01-rep div { height: 36px; }
-  #t01-bruit.t01-vertical .t01-qui { top: 122px; font-size: 21px; }
-  #t01-bruit.t01-vertical .t01-points { top: 168px; }
-  #t01-bruit.t01-vertical .t01-champ { height: 74px; font-size: 25px; }
-  #t01-bruit.t01-vertical .t01-place { top: 25px; }
-  #t01-bruit.t01-vertical .t01-envoi { width: 46px; height: 46px; top: 14px; }
-  #t01-bruit.t01-vertical .t01-label { left: 100px; top: 314px; font-size: 24px; }
+  #t01-bruit.t01-vertical .t01-carte { width: 920px; height: 600px; margin: -270px 0 0 -460px; }
+  #t01-bruit.t01-vertical .t01-bulle { font-size: 34px; max-width: 680px; }
+  #t01-bruit.t01-vertical .t01-rep { font-size: 34px; line-height: 48px; top: 188px; }
+  #t01-bruit.t01-vertical .t01-rep div { height: 48px; }
+  #t01-bruit.t01-vertical .t01-qui { top: 140px; }
+  #t01-bruit.t01-vertical .t01-points { top: 196px; }
+  #t01-bruit.t01-vertical .t01-champ { height: 94px; font-size: 34px; }
+  #t01-bruit.t01-vertical .t01-place { top: 30px; }
+  #t01-bruit.t01-vertical .t01-envoi { top: 18px; width: 58px; height: 58px; }
+  #t01-bruit.t01-vertical .t01-label { left: 100px; top: 306px; font-size: 30px; }
   #t01-bruit.t01-vertical .t01-titre { left: 100px; top: 354px; font-size: 76px; }
 </style>
 
@@ -104,13 +102,13 @@
       <div class="t01-mur" id="t01-bruit-mur" data-layout-ignore></div>
       <div class="t01-carte" id="t01-bruit-carte">
         <div class="t01-bulle" id="t01-bruit-bulle"></div>
-        <div class="t01-qui" id="t01-bruit-qui"><span class="t01-pix"><i></i><i></i><i></i><i></i></span><span>Réponse</span></div>
+        <div class="t01-qui" id="t01-bruit-qui" data-layout-ignore><span class="t01-pix"><i></i><i></i><i></i><i></i></span><span id="t01-bruit-qui-nom"></span></div>
         <div class="t01-points" id="t01-bruit-points"><i></i><i></i><i></i></div>
-        <div class="t01-rep" id="t01-bruit-rep"><div></div><div></div><div></div></div>
+        <div class="t01-rep" id="t01-bruit-rep"></div>
         <div class="t01-champ" id="t01-bruit-champ">
-          <span class="t01-place" id="t01-bruit-place">Pose ta question…</span>
-          <span class="t01-tape" id="t01-bruit-tape"></span>
-          <span class="t01-envoi" id="t01-bruit-envoi"></span>
+          <span class="t01-place" id="t01-bruit-place" data-layout-ignore></span>
+          <span class="t01-tape" id="t01-bruit-tape" data-layout-ignore></span>
+          <span class="t01-envoi" id="t01-bruit-envoi"><i></i></span>
         </div>
       </div>
     </div></div>
@@ -121,28 +119,30 @@
 
 <script>
   (function () {
-    var ID = "t01-bruit", D = 5.5;
-    // ---- Les textes à remplacer ----------------------------------------------------------
-    var QUESTION = "Par où je commence ?";
-    var REPONSE = ["Ça dépend.", "Il existe des dizaines de méthodes,", "et chacune contredit la précédente."];
-    var BRUIT = [
-      "Poste <b>tous les jours</b>, sans exception.", "Une <b>seule vidéo</b> par semaine suffit.",
-      "Fais de la <b>pub</b> dès le premier jour.", "Surtout, <b>pas de pub</b> au début.",
-      "Il te faut une <b>newsletter</b>.", "Les <b>emails</b>, c'est terminé.",
-      "<b>Baisse</b> ton prix pour vendre.", "<b>Monte</b> ton prix, tu vendras plus.",
-      "Copie <b>ce qui marche</b> chez les autres.", "Sois <b>unique</b>, ne copie personne.",
-      "Lance-toi sur <b>TikTok</b> maintenant.", "Reste sur <b>Instagram</b>, c'est mieux."
-    ];
-    var ETIQUETTE = "[ 01 · LE PROBLÈME ]", TITRE = ["Trop de", "bruit."];
-    // ----------------------------------------------------------------------------------------
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      etiquette: "[ 01 · LE PROBLÈME ]",     // le label du chapitre
+      titre: ["Trop de", "bruit."],          // 2 à 4 mots ; le dernier porte le surlignage
+      question: "Par où je commence ?",      // la vraie question du prospect (sa page, ou le client)
+      reponse: ["Ça dépend.", "Des dizaines de méthodes,", "toutes contradictoires."],   // 2 ou 3 lignes courtes qui le noient, jamais un chiffre inventé
+      bruit: [                               // 10 à 14 phrases entendues partout dans son domaine : le décor flou, rien à prouver
+        "Poste <b>tous les jours</b>, sans exception.", "Une <b>seule vidéo</b> par semaine suffit.",
+        "Fais de la <b>pub</b> dès le premier jour.", "Surtout, <b>pas de pub</b> au début.",
+        "Il te faut une <b>newsletter</b>.", "Les <b>emails</b>, c'est terminé.",
+        "<b>Baisse</b> ton prix pour vendre.", "<b>Monte</b> ton prix, tu vendras plus.",
+        "Copie <b>ce qui marche</b> chez les autres.", "Sois <b>unique</b>, ne copie personne.",
+        "Lance-toi sur <b>TikTok</b> maintenant.", "Reste sur <b>Instagram</b>, c'est mieux."
+      ],
+      qui: "Réponse", invite: "Pose ta question…"   // l'interface de la carte, dans la langue du client
+    };
 
+    var ID = "t01-bruit", D = 5.5;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
     if (vertical) racine.classList.add("t01-vertical");
 
-    // Palette : l'encre est sa nuit (var(--brand-sombre), en CSS) ; un accent clair passe en aplat seul.
+    // Palette : un accent clair (jaune, vert pâle…) ne fait que des aplats, jamais un trait.
     var rgb = function (css) {
       var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
       var m = (getComputedStyle(e).color.match(/[\d.]+/g) || [0, 0, 0]).map(Number); racine.removeChild(e); return m;
@@ -200,10 +200,10 @@
     var nc = vertical ? 3 : 5, nl = vertical ? 12 : 7;
     var largeurMur = nc * lc + (nc - 1) * ec, hauteurMur = nl * hc + (nl - 1) * ec;
     var x0 = (L - largeurMur) / 2, y0 = (H - hauteurMur) / 2 + 60;
-    var cartes = [];
+    var cartes = [], B = EXEMPLE.bruit;
     for (var l = 0; l < nl; l++) for (var c = 0; c < nc; c++) {
-      var k = (l * nc + c) % BRUIT.length;
-      var e = K.el(mur, "div", "t01-bruit", BRUIT[k] + " " + BRUIT[(k + 5) % BRUIT.length] + " " + BRUIT[(k + 9) % BRUIT.length]);
+      var k = (l * nc + c) % B.length;
+      var e = K.el(mur, "div", "t01-bruit", B[k] + " " + B[(k + 5) % B.length] + " " + B[(k + 9) % B.length]);
       var cx = x0 + c * (lc + ec) + lc / 2, cy = y0 + l * (hc + ec) + hc / 2;
       e.style.left = (cx - lc / 2) + "px"; e.style.top = (cy - hc / 2) + "px";
       var dist = Math.min(1, Math.hypot((cx - L / 2) / (L / 2), (cy - H / 2) / (H / 2)) / 1.2);
@@ -219,16 +219,16 @@
     tl.fromTo(mur, { y: 0 }, { y: -(hc + ec), duration: 3.6, ease: "power1.inOut" }, 1.9);
 
     // La carte sombre : elle est déjà là à la première image, puis la question se tape et part.
-    q("#t01-bruit-envoi").innerHTML = K.ic("arrow-up");
+    q("#t01-bruit-qui-nom").textContent = EXEMPLE.qui;
+    q("#t01-bruit-place").textContent = EXEMPLE.invite;
+    q("#t01-bruit-envoi").insertAdjacentHTML("beforeend", K.ic("arrow-up"));
     tl.fromTo("#t01-bruit-carte", { scale: 0.9 }, { scale: 1, duration: 0.7, ease: "expo.out" }, 0);
-    tl.fromTo("#t01-bruit-cam", { scale: 0.82, y: 30 }, { scale: 1, y: 0, duration: 0.8, ease: "expo.out" }, 0);
-    tl.to("#t01-bruit-cam", { scale: 1.06, y: 24, duration: 0.45, ease: "expo.out" }, 1.06);
-    K.taper(tl, q("#t01-bruit-tape"), QUESTION, 0.25, 0.95, D);
+    K.taper(tl, q("#t01-bruit-tape"), EXEMPLE.question, 0.25, 0.95, D);
     tl.set("#t01-bruit-place", { opacity: 0 }, 0.25).set("#t01-bruit-place", { opacity: 1 }, 1.08);
     tl.set("#t01-bruit-tape", { opacity: 0 }, 1.08);
-    tl.fromTo("#t01-bruit-envoi", { backgroundColor: "rgba(255,255,255,.45)" }, { backgroundColor: "#ffffff", duration: 0.15 }, 0.95);
+    tl.to("#t01-bruit-envoi i", { opacity: 1, duration: 0.15 }, 0.95);
     tl.to("#t01-bruit-envoi", { scale: 0.86, duration: 0.07, yoyo: true, repeat: 1 }, 1.02);
-    var bulle = q("#t01-bruit-bulle"); bulle.textContent = QUESTION;
+    var bulle = q("#t01-bruit-bulle"); bulle.textContent = EXEMPLE.question;
     K.cacher(bulle);
     tl.fromTo(bulle, { opacity: 0, y: 70, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 1.08);
     K.cacher(["#t01-bruit-qui", "#t01-bruit-points", "#t01-bruit-rep"]);
@@ -238,20 +238,23 @@
       tl.fromTo(p, { opacity: 0.25 }, { opacity: 1, duration: 0.12, yoyo: true, repeat: 2, ease: "none" }, 1.4 + i * 0.07);
     });
     tl.fromTo("#t01-bruit-rep", { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 1.78);
-    var lignesRep = racine.querySelectorAll("#t01-bruit-rep div");
-    REPONSE.forEach(function (txt, i) { K.taper(tl, lignesRep[i], txt, 1.8 + i * 0.3, 2.05 + i * 0.3, D); });
+    var rep = q("#t01-bruit-rep");
+    EXEMPLE.reponse.forEach(function (txt, i) { K.taper(tl, K.el(rep, "div"), txt, 1.8 + i * 0.3, 2.05 + i * 0.3, D); });
 
-    // La caméra pousse vers la carte pendant que le bruit monte.
-    tl.to("#t01-bruit-cam", { scale: vertical ? 1.14 : 1.22, y: vertical ? -20 : -14, duration: 3.4, ease: "power2.inOut" }, 1.9);
+    // La caméra : un recul d'entrée, un seul recadrage quand la question part (entre deux phrases),
+    // puis une dérive lente pendant toute la lecture (5 %, sine.inOut), jamais de pas.
+    tl.fromTo("#t01-bruit-cam", { scale: 0.86, y: 30 }, { scale: 1, y: 0, duration: 0.8, ease: "expo.out" }, 0);
+    tl.to("#t01-bruit-cam", { scale: 1.05, y: 16, duration: 0.45, ease: "expo.out" }, 1.06);
+    tl.to("#t01-bruit-cam", { scale: 1.1, y: 6, duration: D - 1.6, ease: "sine.inOut" }, 1.6);
 
-    // L'étiquette : le label se décode, le titre arrive dans sa carte blanche.
-    decoder(q("#t01-bruit-label"), ETIQUETTE, 0.1, 0.55);
+    // L'étiquette : le label se décode, le titre arrive dans sa carte blanche (lu 2 s avant le raccord).
+    decoder(q("#t01-bruit-label"), EXEMPLE.etiquette, 0.1, 0.55);
     K.cacher("#t01-bruit-titre");
-    tl.fromTo("#t01-bruit-titre", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 2.35);
-    decoder(q("#t01-bruit-t1"), TITRE[0], 2.4, 0.4);
-    decoder(q("#t01-bruit-t2"), TITRE[1], 2.6, 0.45);
-    tl.fromTo("#t01-bruit-t2", { scaleX: 0.6, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: "expo.out" }, 2.6);
-    tl.to("#t01-bruit-titre", { y: -6, duration: 2.4, ease: "sine.inOut" }, 3.0);
+    tl.fromTo("#t01-bruit-titre", { opacity: 0, y: 26, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }, 2.1);
+    decoder(q("#t01-bruit-t1"), EXEMPLE.titre[0], 2.15, 0.4);
+    decoder(q("#t01-bruit-t2"), EXEMPLE.titre[1], 2.35, 0.45);
+    tl.fromTo("#t01-bruit-t2", { scaleX: 0.6, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: "expo.out" }, 2.35);
+    tl.to("#t01-bruit-titre", { y: -6, duration: D - 2.8, ease: "sine.inOut" }, 2.8);
 
     window.__timelines[ID] = tl;
   })();

@@ -1,0 +1,323 @@
+<!-- Scène prête « Le schéma qui se trace » (montrer comment ça marche : scenes.md, recette 12).
+     Le nœud de l'offre au centre, ce qui entre (1 à 3 nœuds) et ce qui sort (2 à 4 nœuds), chacun avec
+     son icône ou le logo de son outil ; les liens se tracent, le fil conducteur (le point de sa
+     couleur) les parcourt ; chaque nœud reçoit (un petit coup d'échelle) et se coche ; une ligne
+     d'appui (ou un mot héros) posée au-dessus, un de ses mots surligné à la fin. Sortie : la caméra
+     plonge dans le nœud de l'offre, sa couleur couvre l'écran (raccord : la scène suivante peut
+     partir de l'aplat). Se met en page seule en 9:16 (ce qui entre en tuiles, ce qui sort en liste
+     sur une branche) et en 16:9 (trois colonnes), d'après K.cadre.
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (environ 4,4 s avec 2 entrées
+     et 3 sorties, 0,25 s de plus par sortie ; plus longue, le schéma se tient et la plongée finit sur
+     la dernière image ; trop courte, `check` relève des mots partis avant d'être lus et la console
+     de l'aperçu dit la durée à mettre), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « schema » par un autre identifiant. -->
+<template>
+  <style>
+    #schema {
+      --sch-noeud: var(--brand-surface); --sch-texte: var(--brand-clair); --sch-icone: var(--brand-accent);
+      --sch-bord: var(--brand-gris-1); --sch-titre: var(--brand-clair); --sch-ombre: var(--k-ombre);
+    }
+    #schema.sch-clair {
+      --sch-noeud: var(--brand-clair); --sch-texte: var(--k-encre); --sch-icone: var(--k-encre);
+      --sch-bord: var(--brand-gris-4); --sch-titre: var(--k-encre); --sch-ombre: var(--k-ombre-claire);
+    }
+    #schema.sch-clair .k-lien { stroke: var(--k-encre); }
+    #schema.sch-clair .k-fil { box-shadow: 0 0 0 5px var(--k-encre); }
+    #schema .sch-noeud {
+      position: absolute; display: flex; align-items: center; border-radius: 26px;
+      background: var(--sch-noeud); color: var(--sch-texte); box-shadow: var(--sch-ombre), inset 0 0 0 2px var(--sch-bord);
+      font-family: var(--brand-font-body); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1; white-space: nowrap;
+    }
+    /* Ce qui sort arrive en clair sur la nuit (en sombre sur le clair) : le résultat se voit d'un coup. */
+    #schema .sch-sortie { background: var(--brand-clair); color: var(--k-encre); box-shadow: var(--sch-ombre); }
+    #schema.sch-clair .sch-sortie { background: var(--brand-sombre); color: var(--brand-clair); }
+    #schema .sch-sortie .sch-ic { color: var(--k-encre); }
+    #schema.sch-clair .sch-sortie .sch-ic { color: var(--brand-accent); }
+    #schema .sch-tuile { flex-direction: column; justify-content: center; text-align: center; border-radius: 30px; }
+    #schema .sch-centre {
+      background: var(--brand-accent); color: var(--brand-contrast); box-shadow: var(--sch-ombre);
+      font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; border-radius: 32px;
+    }
+    #schema .sch-ic { flex: none; display: grid; place-items: center; color: var(--sch-icone); }
+    #schema .sch-centre .sch-ic { color: var(--brand-contrast); }
+    #schema .sch-ic svg { width: 100%; height: 100%; display: block; }
+    #schema .sch-nom { flex: 1; }
+    #schema .sch-coche {
+      flex: none; display: grid; place-items: center; border-radius: 50%;
+      background: var(--brand-accent); color: var(--brand-contrast);
+    }
+    #schema .sch-centre .sch-coche { background: var(--brand-contrast); color: var(--brand-accent); }
+    #schema .sch-coche svg { width: 62%; height: 62%; }
+    #schema .sch-tuile .sch-coche { position: absolute; right: -12px; top: -12px; }
+    #schema .sch-titre { position: absolute; color: var(--sch-titre); white-space: nowrap; }
+    #schema .sch-appui { font-family: var(--brand-font-body); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+    #schema .sch-titre .k-mot { margin-right: 0.24em; }
+  </style>
+  <div data-composition-id="schema" data-width="1080" data-height="1920" data-duration="4.4" style="position:absolute; inset:0;">
+    <div id="schema" class="k-scene">
+      <div id="schema-fond" class="k-fond k-fond-sombre"></div>
+      <div class="k-scene3d"><div class="k-camera" id="schema-cam"></div></div>
+      <div class="k-vignette" id="schema-vignette"></div>
+      <div class="k-mots" id="schema-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "schema";
+
+      // À REMPLACER : chaque texte et nom vient de OFFRE.json ; ce qui n'existe pas pour son offre se
+      // met à null ou se retire de sa liste.
+      var CONTENU = {
+        fond: "sombre",                 // "sombre" (sa nuit) ou "clair"
+        offre: { nom: "Klasso", icone: "layers" },        // le nœud de l'offre : son nom et son icône (ou son logo « logo-… »)
+        entrees: [                      // ce qui entre (1 à 3) : nom court, icône du kit ou logo de l'outil (`logos`)
+          { nom: "Tes e-mails", icone: "mail" }, { nom: "Tes reçus", icone: "file-text" }
+        ],
+        sorties: [                      // ce qui sort (2 à 4), dans l'ordre où ça arrive
+          { nom: "Factures classées", icone: "folder" }, { nom: "TVA calculée", icone: "euro" },
+          { nom: "Export comptable", icone: "download" }
+        ],
+        titre: "Ta compta se range seule",   // la ligne d'appui (3 à 6 mots), ou le mot héros (1 à 3 mots, avec heros: true) ; ou null
+        heros: false,                   // true : le titre est un mot héros, en très grand
+        surligne: "seule",              // le mot du titre surligné d'un bloc plein à la fin, ou null
+        sortie: "plongee",              // "plongee" : la caméra plonge dans le nœud de l'offre, sa couleur couvre l'écran ; null : il reste
+        zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
+      var mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      var duree = K.duree(racine) || 30;   // une fois montée : la durée de son hôte dans index.html
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      if (CONTENU.fond === "clair") {
+        racine.classList.add("sch-clair");
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-clair";
+        document.getElementById(ID + "-vignette").className = "k-vignette-claire";
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) { return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length); };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+      // Un texte tient sur une ou deux lignes, coupé à l'espace le plus proche du milieu.
+      var decouper = function (texte, maxCars) {
+        texte = String(texte).trim();
+        if (texte.length <= maxCars || texte.indexOf(" ") < 0) return [texte];
+        var milieu = texte.length / 2, coupe = -1;
+        for (var i = 0; i < texte.length; i++) {
+          if (texte[i] === " " && (coupe < 0 || Math.abs(i - milieu) < Math.abs(coupe - milieu))) coupe = i;
+        }
+        return [texte.slice(0, coupe), texte.slice(coupe + 1)];
+      };
+      var plusLong = function (l) { return l.reduce(function (a, b) { return b.length > a.length ? b : a; }, ""); };
+
+      // --- Le titre, au-dessus du schéma ---------------------------------------------------
+      var colT = V ? { x: 0.07 * L, l: 0.86 * L } : { x: 0.1 * L, l: 0.8 * L };
+      var fT = 0, lignesT = [], hT = 0;
+      if (CONTENU.titre) {
+        lignesT = CONTENU.heros ? decouper(CONTENU.titre, V ? 12 : 16) : decouper(CONTENU.titre, Math.floor(colT.l / (0.6 * (V ? 66 : 62))));
+        fT = CONTENU.heros ? taillePour(plusLong(lignesT), colT.l, V ? 110 : 100, V ? 220 : 190) : (V ? 66 : 62);
+        hT = fT * (CONTENU.heros ? 0.98 : 1.15) * lignesT.length;
+      }
+
+      // --- Les nœuds : une pilule (icône, nom, coche) ou, en 9:16 pour ce qui entre, une tuile -----
+      // Leur largeur s'estime sur le nombre de lettres ; trop long, le nom passe sur deux lignes.
+      // Rien en `will-change` : la plongée agrandit le nœud quinze fois, il doit se redessiner net.
+      var fN = V ? 46 : 42, fC = V ? 72 : 64;
+      var noeud = function (d, o) {
+        var f = o.taille, ic = f * (o.centre ? 1.3 : 1.35), padX = f * 0.7, padY = f * 0.62, coche = f * (o.centre ? 0.95 : 1.15), gap = f * 0.4;
+        var place = o.tuile ? o.largeur - 2 * padX : o.largeur - 2 * padX - ic - coche - 2 * gap;
+        var lignes = decouper(d.nom, Math.max(6, Math.floor(place / ((o.centre ? 0.62 : 0.58) * f))));
+        var texteL = plusLong(lignes).length * (o.centre ? 0.62 : 0.58) * f;
+        var l = o.tuile || o.fixe ? o.largeur : Math.min(o.largeur, 2 * padX + ic + coche + 2 * gap + texteL);
+        var ha = o.tuile ? 2 * padY + ic * 1.15 + f * 0.35 + lignes.length * 1.1 * f : 2 * padY + Math.max(ic, lignes.length * 1.1 * f);
+        var e = K.el(cam, "div", "sch-noeud k-plan" + (o.tuile ? " sch-tuile" : "") + (o.centre ? " sch-centre" : "") + (o.sortie ? " sch-sortie" : ""), null,
+          "left:" + (o.x - l / 2) + "px; top:" + (o.y - ha / 2) + "px; width:" + l + "px; height:" + ha + "px; padding:0 " + padX + "px; gap:" + gap + "px; font-size:" + f + "px;");
+        var i = K.el(e, "span", "sch-ic", d.icone ? K.ic(d.icone) : "", "width:" + (o.tuile ? ic * 1.15 : ic) + "px; height:" + (o.tuile ? ic * 1.15 : ic) + "px;");
+        var nom = K.el(e, "span", "sch-nom");
+        lignes.forEach(function (li) { K.el(nom, "div", null).textContent = li; });
+        var c = K.el(e, "span", "sch-coche", K.ic("check"), "width:" + coche + "px; height:" + coche + "px;");
+        gsap.set(c, { scale: 0 });
+        return { el: e, coche: c, x: o.x, y: o.y, l: l, h: ha, nom: d.nom, ic: i };
+      };
+      var entrees = (CONTENU.entrees || []).filter(Boolean).slice(0, 3), sorties = (CONTENU.sorties || []).filter(Boolean).slice(0, 4);
+      var nE = entrees.length, nS = sorties.length;
+      // Le SVG des liens, sous les nœuds, aux pixels de la composition.
+      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "k-liens");
+      svg.setAttribute("viewBox", "0 0 " + L + " " + H);
+      svg.setAttribute("width", String(L));
+      svg.setAttribute("height", String(H));
+      cam.appendChild(svg);
+      var chemin = function (d) {
+        var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        p.setAttribute("d", d);
+        p.setAttribute("class", "k-lien");
+        svg.appendChild(p);
+        return p;
+      };
+      // Un lien courbe à tangentes droites (le long de l'axe du flux), et un lien coudé à coins ronds.
+      var courbe = function (a, b, vertical) {
+        var dx = (b[0] - a[0]) * 0.55, dy = (b[1] - a[1]) * 0.55;
+        return chemin("M" + a + " C" + (vertical ? [a[0], a[1] + dy] : [a[0] + dx, a[1]]) + " " +
+          (vertical ? [b[0], b[1] - dy] : [b[0] - dx, b[1]]) + " " + b);
+      };
+      var coude = function (a, xTronc, b, rayon) {
+        return chemin("M" + a + " H" + (xTronc + rayon) + " Q" + xTronc + " " + a[1] + " " + xTronc + " " + (a[1] + rayon) +
+          " V" + (b[1] - rayon) + " Q" + xTronc + " " + b[1] + " " + (xTronc + rayon) + " " + b[1] + " H" + b[0]);
+      };
+
+      // --- La mise en page ----------------------------------------------------------------
+      var yRegion = haut + (fT ? hT + 0.8 * fT : 0), hRegion = bas - yRegion;
+      var centre, nE_ = [], nS_ = [], liensE = [], liensS = [];
+      if (V) {
+        // 9:16 : ce qui entre en tuiles sur une rangée, l'offre au milieu, ce qui sort en liste sur
+        // une branche qui part de son côté gauche.
+        var lT = (nE === 1 ? 0.46 : nE === 2 ? 0.4 : 0.285) * L, xsE = nE === 1 ? [0.5] : nE === 2 ? [0.27, 0.73] : [0.18, 0.5, 0.82];
+        var hTuile = 2 * 0.62 * fN + 1.35 * fN * 1.15 + fN * 0.35 + 2 * 1.1 * fN;   // une tuile à deux lignes au plus
+        var hC = 2 * 0.62 * fC + 1.3 * fC, hP = 2 * 0.62 * fN + 1.35 * fN, gO = 0.7 * fN;
+        var hListe = nS * hP + (nS - 1) * gO;
+        var reste = hRegion - hTuile - hC - hListe;
+        var g1 = Math.max(100, Math.min(260, reste * 0.5)), g2 = Math.max(80, Math.min(200, reste * 0.5));
+        var y0 = yRegion + Math.max(0, (hRegion - hTuile - g1 - hC - g2 - hListe) / 2);
+        centre = noeud(CONTENU.offre || { nom: "" }, { taille: fC, centre: true, x: L / 2, y: y0 + hTuile + g1 + hC / 2, largeur: 0.8 * L });
+        var xTronc = 0.1 * L, xListe = xTronc + 1.7 * fN;
+        nE_ = entrees.map(function (d, i) {
+          var nd = noeud(d, { taille: fN, tuile: true, x: xsE[i] * L, y: y0 + hTuile / 2, largeur: lT });
+          liensE.push(courbe([nd.x, nd.y + nd.h / 2], [L / 2 + (nd.x - L / 2) * 0.4, centre.y - centre.h / 2], true));
+          return nd;
+        });
+        nS_ = sorties.map(function (d, j) {
+          var yj = centre.y + centre.h / 2 + g2 + hP / 2 + j * (hP + gO);
+          var lMax = 0.95 * L - xListe, nd = noeud(d, { taille: fN, x: 0, y: yj, largeur: lMax, fixe: true, sortie: true });   // une liste : même largeur
+          nd.x = xListe + nd.l / 2;
+          nd.el.style.left = xListe + "px";
+          liensS.push(coude([centre.x - centre.l / 2, centre.y], xTronc, [xListe, yj], 0.9 * fN));
+          return nd;
+        });
+      } else {
+        // 16:9 : trois colonnes, ce qui entre à gauche, l'offre au centre (une tuile), ce qui sort à droite.
+        var cy = yRegion + hRegion / 2, nomC = String((CONTENU.offre || {}).nom || "");
+        centre = noeud(CONTENU.offre || { nom: "" }, { taille: fC, centre: true, tuile: true, x: L / 2, y: cy,
+          largeur: Math.min(0.24 * L, Math.max(0.15 * L, decouper(nomC, 10).reduce(function (m, l) { return Math.max(m, l.length); }, 0) * 0.62 * fC + 1.6 * fC)) });
+        var pas = function (k) { return Math.min(5.4 * fN, hRegion / Math.max(1, k)); };
+        nE_ = entrees.map(function (d, i) {
+          var nd = noeud(d, { taille: fN, x: 0, y: cy + (i - (nE - 1) / 2) * pas(nE), largeur: 0.32 * L });
+          nd.x = 0.35 * L - nd.l / 2;
+          nd.el.style.left = (0.35 * L - nd.l) + "px";
+          liensE.push(courbe([0.35 * L, nd.y], [centre.x - centre.l / 2, cy + (nd.y - cy) * 0.3], false));
+          return nd;
+        });
+        nS_ = sorties.map(function (d, j) {
+          var nd = noeud(d, { taille: fN, x: 0, y: cy + (j - (nS - 1) / 2) * pas(nS), largeur: 0.32 * L, sortie: true });
+          nd.x = 0.65 * L + nd.l / 2;
+          nd.el.style.left = 0.65 * L + "px";
+          liensS.push(courbe([centre.x + centre.l / 2, cy + (nd.y - cy) * 0.3], [0.65 * L, nd.y], false));
+          return nd;
+        });
+      }
+
+      // --- Le titre : posé dès la première image, au-dessus de la caméra (il ne bouge plus) ----
+      var motsT = [], blocT = null;
+      if (fT) {
+        blocT = K.el(mots, "div", "sch-titre " + (CONTENU.heros ? "k-heros" : "sch-appui"), null,
+          "left:" + colT.x + "px; top:" + haut + "px; width:" + colT.l + "px; font-size:" + fT + "px; text-align:" + (V ? "left" : "center") + ";" +
+          (CONTENU.heros ? " line-height:0.98;" : ""));
+        lignesT.forEach(function (li) {
+          var ligne = K.el(blocT, "div", null);
+          li.split(/\s+/).forEach(function (m) {
+            var s = K.el(ligne, "span", "k-mot");
+            s.textContent = m;
+            motsT.push(s);
+          });
+        });
+      }
+
+      var tl = gsap.timeline({ paused: true });
+      var kick = function (nd, t, f) {
+        tl.to(nd.el, { scale: f || 1.08, duration: 0.09, ease: "power2.out" }, t);
+        tl.to(nd.el, { scale: 1, duration: 0.42, ease: "back.out(2.6)" }, t + 0.09);
+      };
+      var coche = function (nd, t) {
+        tl.fromTo(nd.coche, { scale: 0 }, { scale: 1, duration: 0.34, ease: "back.out(2.4)", immediateRender: false }, t);
+      };
+      // Le fil : un point par lien, qui dessine sa pointe puis se fond dans le nœud d'arrivée.
+      var parcourir = function (lien, t, d) {
+        var fil = K.el(cam, "div", "k-fil");
+        K.cacher([fil, lien]);   // un trait pas encore tracé montrerait le point de son bout rond
+        tl.set(lien, { opacity: 1 }, t);
+        K.trace(tl, lien, t, d);
+        K.longer(tl, fil, lien, t, d, duree);
+        tl.set(fil, { opacity: 1 }, t);
+        tl.to(fil, { scale: 0, duration: 0.16, ease: "power2.in" }, t + d);
+      };
+
+      // L'affiche : l'offre et ce qui entre sont là dès l'image 0, et se posent depuis la profondeur.
+      K.claque(tl, centre.el, 0, { de: 1.22, duree: 0.55 });
+      nE_.forEach(function (nd, i) {
+        tl.fromTo(nd.el, { z: -320, rotationX: V ? 22 : 0, rotationY: V ? 0 : 24 }, { z: 0, rotationX: 0, rotationY: 0, duration: 0.85, ease: "expo.out" }, i * 0.08);
+      });
+
+      // Ce qui entre part vers l'offre : chaque nœud se coche en envoyant, l'offre reçoit chaque fil.
+      var D = 0.5, tE = 0.4, arrivee = tE;
+      nE_.forEach(function (nd, i) {
+        var ti = tE + i * 0.16;
+        kick(nd, ti, 0.94);
+        coche(nd, ti + 0.05);
+        parcourir(liensE[i], ti, D);
+        kick(centre, ti + D, 1.07);
+        arrivee = ti + D;
+      });
+      coche(centre, arrivee + 0.08);
+
+      // Ce qui sort arrive par le fil, un nœud après l'autre : il claque, puis se coche.
+      var finLecture = fT ? lecture(CONTENU.titre) : 0, tS = arrivee + 0.14, tDernier = tS;
+      nS_.forEach(function (nd, j) {
+        var tj = tS + j * 0.24, a = tj + 0.48;
+        parcourir(liensS[j], tj, 0.48);
+        K.claque(tl, nd.el, a - 0.05, { de: 0.55, duree: 0.45, ease: "back.out(1.6)" });
+        coche(nd, a + 0.2);
+        finLecture = Math.max(finLecture, a + lecture(nd.nom));
+        tDernier = a;
+      });
+
+      // Le titre joue ce qu'il dit : son mot clé se surligne d'un bloc plein.
+      var mot = CONTENU.surligne && motsT.filter(function (s) { return s.textContent.replace(/[.,!?]/g, "") === CONTENU.surligne; })[0];
+      var bloc = mot ? K.surligner(tl, mot, tDernier + 0.3, { encre: K.jeton("--brand-contrast") }) : null;
+      var t = Math.max(finLecture, tDernier + 0.9);
+      // La plongée finit sur la dernière image (plus de temps : le schéma se tient plus longtemps).
+      if (CONTENU.sortie === "plongee" && duree > t + 0.65) t = duree - 0.65;
+
+      // La caméra : une dérive lente derrière le titre, puis, en sortie, la plongée dans l'offre
+      // (power3.in : elle va le plus vite à la dernière image, la scène suivante part en mouvement).
+      // Le schéma est posé sur un plan à peine incliné qui se redresse lentement : de la profondeur.
+      tl.fromTo(cam, { scale: 1, rotationX: V ? 9 : 7, rotationY: V ? 0 : -7 },
+        { scale: 1.03, rotationX: V ? 3 : 2, rotationY: V ? 0 : -2, duration: t, ease: "sine.inOut" }, 0);
+      if (CONTENU.sortie === "plongee") {
+        // Le bloc de l'accent se replie d'abord, plein (jamais en fondu sur la nuit), puis les mots partent.
+        if (bloc) {
+          tl.set(mot, { color: K.jeton("--brand-clair") }, t);
+          tl.to(bloc, { scaleX: 0, transformOrigin: "100% 50%", duration: 0.16, ease: "power3.in" }, t);
+        }
+        if (blocT) K.sortieMots(tl, motsT, t + (bloc ? 0.1 : 0), { decalage: 0.02 });
+        // La vignette part avant que l'accent couvre l'écran (du noir transparent sur l'accent fait de l'olive).
+        tl.to("#" + ID + "-vignette", { opacity: 0, duration: 0.25, ease: "power1.in" }, t);
+        var s = 1.12 * Math.max(L / centre.l, H / centre.h);
+        tl.to(cam, { scale: s, x: -s * (centre.x - L / 2), y: -s * (centre.y - H / 2), rotationX: 0, rotationY: 0, duration: 0.6, ease: "power3.in" }, t + 0.05);
+        t += 0.65;
+      }
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

@@ -6,61 +6,60 @@
     STYLE N°4 · MOTS ÉPARPILLÉS · SCÈNE « MOTS ET CASES » (l'avant : le problème), 16:9
 
     Ce qu'elle montre : le monde d'avant, en plans qui se suivent, chaque bascule par une transition
-    en pixels (des carrés de 120 px qui balaient l'écran, 0,4 s) :
+    en pixels (des carrés de 120 px qui découvrent le plan suivant, 0,4 s, entre deux phrases) :
       - un papier clair quadrillé (sa couleur claire) : une phrase complète arrive un mot à la fois,
         chaque mot à sa place sur la grille (en zigzag, lue de gauche à droite) ; avec les mots, puis
         sur les temps de la tenue, des cases surgissent, et chacune porte sa vraie matière (une vraie
         capture en vignette, un vrai chiffre qui compte, le vrai logo d'un outil de sa corvée) ; la
         phrase complète reste le temps de la lire, ses mots clés se surlignent de sa couleur ;
-      - un écran de nuit (sa couleur sombre, une trame de tirets blancs très pâles où passent deux
-        lumières) : la pastille de ce qu'il vit tombe, s'empile et vibre, près de sa vraie capture
-        inclinée (une carte claire, ou un téléphone) qui monte et vibre à chaque appel ;
+      - un écran de nuit (sa couleur sombre, une trame de tirets blancs très pâles) : la pastille de
+        ce qu'il vit tombe, s'empile et vibre, près de sa vraie capture inclinée (une carte claire, ou
+        un téléphone) qui monte et vibre à chaque appel ;
       - à la fin, sa couleur pleine envahit l'écran par carrés (raccord avec orbe-pivot).
-    Exemple : l'avant de la story d'ouverture de Publicitaire IA (ses trois options, avec les
-    illustrations de sa page, sa vraie pub et les chiffres de sa fiche). Tout se remplace.
 
-    Les durées suivent la lecture, jamais le tempo haché de l'original : un papier dure le temps de
-    poser ses mots (un toutes les CADENCE s) puis la lecture de sa phrase complète (0,3 s par mot +
-    0,8 s, jamais moins de 1,5 s : `studio_motion.py lecture`) ; un écran, 1 s pour poser sa pastille
-    puis sa lecture. La scène calcule ses instants : sa durée est FIN (console : « t04-mots dure …
-    s ») ; reporte-la dans D et dans data-duration, ici et sur son hôte dans index.html. Aucun
+    Les durées suivent la lecture : un papier dure le temps de poser ses mots (un toutes les CADENCE
+    s) puis la lecture de sa phrase complète (`studio_motion.py lecture`) ; un écran, 1 s pour poser
+    sa pastille puis sa lecture. La scène calcule ses instants : sa durée est FIN (console : « t04-mots
+    dure … s ») ; reporte-la dans D et dans data-duration, ici et sur son hôte dans index.html. Aucun
     recadrage : le papier pousse lentement (×1,03 sur toute sa tenue). Pendant la tenue, la vie vient
     des cases qui arrivent sur les temps (« tenue 1, 2… ») : des matières contrastées (une capture
     sombre, un logo plein, un chiffre sur sa couleur) ; c'est ce que `rythme` voit.
 
-    À remplacer :
+    À remplacer : l'objet EXEMPLE (en tête du script), puis la mise en page qui le suit.
       1. L'identifiant « t04-mots » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. PLANS, dans l'ordre (le motif papier / écran se répète une fois par besoin) :
-         papier : { mots: [[mot, x, y], …], surligne: [mots clés], cases: [[matière, x, y, côté, quand], …] }
-           - mots : une phrase courte et complète, un mot par entrée, dans l'ordre (coin haut gauche
-             en px, sur la grille de 100 px, en zigzag sur deux ou trois rangées), 8 mots conseillés,
-             12 au plus ; « 1 500 € » reste un seul mot (espaces insécables) ;
-           - surligne : les mots clés (tels qu'écrits), surlignés d'un bloc de sa couleur ; [] sans ;
-           - cases : côté = un nombre (carré) ou [largeur, hauteur] ; quand = "mot 3"
-             (avec le 3e mot) ou "tenue 1" (0,4 s après le dernier mot ; "tenue 2" 0,5 s plus tard…).
-             La matière, du plus fort au plus faible (references/style.md, « Aucune image inventée ») :
-               { img: "assets/images/…" } : une vraie capture en vignette (sa page, son produit, un
-                 résultat, une image de sa vraie vidéo), recadrée par la case ;
-               { chiffre: 1500, unite: "€", avant: "dès" } : un vrai chiffre de OFFRE.json, qui
-                 compte jusqu'à sa valeur (un texte, "2 976 €", s'affiche tel quel) ;
-               { logo: "logo-…" } : le vrai logo nu d'un outil que l'offre nomme (`studio_motion.py logos`) ;
-               { mot: "…" } : un de ses vrais mots, en dernier recours.
-             fond (facultatif) : "case" (grise), "cadre" (au trait), "nuit", "aplat" (sa couleur) ou
-             "aucun" : un fond est un cadre, il porte toujours une matière. Une case sans matière (ou
-             dont le logo manque au projet) ne s'affiche pas : jamais une forme seule comme sujet,
-             jamais un objet dessiné (tasse, réveil, post-it, enveloppe) ;
-         écran : { ecran: "TE FILMER", place: [x, y], capture: "assets/images/…", cadre: "carte",
-           pose: [x, y, largeur, hauteur, angle Y, angle X, angle Z], graine: 3 }
-           - ecran : la pastille, 2 à 4 mots en capitales (ce qu'il vit, ce qui lui coûte), centrée
-             en place ;
-           - capture (facultative) : sa vraie capture, dans une carte claire inclinée (cadre:
-             "carte", paysage) ou un téléphone (cadre: "tel", 400 × 800) ; sans capture, la
-             pastille seule, au centre.
-      3. CADENCE (écart entre deux mots, 0,22 à 0,3 s), seulement si la musique l'exige.
+      2. EXEMPLE.papiers : chaque papier, sa phrase (courte et complète, 8 mots au plus ; un chiffre
+         et son unité restent un seul mot, avec une espace insécable), ses mots clés tels qu'écrits
+         (surlignés de sa couleur ; [] sans), et les matières de ses cases, du plus fort au plus
+         faible (references/image.md, « La vraie matière ») :
+           { img: "assets/images/…" } : une vraie capture en vignette (sa page, son produit, un
+             résultat, une image de sa vraie vidéo), recadrée par la case ;
+           { chiffre: 40, unite: "…", avant: "…" } : un vrai chiffre de OFFRE.json, qui compte
+             jusqu'à sa valeur (un texte, "2 976 €", s'affiche tel quel) ;
+           { logo: "logo-…" } : le vrai logo nu d'un outil que l'offre nomme (`studio_motion.py logos`) ;
+           { mot: "…" } : un de ses vrais mots, en dernier recours.
+         Une matière absente (capture ou logo qui manque au projet) retire sa case : jamais une forme
+         seule comme sujet, jamais un objet dessiné (tasse, réveil, post-it, enveloppe).
+      3. EXEMPLE.ecrans : chaque écran de nuit, sa pastille (2 à 4 mots en capitales : ce qu'il vit,
+         ce qui lui coûte) et sa vraie capture (facultative : sans elle, la pastille seule, au centre).
+      4. PLANS : l'ordre des plans (le motif papier / écran se répète une fois par besoin) et leur
+         mise en page :
+           papier : { papier: n° dans EXEMPLE.papiers, mots: [[x, y], …], cases: [[x, y, côté, quand, fond], …] }
+             - mots : la place de chaque mot, dans l'ordre (coin haut gauche en px, sur la grille de
+               100 px, en zigzag sur deux rangées) ; un mot sans place suit le précédent ;
+             - cases : une par matière, dans l'ordre ; côté = un nombre (carré) ou [largeur,
+               hauteur] ; quand = "mot 3" (avec le 3e mot) ou "tenue 1" (0,4 s après le dernier mot ;
+               "tenue 2" 0,5 s plus tard…) ; fond (facultatif) : "case" (grise), "cadre" (au trait),
+               "nuit", "aplat" (sa couleur) ou "aucun" : un fond est un cadre, il porte toujours sa
+               matière ;
+           écran : { ecran: n° dans EXEMPLE.ecrans, place: [x, y] (centre de la pastille), cadre:
+             "carte" (paysage) ou "tel" (400 × 800), pose: [x, y, largeur, hauteur, angle Y, angle X,
+             angle Z], graine }.
+      5. CADENCE (écart entre deux mots, 0,22 à 0,3 s), seulement si la musique l'exige. OUVERTURE :
+         true quand la scène ouvre la vidéo (la première image porte déjà le premier mot et sa case).
     Couleurs : celles de sa marque, rien d'autre (brand/tokens.css) : le papier est sa couleur
-    claire, l'encre et la nuit sa couleur sombre, les cases et la trame des neutres en
-    transparence, l'aplat, le surlignage et la fin sa couleur pleine. Aucune couleur tirée de
-    l'accent, jamais l'accent en transparence ; ses captures et ses logos gardent leurs couleurs.
+    claire, l'encre et la nuit sa couleur sombre, les cases et les pastilles empilées ses gris, la
+    grille et la trame des traits fins en transparence, l'aplat, le surlignage et la fin sa couleur
+    pleine ; rien ne porte d'ombre sur sa couleur. Ses captures et ses logos gardent leurs couleurs.
   -->
 </head>
 <body>
@@ -70,7 +69,7 @@
       --t04-papier: var(--brand-clair);
       --t04-encre: var(--brand-sombre);
       --t04-nuit: var(--brand-sombre);
-      --t04-case: rgba(0, 0, 0, 0.055);
+      --t04-case: var(--brand-gris-4);
       background: var(--t04-papier);
     }
     #t04-mots .t04-mots-plan { position: absolute; inset: 0; overflow: hidden; }
@@ -98,6 +97,8 @@
     #t04-mots .t04-fond-nuit .t04-mots-logo { color: var(--brand-clair); }
     #t04-mots .t04-fond-aplat .t04-mots-logo { color: var(--brand-contrast); }
     #t04-mots .t04-mots-logo svg, #t04-mots .t04-mots-logo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.22)); }
+    /* Sur sa couleur, aucune ombre sombre (elle en ferait de l'olive ou du brun). */
+    #t04-mots .t04-fond-aplat .t04-mots-logo svg, #t04-mots .t04-fond-aplat .t04-mots-logo img { filter: none; }
     #t04-mots .t04-mots-vignette { position: absolute; inset: 0; border-radius: 14px; overflow: hidden; background: var(--t04-nuit); box-shadow: 0 22px 40px rgba(0, 0, 0, 0.22); }
     #t04-mots .t04-fond-cadre .t04-mots-vignette, #t04-mots .t04-fond-nuit .t04-mots-vignette, #t04-mots .t04-fond-aplat .t04-mots-vignette { inset: 14px; box-shadow: none; }
     #t04-mots .t04-mots-vignette img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -108,6 +109,8 @@
     #t04-mots .t04-fond-nuit .t04-mots-chiffre, #t04-mots .t04-fond-nuit .t04-mots-texte { color: var(--brand-clair); }
     #t04-mots .t04-fond-aplat .t04-mots-chiffre, #t04-mots .t04-fond-aplat .t04-mots-texte { color: var(--brand-contrast); }
     #t04-mots .t04-mots-nuit { background: var(--t04-nuit); }
+    /* La trame de l'écran : des tirets blancs très pâles (une texture fine, sans image dessous) ; deux
+       passages plus clairs la traversent lentement. */
     #t04-mots .t04-mots-trame {
       position: absolute; inset: -40px;
       -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='12'><rect width='4' height='9' rx='1' fill='black'/></svg>");
@@ -124,7 +127,9 @@
       box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4);
     }
     #t04-mots .t04-mots-pastille i { display: block; flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--brand-accent); box-shadow: 0 0 0 2px var(--brand-sombre); }
-    #t04-mots .t04-mots-vide { position: absolute; border-radius: 999px; background: rgba(255, 255, 255, 0.16); border: 1.5px solid rgba(255, 255, 255, 0.22); }
+    /* Les deux pastilles empilées derrière elle : ses gris, pleins (la pile, pas un voile). */
+    #t04-mots .t04-mots-vide { position: absolute; border-radius: 999px; background: var(--brand-gris-1); }
+    #t04-mots .t04-mots-vide.pres { background: var(--brand-gris-2); }
     #t04-mots .t04-mots-scene-capture { position: absolute; perspective: 1400px; }
     #t04-mots .t04-mots-carte { position: absolute; inset: 0; padding: 14px; border-radius: 24px; background: var(--brand-clair); transform-style: preserve-3d; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5); }
     #t04-mots .t04-mots-carte > div { position: absolute; inset: 14px; border-radius: 12px; overflow: hidden; }
@@ -133,48 +138,70 @@
     /* La fin : sa couleur pleine, qui envahit l'écran par carrés (même rendu que le début d'orbe-pivot). */
     #t04-mots .t04-mots-couleur { background: var(--brand-accent); }
   </style>
-  <div data-composition-id="t04-mots" data-width="1920" data-height="1080" data-duration="20.4" style="position:absolute; inset:0;">
+  <div data-composition-id="t04-mots" data-width="1920" data-height="1080" data-duration="18.4" style="position:absolute; inset:0;">
     <div id="t04-mots" class="k-scene"></div>
   </div>
 
   <script>
     (function () {
-      window.__timelines = window.__timelines || {};
-      var D = 20.4, ID = "t04-mots", tl = gsap.timeline({ paused: true });
-      var racine = document.getElementById(ID);
-      var PIX = 0.4, CADENCE = 0.25;
+      // Exemple fictif : un logiciel de prise de rendez-vous pour indépendants.
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json et de sa vraie matière, ou la ligne se retire
+        papiers: [
+          { phrase: "Tes messages arrivent de partout, sans arrêt.", cles: ["partout,"],
+            matieres: [{ logo: "logo-whatsapp" }, { logo: "logo-instagram" }, { img: "assets/images/capture-telephone.jpg" },
+              { logo: "logo-linkedin" }, { img: "assets/images/capture-messages.png" }, { img: "assets/images/capture-boite.png" },
+              { img: "assets/images/capture-agenda.png" }, { logo: "logo-google" }, { logo: "logo-facebook" }] },
+          { phrase: "Et ta journée file sans toi.", cles: ["sans", "toi."],
+            matieres: [{ logo: "logo-whatsapp" }, { img: "assets/images/capture-agenda.png" }, { img: "assets/images/capture-messages.png" },
+              { img: "assets/images/capture-boite.png" },
+              { chiffre: 40, unite: "messages" },   // un vrai chiffre de sa fiche : « 40 » n'est qu'un exemple
+              { logo: "logo-instagram" }, { img: "assets/images/capture-telephone.jpg" }, { logo: "logo-google" },
+              { logo: "logo-facebook" }, { logo: "logo-linkedin" }] }
+        ],
+        ecrans: [
+          { pastille: "NOUVEAU MESSAGE", capture: "assets/images/capture-messages.png" },
+          { pastille: "RENDEZ-VOUS MANQUÉ", capture: "assets/images/capture-agenda.png" },
+          { pastille: "RELANCE OUBLIÉE", capture: "assets/images/capture-boite.png" }
+        ]
+      };
 
-      // ---------- Les plans, dans l'ordre : chaque papier et chaque écran apparaît en pixels ----------
+      window.__timelines = window.__timelines || {};
+      var D = 18.4, ID = "t04-mots", tl = gsap.timeline({ paused: true });
+      var racine = document.getElementById(ID);
+      var PIX = 0.4, CADENCE = 0.25, OUVERTURE = true, TAILLE = 104;
+
+      // ---------- La mise en page : l'ordre des plans, la place de chaque mot et de chaque case ----------
       var PLANS = [
-        { mots: [["Pour", 360, 300], ["avoir", 650, 250], ["une", 980, 310], ["vidéo,", 1210, 260],
-            ["tu", 440, 480], ["as", 600, 430], ["trois", 770, 490], ["options.", 1060, 440]],
-          surligne: ["trois", "options."],
-          cases: [[{ logo: "logo-instagram" }, 60, 40, 300, "mot 1"], [{ logo: "logo-facebook" }, 1660, 40, 200, "mot 3"],
-            [{ img: "assets/images/pub-image.jpg" }, 1660, 640, [200, 300], "mot 4"],
-            [{ logo: "logo-youtube" }, 760, 40, 100, "mot 6"],
-            [{ img: "assets/images/options-filmer.png" }, 160, 740, [300, 200], "tenue 1"],
-            [{ img: "assets/images/options-devis.png", fond: "nuit" }, 560, 840, [300, 200], "tenue 2"],
-            [{ img: "assets/images/options-samedi.png" }, 1160, 740, [300, 200], "tenue 3"],
-            [{ logo: "logo-capcut" }, 960, 40, 200, "tenue 4"], [{ logo: "logo-tiktok" }, 160, 440, 100, "tenue 5"]] },
-        { ecran: "TE FILMER", place: [1400, 560], capture: "assets/images/options-filmer.png", cadre: "carte",
-          pose: [250, 330, 600, 391, -22, 8, -5], graine: 3 },
-        { ecran: "UN DEVIS DÈS 1 500 €", place: [600, 760], capture: "assets/images/options-devis.png", cadre: "carte",
-          pose: [1060, 190, 600, 391, 22, 8, 5], graine: 5 },
-        { ecran: "UN WEEK-END DE MONTAGE", place: [1270, 660], capture: "assets/images/options-samedi.png", cadre: "carte",
-          pose: [180, 250, 600, 391, 24, 8, 6], graine: 9 },
-        { mots: [["Pour", 420, 320], ["une", 700, 270], ["vidéo", 920, 330], ["qui", 560, 480], ["fait", 760, 440], ["amateur.", 980, 490]],
-          surligne: ["amateur."],
-          cases: [[{ logo: "logo-capcut" }, 160, 640, 300, "mot 1"],
-            [{ img: "assets/images/options-samedi.png" }, 1460, 140, [300, 200], "mot 2"],
-            [{ img: "assets/images/options-filmer.png" }, 160, 140, [300, 200], "mot 3"],
-            [{ img: "assets/images/options-devis.png", fond: "nuit" }, 1560, 740, [300, 200], "mot 4"],
-            [{ chiffre: 1500, unite: "€", avant: "dès", fond: "aplat" }, 560, 840, [500, 200], "mot 5"],
-            [{ logo: "logo-instagram" }, 860, 40, 200, "mot 6"],
-            [{ img: "assets/images/pub-image.jpg" }, 1160, 740, [200, 300], "tenue 1"],
-            [{ logo: "logo-capcut" }, 1160, 40, 200, "tenue 2"],
-            [{ logo: "logo-facebook" }, 1460, 440, 200, "tenue 3"],
-            [{ logo: "logo-tiktok" }, 60, 440, 200, "tenue 4"]] }
+        { papier: 0, mots: [[390, 300], [600, 250], [1190, 310], [400, 480], [560, 430], [1080, 490], [1360, 440]],
+          cases: [[60, 40, 300, "mot 1"], [1660, 40, 200, "mot 3"], [1660, 640, [200, 300], "mot 4"], [760, 40, 100, "mot 6"],
+            [160, 740, [300, 200], "tenue 1"], [560, 840, [300, 200], "tenue 2", "nuit"], [1160, 740, [300, 200], "tenue 3"],
+            [960, 40, 200, "tenue 4"], [160, 440, 100, "tenue 5"]] },
+        { ecran: 0, place: [1400, 560], cadre: "carte", pose: [250, 330, 600, 391, -22, 8, -5], graine: 3 },
+        { ecran: 1, place: [600, 760], cadre: "carte", pose: [1060, 190, 600, 391, 22, 8, 5], graine: 5 },
+        { ecran: 2, place: [1270, 660], cadre: "carte", pose: [180, 250, 600, 391, 24, 8, 6], graine: 9 },
+        { papier: 1, mots: [[500, 320], [660, 270], [840, 330], [600, 480], [840, 440], [1110, 490]],
+          cases: [[160, 640, 300, "mot 1"], [1460, 140, [300, 200], "mot 2"], [160, 140, [300, 200], "mot 3"],
+            [1560, 740, [300, 200], "mot 4", "nuit"], [560, 840, [500, 200], "mot 5", "aplat"], [860, 40, 200, "mot 6"],
+            [1160, 740, [200, 300], "tenue 1"], [1160, 40, 200, "tenue 2"], [1460, 440, 200, "tenue 3"], [60, 440, 200, "tenue 4"]] }
       ];
+      // Chaque plan reçoit son contenu depuis EXEMPLE : les mots de sa phrase à leurs places, les
+      // matières à leurs cases (une matière sans case, ou une case sans matière, ne s'affiche pas).
+      PLANS.forEach(function (p) {
+        if (p.papier != null) {
+          var src = EXEMPLE.papiers[p.papier], places = p.mots, x = 0, y = 0;
+          p.mots = src.phrase.trim().split(/\s+/).map(function (w, k) {
+            var pl = places[k] || [x, y];   // un mot sans place suit le précédent, sur sa rangée
+            x = pl[0] + Math.round(w.length * 0.56 * TAILLE) + 40; y = pl[1];
+            return [w, pl[0], pl[1]];
+          });
+          p.surligne = src.cles || [];
+          p.cases = p.cases.slice(0, src.matieres.length).map(function (c, k) { return [src.matieres[k]].concat(c); });
+        } else {
+          var e = EXEMPLE.ecrans[p.ecran];
+          p.ecran = e.pastille; p.capture = e.capture;
+        }
+      });
+
       // ---------- Le temps de lecture (la règle de `studio_motion.py lecture`) ----------
       function lire(texte) {
         var n = texte.trim().split(/\s+/).filter(function (m) { return /[\p{L}\p{N}_]/u.test(m); }).length;
@@ -186,7 +213,7 @@
         p.debut = t;
         var entree = p.debut + (i ? PIX : 0);
         if (p.mots) {
-          p.t0 = entree + 0.15;
+          p.t0 = i === 0 && OUVERTURE ? 0 : entree + 0.15;
           p.finMots = p.t0 + (p.mots.length - 1) * CADENCE + 0.2;
           p.fin = p.finMots + lire(p.mots.map(function (m) { return m[0]; }).join(" "));
         } else {
@@ -203,49 +230,57 @@
         var m = /^(mot|tenue) (\d+)$/.exec(q || "") || ["", "mot", "1"], k = parseInt(m[2], 10);
         return m[1] === "mot" ? p.t0 + (Math.min(k, p.mots.length) - 1) * CADENCE : p.finMots + 0.4 + (k - 1) * 0.5;
       }
-      function nombre(v) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+      function nombre(v) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
 
       // ---------- Une case : son fond (un cadre) et sa vraie matière ; sans matière, pas de case ----------
       function caseDe(el, p, o, i) {
         var m = o[0], cote = Array.isArray(o[3]) ? o[3] : [o[3], o[3]], tc = quand(p, o[4]);
-        var logo = m.logo ? K.ic(m.logo) : "";
+        var logo = m.logo ? K.ic(m.logo) : "", deja = tc <= 0;   // deja : sur la première image de la vidéo
         if (!(m.img || logo || m.chiffre != null || m.mot)) return;   // jamais une forme seule
-        var fond = m.fond || (m.img ? "aucun" : "case");
+        var fond = o[5] || (m.img ? "aucun" : "case");
         var c = K.el(el, "div", "t04-mots-case t04-fond-" + fond, null,
           "left:" + o[1] + "px; top:" + o[2] + "px; width:" + cote[0] + "px; height:" + cote[1] + "px;");
         var dessus;
         if (m.img) {
           dessus = K.el(c, "div", "t04-mots-vignette", '<img src="' + m.img + '" alt="">');
           dessus.firstChild.addEventListener("error", function () { c.style.display = "none"; });   // capture absente : pas de case
-          gsap.set(dessus, { clipPath: "inset(100% 0% 0% 0% round 14px)" });
-          tl.fromTo(dessus, { y: 18 }, { y: 0, clipPath: "inset(0% 0% 0% 0% round 14px)", duration: 0.45, ease: "expo.out", immediateRender: false }, tc + 0.2);
+          if (!deja) {
+            gsap.set(dessus, { clipPath: "inset(100% 0% 0% 0% round 14px)" });
+            tl.fromTo(dessus, { y: 18 }, { y: 0, clipPath: "inset(0% 0% 0% 0% round 14px)", duration: 0.45, ease: "expo.out", immediateRender: false }, tc + 0.2);
+          }
         } else if (logo) {
           dessus = K.el(c, "div", "t04-mots-logo", logo);
-          K.cacher(dessus, { scale: 0.5 });
-          tl.to(dessus, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, tc + 0.2);
+          if (!deja) {
+            K.cacher(dessus, { scale: 0.5 });
+            tl.to(dessus, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, tc + 0.2);
+          }
         } else {
           var long = (m.mot || String(m.chiffre)).length + (m.avant ? m.avant.length + 1 : 0) + (m.unite ? m.unite.length + 1 : 0) + (typeof m.chiffre === "number" && m.chiffre >= 1000 ? 1 : 0);
           var h = Math.min(cote[1] * 0.46, cote[0] / (0.58 * long + 0.8));
           dessus = K.el(c, "div", m.mot ? "t04-mots-texte" : "t04-mots-chiffre", null, "font-size:" + Math.round(h) + "px;");
-          K.cacher(dessus, { scale: 0.85 });
-          tl.to(dessus, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, tc + 0.2);
+          if (!deja) {
+            K.cacher(dessus, { scale: 0.85 });
+            tl.to(dessus, { opacity: 1, scale: 1, duration: 0.35, ease: "expo.out" }, tc + 0.2);
+          }
           if (typeof m.chiffre === "number") {
-            var avant = m.avant ? m.avant + " " : "", unite = m.unite ? " " + m.unite : "";
-            K.compteur(tl, dessus, 0, m.chiffre, tc + 0.2, 0.9, D, function (v) { return avant + nombre(v) + unite; }, "expo.out");
+            var avant = m.avant ? m.avant + " " : "", unite = m.unite ? " " + m.unite : "";
+            K.compteur(tl, dessus, deja ? m.chiffre : 0, m.chiffre, tc + 0.2, 0.9, D, function (v) { return avant + nombre(v) + unite; }, "expo.out");
           } else dessus.textContent = m.mot || String(m.chiffre);
         }
         // La case surgit, sa matière s'y pose 0,2 s après puis flotte (8 px ; un logo tourne de 3 degrés).
-        gsap.set(c, { opacity: 0, scale: 0.55 });
-        tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, tc);
-        var a = logo ? 1 : 0;
-        tl.fromTo(dessus, { y: 0, rotation: 0 }, { y: -8, rotation: ((i % 3) - 1) * 3 * a, duration: Math.max(0.5, p.fin + PIX - tc - 0.65), ease: "sine.inOut", immediateRender: false }, tc + 0.65);
+        if (!deja) {
+          gsap.set(c, { opacity: 0, scale: 0.55 });
+          tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)" }, tc);
+        }
+        var a = logo ? 1 : 0, flotte = Math.max(0, tc) + 0.65;
+        tl.fromTo(dessus, { y: 0, rotation: 0 }, { y: -8, rotation: ((i % 3) - 1) * 3 * a, duration: Math.max(0.5, p.fin + PIX - flotte), ease: "sine.inOut", immediateRender: false }, flotte);
       }
 
       // ---------- Un papier : ses cases, ses mots, ses mots clés surlignés pendant la tenue ----------
-      function papier(p) {
+      function papier(p, i) {
         var el = plan("t04-mots-papier");
         el.setAttribute("data-layout-allow-overflow", "");   // le papier pousse de 3 % : il déborde exprès
-        p.cases.forEach(function (o, i) { caseDe(el, p, o, i); });
+        p.cases.forEach(function (o, k) { caseDe(el, p, o, k); });
         var cles = p.surligne || [];
         p.mots.forEach(function (m, k) {
           var e = K.el(el, "div", "t04-mots-mot", null, "left:" + m[1] + "px; top:" + m[2] + "px;");
@@ -263,19 +298,20 @@
           var lettres = K.el(e, "span", "t04-mots-lettres");
           lettres.setAttribute("data-layout-allow-overlap", "");
           var tw = p.t0 + k * CADENCE;
-          K.taper(tl, lettres, m[0], tw, tw + Math.min(0.1, 0.025 * m[0].length), D);
+          if (i === 0 && k === 0 && OUVERTURE) K.taper(tl, lettres, m[0], -0.2, -0.1, D);   // déjà là sur la première image
+          else K.taper(tl, lettres, m[0], tw, tw + Math.min(0.1, 0.025 * m[0].length), D);
         });
         // Le papier pousse lentement pendant toute sa tenue : la seule caméra de la scène.
         tl.fromTo(el, { scale: 1 }, { scale: 1.03, duration: p.fin + PIX - p.debut, ease: "sine.inOut", transformOrigin: "50% 50%" }, p.debut);
         return el;
       }
 
-      // ---------- Un écran de nuit : la trame, les lumières, sa vraie capture, la pastille ----------
+      // ---------- Un écran de nuit : la trame, sa vraie capture, la pastille ----------
       function ecran(p) {
         var el = plan("t04-mots-nuit");
         el.setAttribute("data-layout-allow-overflow", "");
         var r = K.rng(p.graine || 3), trame = K.el(el, "div", "t04-mots-trame"), duree = p.fin + PIX - p.debut;
-        K.el(trame, "div", "t04-mots-trame-fond");   // la trame, les lumières qui passent dessous
+        K.el(trame, "div", "t04-mots-trame-fond");   // la trame, et deux passages plus clairs qui la traversent
         [0, 1].forEach(function (k) {
           var w = 1100 + r() * 400, h = 700 + r() * 300;
           var l = K.el(trame, "div", "t04-mots-lumiere", null, "left:" + (r() * 1300 - 300) + "px; top:" + (r() * 600 - 300) + "px; width:" + w + "px; height:" + h + "px;");
@@ -297,18 +333,18 @@
           }
           tl.to(obj, { y: -30, duration: Math.max(0.5, duree - 1.6), ease: "sine.inOut" }, p.t0 + 1.6);
         }
-        // La pastille glisse, deux pastilles vides s'empilent derrière elle, puis tout vibre.
+        // La pastille glisse, deux pastilles s'empilent derrière elle, puis la pile vibre une fois.
         var place = p.place || [960, 540];
         var pile = K.el(el, "div", "t04-mots-pile", null, "left:" + place[0] + "px; top:" + place[1] + "px;");
         pile.setAttribute("data-layout-allow-overlap", "");
-        var vides = [[0.14, 52, 0.55], [0.07, 26, 0.8]].map(function (v) {
-          return K.el(pile, "div", "t04-mots-vide", null, "left:" + v[0] * 100 + "%; right:" + v[0] * 100 + "%; top:" + v[1] + "px; bottom:" + -v[1] + "px; opacity:" + v[2] + ";");
+        var vides = [[0.14, 52, ""], [0.07, 26, " pres"]].map(function (v) {
+          return K.el(pile, "div", "t04-mots-vide" + v[2], null, "left:" + v[0] * 100 + "%; right:" + v[0] * 100 + "%; top:" + v[1] + "px; bottom:" + -v[1] + "px;");
         });
         var pastille = K.el(pile, "div", "t04-mots-pastille", "<i></i>" + p.ecran);
         K.cacher(pile, { xPercent: -50, yPercent: -50 });
         tl.fromTo(pile, { opacity: 0, x: -34, scale: 0.9 }, { opacity: 1, x: 0, scale: 1, duration: 0.4, ease: "expo.out" }, p.t0 + 0.3);
         K.cacher(vides, { y: -30 });
-        vides.forEach(function (v, k) { tl.to(v, { opacity: [0.55, 0.8][k], y: 0, duration: 0.35, ease: "expo.out" }, p.t0 + 0.5 + (1 - k) * 0.09); });
+        vides.forEach(function (v, k) { tl.to(v, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, p.t0 + 0.5 + (1 - k) * 0.09); });
         [0, 1, 2, 3, 4, 5].forEach(function (k) { tl.to(pile, { rotation: k % 2 ? -2.2 : 2.2, duration: 0.06, ease: "none" }, p.t0 + 0.62 + k * 0.06); });
         tl.to(pile, { rotation: 0, duration: 0.1 }, p.t0 + 0.98);
         // Le point de la pastille bat deux fois, comme un appel qui arrive.
@@ -318,7 +354,7 @@
       }
 
       // Les plans dans l'ordre d'apparition (chacun recouvre le précédent), puis sa couleur.
-      var ordre = PLANS.map(function (p) { return [p.mots ? papier(p) : ecran(p), p.debut]; });
+      var ordre = PLANS.map(function (p, i) { return [p.mots ? papier(p, i) : ecran(p), p.debut]; });
       ordre.push([plan("t04-mots-couleur"), COULEUR]);
 
       // ---------- Les transitions en pixels : un plan apparaît par carrés de 120 px ----------

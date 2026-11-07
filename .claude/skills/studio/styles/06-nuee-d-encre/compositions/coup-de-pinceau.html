@@ -3,31 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 1 : LE COUP DE PINCEAU QUI SE DÉFAIT (4,5 s)
+    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 1 : LE CERCLE AU PINCEAU QUI PORTE L'ACCROCHE (5,4 s)
 
-    Ce qu'elle montre : une page claire, un aplat de la couleur claire de la marque (petites
-    légendes dans les coins, chiffres qui défilent en bas : le cadre d'imprimerie). Un pinceau
-    trace un grand cercle à l'encre de la marque d'un seul geste (appui, poils qui sèchent, queue
-    qui s'effiloche), puis pose un point. Le tracé se « numérise » (des colonnes de petits signes le
-    traversent), puis se défait en une nuée de points qui s'envole et se pose en une bande au
-    centre : la scène 2 (« nuee-de-particules ») part de cette bande. Ni texture de papier, ni image.
-    Rôle : l'accroche d'un teaser (ouverture des inscriptions, bientôt disponible). Rien n'est dit,
-    on donne envie de voir la suite.
+    Ce qu'elle montre : une page claire, un aplat de la couleur claire de la marque (le cadre
+    d'imprimerie dans les coins : une texture, jamais lue). Un pinceau trace un grand cercle à
+    l'encre d'un seul geste ; pendant qu'il le ferme, les mots de l'accroche s'impriment au centre
+    du cercle, et le point que pose le pinceau finit la phrase. Le cercle est le cadre de la phrase,
+    jamais une forme seule. Puis le cercle et ses mots se « numérisent » (des colonnes de petits
+    signes les traversent) et se défont en une nuée de points : un point par case d'encre réellement
+    posée, leur nombre vient du sujet. La nuée tourne dans le sens du geste et se pose en une bande,
+    le raccord de la scène 2 (« nuee-de-particules »), où elle écrit les mots suivants.
+    Rôle : l'accroche d'un teaser (ouverture des inscriptions, bientôt disponible).
 
     Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine (1080 × 1920) :
-    le cercle, les légendes et la bande se recalent seuls.
+    le cercle grandit à 80 % de la largeur, les mots, le point, les légendes et la bande se
+    recalent seuls.
 
-    À REMPLACER :
-      1. L'id « t06-pinceau » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. LEGENDES (en tête du script) : les petites légendes des coins (le nom du projet, un
-         numéro, le mot du lancement). Ce sont des repères d'imprimerie : jamais un chiffre de
-         vente, une date ou une promesse inventés.
-      3. GESTES : un cercle et un point par défaut. Un autre tracé se décrit par ses points (x, y
-         de 0 à 1 dans le cadre), son épaisseur, son départ et sa durée.
-      4. Couleurs : celles de la marque, rien d'autre. La page est var(--brand-clair) (un aplat,
-         avec un dégradé neutre à peine visible vers les bords), l'encre var(--brand-sombre) ; un
-         geste marqué accent: true prend l'accent, posé plein (jamais en transparence).
-    Ne pas toucher : PARTICULES, GRAINE et la fonction bande() (la scène 2 reprend la même nuée).
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t06-pinceau » partout
+    (rechercher-remplacer) par l'id de la scène dans index.html.
+    Couleurs : celles de la marque, rien d'autre. La page est var(--brand-clair), l'encre
+    var(--brand-sombre) ; POINT.accent = true pose le point à l'accent, plein (jamais en
+    transparence).
+    Ne pas toucher : GRAINE et la fonction bande() (la scène 2 repart de la même bande).
   -->
 </head>
 <body>
@@ -37,12 +34,16 @@
       --t06-papier: var(--brand-clair);   /* la page : un aplat de la couleur claire de la marque */
       --t06-encre: var(--brand-sombre);   /* l'encre : sa couleur la plus sombre */
       --t06-texte: var(--brand-font-body);
+      --t06-titres: var(--brand-font-display);
       background: var(--t06-papier); color: var(--t06-encre);
     }
-    /* la page respire à peine : un dégradé neutre vers les bords, jamais une texture */
+    /* la page respire à peine : une ombre neutre vers les bords, jamais une texture */
     #t06-pinceau .t06-page { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.045) 100%); }
     #t06-pinceau canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
-    #t06-pinceau .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
+    #t06-pinceau .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 48%; }
+    #t06-pinceau .t06-mots { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-pinceau .t06-mot { position: absolute; display: block; font-family: var(--t06-titres); font-weight: 600; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+    /* le cadre d'imprimerie : une texture (data-layout-ignore), jamais un texte à lire */
     #t06-pinceau .t06-legende { position: absolute; font: 400 11px/1.4 var(--t06-texte); letter-spacing: 0.02em; white-space: nowrap; }
     #t06-pinceau .t06-legende b { font-weight: 700; letter-spacing: 0.08em; }
     #t06-pinceau .t06-legende .t06-petit { font-size: 9px; opacity: 0.75; }
@@ -51,33 +52,39 @@
     #t06-pinceau .t06-chiffre { position: absolute; font: 600 11px/1 var(--t06-texte); letter-spacing: 0.04em; white-space: nowrap; }
   </style>
 
-  <div data-composition-id="t06-pinceau" data-width="1920" data-height="1080" data-duration="4.5" style="position:absolute; inset:0;">
+  <div data-composition-id="t06-pinceau" data-width="1920" data-height="1080" data-duration="5.4" style="position:absolute; inset:0;">
     <div id="t06-pinceau" class="k-scene">
       <div class="t06-cam" id="t06-pinceau-cam" data-layout-allow-overflow>
         <div class="t06-page"></div>
         <canvas id="t06-pinceau-encre"></canvas>
+        <div class="t06-mots" id="t06-pinceau-mots"></div>
         <canvas id="t06-pinceau-nuee"></canvas>
       </div>
-      <div id="t06-pinceau-cadre"></div>
+      <div id="t06-pinceau-cadre" data-layout-ignore></div>
     </div>
   </div>
 
   <script>
     (function () {
-      var ID = "t06-pinceau", D = 4.5;
-      // Les légendes d'imprimerie des coins (le mot en gras en capitales).
-      var LEGENDES = {
-        hautDroite: ["<b>N° 01</b> ESQUISSE", "à l'encre", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
-        basGauche: ["<b>PROJET 01.</b> TON OFFRE", "bientôt", '<span class="t06-petit">ce qui arrive, page après page</span>'],
-        basDroite: ["<b>P. 03</b>"]
+      var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json ou du script validé, ou la ligne se retire
+        // l'accroche : 1 à 3 mots, un par ligne, sans point final (le point, c'est le pinceau qui le pose)
+        accroche: ["Quelque", "chose", "arrive"],
+        // les repères d'imprimerie des coins (une texture, jamais lue) : le nom du projet, un numéro ;
+        // jamais un chiffre de vente, une date ou une promesse
+        legendes: {
+          hautDroite: ["<b>N° 01</b> ESQUISSE", "à l'encre", '<span class="t06-petit">une forme qui se cherche</span>', "<b>PLANCHE</b> 01"],
+          basGauche: ["<b>PROJET 01.</b> TON OFFRE", "à suivre", '<span class="t06-petit">page après page</span>'],
+          basDroite: ["<b>P. 03</b>"]
+        }
       };
-      // Les gestes : points (0 à 1 dans le cadre) ou "cercle", épaisseur (px pour 1080 de haut),
-      // départ et durée (s).
-      var GESTES = [
-        { pts: "cercle", cx: 0.5, cy: 0.48, r: 0.27, largeur: 120, debut: 0.1, duree: 1.15, graine: 3 },
-        { pts: [[0.4995, 0.458], [0.5005, 0.492]], largeur: 64, debut: 1.36, duree: 0.22, graine: 9, accent: false }
-      ];
-      var PARTICULES = 3400, GRAINE = 61;
+      var ID = "t06-pinceau", D = 5.4;
+      // Le geste : le cercle (centre et rayon dans le cadre, épaisseur en px pour 1080 de haut,
+      // départ et durée en s), puis le point qui finit la phrase (sa place suit le dernier mot).
+      var CERCLE = { pts: "cercle", cx: 0.5, cy: 0.48, r: 0.33, largeur: 120, debut: 0.1, duree: 1.15, graine: 3 };
+      var POINT = { debut: 1.36, duree: 0.22, graine: 9, accent: false };
+      var MOTS_DEBUT = 0.7;      // les mots s'impriment pendant que le pinceau ferme le cercle
+      var T_NUM = 2.7, T_DEFAIT = 3.3; // la numérisation, puis l'encre qui se défait en points
+      var GRAINE = 61, PAS_ENCRE = 9;  // une place de point par case de 9 px d'encre du cercle
 
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -91,18 +98,16 @@
       // l'encre est sa couleur la plus sombre, la page sa plus claire, l'accent se pose plein.
       var cs = getComputedStyle(racine), ENCRE = cs.color, PAPIER = cs.backgroundColor;
       var ACCENT = cs.getPropertyValue("--brand-accent").trim() || ENCRE;
-      function cadreImprimerie(hote, t0) {
-        var m = vertical ? 54 : 68, blocs = [];
+      var TITRES = cs.getPropertyValue("--t06-titres").trim() || "sans-serif";
+      function cadreImprimerie(hote) {
+        var m = vertical ? 54 : 68, blocs = [], Lg = EXEMPLE.legendes;
         var lignes = function (l, filetAvant) { return l.map(function (x, i) { return (i === filetAvant ? '<i class="t06-filet"></i>' : "") + "<div>" + x + "</div>"; }).join(""); };
-        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.hautDroite, LEGENDES.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
-        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(LEGENDES.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
-        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(Lg.hautDroite, Lg.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
+        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(Lg.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(Lg.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
         var xs = vertical ? [0.12, 0.3, 0.7, 0.88] : [0.14, 0.205, 0.275, 0.45, 0.86, 0.92], chiffres = [];
         xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px;")); });
-        var tous = blocs.concat(chiffres);
-        gsap.set(tous, { opacity: 0 });
-        tous.forEach(function (b, i) { tl.to(b, { opacity: 1, duration: 0.12, ease: "none" }, t0 + i * 0.04); });
-        // Les chiffres changent tous les quarts de seconde (valeur fixe pour un instant donné).
+        // Les repères changent tous les quarts de seconde (valeur fixe pour un instant donné).
         return function (t) { var pas = Math.floor(t * 4); chiffres.forEach(function (c, i) { c.textContent = (rng(pas * 131 + i * 977 + 7)() * 99.99).toFixed(2); }); };
       }
       function hache(i, k) { var s = Math.sin(i * 12.9898 + (k || 0) * 78.233) * 43758.5453; return s - Math.floor(s); }
@@ -113,6 +118,36 @@
         var u = rB(), v = (rB() + rB() + rB() - 1.5) / 1.5;
         var epais = bh * (0.3 + 0.7 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.06 + u * 1.04)), 0.55));
         return [bx0 + (bx1 - bx0) * u, by + v * epais + Math.sin(u * 5 + 1) * 20 * E - (u - 0.5) * 46 * E];
+      }
+      // Les mots d'un élément de la page, redessinés à l'identique dans un canevas (même police,
+      // même place) : pour les numériser, et pour en tirer les points.
+      // mesurer() lit une fois la police et la place de chaque ligne ; ecrire() les redessine sans
+      // toucher à la page (aucune mesure pendant le rendu).
+      function mesurer(spans) {
+        var x = document.createElement("canvas").getContext("2d");
+        return spans.map(function (s) {
+          var c = getComputedStyle(s), fs = parseFloat(c.fontSize), font = c.fontWeight + " " + fs + "px " + c.fontFamily;
+          x.font = font; var m = x.measureText(s.textContent), fa = m.fontBoundingBoxAscent || fs * 0.9, fd = m.fontBoundingBoxDescent || fs * 0.25;
+          return { texte: s.textContent, font: font, ls: c.letterSpacing === "normal" ? "0px" : c.letterSpacing, x: s.offsetLeft, y: s.offsetTop + (s.offsetHeight - fa - fd) / 2 + fa };
+        });
+      }
+      function ecrire(x, lignes, couleur) {
+        lignes.forEach(function (l) {
+          x.font = l.font; x.textBaseline = "alphabetic"; x.textAlign = "left"; x.fillStyle = couleur;
+          if ("letterSpacing" in x) x.letterSpacing = l.ls;
+          x.fillText(l.texte, l.x, l.y);
+        });
+      }
+      // Les places d'une matière (encre ou mots) dessinée dans un canevas caché : une place par case
+      // de `pas` px que l'encre couvre. Le nombre de points vient donc du sujet, jamais d'un effet.
+      function placesDe(x, pas, graine) {
+        var d = x.getImageData(0, 0, L, H).data, r = rng(graine), p = [];
+        for (var y = pas / 2; y < H; y += pas) for (var X = pas / 2; X < L; X += pas) {
+          var qx = Math.min(L - 1, Math.max(0, X + (r() - 0.5) * pas * 0.7)), qy = Math.min(H - 1, Math.max(0, y + (r() - 0.5) * pas * 0.7));
+          if (d[((qy | 0) * L + (qx | 0)) * 4 + 3] > 140) p.push([qx, qy]);
+        }
+        for (var i = p.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), s = p[i]; p[i] = p[j]; p[j] = s; }
+        return p;
       }
 
       // --- Le pinceau : des poils qui portent l'encre et sèchent le long du geste -------------
@@ -139,8 +174,6 @@
         var sec = court ? function () { return 0.04; } : function (u) { return 0.05 + 0.7 * Math.pow(u, 1.8); };
         var poils = [];
         for (var p = 0; p < 150; p++) { var k = (p / 149) * 2 - 1; poils.push({ k: k + (r() - 0.5) * 0.02, w: (1.2 + r() * 2.6) * E, a: 0.55 + r() * 0.45, ph: r() * 100, f: 9 + r() * 22, bord: Math.abs(k) }); }
-        var points = [];
-        for (var q = 0; q < 900; q++) { var u = r(), idx = Math.min(n - 1, Math.floor(u * (n - 1))), kk = (r() * 2 - 1) * 0.48 * larg(u); if (r() < sec(u) * 0.8) continue; points.push([pts[idx][0] + nx[idx] * kk, pts[idx][1] + ny[idx] * kk]); }
         // plein : un geste à l'accent se pose sans transparence (l'accent n'est jamais dilué)
         function dessiner(ctx, avance, couleur, plein) {
           if (avance <= 0) return;
@@ -166,67 +199,97 @@
           });
           ctx.globalAlpha = 1;
         }
-        return { dessiner: dessiner, points: points };
+        return { dessiner: dessiner };
       }
 
-      // --- Construction ---------------------------------------------------------------------
-      var ctxE = toile($("encre")), ctxN = toile($("nuee"));
-      var traits = GESTES.map(pinceau);
-      var chiffres = cadreImprimerie($("cadre"), 0.05);
+      // --- Les mots de l'accroche, au centre du cercle -----------------------------------------
+      // Une ligne par mot, la plus longue à 62 % du diamètre, le bloc à moitié de sa hauteur au plus.
+      var R = CERCLE.r * Math.min(L, H) * (vertical ? 1.22 : 1), CX = CERCLE.cx * L, CY = CERCLE.cy * H;
+      var hoteMots = $("mots"), spans = EXEMPLE.accroche.map(function (m) { return K.el(hoteMots, "span", "t06-mot", m, "font-size:100px;"); });
+      var chiffres = cadreImprimerie($("cadre"));
 
-      // La nuée : chaque point part d'un point d'encre, s'envole avec le vent, puis se pose en bande.
-      var rB = rng(GRAINE), r = rng(GRAINE + 1), part = [], sources = [], CX = GESTES[0].cx * L, CY = GESTES[0].cy * H;
-      traits.forEach(function (tr) { sources = sources.concat(tr.points); });
-      for (var i = 0; i < PARTICULES; i++) {
-        var s = sources[Math.floor(r() * sources.length)], b = bande(rB);
-        var x0 = s[0] + (r() - 0.5) * 8, y0 = s[1] + (r() - 0.5) * 8;
-        part.push({ x0: x0, y0: y0, ra: Math.hypot(x0 - CX, y0 - CY), an: Math.atan2(y0 - CY, x0 - CX), x2: b[0], y2: b[1], tour: 0.9 + r() * 0.7, sou: (r() - 0.5) * 60 * E, d: r() * 0.3, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45 });
-      }
+      function construire() {
+        var w100 = Math.max.apply(null, spans.map(function (s) { return s.offsetWidth; }).concat([1]));
+        var fs = Math.min(0.62 * 2 * R / w100 * 100, (R * 1.05) / (spans.length * 1.04), 0.42 * R), ih = fs * 1.04;
+        spans.forEach(function (s, k) {
+          s.style.fontSize = fs.toFixed(1) + "px";
+          s.style.left = (CX - s.offsetWidth / 2).toFixed(1) + "px";
+          s.style.top = (CY - (spans.length * ih) / 2 + k * ih + (ih - s.offsetHeight) / 2).toFixed(1) + "px";
+          // chaque ligne s'imprime de gauche à droite
+          tl.fromTo(s, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)", duration: 0.3, ease: "power2.out", immediateRender: true }, MOTS_DEBUT + k * 0.15);
+        });
+        // Le point posé par le pinceau finit la phrase, après le dernier mot (sur sa ligne de base).
+        var der = spans[spans.length - 1], mDer = (function () { var x = document.createElement("canvas").getContext("2d"); x.font = "600 " + fs + "px " + TITRES; return x.measureText("x"); })();
+        var fa = mDer.fontBoundingBoxAscent || fs * 0.9, fd = mDer.fontBoundingBoxDescent || fs * 0.25;
+        var px = der.offsetLeft + der.offsetWidth + fs * 0.2, py = der.offsetTop + (der.offsetHeight - fa - fd) / 2 + fa - fs * 0.1;
+        var gPoint = { pts: [[(px - fs * 0.02) / L, (py - fs * 0.05) / H], [(px + fs * 0.02) / L, (py + fs * 0.03) / H]], largeur: fs * 0.3 / E, debut: POINT.debut, duree: POINT.duree, graine: POINT.graine, accent: POINT.accent };
+        var GESTES = [CERCLE, gPoint], traits = GESTES.map(pinceau);
 
-      function rendre(t) {
-        chiffres(t);
-        ctxE.clearRect(0, 0, L, H);
-        var fondu = 1 - prog(t, 2.4, 2.95);
-        if (fondu > 0) {
-          // le premier geste se trace en deux élans (le pinceau accélère, ralentit, repart)
-          traits.forEach(function (tr, k) { var g = GESTES[k], a = k === 0 ? 0.52 * prog(t, g.debut, g.debut + g.duree * 0.42, "power2.out") + 0.48 * prog(t, g.debut + g.duree * 0.45, g.debut + g.duree, "power2.inOut") : prog(t, g.debut, g.debut + g.duree, "power2.out"); tr.dessiner(ctxE, a, g.accent ? ACCENT : ENCRE, !!g.accent); });
-          // la numérisation : des colonnes de petits signes, couleur de la page, traversent l'encre
-          var nb = prog(t, 1.8, 2.45, "none");
-          if (nb > 0) {
-            ctxE.save(); ctxE.globalCompositeOperation = "source-atop"; ctxE.fillStyle = PAPIER; ctxE.font = "700 " + Math.round(16 * E) + "px ui-monospace, monospace";
-            var rr = rng(Math.floor(t * 12) * 17 + 3), col = Math.floor(nb * 48), x0 = L / 2 - 0.36 * Math.min(L, H) * (vertical ? 1.22 : 1);
-            for (var c = 0; c < col; c++) { var x = x0 + c * 16 * E; if (rr() < 0.3) continue; for (var y = H * 0.12; y < H * 0.88; y += 17 * E) if (rr() < 0.72) ctxE.fillText("01-^|:#"[Math.floor(rr() * 7)], x, y); }
-            ctxE.restore();
-          }
-          if (fondu < 1) { ctxE.save(); ctxE.globalCompositeOperation = "destination-in"; ctxE.fillStyle = "rgba(0,0,0," + fondu.toFixed(3) + ")"; ctxE.fillRect(0, 0, L, H); ctxE.restore(); }
+        // La nuée naît de l'encre réellement posée : le cercle, le point, puis les mots.
+        var cE = document.createElement("canvas"), xE = toile(cE);
+        traits.forEach(function (tr, k) { tr.dessiner(xE, 1, "#000", !!GESTES[k].accent); });
+        var cM = document.createElement("canvas"), xM = toile(cM);
+        var LIGNES = mesurer(spans);
+        ecrire(xM, LIGNES, "#000");
+        var pasMots = Math.max(4, Math.min(9, fs * 0.06)) * 1;
+        var sources = placesDe(xE, PAS_ENCRE * E, GRAINE + 3).concat(placesDe(xM, pasMots, GRAINE + 4));
+        var rB = rng(GRAINE), r = rng(GRAINE + 1), part = [];
+        for (var i = 0; i < sources.length; i++) {
+          var s = sources[i], b = bande(rB);
+          part.push({ x0: s[0], y0: s[1], ra: Math.hypot(s[0] - CX, s[1] - CY), an: Math.atan2(s[1] - CY, s[0] - CX), x2: b[0], y2: b[1], tour: 0.9 + r() * 0.7, sou: (r() - 0.5) * 60 * E, d: r() * 0.3, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45 });
         }
-        ctxN.clearRect(0, 0, L, H);
-        var apparait = prog(t, 2.3, 2.75);
-        if (apparait > 0) {
-          ctxN.fillStyle = ENCRE;
-          for (var i = 0; i < part.length; i++) {
-            // la nuée tourne dans le sens du geste en respirant, puis s'aplatit en bande
-            var p = part[i], envol = 0.55 * prog(t, 2.4 + p.d, 2.95 + p.d, "power3.out") + 0.45 * prog(t, 3.05 + p.d * 0.5, 3.5 + p.d * 0.5, "power3.inOut"), pose = prog(t, 3.45 + p.d * 0.5, 4.3, "power3.inOut");
-            var a = p.an - p.tour * envol, rr = p.ra * (1 + 0.22 * Math.sin(Math.PI * envol)) + p.sou * envol;
-            var x = CX + Math.cos(a) * rr, y = CY + Math.sin(a) * rr;
-            x += (p.x2 - x) * pose; y += (p.y2 - y) * pose;
-            ctxN.globalAlpha = apparait * p.al; ctxN.beginPath(); ctxN.arc(x, y, p.ta, 0, 6.2832); ctxN.fill();
+
+        var ctxE = toile($("encre")), ctxN = toile($("nuee"));
+        // Les mots passent de la page au canevas au début de la numérisation (même dessin, même
+        // place) : les colonnes de signes les traversent avec le cercle.
+        tl.set(hoteMots, { opacity: 0 }, T_NUM);
+        function rendre(t) {
+          chiffres(t);
+          ctxE.clearRect(0, 0, L, H);
+          var fondu = 1 - prog(t, T_DEFAIT + 0.05, T_DEFAIT + 0.6);
+          if (fondu > 0) {
+            // le cercle se trace en deux élans (le pinceau accélère, ralentit, repart), puis le point
+            traits.forEach(function (tr, k) { var g = GESTES[k], a = k === 0 ? 0.52 * prog(t, g.debut, g.debut + g.duree * 0.42, "power2.out") + 0.48 * prog(t, g.debut + g.duree * 0.45, g.debut + g.duree, "power2.inOut") : prog(t, g.debut, g.debut + g.duree, "power2.out"); tr.dessiner(ctxE, a, g.accent ? ACCENT : ENCRE, !!g.accent); });
+            if (t >= T_NUM) ecrire(ctxE, LIGNES, ENCRE);
+            // la numérisation : des colonnes de petits signes, couleur de la page, traversent l'encre
+            var nb = prog(t, T_NUM, T_NUM + 0.65, "none");
+            if (nb > 0) {
+              ctxE.save(); ctxE.globalCompositeOperation = "source-atop"; ctxE.fillStyle = PAPIER; ctxE.font = "700 " + Math.round(16 * E) + "px ui-monospace, monospace";
+              var rr = rng(Math.floor(t * 12) * 17 + 3), col = Math.floor(nb * 48), x0 = CX - R * 1.09;
+              for (var c = 0; c < col; c++) { var x = x0 + c * 16 * E * (R / 356); if (rr() < 0.3) continue; for (var y = H * 0.12; y < H * 0.88; y += 17 * E) if (rr() < 0.72) ctxE.fillText("01-^|:#"[Math.floor(rr() * 7)], x, y); }
+              ctxE.restore();
+            }
+            if (fondu < 1) { ctxE.save(); ctxE.globalCompositeOperation = "destination-in"; ctxE.fillStyle = "rgba(0,0,0," + fondu.toFixed(3) + ")"; ctxE.fillRect(0, 0, L, H); ctxE.restore(); }
           }
-          ctxN.globalAlpha = 1;
+          ctxN.clearRect(0, 0, L, H);
+          var apparait = prog(t, T_DEFAIT - 0.05, T_DEFAIT + 0.35);
+          if (apparait > 0) {
+            ctxN.fillStyle = ENCRE;
+            for (var i = 0; i < part.length; i++) {
+              // la nuée tourne dans le sens du geste en respirant, puis s'aplatit en bande
+              var p = part[i], T0 = T_DEFAIT, envol = 0.55 * prog(t, T0 + 0.1 + p.d, T0 + 0.65 + p.d, "power3.out") + 0.45 * prog(t, T0 + 0.75 + p.d * 0.5, T0 + 1.2 + p.d * 0.5, "power3.inOut"), pose = prog(t, T0 + 1.15 + p.d * 0.5, T0 + 2, "power3.inOut");
+              var a = p.an - p.tour * envol, rr2 = p.ra * (1 + 0.22 * Math.sin(Math.PI * envol)) + p.sou * envol;
+              var x2 = CX + Math.cos(a) * rr2, y2 = CY + Math.sin(a) * rr2;
+              x2 += (p.x2 - x2) * pose; y2 += (p.y2 - y2) * pose;
+              ctxN.globalAlpha = apparait * p.al; ctxN.beginPath(); ctxN.arc(x2, y2, p.ta, 0, 6.2832); ctxN.fill();
+            }
+            ctxN.globalAlpha = 1;
+          }
         }
+        // Les cinq premières secondes se lisent sur une image stable : la caméra ne fait qu'une lente
+        // avancée pendant le geste et la lecture (×1,02 → ×1,05, sine.inOut), puis, une fois les
+        // mots défaits, revient au cadre de la scène suivante.
+        var cam = $("cam");
+        gsap.set(cam, { scale: 1.02 });
+        tl.to(cam, { scale: 1.05, duration: T_DEFAIT + 0.3, ease: "sine.inOut" }, 0.1);
+        tl.to(cam, { scale: 1, duration: 0.6, ease: "power2.inOut" }, T_DEFAIT + 0.45);
+        var horloge = { t: 0 };
+        tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
+        rendre(0);
+        window.__timelines[ID] = tl;
       }
-      // Les cinq premières secondes se lisent sur une image stable : la caméra ne fait qu'une lente
-      // avancée pendant le geste (×1,02 → ×1,05, sine.inOut), sans choc au point posé ni sursaut à la
-      // numérisation (le geste, le point et les colonnes de signes font l'événement), puis revient au
-      // cadre de la scène suivante.
-      var cam = $("cam");
-      gsap.set(cam, { scale: 1.02 });
-      tl.to(cam, { scale: 1.05, duration: 3.6, ease: "sine.inOut" }, 0.1);
-      tl.to(cam, { scale: 1, duration: 0.6, ease: "power2.inOut" }, 3.7);
-      var horloge = { t: 0 };
-      tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
-      rendre(0);
-      window.__timelines[ID] = tl;
+      // les mots se mesurent avec la police chargée
+      if (document.fonts && document.fonts.load) document.fonts.load("600 100px " + TITRES, EXEMPLE.accroche.join(" ")).then(construire, construire); else construire();
     })();
   </script>
 </template>

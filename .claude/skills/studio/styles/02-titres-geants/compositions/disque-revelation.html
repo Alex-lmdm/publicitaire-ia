@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°2 · TITRES GÉANTS · SCÈNE « LE DISQUE QUI POSE LE NOM » (la révélation), 7,7 s, 16:9
+    STYLE N°2 · TITRES GÉANTS · SCÈNE « LE DISQUE QUI POSE LE NOM » (la révélation), 7,8 s, 16:9
 
     Ce qu'elle montre : sur le clair de la marque, un cercle se dessine au trait avec ses repères de
     construction (son carré, ses deux diamètres), puis se remplit d'un coup de sa vraie matière en
@@ -16,45 +16,43 @@
     le nom de l'offre s'écrit au-dessus, lettre par lettre, et la phrase qui dit ce qu'elle fait se
     pose dessous.
 
-    La vraie matière (style.md, « Aucune image inventée ») : le disque n'est jamais un aplat seul.
-    Il porte LOGO, sinon IMAGE, sinon CHIFFRE (le premier qui existe) dès qu'il prend sa couleur,
-    avant 0,6 s ; le cercle tracé n'est qu'une transition vers elle.
+    La vraie matière (image.md, « La vraie matière ») : le disque n'est jamais un aplat seul ni le
+    sujet seul d'un plan. Il porte le logo, sinon une capture, sinon un chiffre (le premier qui
+    existe) dès qu'il prend sa couleur, avant 0,6 s ; le cercle tracé n'est qu'une transition vers
+    elle. Au plan A, le disque et son logo font plus de 40 % de la hauteur ; pendant la montée, il
+    reste grand (×1,15) et son trait le relie au sol ; posé, il n'est plus que le point de fuite :
+    le sujet est le nom, mot héros à 68 % de la largeur (la scène règle sa taille), et sa phrase.
 
-    La lecture (rythme.md) : le nom et sa phrase restent lecture(NOM + PHRASE) une fois posés (0,3 s
-    par mot + 0,8 s, jamais moins de 1,5 s) ; pendant cette tenue, la caméra ne fait qu'une dérive
-    lente et la vie vient de la phrase : le mot clé surligné d'un bloc d'accent, puis le surlignage à
-    poignées qui attrape le nom et se retire avant la fin. data-duration (ici et sur l'hôte dans index.html) = l'instant
-    où la phrase est posée + sa lecture : la console donne la valeur s'il manque du temps.
+    La lecture (mouvement.md, « La lecture ») : le nom et sa phrase restent lecture(nom + phrase)
+    une fois posés (0,3 s par mot + 0,8 s, jamais moins de 1,5 s) ; pendant cette tenue, la caméra
+    ne fait qu'une dérive lente et la vie vient de la phrase : le mot clé surligné d'un bloc
+    d'accent, puis le surlignage à poignées qui attrape le nom et se retire avant la fin. La montée
+    et la descente de la caméra tombent avant le nom, jamais sous un texte. data-duration (ici et sur
+    l'hôte dans index.html) = l'instant où la phrase est posée + sa lecture : la console donne la
+    valeur s'il manque du temps.
 
     Couleurs : celles de la marque, rien d'autre. Le clair (--brand-clair) et son trait sombre au
     début, la nuit (--brand-sombre) ensuite ; l'anneau du disque est l'accent plein ; les repères et
     les rayons, du blanc en transparence (des gris). Son logo et sa capture gardent leurs couleurs.
     Aucun paysage, aucune sphère, aucun faisceau de lumière, aucune teinte dérivée de l'accent.
 
-    À remplacer :
-      1. L'identifiant « t02-revele » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. NOM : le nom de l'offre (ou de sa marque), 1 à 3 mots ; il se réduit seul s'il est long.
-      3. PHRASE : la suite de la phrase du nom, ce que fait l'offre (4 à 9 mots, de sa page) :
-         « Publicitaire IA » + « installe un publicitaire dans Claude ou ChatGPT. » ; "" pour le nom
-         seul (un nom seul n'explique rien : seulement si la phrase d'avant ou d'après le fait).
-         MOT_CLE (facultatif) : le mot de PHRASE surligné d'un bloc d'accent pendant la lecture.
-      4. La matière du disque, le premier qui existe :
-         LOGO : le logo de sa marque, rond ou carré (brand/logo.png, son icône), découpé dans le
-              disque ;
-         IMAGE : sans logo, une vraie capture (assets/images/… : sa page, son produit, son
-              espace de formation, un résultat) découpée dans le disque ; CADRAGE : la partie
-              montrée (object-position, "50% 20%") ;
-         CHIFFRE : sans logo ni capture, un vrai chiffre de OFFRE.json (« 67 € »), écrit dans le
-              disque à l'encre posée sur l'accent.
-         Un chemin qui manque fait échouer `npm run check` (erreur 404) : sans logo, vide LOGO et
-         donne IMAGE ou CHIFFRE. Si aucun n'existe, la console le dit : la scène ne se monte pas
-         sur un disque vide.
-      5. ETIQUETTE (facultatif) : une info réelle de la fiche (le prix, la date d'ouverture), posée
-         à côté du cadre de sélection ; vide par défaut. Jamais une cote, un nom de police ni un code
-         couleur : ces étiquettes sont réservées à une vidéo qui parle de design (une marque, un
-         template).
-      6. Les instants (MOMENTS) : la couleur, la coupe, la chute du trait et la pose sur les temps
-         forts de la musique ; garde l'ordre.
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque valeur vient de OFFRE.json ou de sa
+    page, ou sa ligne se retire), puis l'identifiant « t02-revele » partout (racine, scène, préfixe
+    des ids, clé de la timeline), data-duration et les instants (MOMENTS : la couleur, la coupe, la
+    chute du trait et la pose sur les temps forts de la musique ; garde l'ordre).
+      nom : le nom de l'offre (ou de sa marque), 1 à 3 mots ; phrase : la suite de la phrase du
+        nom, ce que fait l'offre (3 à 6 mots de sa page : 8 mots au plus avec le nom) ; "" pour
+        le nom seul (seulement si la phrase d'avant ou d'après explique l'offre) ; mot_cle
+        (facultatif) : le mot de la phrase surligné d'un bloc d'accent pendant la lecture.
+      La matière du disque, le premier qui existe : logo (le logo de sa marque, rond ou carré,
+        brand/logo.png, découpé dans le disque) ; sinon image (une vraie capture, assets/images/…,
+        découpée dans le disque) et cadrage (la partie montrée, en object-position) ; sinon
+        chiffre (un vrai chiffre de OFFRE.json, écrit dans le disque à l'encre posée sur l'accent).
+        Un chemin qui manque fait échouer `npm run check` (erreur 404) : sans logo, vide logo et
+        donne image ou chiffre. Si aucun n'existe, la console le dit : la scène ne se monte pas sur
+        un disque vide.
+      etiquette (facultative) : une info réelle de la fiche (le prix, la date d'ouverture), à côté
+        du cadre de sélection ; jamais une cote, un nom de police ni un code couleur.
   -->
 </head>
 <body>
@@ -106,7 +104,9 @@
       letter-spacing: -0.04em; color: var(--t02-texte);
     }
     #t02-revele .t02-revele-nom .t02-revele-mot { display: inline-block; white-space: nowrap; }
-    #t02-revele .t02-revele-nom[data-etat="plein"] { color: var(--brand-contrast); }
+    /* Une lettre sous un bloc d'accent passe à l'encre posée sur l'accent (lettre par lettre, quand
+       le bloc qui la balaie atteint son milieu : le contraste reste bon à chaque image). */
+    #t02-revele [data-plein="1"] { color: var(--brand-contrast); }
     /* Le surlignage à poignées qui attrape le nom pendant sa lecture : un bloc d'accent plein. */
     #t02-revele .t02-revele-surligne { position: absolute; z-index: 6; background: var(--brand-accent); transform-origin: 0 50%; }
     #t02-revele .t02-revele-selnom { position: absolute; z-index: 8; border: 3px solid var(--t02-accent-texte); }
@@ -118,10 +118,9 @@
     #t02-revele .t02-revele-cle { position: relative; display: inline-block; }
     #t02-revele .t02-revele-cle i { position: absolute; left: -0.12em; right: -0.12em; top: 0.04em; bottom: -0.02em; background: var(--brand-accent); transform-origin: 0 50%; }
     #t02-revele .t02-revele-cle span { position: relative; }
-    #t02-revele .t02-revele-cle[data-etat="plein"] span { color: var(--brand-contrast); }
   </style>
 
-  <div data-composition-id="t02-revele" data-width="1920" data-height="1080" data-duration="7.7" style="position:absolute; inset:0;">
+  <div data-composition-id="t02-revele" data-width="1920" data-height="1080" data-duration="7.8" style="position:absolute; inset:0;">
     <div id="t02-revele" class="k-scene">
       <div class="t02-revele-monde" id="t02-revele-monde" data-layout-allow-overflow>
         <div class="t02-revele-grille" id="t02-revele-grille"></div>
@@ -140,6 +139,16 @@
 
   <script>
     (function () {
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+        nom: "Ton coaching",                     // le nom de l'offre (exemple : un coaching)
+        phrase: "t'aide à décider plus vite.",   // ce qu'elle fait, la suite du nom ("" : le nom seul)
+        mot_cle: "décider",                      // un mot de la phrase, surligné ("" : aucun)
+        logo: "brand/logo.png",                  // le logo de sa marque, découpé dans le disque
+        image: "", cadrage: "50% 20%",           // sans logo : une vraie capture (assets/images/…)
+        chiffre: "",                             // sans logo ni capture : un vrai chiffre de la fiche
+        etiquette: ""                            // une info réelle à côté du cadre ("" : aucune)
+      };
+
       var ID = "t02-revele", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       // La durée : la plus courte des data-duration de la scène et de son hôte (index.html).
@@ -148,17 +157,13 @@
         for (; n; n = n.parentElement) {
           if (n.getAttribute && n.getAttribute("data-composition-id") === ID && parseFloat(n.getAttribute("data-duration")) > 0) v.push(parseFloat(n.getAttribute("data-duration")));
         }
-        return v.length ? Math.min.apply(null, v) : 7.7;
+        return v.length ? Math.min.apply(null, v) : 7.8;
       })();
 
-      // ---------- Ce qu'on remplace ----------
-      var NOM = "Ton offre";
-      var PHRASE = "dit ici ce qu'elle fait.";   // la suite de la phrase du nom ("" : le nom seul)
-      var MOT_CLE = "";                          // un mot de PHRASE, surligné pendant la lecture
-      var LOGO = "brand/logo.png";               // le logo de sa marque, découpé dans le disque
-      var IMAGE = "", CADRAGE = "50% 20%";       // sans logo : une vraie capture (assets/images/…)
-      var CHIFFRE = "";                          // sans logo ni capture : un vrai chiffre (« 67 € »)
-      var ETIQUETTE = "";                        // une info réelle à côté du cadre ("" : aucune)
+      // ---------- Le mouvement (sur les temps de la musique) ----------
+      var NOM = EXEMPLE.nom, PHRASE = EXEMPLE.phrase || "", MOT_CLE = EXEMPLE.mot_cle || "";
+      var LOGO = EXEMPLE.logo || "", IMAGE = EXEMPLE.image || "", CADRAGE = EXEMPLE.cadrage || "50% 20%";
+      var CHIFFRE = EXEMPLE.chiffre || "", ETIQUETTE = EXEMPLE.etiquette || "";
       var MOMENTS = { couleur: 0.55, nuit: 0.95, trait: 1.95, descente: 2.3, sol: 2.95, pose: 3.5 };
 
       // La lecture : 0,3 s par mot + 0,8 s, jamais moins de 1,5 s (studio_motion.py lecture).
@@ -168,10 +173,12 @@
       };
 
       // Le monde (1920 × 1760) : le disque y vit en (960, 1160) ; l'horizon est à 1340.
-      // Plan A, monde à y -620 : le disque au centre de l'image. Il monte de 730 px en rapetissant
-      // (×0,62) pendant que la caméra lève les yeux (monde à -100), puis redescend se poser sur
-      // l'horizon (×0,33, son bas sur la ligne) quand la caméra revient (monde à -620).
-      var X = 960, Y = 1160, HORIZON = 1340, MONTE = 730, S_HAUT = 0.62, S_POSE = 0.333;
+      // Plan A, monde à y -620 : le disque au centre de l'image (×1,25 : 450 px, 42 % de la
+      // hauteur). Il monte de 730 px en rapetissant à peine (×1,15) pendant que la caméra lève les
+      // yeux (monde à -100), puis redescend se poser sur l'horizon (×0,42, son bas sur la ligne)
+      // quand la caméra revient (monde à -620). Le nom, au-dessus, fait 68 % de la largeur.
+      var W = 1920, X = 960, Y = 1160, HORIZON = 1340, MONTE = 730, ECH_A = 1.25, S_HAUT = 1.15, S_POSE = 0.42;
+      var NOM_LARGE = 0.68 * W, NOM_MAX = 260, PHRASE_HAUT = 1070;   // la phrase, à 450 px du haut de l'image
       var monde = $("monde"), disque = $("disque"), papier = $("papier");
       var R = 180, HAUT = Y - MONTE, POSE = HORIZON - R * S_POSE;
 
@@ -200,8 +207,9 @@
 
       // ---------- Plan A : le dessin au trait sur le clair ----------
       // Le carré de construction du cercle (tangent à lui), en pixels du monde ; aucune cote écrite.
-      var pv = [X - R, X + R].map(function (x) { return K.el(papier, "i", "t02-revele-pv", null, "left:" + x + "px"); });
-      var ph = [540 - R, 540 + R].map(function (y) { return K.el(papier, "i", "t02-revele-ph", null, "top:" + y + "px"); });
+      var RA = R * ECH_A;
+      var pv = [X - RA, X + RA].map(function (x) { return K.el(papier, "i", "t02-revele-pv", null, "left:" + x + "px"); });
+      var ph = [540 - RA, 540 + RA].map(function (y) { return K.el(papier, "i", "t02-revele-ph", null, "top:" + y + "px"); });
       gsap.set(pv, { scaleY: 0 }); gsap.set(ph, { scaleX: 0 });
       tl.to(pv, { scaleY: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.0);
       tl.to(ph, { scaleX: 1, duration: 0.45, ease: "expo.out", stagger: 0.05 }, 0.05);
@@ -216,10 +224,10 @@
       tl.to(disque.querySelector(".d-centre"), { opacity: 1, duration: 0.1 }, 0.28);
       // La matière : le disque se remplit d'un coup de son logo (ou de sa capture, de son chiffre),
       // cerclé d'accent, en gonflant ; ses repères s'effacent.
-      gsap.set(disque, { x: 0, y: 0, scale: 0.86 });
+      gsap.set(disque, { x: 0, y: 0, scale: 0.86 * ECH_A });
       tl.set(fondD, { opacity: 1 }, MOMENTS.couleur);
       tl.set(reperes, { opacity: 0 }, MOMENTS.couleur);
-      tl.to(disque, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, MOMENTS.couleur);
+      tl.to(disque, { scale: ECH_A, duration: 0.5, ease: "back.out(1.6)" }, MOMENTS.couleur);
       tl.to(pv, { scaleY: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
       tl.to(ph, { scaleX: 0, duration: 0.25, ease: "power2.in" }, MOMENTS.couleur + 0.02);
 
@@ -236,7 +244,7 @@
         // L'étiquette se pose avec le cadre et garde sa taille pendant que le disque rapetisse.
         K.cacher(etq, { x: -12 });
         tl.to(etq, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, MOMENTS.nuit + 0.6);
-        tl.fromTo(etq, { scale: 1 }, { scale: 1 / S_HAUT, duration: 1.1, ease: "power2.inOut", immediateRender: false }, MOMENTS.nuit + 0.1);
+        tl.fromTo(etq, { scale: 1 / ECH_A }, { scale: 1 / S_HAUT, duration: 1.1, ease: "power2.inOut", immediateRender: false }, MOMENTS.nuit + 0.1);
         tl.to(etq, { opacity: 0, duration: 0.2, ease: "power2.in" }, MOMENTS.descente - 0.12);
       }
 
@@ -284,8 +292,7 @@
 
       // ---------- Le nom, lettre par lettre, et sa phrase, au-dessus du point de pose ----------
       var nom = $("nom"), phrase = $("phrase");
-      nom.style.top = (PHRASE ? 870 : 1010) + "px";
-      phrase.style.top = "1015px";
+      phrase.style.top = PHRASE_HAUT + "px";   // le nom se place au-dessus d'elle, une fois mesuré
       // Chaque mot du nom dans sa boîte (pour changer de graisse d'un coup), chaque lettre à part.
       nom.innerHTML = NOM.split(" ").map(function (m) {
         return '<span class="t02-revele-mot">' + m.split("").map(function (l) { return '<span class="k-mot">' + l + "</span>"; }).join("") + "</span>";
@@ -298,7 +305,7 @@
       if (PHRASE) {
         phrase.innerHTML = PHRASE.split(" ").map(function (m) {
           var propre = m.replace(/[.,;:!?…]+$/, "");
-          if (MOT_CLE && propre === MOT_CLE) return '<span class="k-mot t02-revele-cle"><i></i><span>' + m + "</span></span>";
+          if (MOT_CLE && propre === MOT_CLE) return '<span class="k-mot t02-revele-cle"><i></i><span>' + m.split("").map(function (l) { return "<span>" + l + "</span>"; }).join("") + "</span></span>";
           return '<span class="k-mot">' + m + "</span>";
         }).join(" ");
         motsPhrase = phrase.querySelectorAll(".k-mot");
@@ -313,32 +320,46 @@
 
       // La tenue : une dérive lente (3 %), et la vie de la phrase (mot clé, bascules de graisse).
       tl.to(monde, { scale: 1.03, duration: Math.max(0.5, D - MOMENTS.sol - 0.8), ease: "sine.inOut" }, MOMENTS.sol + 0.8);
-      if (cle) {
-        var bloc = cle.querySelector("i");
-        gsap.set(bloc, { scaleX: 0 });
-        tl.to(bloc, { scaleX: 1, duration: 0.3, ease: "power3.out" }, LU + 0.25);
-        tl.set(cle, { attr: { "data-etat": "plein" } }, LU + 0.35);
-      }
-      // Le surlignage à poignées (le geste du nom de l'original) : un cadre attrape le nom, un bloc
-      // d'accent le remplit, le nom passe à l'encre posée sur l'accent ; il se retire avant la fin.
+      if (cle) gsap.set(cle.querySelector("i"), { scaleX: 0 });   // son bloc s'étend en finir()
+      // Le surlignage à poignées : un cadre attrape le nom, un bloc d'accent le sélectionne lettre
+      // par lettre (le nom passe à l'encre posée sur l'accent) ; il se retire avant la fin.
       var H = FIN - LU, surligne = K.el(monde, "div", "t02-revele-surligne"), selNom = K.el(monde, "div", "t02-revele-selnom");
       [[0, 0], [100, 0], [0, 100], [100, 100]].forEach(function (p) { K.el(selNom, "i", "t02-revele-poignee", null, "left:" + p[0] + "%; top:" + p[1] + "%;"); });
       gsap.set(surligne, { scaleX: 0 });
       K.cacher(selNom, { scale: 1.06 });
       tl.to(selNom, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, LU + 0.45);
-      tl.to(surligne, { scaleX: 1, duration: 0.3, ease: "power3.out" }, LU + 0.55);
-      tl.set(nom, { attr: { "data-etat": "plein" } }, LU + 0.65);
       // Sur le surlignage, le premier mot du nom passe en voix légère puis revient, sur les temps ;
       // le surlignage se retire 0,9 s avant la fin (rien ne reste figé plus de 0,8 s).
       var RETRAIT = Math.max(LU + 1.6, LU + H - 0.9), premier = motsNom[0], bascules = [];
       if (LU + 1.25 < RETRAIT - 0.25) bascules.push([LU + 1.25, 400]);
       if (LU + 1.9 < RETRAIT - 0.25) bascules.push([LU + 1.9, 600]);
-      if (bascules.length === 1) bascules.push([RETRAIT + 0.12, 600]);
+      if (bascules.length === 1) bascules.push([RETRAIT - 0.2, 600]);   // en gras au retrait : les lettres gardent leur place
       bascules.forEach(function (b) { if (b[0] < D - 0.3) tl.set(premier, { fontWeight: b[1] }, b[0]); });
-      if (RETRAIT < D - 0.35) {
-        tl.to(surligne, { scaleX: 0, duration: 0.25, ease: "power2.in", transformOrigin: "100% 50%" }, RETRAIT);
-        tl.set(nom, { attr: { "data-etat": "" } }, RETRAIT + 0.12);
+      var RETIRE = RETRAIT < D - 0.35;
+      if (RETIRE) {
         tl.to(selNom, { opacity: 0, duration: 0.18, ease: "power2.in" }, RETRAIT + 0.1);
+      }
+
+      // Un bloc d'accent qui sélectionne un texte lettre par lettre, comme une sélection dans un
+      // éditeur : à chaque pas, il s'arrête au bord d'une lettre et elle passe à l'encre posée sur
+      // l'accent (aucune lettre à moitié couverte : le contraste reste bon à chaque image). Il
+      // s'étend en 0,3 s (rythme power3.out) et se retire vers la droite en 0,25 s (power2.in).
+      // bord(l) : [gauche, droite] de la lettre, dans le repère du bloc (x0, largeB).
+      function selectionner(bloc, lettresB, bord, x0, largeB, debut, retrait) {
+        var n = lettresB.length;
+        gsap.set(bloc, { scaleX: 0, transformOrigin: "0 50%" });
+        Array.prototype.forEach.call(lettresB, function (l, i) {
+          var t = debut + 0.3 * (1 - Math.cbrt(1 - (i + 1) / n));
+          tl.set(bloc, { scaleX: i === n - 1 ? 1 : Math.min(1, (bord(l)[1] - x0) / largeB) }, t);
+          tl.set(l, { attr: { "data-plein": "1" } }, t);
+        });
+        if (retrait == null) return;
+        tl.set(bloc, { transformOrigin: "100% 50%" }, retrait);
+        Array.prototype.forEach.call(lettresB, function (l, i) {
+          var t = retrait + 0.25 * Math.sqrt((i + 1) / n);
+          tl.set(bloc, { scaleX: i === n - 1 ? 0 : Math.max(0, (x0 + largeB - bord(l)[1]) / largeB) }, t);
+          tl.set(l, { attr: { "data-plein": "" } }, t);
+        });
       }
 
       // Ce qui se mesure (la largeur du nom, la matière qui se charge) attend la police et les images.
@@ -347,15 +368,27 @@
       Promise.all([document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).catch(function () {})]
         .concat(candidats.map(charge))).then(finir, finir);
       function finir(res) {
-        if (nom.scrollWidth > 1500) nom.style.fontSize = (120 * 1500 / nom.scrollWidth).toFixed(1) + "px";
+        // Le nom, mot héros : 68 % de la largeur (mesuré lettre à lettre, pas sa boîte, qui fait
+        // toute la largeur), NOM_MAX au plus ; posé au-dessus de sa phrase (ou seul, plus bas).
+        var l0 = lettres[0], lz = lettres[lettres.length - 1];
+        var f0 = parseFloat(getComputedStyle(nom).fontSize);
+        var taille = Math.min(NOM_MAX, f0 * NOM_LARGE / Math.max(1, lz.offsetLeft + lz.offsetWidth - l0.offsetLeft));
+        nom.style.fontSize = taille.toFixed(1) + "px";
+        nom.style.top = ((PHRASE ? PHRASE_HAUT : PHRASE_HAUT + 90) - 75 - taille) + "px";   // le surlignage déborde de 0,16 × la taille
         // Le surlignage et son cadre se calent sur le nom tel qu'il est écrit.
-        var l0 = lettres[0], lz = lettres[lettres.length - 1], gauche = nom.offsetLeft + l0.offsetLeft, large = lz.offsetLeft + lz.offsetWidth - l0.offsetLeft;
-        var hNom = parseFloat(getComputedStyle(nom).fontSize) * 1.0, marge = 0.16 * hNom;
+        var gauche = nom.offsetLeft + l0.offsetLeft, large = lz.offsetLeft + lz.offsetWidth - l0.offsetLeft;
+        var hNom = taille, marge = 0.16 * hNom;
         [surligne, selNom].forEach(function (e, i) {
           var m = marge + (i ? 10 : 0);
           e.style.left = (gauche - m) + "px"; e.style.width = (large + 2 * m) + "px";
           e.style.top = (nom.offsetTop - m + 0.06 * hNom) + "px"; e.style.height = (hNom + 2 * m) + "px";
         });
+        // Les sélections : le mot clé à LU + 0,25 s, puis le nom à LU + 0,55 s (retiré à RETRAIT).
+        if (cle) {
+          var bc = cle.querySelector("i");
+          selectionner(bc, cle.querySelectorAll(":scope > span > span"), function (l) { return [l.offsetLeft, l.offsetLeft + l.offsetWidth]; }, bc.offsetLeft, bc.offsetWidth, LU + 0.25, null);
+        }
+        selectionner(surligne, lettres, function (l) { var g = nom.offsetLeft + l.offsetLeft; return [g, g + l.offsetWidth]; }, gauche - marge, large + 2 * marge, LU + 0.55, RETIRE ? RETRAIT : null);
         K.entreeMots(tl, lettres, MOMENTS.pose + 0.06, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
         if (motsPhrase.length) K.entreeMots(tl, motsPhrase, PHRASE_DEBUT, { y: 26, flou: 8, decalage: 0.05, duree: 0.5 });
         // La matière du disque : le premier logo ou la première capture chargés, sinon le chiffre.

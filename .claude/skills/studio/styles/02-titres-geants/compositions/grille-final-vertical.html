@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!--
     STYLE N°2 · TITRES GÉANTS · SCÈNE « GRILLE ET FINAL », VERSION VERTICALE 9:16 (1080 × 1920),
-    11,7 s (la même scène que grille-final.html, remise en page pour un Reel, une story, un TikTok :
+    11,9 s (la même scène que grille-final.html, remise en page pour un Reel, une story, un TikTok :
     grille de 4 colonnes, slogan sur trois lignes, bouton aux deux tiers de la largeur au moins)
 
     Ce qu'elle montre, en trois plans coupés franc, chacun tenu le temps de sa lecture :
@@ -21,38 +21,41 @@
         qui s'étire en pilule) ; le nom s'écrit, des repères le mesurent ; le curseur clique le
         bouton, il se remplit de l'accent ; tenue de 3 s au moins.
 
-    La vraie matière (style.md, « Aucune image inventée ») : chaque case est un élément réel de
-    l'offre (un module, un bonus, une fonction : son icône ; un outil qu'elle nomme : son vrai logo),
-    autant de cases qu'il y en a, jamais une icône de remplissage ; le nom de l'élément phare le dit.
-    Le disque qui devient le bouton est permis : c'est la carte de fin.
+    La vraie matière (image.md, « La vraie matière ») : chaque case est un élément réel de l'offre
+    (un module, un bonus, une fonction : son icône ; un outil qu'elle nomme : son vrai logo), autant
+    de cases qu'il y en a, jamais une icône de remplissage ; le nom de l'élément phare le dit. Le
+    disque d'accent porte l'icône de la case phare, puis il est le point du slogan et devient le
+    bouton : jamais une forme seule.
+    Les tailles : le nom de l'élément phare fait 40 px (62 px à l'écran, caméra approchée) ; le
+    slogan, sa plus longue ligne à 85 % de la largeur (200 px au plus) ; le nom de la carte de fin,
+    mot héros à 80 % de la largeur (200 px au plus) : la scène règle ces tailles seule.
 
-    La lecture (rythme.md) : la scène place seule ses coupes après la lecture de chaque phrase
-    (0,3 s par mot + 0,8 s, jamais moins de 1,5 s ; la carte de fin 3 s au moins) ; data-duration
-    (ici et sur l'hôte dans index.html) = la fin de la tenue du plan C : la console donne la valeur
-    s'il manque du temps.
+    La lecture (mouvement.md, « La lecture ») : la scène place seule ses coupes après la lecture de
+    chaque phrase (0,3 s par mot + 0,8 s, jamais moins de 1,5 s ; la carte de fin 3 s au moins) ;
+    data-duration (ici et sur l'hôte dans index.html) = la fin de la tenue du plan C : la console
+    donne la valeur s'il manque du temps. La caméra s'approche de la case phare avant tout texte ;
+    pendant les lectures, elle ne fait qu'une dérive ou une poussée lente.
 
     Couleurs : celles de la marque, rien d'autre : la nuit (--brand-sombre), le texte clair
     (--brand-clair), ses gris, l'accent plein (--brand-accent-lisible pour un trait ou un texte
     posé sur la nuit). Les logos de ses outils gardent leurs couleurs. Aucune planète, aucun cube,
     aucune sphère, aucune forme 3D, aucune teinte dérivée de l'accent.
 
-    À remplacer :
-      1. L'identifiant « t02-final » partout (racine, scène, préfixe des ids, clé de la timeline).
-      2. ICONES : une case par élément RÉEL de l'offre (module, bonus, outil, fonction), 6 à 24,
-         autant qu'il en a : noms du kit (K.ic, Lucide) pour ses modules et ses bonus, logos posés
-         par `studio_motion.py logos` (« logo-claude ») pour les outils qu'elle nomme. CHOISIE :
-         l'index de la case que le cadre attrape ; ETIQUETTE : ce qu'elle est, en vrai (2 à 5 mots,
-         « 35 musiques de lancement »).
-      3. Le slogan (#t02-final-l1 à l3 : 1 ou 2 mots par ligne, 10 caractères au plus par ligne,
-         4 mots au plus en tout, une phrase de sa page). Son point final devient le disque d'accent
-         (ajouté s'il manque).
-      4. Le nom (#t02-final-nom : le nom de sa marque ou de l'offre ; un logo se pose en
-         <img src="brand/logo.png"> à sa gauche, s'il en a un) et le bouton (#t02-final-btn-texte :
-         le vrai libellé du bouton de sa page ; la pilule s'élargit à sa mesure). NOTE (facultatif) :
-         une info réelle sous le bouton (« 67 € jusqu'au 12 novembre »), vide par défaut. Une pub ne
-         dessine pas de bouton : « Découvre-le » et une flèche vers le bas, à la place.
-      Aucune étiquette technique (police, taille, rayon, code couleur) : réservées à une vidéo qui
-      parle de design (une marque, un template).
+    À remplacer : l'objet EXEMPLE, en tête du script (chaque valeur vient de OFFRE.json ou de sa
+    page, ou sa ligne se retire), puis l'identifiant « t02-final » partout (racine, scène, préfixe
+    des ids, clé de la timeline) et data-duration.
+      icones : une case par élément RÉEL de l'offre (module, bonus, outil, fonction), 6 à 24,
+        autant qu'il en a : noms du kit (K.ic, Lucide) pour ses modules et ses bonus, logos posés
+        par `studio_motion.py logos` (« logo-claude ») pour les outils qu'elle nomme ; choisie :
+        l'index de la case que le cadre attrape ; etiquette : ce qu'elle est, en vrai (2 à 4 mots).
+      slogan : une phrase de sa page en trois lignes (1 ou 2 mots par ligne, 10 caractères au plus
+        par ligne, 4 mots au plus en tout) ;
+        son point final devient le disque d'accent (ajouté s'il manque).
+      nom : le nom de sa marque ou de l'offre ; logo (facultatif) : brand/logo.png, posé à sa
+        gauche. bouton : le vrai libellé du bouton de sa page (la pilule s'élargit à sa mesure) ;
+        note (facultative) : une info réelle sous le bouton (le prix, la date de fin). Une pub ne
+        dessine pas de bouton : « Découvre-le » et une flèche vers le bas, à la place.
+      Aucune étiquette technique (police, taille, rayon, code couleur).
     Polices : var(--brand-font-display) ; la note en var(--brand-font-body).
   -->
 </head>
@@ -111,6 +114,7 @@
       font-family: var(--brand-font-display); font-weight: 600; font-size: 96px; line-height: 1;
       letter-spacing: -0.04em; color: var(--t02-texte);
     }
+    #t02-final .t02-final-nom img { height: 0.82em; width: auto; margin-right: 0.22em; vertical-align: -0.08em; }
     #t02-final .t02-final-trait { position: absolute; background: var(--t02-accent-texte); }
     #t02-final .t02-final-note { position: absolute; left: 60px; right: 60px; top: 1124px; text-align: center; font-family: var(--brand-font-body); font-weight: 500; font-size: 38px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; }
     #t02-final .t02-final-btn {
@@ -127,7 +131,7 @@
     #t02-final .t02-final-btn[data-etat="plein"] span { color: var(--brand-contrast); }
   </style>
 
-  <div data-composition-id="t02-final" data-width="1080" data-height="1920" data-duration="11.7" style="position:absolute; inset:0;">
+  <div data-composition-id="t02-final" data-width="1080" data-height="1920" data-duration="11.9" style="position:absolute; inset:0;">
     <div id="t02-final" class="k-scene">
       <!-- Plan A -->
       <div class="t02-final-plan" id="t02-final-planA">
@@ -143,19 +147,19 @@
       </div>
       <!-- Plan B -->
       <div class="t02-final-plan" id="t02-final-planB" style="background:var(--t02-nuit);">
-        <div class="t02-final-grille"></div>
+        <div class="t02-final-grille" data-layout-allow-overflow></div>
         <div id="t02-final-bases"></div>
-        <div class="t02-final-slogan" id="t02-final-l1" style="top:716px;"><span class="k-mot" data-layout-allow-overlap>Ose</span></div>
-        <div class="t02-final-slogan" id="t02-final-l2" style="top:888px;"><span class="k-mot" data-layout-allow-overlap>aller</span></div>
-        <div class="t02-final-slogan" id="t02-final-l3" style="top:1060px;"><span class="k-mot" data-layout-allow-overlap>plus</span> <span class="k-mot" data-layout-allow-overlap>loin.</span></div>
+        <div class="t02-final-slogan" id="t02-final-l1"></div>
+        <div class="t02-final-slogan" id="t02-final-l2"></div>
+        <div class="t02-final-slogan" id="t02-final-l3"></div>
       </div>
       <!-- Plan C -->
       <div class="t02-final-plan" id="t02-final-planC" style="background:var(--t02-nuit);">
-        <div class="t02-final-grille"></div>
+        <div class="t02-final-grille" data-layout-allow-overflow></div>
         <div class="t02-final-contenuC" id="t02-final-contenuC">
-          <div class="t02-final-nom" id="t02-final-nom">Ta marque</div>
+          <div class="t02-final-nom" id="t02-final-nom"></div>
           <div id="t02-final-reperes"></div>
-          <div class="t02-final-btn" id="t02-final-btn" data-etat="vide"><i class="remplir"></i><span id="t02-final-btn-texte">Je commence</span></div>
+          <div class="t02-final-btn" id="t02-final-btn" data-etat="vide"><i class="remplir"></i><span id="t02-final-btn-texte"></span></div>
           <div class="t02-final-note" id="t02-final-note"></div>
           <div id="t02-final-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
         </div>
@@ -167,6 +171,18 @@
 
   <script>
     (function () {
+      var EXEMPLE = {   // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+        // Une case par élément réel de l'offre (ses fonctions, ses modules, ses outils), autant qu'il
+        // en a. Exemple : un logiciel et ses fonctions.
+        icones: ["layout-dashboard", "chart-line", "mail", "calendar", "users", "shield-check",
+          "zap", "cloud", "lock", "rocket", "settings", "bell"],
+        choisie: 9, etiquette: "Mise en ligne",   // la case que le cadre attrape, et ce qu'elle est
+        slogan: ["Ose", "aller", "plus loin."],   // une phrase de sa page, en trois lignes
+        nom: "Ta marque", logo: "",               // logo : "brand/logo.png" s'il en a un
+        bouton: "Essayer",                        // le vrai libellé du bouton de sa page
+        note: ""                                  // une info réelle sous le bouton ("" : aucune)
+      };
+
       var ID = "t02-final", tl = gsap.timeline({ paused: true });
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       // La durée : la plus courte des data-duration de la scène et de son hôte (index.html).
@@ -175,15 +191,14 @@
         for (; n; n = n.parentElement) {
           if (n.getAttribute && n.getAttribute("data-composition-id") === ID && parseFloat(n.getAttribute("data-duration")) > 0) v.push(parseFloat(n.getAttribute("data-duration")));
         }
-        return v.length ? Math.min.apply(null, v) : 11.7;
+        return v.length ? Math.min.apply(null, v) : 11.9;
       })();
 
-      // ---------- Ce qu'on remplace ----------
-      // Une case par élément réel de l'offre (ses modules, ses bonus, ses outils), autant qu'il en a.
-      var ICONES = ["play", "book-open", "video", "list-checks", "message-circle", "calendar",
-        "users", "graduation-cap", "file-text", "rocket", "target", "lightbulb"];
-      var CHOISIE = 9, ETIQUETTE = "Ton lancement";
-      var NOTE = "";   // une info réelle sous le bouton (le prix, la date) ; "" : aucune
+      var ICONES = EXEMPLE.icones, CHOISIE = Math.min(EXEMPLE.choisie, ICONES.length - 1), ETIQUETTE = EXEMPLE.etiquette;
+      var NOTE = EXEMPLE.note || "";
+      // Les tailles (la scène les règle à la mesure des textes) : le slogan, sa plus longue ligne ;
+      // le nom de la carte de fin, mot héros.
+      var W = 1080, H = 1920, SLOGAN_LARGE = 0.85 * W, SLOGAN_MAX = 200, NOM_LARGE = 0.8 * W, NOM_MAX = 200, NOM_BAS = 864;
 
       // La lecture : 0,3 s par mot + 0,8 s, jamais moins de 1,5 s ; la carte de fin 3 s au moins.
       var lecture = function (t, final) {
@@ -194,6 +209,10 @@
       };
       var l1 = $("l1"), l2 = $("l2"), l3 = $("l3"), lignesS = [l1, l2, l3];
       var nom = $("nom"), texteBtn = $("btn-texte");
+      lignesS.forEach(function (l, i) {
+        l.innerHTML = (EXEMPLE.slogan[i] || "").split(" ").filter(Boolean).map(function (m) { return '<span class="k-mot" data-layout-allow-overlap>' + m + "</span>"; }).join(" ");
+      });
+      nom.textContent = EXEMPLE.nom; texteBtn.textContent = EXEMPLE.bouton;
       var slogan = lignesS.map(function (l) { return l.textContent; }).join(" ");
       // Plan A : la grille se dessine (jusqu'à 1,35 s), la caméra s'approche (0,9 s), le cadre
       // attrape la case, son nom s'écrit (posé à 2,65 s) et se lit.
@@ -301,7 +320,7 @@
       // (les deux premières lignes : le point, sur la 3e, ne bouge pas).
       tl.fromTo(lignesS, { scale: 1 }, { scale: 1.035, duration: C - B, ease: "sine.inOut", transformOrigin: "0% 50%" }, B);
       var mA = l1.querySelectorAll(".k-mot")[0], mZ = l2.querySelectorAll(".k-mot")[0];
-      var bascules = [[0.45, mZ, 400], [1.1, mZ, 600], [1.1, mA, 400], [1.75, mA, 600]];
+      var bascules = [[0.45, mZ, 400], [1.1, mZ, 600], [1.1, mA, 400], [1.75, mA, 600]].filter(function (b) { return b[1]; });
       bascules.forEach(function (b) { if (B_LU + b[0] < C - 0.25) tl.set(b[1], { fontWeight: b[2] }, B_LU + b[0]); });
 
       // ---------- Plan C : le nom, ses repères, le point qui devient le bouton ----------
@@ -311,7 +330,8 @@
       tl.set(planB, { opacity: 0 }, C + 0.02);
       var btn = $("btn"), remplir = btn.querySelector(".remplir"), note = $("note");
       var lettres = nom.textContent.split("");
-      nom.innerHTML = lettres.map(function (l) { return '<span class="k-mot">' + (l === " " ? "&nbsp;" : l) + "</span>"; }).join("");
+      nom.innerHTML = (EXEMPLE.logo ? '<img class="k-mot" alt="" src="' + EXEMPLE.logo + '">' : "") +
+        lettres.map(function (l) { return '<span class="k-mot">' + (l === " " ? "&nbsp;" : l) + "</span>"; }).join("");
       K.cacher(nom.querySelectorAll(".k-mot"));
       K.entreeMots(tl, nom.querySelectorAll(".k-mot"), C + 0.05, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
       if (NOTE) {
@@ -326,6 +346,16 @@
       var cs = getComputedStyle(l1);
       document.fonts.load(cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily).then(finir, finir);
       function finir() {
+        // Le slogan : sa plus longue ligne à SLOGAN_LARGE (SLOGAN_MAX au plus), les deux lignes
+        // centrées en hauteur ; le nom de fin, mot héros, posé au-dessus de son repère.
+        var fS = parseFloat(getComputedStyle(l1).fontSize), largeS = Math.max(l1.scrollWidth, l2.scrollWidth, l3.scrollWidth, 1);
+        var tS = Math.min(SLOGAN_MAX, fS * SLOGAN_LARGE / largeS), pasS = tS * 172 / 166;
+        var hautS = (H - (2 * pasS + 0.92 * tS)) / 2 - 0.15 * tS;
+        lignesS.forEach(function (l, i) { l.style.fontSize = tS.toFixed(1) + "px"; l.style.top = (hautS + i * pasS).toFixed(1) + "px"; });
+        var mN = nom.querySelectorAll(".k-mot"), fN = parseFloat(getComputedStyle(nom).fontSize);
+        var largeN = mN[mN.length - 1].offsetLeft + mN[mN.length - 1].offsetWidth - mN[0].offsetLeft;
+        var tN = Math.min(NOM_MAX, fN * NOM_LARGE / Math.max(1, largeN));
+        nom.style.fontSize = tN.toFixed(1) + "px"; nom.style.top = (NOM_BAS - 1.16 * tN) + "px";   // ses jambages au-dessus de son repère
         // Les lignes de base du slogan (des repères, sans étiquette).
         var hoteBases = $("bases"), bases = [];
         lignesS.forEach(function (l) {
@@ -354,7 +384,7 @@
         // Le bouton : un rond qui s'étire en pilule (à la mesure de son libellé), puis le texte.
         // Les deux tiers de la largeur au moins, la largeur moins ses marges au plus.
         var LARGEUR = Math.min(960, Math.max(720, Math.ceil(texteBtn.offsetWidth) + 140));
-        if (texteBtn.offsetWidth > LARGEUR - 100) texteBtn.style.fontSize = (44 * (LARGEUR - 100) / texteBtn.offsetWidth).toFixed(1) + "px";
+        if (texteBtn.offsetWidth > LARGEUR - 100) console.warn(ID + " : le libellé du bouton est trop long, coupe des mots");
         gsap.set(btn, { width: 112, x: -56, opacity: 0 });
         gsap.set(remplir, { scale: 0 });
         tl.to(btn, { opacity: 1, duration: 0.1 }, C + 0.6);

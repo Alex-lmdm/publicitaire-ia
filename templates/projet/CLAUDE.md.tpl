@@ -5,8 +5,8 @@
 
 **Charge le skill `studio` et suis-le** (Claude Code : outil Skill ou `/studio` ; sinon ouvre
 `{{MAISON}}{{SKILLS}}/studio/SKILL.md`). Ses références décident de la structure, de l'écriture, du
-format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composition :
-`{{MAISON}}{{SKILLS}}/hyperframes-core/SKILL.md` ; effets : `{{MAISON}}{{SKILLS}}/hyperframes-animation/SKILL.md`.
+format, du mouvement, du son et de la revue de cette vidéo ; le contrat d'une composition est sa
+référence `composition.md`.
 
 - Objectif : **{{OBJECTIF}}**. Support : **{{SUPPORT_TITRE}}**. Format **{{FORMAT}}**
   ({{LARGEUR}}×{{HAUTEUR}}), 30 images/s, **{{IDEAL}} s** visées (bornes {{DUREE_MIN}} à {{DUREE_MAX}} s).
@@ -25,7 +25,7 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
   musiques (le style et la musique : `musiques choisir --duree <durée> --style <N> --ouvrir`, puis
   `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
-  sons, planche, rythme, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
+  sons, planche, rythme, cadre, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
   plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans idée retenue,
@@ -40,12 +40,12 @@ format, du rythme, du son et de la revue de cette vidéo. Contrat d'une composit
   publier (le son réglé, la couverture), ouvre ton dossier {{PRODUIT}} dans ton assistant et dis
   « mets à jour la livraison de {{VIDEO_NOM}} ». » Le bouton Export de l'app donne un brouillon
   dans Téléchargements, pas le fichier final. Si l'app te propose ses propres skills (`hyperframes`,
-  `launch-film`, `product-launch-video`), garde la méthode du skill `studio` : ils ne connaissent ni
+  `hyperframes-cli`, `media-use`, `launch-film`, `product-launch-video`), garde la méthode du skill `studio` : ils ne connaissent ni
   la fiche de l'offre ni la marque de cette vidéo.
-- Jamais `hyperframes feedback`, `publish`, `cloud`, `lambda` ni `cloudrun`.
-- Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check`. Puis
-  `studio_motion.py rythme exports/{{VIDEO}}.mp4` et `studio_motion.py palette
-  exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses vraies captures
-  et les logos de ses outils peuvent rester signalés). Puis `studio_motion.py relecture
+- Jamais `hyperframes feedback`, `events`, `usage`, `publish`, `cloud`, `lambda`, `cloudrun` ni `auth`.
+- Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check` (zéro erreur,
+  et aucun texte à lire trop petit ou parti trop tôt). Puis `studio_motion.py rythme`, `cadre` et
+  `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses
+  vraies captures et les logos de ses outils peuvent rester signalés). Puis `studio_motion.py relecture
   exports/{{VIDEO}}.mp4` : un relecteur neuf (un sous-agent qui ne voit que ses planches) doit
   dire ce qui est vendu, à qui et quoi faire (`references/revue.md`, porte 3).

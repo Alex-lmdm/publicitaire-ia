@@ -6,16 +6,15 @@ Le motion design qui décore vend mal : dans l'étude Motion de 578 750 publicit
 deux fois plus souvent. **Le mouvement sert le message et la démonstration, jamais l'inverse.**
 
 **Sans voix (le cas par défaut), l'image raconte et les mots ponctuent.** Ce qu'on voit se passer
-(le dossier glissé dans l'IA, la demande tapée, les étapes qui se cochent, les vidéos qui sortent)
-porte le sens ; à l'écran, seulement les mots qui claquent, très grands, qui jouent ce qu'ils disent.
-Deux échecs opposés, tous deux refusés par le créateur :
+(le relevé glissé dans le logiciel, le module qui s'ouvre, les étapes qui se cochent, le résultat
+qui sort) porte le sens ; à l'écran, seulement les mots qui claquent, très grands, qui jouent ce
+qu'ils disent. Deux échecs opposés :
 - **le trop peu** : des mots isolés et des chiffres sans rien montrer (« C'est ouvert. » « Ma pub la
-  plus rentable. » « 2 976 € de ventes. ») ne disent rien à un inconnu (story d'ouverture refusée
-  le 06/11/2026 : « on n'a rien compris ») ;
+  plus rentable. » « 2 976 € de ventes. ») ne disent rien à un inconnu : « on n'a rien compris » ;
 - **le trop de texte** : une phrase entière par écran, posée en haut au-dessus d'une petite
-  interface, treize fois de suite (115 mots en 47 s) : « trop de texte, on a l'impression de voir
-  des sous-titres, c'est phrase par phrase » (story v2 refusée le 07/11/2026). La référence qu'il a
-  donnée (les vidéos de Higgsfield Katana) dit 20 à 30 mots en 30 à 40 s : tout le reste se montre.
+  interface, plan après plan (115 mots en 47 s) : « on a l'impression de voir des sous-titres ».
+  Les vidéos de lancement de niveau studio disent 20 à 30 mots en 30 à 40 s : tout le reste se
+  montre.
 Court ne veut pas dire elliptique : chaque plan se comprend seul, par ce qu'il montre ET ses mots.
 
 Le client est le créateur ; tu écris dans **sa** voix (relis sa page de vente, ses légendes s'il
@@ -35,15 +34,15 @@ quelques mots qu'on y lit.
    ([structures.md](structures.md)). Ce texte est pour toi : il ne s'affiche pas tel quel.
 2. **Pour chaque idée, demande-toi ce qu'on peut MONTRER au lieu de l'écrire.** Une idée = un plan
    de 2,5 à 6 s, avec une action que l'œil suit et qui prouve (l'échelle de la matière de
-   [style.md](style.md)). Exemples tirés de la story d'ouverture v3 (07/11/2026) :
+   [image.md](image.md)). Exemples pour trois offres différentes (à adapter, jamais à copier) :
 
    | L'idée (ce qu'on dirait) | Ce qu'on montre à la place | Les mots qui restent |
    |---|---|---|
-   | « Cette story, je ne l'ai ni filmée ni montée. » | un viseur de caméra REC qui tourne, barré d'un trait jaune ; une timeline de montage qui arrive, barrée, ses morceaux tombent | « Cette story : » « ni filmée. » « ni montée. » |
-   | « Claude a écrit le script, puis l'a animée. » | la fenêtre de Claude : le dossier glissé dans la barre, la demande tapée, cinq étapes qui se cochent et leurs aperçus qui sortent de la fenêtre, le fichier qui se charge | « C'est Claude. » (le reste est l'interface) |
-   | « Tu lui donnes le lien de ta page, il en fait tes pubs, tes Reels, tes stories. » | le schéma qui se trace : la pastille « ta page de vente » entre dans le dossier, quatre liens en sortent vers quatre formats, chacun avec l'image d'une vraie vidéo | « Ton lien. » qui devient « Tes vidéos. » |
-   | « Pour une formation, un coaching, un logiciel ou un service. » | quatre pastilles sous le lien de la page | (les pastilles, matière) |
-   | « Je m'en sers pour mes propres vidéos de vente. » | ses vraies vidéos en plein écran, l'une après l'autre | « Pub faite avec Publicitaire IA » (étiquette) |
+   | « Avant, je passais mes dimanches sur ma compta. » (un logiciel) | l'agenda du dimanche qui se remplit de cases « compta », un compteur d'heures qui grimpe, puis une barre de l'accent raye la journée | « Tes dimanches. » |
+   | « Tu importes ton relevé, il classe tout. » | son interface : le relevé glissé dans la fenêtre, les lignes qui se rangent une à une dans leurs catégories, le total qui se calcule | « Il classe. » (le reste est l'interface) |
+   | « En six semaines, tu décroches ton premier client. » (une formation) | le sommaire qui se déroule, six modules qui se cochent, et au bout la capture d'un premier paiement reçu | « 6 semaines. » |
+   | « On se voit chaque semaine, et tu repars avec ton plan. » (un coaching) | l'agenda des séances qui se remplit, une visio qui s'ouvre, le document du plan qui sort de l'écran | « Chaque semaine. » puis « Ton plan. » |
+   | « Plus de 400 élèves l'ont suivie. » | leurs vrais messages qui arrivent de la profondeur autour d'un compteur | « +400 élèves » (étiquette) |
 
 3. **Ne garde à l'écran que les mots qui claquent.** Par plan, 0 à 8 mots à lire, hors interface :
    un **mot héros** (1 à 3 mots, très grand, qui joue ce qu'il dit) et, au besoin, une **ligne
@@ -90,10 +89,10 @@ Plan par plan, ce qu'on voit d'abord, les mots ensuite, sans jargon de fabricati
 
 > Voici le script de ta story, environ 40 s, en 9 plans. Pour chacun, ce qu'on voit, puis les mots
 > à l'écran :
-> 1. Un viseur de caméra qui tourne (REC), barré d'un trait jaune ; une timeline de montage, barrée,
->    qui tombe en morceaux · « Cette story : ni filmée. ni montée. » (3,5 s)
-> 2. Le logo de Claude, puis sa fenêtre : ton dossier glissé dedans, le lien de ta page, la demande
->    tapée · « C'est Claude. » (4,5 s)
+> 1. Ton agenda du dimanche qui se remplit de cases « compta », un compteur d'heures qui grimpe,
+>    puis la journée barrée · « Tes dimanches. » (3,5 s)
+> 2. Ton logiciel : le relevé glissé dans la fenêtre, les lignes qui se rangent toutes seules ·
+>    « Il classe. » (4,5 s)
 > 3. …
 >
 > En tout : 36 mots à lire, 0,9 par seconde. Dis-moi ce que tu changes (un mot, un plan, l'ordre),
@@ -106,9 +105,9 @@ l'audience sait déjà, sans jamais supposer qu'elle connaît le produit :
 
 | L'audience… | Accroche | Exemple (à adapter, jamais à copier) |
 |---|---|---|
-| connaît le créateur, attend l'offre | L'annonce, puis aussitôt ce que c'est et pour qui | « C'est ouvert. » → « Publicitaire IA fait tes vidéos de vente avec ton IA. » |
+| connaît le créateur, attend l'offre | L'annonce, puis aussitôt ce que c'est et pour qui | « C'est ouvert. » → « 8 semaines pour décrocher tes premiers clients. » |
 | connaît le produit, hésite | Une objection levée, une preuve, une comparaison | « 3,3 millions de vues. Même méthode. » |
-| connaît la solution, pas ce produit | Ce qui le rend différent | « Tes Reels montés par ton IA, pas par toi. » |
+| connaît la solution, pas ce produit | Ce qui le rend différent | « Ta compta classée par ton logiciel, pas par toi. » |
 | connaît le problème | Le problème nommé, puis la solution annoncée | « Trois heures de montage par Reel ? » |
 | ne sait pas encore qu'il a un problème | Une situation qu'il reconnaît, une question | « Pourquoi la plupart des créateurs arrêtent au bout d'un mois » |
 
@@ -126,12 +125,11 @@ secret ». Une question entre dans la tête ; une affirmation se juge vraie ou f
 Devant une audience froide (le cas par défaut) :
 - ouvre sur ce qu'elle vit, pas sur une annonce ni sur le nom du produit, et sans l'interpeller
   par une étiquette (« Coachs, écoutez ») ;
-- **une situation factuelle et précise** qu'il reconnaît d'un coup : un objet concret (une pub, un
-  Reel, sa page de vente), l'outil qu'il utilise, et un temps ou un prix tiré de la page (« 3 heures
-  sur CapCut pour monter tes Reels Instagram ? », la pub la plus rentable de Monteur IA ; « Un
-  week-end sur Canva pour une seule pub vidéo ? »). Jamais une question vague dont il faut deviner
-  l'objet : « La dernière vidéo qui a fait vendre ton offre, c'était quand ? » a été refusée par le
-  client (06/11/2026 : « une vidéo qui a fait vendre, tu parles de quoi ? D'une pub ? ») ;
+- **une situation factuelle et précise** qu'il reconnaît d'un coup : un objet concret (un Reel, sa
+  compta, ses séances), l'outil qu'il utilise, et un temps ou un prix tiré de la page (« 3 heures
+  sur CapCut pour monter tes Reels Instagram ? », « Un dimanche entier sur ta compta ? »). Jamais
+  une question vague dont il faut deviner l'objet : « La dernière vidéo qui a fait vendre ton offre,
+  c'était quand ? » laisse le spectateur se demander de quoi on parle ;
 - une question qui suppose déjà le problème, jamais une question à laquelle on répond « non » ;
 - aucun mot qui invite seulement à explorer (« découvre », « révélé », « le secret ») : il attire
   des curieux, pas des acheteurs ;
@@ -182,15 +180,14 @@ redit le problème en une phrase.
 
 - **Trois tailles, jamais plus** : le **mot héros** (1 à 3 mots, 130 à 400 px en 9:16, il remplit
   la largeur), la **ligne d'appui** (3 à 6 mots, 56 à 72 px), les **étiquettes** posées sur ce
-  qu'on montre (« Pub », « faite avec Publicitaire IA », 30 à 40 px). Au plus 8 mots à lire sur une
+  qu'on montre (« Module 2 », « Séance du mardi », 30 à 40 px). Au plus 8 mots à lire sur une
   image, hors interface (`studio_motion.py lecture` prévient au-delà).
 - **Le mot joue ce qu'il dit**, une fois lisible : il claque, s'étire, se barre, se surligne, se
   change sur place (« Ton lien. » devient « Tes vidéos. »), ses lettres tombent en rafale
   (`K.claque`, `K.etire`, `K.barre`, `K.surligner`, [kit.md](kit.md)). Deux tons : le plein et
   l'accent (« Ton **lien.** »), ou le gris d'appui (« ni » gris, « filmée. » blanc).
 - **Jamais la mise en page des sous-titres** : une phrase en haut, une petite interface dessous,
-  plan après plan. C'est la story v2 refusée (07/11/2026). Le sujet du plan est ce qu'on montre, en
-  grand ; les mots s'y posent.
+  plan après plan. Le sujet du plan est ce qu'on montre, en grand ; les mots s'y posent.
 - **Avec une voix off** : le texte souligne la voix, 1 à 5 mots (les mots clés de la phrase dite),
   plus des sous-titres si la vidéo démarre muette (page de vente, story).
 - Une liste se montre en objets (pastilles, cartes, coches), 5 au plus, chacun de 2 à 5 mots, avec

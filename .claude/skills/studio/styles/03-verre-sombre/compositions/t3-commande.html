@@ -5,28 +5,31 @@
 <template>
 <!--
   Style n°3 · Verre sombre · scène « Le bon de commande » (l'offre et le prix).
-  Ce qu'elle montre : le bon de commande de ton offre, en verre sombre, incliné en 3D. Il pivote
-  et entre de profil ; la caméra le descend de haut en bas avec une faible profondeur de champ
-  (le haut et le bas de l'image sont flous). Le prix tourne jusqu'à sa valeur, les pastilles de ce
-  qui est inclus s'allument, le curseur fait glisser le nombre de paiements, active le bonus, le
-  total se met à jour, puis il clique sur le bouton, qui se défait en points.
-  Le bon suit TA VRAIE PAGE DE PAIEMENT, simplifiée : ses formules, son prix, ses façons de payer,
+  Ce qu'elle montre : le bon de commande de l'offre, en verre sombre, incliné en 3D. Il pivote et
+  entre de profil depuis une lame claire ; la caméra le montre en trois cadrages, un par partie
+  (le prix, le réglage, le total et le bouton), recadrée nettement entre deux et posée pendant
+  qu'on lit (une dérive lente seulement). Le prix tourne jusqu'à sa valeur, ce qui est inclus s'allume, le curseur
+  fait glisser le nombre de paiements, active le bonus, le total se met à jour, puis il clique sur
+  le bouton, qui se défait en points.
+  Le bon suit SA VRAIE PAGE DE PAIEMENT, simplifiée : ses formules, son prix, ses façons de payer,
   son option ou son bonus s'il en a un, son total, son bouton, rien d'autre.
-  Durée : 7,2 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : le bon se recadre
-  seul (K.cadre), plus grand et moins incliné.
-  À remplacer (objet R en tête du script) : les formules, le nom, le prix, ce qui est inclus, le
-  nombre de paiements possible, le bonus (0 = pas de ligne bonus), le texte du bouton. Uniquement
-  ce que sa vraie page de paiement propose : une ligne qui n'existe pas chez lui se retire
-  (paiement en plusieurs fois, bonus) ; ni réduction ni prix barré inventés.
-  Couleurs : celles de la marque, rien d'autre. La nuit est var(--brand-sombre), le verre un noir
-  en transparence avec des reflets blancs, le texte var(--brand-clair), les gris var(--brand-gris-*) ;
-  l'accent se pose plein (la pastille, la piste remplie, l'interrupteur, le bouton et ses points),
-  jamais en halo ni assombri par un voile.
+  Durée : 8,8 s. 16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : le bon se recadre
+  seul (K.cadre), il remplit la largeur.
+  À remplacer : l'objet EXEMPLE (les formules, le nom, le prix, ce qui est inclus, le nombre de
+  paiements possible, le bonus, les libellés, le texte du bouton). Uniquement ce que sa vraie page
+  de paiement propose : une ligne qui n'existe pas chez lui se retire (paiement en plusieurs fois,
+  bonus) ; ni réduction ni prix barré inventés. Le menu, la ligne d'accès et la mention sont des
+  micro-textes d'interface (texture, data-layout-ignore) ; le prix, les options, le total et le
+  bouton se lisent (28 px au moins à l'écran, par la caméra).
+  Couleurs : la nuit var(--brand-sombre), le verre une ombre (noir en transparence) avec des
+  reflets blancs, le texte var(--brand-clair), les gris et les surfaces du bon var(--brand-gris-*),
+  la lame var(--brand-clair) ; l'accent se pose plein (la pastille, la piste remplie,
+  l'interrupteur, le bouton et ses points), il n'entre et ne sort jamais en fondu ni en flou, et il
+  n'a ni halo ni voile.
   Identifiant : t3c (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3c {
-    /* La palette du look : rien que des couleurs de la marque, du blanc et du noir en transparence. */
     --t3-nuit: var(--brand-sombre);
     --t3-texte: var(--brand-clair);
     --t3-accent-texte: var(--brand-accent-lisible);
@@ -54,76 +57,71 @@
   #t3c .t3c-liseret { position: absolute; inset: 0; border-radius: 40px; pointer-events: none;
     background: linear-gradient(100deg, rgba(255,255,255,.22), transparent 18%, transparent 82%, rgba(255,255,255,.1)); opacity: .55;
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; padding: 2px; }
-  /* La lame claire : le bon vu de profil, blanc presque plein, qui pivote puis se retire d'un
-     balayage (jamais un fondu : un voile blanc à demi transparent sur l'accent ferait du jaune pâle). */
+  /* La lame claire : le bon vu de profil, le clair de la marque, plein, qui pivote puis se retire
+     d'un balayage (jamais un fondu : un voile blanc à demi transparent sur l'accent ferait du jaune pâle). */
   #t3c .t3c-voile { position: absolute; inset: 0; border-radius: 40px; pointer-events: none;
-    background: rgba(255, 255, 255, 0.96); clip-path: inset(0% 0% 0% 0% round 40px); }
+    background: var(--brand-clair); clip-path: inset(0% 0% 0% 0% round 40px); }
   #t3c .t3c-ligne { display: flex; align-items: center; justify-content: space-between; gap: 20px; position: relative; }
   #t3c .t3c-onglets { display: flex; gap: 10px; align-items: center; }
-  #t3c .t3c-onglet { padding: 14px 30px; border-radius: 999px; font-size: 28px; font-weight: 600; color: var(--t3-gris); }
+  #t3c .t3c-onglet { padding: 14px 30px; border-radius: 999px; font-size: 30px; font-weight: 600; color: var(--t3-gris); }
   #t3c .t3c-onglet.t3c-actif { background: var(--t3-texte); color: var(--t3-nuit); }
   #t3c .t3c-menu { font-size: 26px; font-weight: 500; color: var(--t3-gris); display: flex; align-items: center; gap: 8px; }
   #t3c .t3c-menu svg { width: 26px; height: 26px; }
   #t3c .t3c-segment { position: relative; display: flex; border-radius: 999px; padding: 7px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); }
-  #t3c .t3c-seg-pastille { position: absolute; left: 7px; top: 7px; bottom: 7px; width: calc(50% - 7px); border-radius: 999px; background: var(--brand-accent); }
-  #t3c .t3c-seg { position: relative; flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; font-size: 30px; font-weight: 600; color: var(--t3-gris); }
-  #t3c .t3c-lab { font-size: 31px; font-weight: 600; }
-  #t3c .t3c-sous { font-size: 23px; font-weight: 500; color: var(--t3-gris); margin-top: 6px; }
-  #t3c .t3c-prix { font-size: 112px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; text-shadow: 0 0 30px rgba(255,255,255,.18); }
+  /* La pastille du sélecteur : cerclée d'un trait plein de l'accent (le motif du look), elle glisse
+     sous les libellés ; le choisi passe au clair, l'autre au gris (deux neutres : à chaque image, le
+     libellé se lit, ce qu'un libellé foncé sur une pastille pleine qui glisse ne garantit pas). */
+  #t3c .t3c-seg-pastille { position: absolute; left: 7px; top: 7px; bottom: 7px; width: calc(50% - 7px); border-radius: 999px; box-shadow: inset 0 0 0 2.5px var(--brand-accent); }
+  #t3c .t3c-seg { position: relative; flex: 1; text-align: center; padding: 18px 0; border-radius: 999px; font-size: 32px; font-weight: 600; color: var(--t3-gris); }
+  #t3c .t3c-lab { font-size: 32px; font-weight: 600; }
+  #t3c .t3c-sous { font-size: 24px; font-weight: 500; color: var(--t3-gris); margin-top: 6px; }
+  #t3c .t3c-prix { font-size: 112px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
   #t3c .t3c-puces { display: flex; gap: 14px; }
+  /* ce qui est inclus : des puces cerclées d'un gris de la marque, qui s'allument (fond plein) */
   #t3c .t3c-puce { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 0; border-radius: 18px;
-    background: rgba(255,255,255,.07); font-size: 26px; font-weight: 600; color: var(--brand-gris-4); }
-  #t3c .t3c-puce svg { width: 26px; height: 26px; color: var(--t3-accent-texte); }
+    box-shadow: inset 0 0 0 2px var(--brand-gris-1); font-size: 30px; font-weight: 600; color: var(--brand-gris-4); }
+  #t3c .t3c-puce svg { width: 30px; height: 30px; color: var(--t3-accent-texte); }
   #t3c .t3c-glisse { display: flex; align-items: center; gap: 28px; }
-  #t3c .t3c-piste { position: relative; flex: 1; height: 12px; border-radius: 6px; background: rgba(255,255,255,.14); }
+  #t3c .t3c-piste { position: relative; flex: 1; height: 12px; border-radius: 6px; background: var(--brand-gris-1); }
   #t3c .t3c-rempli { position: absolute; left: 0; top: 0; height: 100%; width: 100%; border-radius: 6px; background: var(--brand-accent); transform-origin: 0 50%; }
-  #t3c .t3c-bille { position: absolute; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 6px rgba(255,255,255,.08); }
+  #t3c .t3c-bille { position: absolute; left: 0; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: var(--brand-clair);
+    box-shadow: 0 6px 18px rgba(0,0,0,.45); }
   #t3c .t3c-cran { position: absolute; top: 30px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: rgba(255,255,255,.3); }
   #t3c .t3c-valeur { width: 128px; height: 70px; border-radius: 20px; display: grid; place-items: center; font-size: 32px; font-weight: 600;
-    background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 2px rgba(255,255,255,.16); }
-  #t3c .t3c-inter { position: relative; width: 92px; height: 52px; border-radius: 26px; background: rgba(255,255,255,.16); flex: none; }
+    background: var(--brand-gris-1); }
+  #t3c .t3c-inter { position: relative; width: 92px; height: 52px; border-radius: 26px; background: var(--brand-gris-1); flex: none; }
   /* l'interrupteur se remplit de l'accent par un volet (jamais en fondu) */
   #t3c .t3c-inter-plein { position: absolute; inset: 0; border-radius: 26px; background: var(--brand-accent); clip-path: inset(0% 100% 0% 0% round 26px); }
-  #t3c .t3c-inter-bille { position: absolute; left: 5px; top: 5px; width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,.35); }
+  #t3c .t3c-inter-bille { position: absolute; left: 5px; top: 5px; width: 42px; height: 42px; border-radius: 50%; background: var(--brand-clair); box-shadow: 0 3px 10px rgba(0,0,0,.35); }
   #t3c .t3c-bonus { overflow: hidden; }
   #t3c .t3c-champs { display: flex; gap: 16px; padding-top: 4px; }
-  #t3c .t3c-champ { flex: 1; display: flex; align-items: center; gap: 14px; padding: 22px 26px; border-radius: 20px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.2); font-size: 30px; font-weight: 600; }
+  #t3c .t3c-champ { flex: 1; display: flex; align-items: center; gap: 14px; padding: 22px 26px; border-radius: 20px; box-shadow: inset 0 0 0 2px rgba(255,255,255,.2); font-size: 32px; font-weight: 600; }
   #t3c .t3c-champ svg { width: 30px; height: 30px; color: var(--t3-accent-texte); }
   #t3c .t3c-tag svg { width: 24px; height: 24px; display: block; }
   #t3c .t3c-tag { margin-left: auto; padding: 6px 10px; border-radius: 10px; font-size: 22px; font-weight: 700;
     color: var(--brand-contrast); background: var(--brand-accent); }
   #t3c .t3c-trait { height: 2px; background: rgba(255,255,255,.16); }
-  #t3c .t3c-res { display: flex; align-items: center; gap: 16px; font-size: 30px; font-weight: 600; }
+  #t3c .t3c-res { display: flex; align-items: center; gap: 16px; font-size: 32px; font-weight: 600; }
   #t3c .t3c-res svg { width: 30px; height: 30px; color: var(--t3-gris); }
   #t3c .t3c-res .t3c-v { margin-left: auto; }
   /* Le bouton : l'accent plein ; au clic, un trou s'ouvre depuis le curseur et ne laisse que ses
      points (pleins, à l'accent), qui montent et s'effacent. */
   #t3c .t3c-bouton { position: relative; height: 112px; border-radius: 28px; }
-  #t3c .t3c-bouton-plein { position: absolute; inset: 0; border-radius: 28px; display: grid; place-items: center; font-size: 38px; font-weight: 700;
+  #t3c .t3c-bouton-plein { position: absolute; inset: 0; border-radius: 28px; display: grid; place-items: center; font-size: 40px; font-weight: 700;
     background: var(--brand-accent); color: var(--brand-contrast);
     --t3c-trou: 0px;
     -webkit-mask-image: radial-gradient(circle at 62% 50%, transparent var(--t3c-trou), #000 calc(var(--t3c-trou) + 1px));
     mask-image: radial-gradient(circle at 62% 50%, transparent var(--t3c-trou), #000 calc(var(--t3c-trou) + 1px)); }
   #t3c .t3c-points-bouton { position: absolute; inset: -6px; border-radius: 32px; opacity: 0;
     background-image: radial-gradient(circle, var(--brand-accent) 2px, transparent 2.7px); background-size: 11px 11px; }
-  #t3c .t3c-mention { text-align: center; font-size: 22px; font-weight: 500; color: var(--brand-gris-4); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: -12px; }
+  #t3c .t3c-mention { text-align: center; font-size: 24px; font-weight: 500; color: var(--brand-gris-4); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: -12px; }
   #t3c .t3c-mention svg { width: 22px; height: 22px; }
-  /* Profondeur de champ en écran : le haut et le bas de l'image passent au flou, sans voile sombre
-     (un voile assombrirait l'accent en brun) et assez court pour que l'accent flou reste rare
-     (bouton et pastille flous : leur texte foncé se mêle au jaune en olive, `palette` le relève). */
-  #t3c .t3c-flou { position: absolute; left: 0; right: 0; pointer-events: none; z-index: 60; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-  #t3c .t3c-flou-haut { top: 0; height: 30%; -webkit-mask-image: linear-gradient(#000 25%, transparent); mask-image: linear-gradient(#000 25%, transparent); }
-  #t3c .t3c-flou-bas { bottom: 0; height: 26%; -webkit-mask-image: linear-gradient(transparent, #000 75%); mask-image: linear-gradient(transparent, #000 75%); }
-  /* en 9:16, le bon remplit l'image et son bouton passe plus près du bas : bandes plus fines */
-  #t3c.t3c-vertical .t3c-flou-haut { height: 24%; }
-  #t3c.t3c-vertical .t3c-flou-bas { height: 16%; }
-  /* L'éclat du clic : du blanc très faible, qui passe */
-  #t3c .t3c-eclat { position: absolute; left: 50%; top: 50%; width: 1500px; height: 900px; margin: -450px 0 0 -750px; border-radius: 50%; z-index: 62; pointer-events: none;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, 0.09), transparent 70%); opacity: 0; }
+  /* Pas de bande floue de profondeur de champ : le bon est plein d'accent (pastille, piste,
+     interrupteur, bouton), et un accent flou se mêle à la nuit en olive. La profondeur vient de
+     l'inclinaison, de la perspective et de la grande ombre. */
 </style>
 
-<div data-composition-id="t3c" data-width="1920" data-height="1080" data-duration="7.2" style="position:absolute; inset:0;">
+<div data-composition-id="t3c" data-width="1920" data-height="1080" data-duration="9" style="position:absolute; inset:0;">
   <div id="t3c" class="k-scene">
     <div class="t3c-fond"></div>
     <!-- La vignette assombrit la nuit seule : posée sous le bon, elle ne touche jamais l'accent. -->
@@ -162,61 +160,55 @@
         </div>
       </div>
     </div></div>
-    <div class="t3c-flou t3c-flou-haut"></div>
-    <div class="t3c-flou t3c-flou-bas"></div>
-    <div class="t3c-eclat" id="t3c-eclat"></div>
   </div>
 </div>
 
 <script>
 (function () {
-  // ---- À remplacer : ce que montre ta vraie page de paiement ---------------------------------
-  var R = {
-    formules: ["Essentiel", "Complet"],          // la 2e est active ; [] pour retirer la ligne
-    menu: "Accès à vie",                         // petit menu à droite ("" pour le retirer)
+  var EXEMPLE = { // À REMPLACER : tout vient de sa vraie page de paiement et de OFFRE.json (prix, bonus, echeances), ou la ligne se retire
+    formules: ["Essentiel", "Complet"],          // ses formules, la 2e est active ; [] retire la ligne
+    menu: "Accès à vie",                         // petit menu à droite, texture ("" le retire)
     paiements: ["Paiement unique", "En plusieurs fois"],
-    nom: "Ton offre",
-    acces: "Accès immédiat",
-    prix: 99,                                    // prix TTC réel, en euros
-    inclus: [["play", "Vidéos"], ["file-text", "Modèles"], ["users", "Groupe"], ["gift", "Bonus"]],
-    foisMax: 3,                                  // paiement en 1 à N fois (1 = retire le curseur)
+    nom: "Ton offre",                            // le nom de l'offre (OFFRE.json, produit)
+    acces: "Accès immédiat",                     // sous le nom, texture ("" la retire)
+    prix: 300,                                   // prix d'exemple, rond : son vrai prix TTC en euros (prix.montant)
+    inclus: [["play", "Vidéos"], ["file-text", "Modèles"], ["users", "Groupe"], ["gift", "Bonus"]],   // [icône du kit, ce qui est inclus]
+    foisMax: 3,                                  // paiement en 1 à N fois (echeances) ; 1 retire le curseur
     foisLab: "Nombre de paiements",
-    bonus: 27, bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // bonus: 0 = pas de ligne bonus
+    bonus: 30, bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // prix d'exemple du bonus ; 0 retire la ligne
     aujourdhui: "Aujourd'hui", total: "Total",
-    bouton: "Je rejoins",
-    mention: "Paiement sécurisé"
+    bouton: "Je rejoins",                        // le texte de son vrai bouton
+    mention: "Paiement sécurisé"                 // texture ("" la retire)
   };
   var euros = function (v) { var r = Math.round(v * 100) / 100; return (r % 1 ? r.toFixed(2).replace(".", ",") : String(r)) + " €"; };
-  // -------------------------------------------------------------------------------------------
-  var D = 7.2;
+  var D = 9.0;
   var $ = function (id) { return document.getElementById(id); };
   var cadre = K.cadre($("t3c")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
   if (vertical) $("t3c").classList.add("t3c-vertical");
 
-  // Construction depuis R
-  R.formules.forEach(function (f, i) { K.el($("t3c-formules"), "div", "t3c-onglet" + (i === R.formules.length - 1 ? " t3c-actif" : ""), f); });
-  if (!R.formules.length) $("t3c-formules").style.visibility = "hidden";
-  $("t3c-menu").innerHTML = R.menu ? "<span>" + R.menu + "</span>" + K.ic("arrow-right").replace("<svg", '<svg style="transform:rotate(90deg)"') : "";
-  $("t3c-seg-1").textContent = R.paiements[0]; $("t3c-seg-2").textContent = R.paiements[1];
-  $("t3c-nom").textContent = R.nom; $("t3c-acces").textContent = R.acces;
-  R.inclus.forEach(function (p) { K.el($("t3c-puces"), "div", "t3c-puce", K.ic(p[0]) + "<span>" + p[1] + "</span>"); });
-  $("t3c-fois-lab").textContent = R.foisLab;
-  for (var c = 0; c < R.foisMax; c++) K.el($("t3c-piste"), "div", "t3c-cran", null, "left:" + (R.foisMax > 1 ? (c / (R.foisMax - 1)) * 100 : 0) + "%");
-  if (R.foisMax <= 1) $("t3c-l-fois").style.display = "none";
-  $("t3c-bonus-lab").textContent = R.bonusLab;
-  $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + R.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + euros(R.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
-  if (!R.bonus) { $("t3c-l-bonus").style.display = "none"; $("t3c-bonus").style.display = "none"; }
-  $("t3c-l-auj").innerHTML = K.ic("calendar") + "<span>" + R.aujourdhui + '</span><span class="t3c-v" id="t3c-v-auj"></span>';
-  $("t3c-l-total").innerHTML = K.ic("wallet") + "<span>" + R.total + '</span><span class="t3c-v" id="t3c-v-total"></span>';
-  $("t3c-bouton-texte").textContent = R.bouton;
-  $("t3c-mention").innerHTML = K.ic("lock") + "<span>" + R.mention + "</span>";
+  // Construction depuis EXEMPLE
+  EXEMPLE.formules.forEach(function (f, i) { K.el($("t3c-formules"), "div", "t3c-onglet" + (i === EXEMPLE.formules.length - 1 ? " t3c-actif" : ""), f); });
+  if (!EXEMPLE.formules.length) $("t3c-formules").style.visibility = "hidden";
+  $("t3c-menu").innerHTML = EXEMPLE.menu ? "<span>" + EXEMPLE.menu + "</span>" + K.ic("arrow-right").replace("<svg", '<svg style="transform:rotate(90deg)"') : "";
+  $("t3c-seg-1").textContent = EXEMPLE.paiements[0]; $("t3c-seg-2").textContent = EXEMPLE.paiements[1];
+  $("t3c-nom").textContent = EXEMPLE.nom; $("t3c-acces").textContent = EXEMPLE.acces;
+  EXEMPLE.inclus.forEach(function (p) { K.el($("t3c-puces"), "div", "t3c-puce", K.ic(p[0]) + "<span>" + p[1] + "</span>"); });
+  $("t3c-fois-lab").textContent = EXEMPLE.foisLab;
+  for (var c = 0; c < EXEMPLE.foisMax; c++) K.el($("t3c-piste"), "div", "t3c-cran", null, "left:" + (EXEMPLE.foisMax > 1 ? (c / (EXEMPLE.foisMax - 1)) * 100 : 0) + "%");
+  if (EXEMPLE.foisMax <= 1) $("t3c-l-fois").style.display = "none";
+  $("t3c-bonus-lab").textContent = EXEMPLE.bonusLab;
+  $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + EXEMPLE.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + euros(EXEMPLE.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
+  if (!EXEMPLE.bonus) { $("t3c-l-bonus").style.display = "none"; $("t3c-bonus").style.display = "none"; }
+  $("t3c-l-auj").innerHTML = K.ic("calendar") + "<span>" + EXEMPLE.aujourdhui + '</span><span class="t3c-v" id="t3c-v-auj"></span>';
+  $("t3c-l-total").innerHTML = K.ic("wallet") + "<span>" + EXEMPLE.total + '</span><span class="t3c-v" id="t3c-v-total"></span>';
+  $("t3c-bouton-texte").textContent = EXEMPLE.bouton;
+  $("t3c-mention").innerHTML = EXEMPLE.mention ? K.ic("lock") + "<span>" + EXEMPLE.mention + "</span>" : "";
+  // les micro-textes de l'interface, qu'on ne lit pas : de la texture
+  ["t3c-menu", "t3c-acces", "t3c-mention"].forEach(function (id) { $(id).setAttribute("data-layout-ignore", ""); });
   var curseur = K.curseur($("t3c-bon"), "t3c-curseur", false);
-  // Les couleurs des libellés du sélecteur, lues sur la scène (GSAP anime des valeurs, pas des var()).
-  var css = getComputedStyle($("t3c"));
-  var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
-  var surAccent = C("--brand-contrast", "#111111"), gris = C("--brand-gris-3", "#999999");
-  gsap.set("#t3c-seg-1", { color: surAccent });
-  gsap.set("#t3c-seg-2", { color: gris });
+  // Les couleurs animées, lues dans les jetons de la marque (GSAP n'interpole pas une variable CSS).
+  var clair = K.jeton("--brand-clair"), gris = K.jeton("--brand-gris-3"), gris1 = K.jeton("--brand-gris-1");
+  gsap.set("#t3c-seg-1", { color: clair });
 
   // États de départ
   var cam = { rx: 22, ry: -10, rz: -3, s: vertical ? 1.02 : 1.22 };
@@ -224,6 +216,7 @@
   gsap.set("#t3c-bon", { rotationY: 87, x: 320, opacity: 0, filter: "blur(10px)", transformOrigin: "50% 0%" });
   gsap.set("#t3c-rempli", { scaleX: 0 });
   gsap.set("#t3c-bonus", { height: 0 });
+  gsap.set("#t3c-puces svg", { scale: 0 });
   K.cacher(curseur);
 
   function construire() {
@@ -232,85 +225,89 @@
     var y = function (el) { var v = 0; while (el && el !== bon) { v += el.offsetTop; el = el.offsetParent; } return v; };
     var x = function (el) { var v = 0; while (el && el !== bon) { v += el.offsetLeft; el = el.offsetParent; } return v; };
     var milieu = function (id) { var e = $(id); return y(e) + e.offsetHeight / 2; };
-    var hBonus = $("t3c-champs").offsetHeight + 4;
-    // la caméra suit un point du bon (repère du bon, avant l'ouverture du bonus)
-    // en vertical, le point suivi monte au-dessus du milieu : le bon remplit le haut de l'image
-    var haut = vertical ? H * 0.13 : 0;
-    var vise = function (t, cible, duree, ease, h) { tl.to("#t3c-rail", { y: -cible - (h == null ? haut : h), duration: duree, ease: ease || "power3.inOut" }, t); };
-    gsap.set("#t3c-rail", { y: -(milieu("t3c-l-prix") - 60) - haut });
+    var hBonus = EXEMPLE.bonus ? $("t3c-champs").offsetHeight + 4 : 0;
+    var wSeg = $("t3c-seg-1").offsetWidth;
+    // La caméra suit un point du bon (repère du bon, avant l'ouverture du bonus). Trois cadrages, un
+    // par partie : on recadre net ENTRE deux lectures (0,7 s), jamais pendant ; sous une lecture, la
+    // caméra ne fait que sa dérive lente. En vertical, le bon remplit la largeur et tient presque en
+    // entier : le premier cadrage le montre tout entier, centré.
+    var vise = function (t, cible) { tl.to("#t3c-rail", { y: -cible, duration: 0.7, ease: "power3.inOut" }, t); };
+    var A = vertical ? bon.offsetHeight / 2 : milieu("t3c-l-prix") - 60;
+    var B = EXEMPLE.foisMax > 1 ? (milieu("t3c-l-fois") + (EXEMPLE.bonus ? milieu("t3c-l-bonus") + hBonus / 2 : milieu("t3c-l-fois"))) / 2 : milieu("t3c-l-bonus") + hBonus / 2;
+    // le total et le bouton ; en vertical, le bas du bon se pose près du bas de l'image
+    var C = vertical ? (bon.offsetHeight + hBonus) * 0.62 : (milieu("t3c-l-auj") + milieu("t3c-bouton")) / 2 + hBonus;
+    gsap.set("#t3c-rail", { y: -A });
+    // la dérive lente de toute la scène : le bon tourne de quelques degrés
+    tl.to("#t3c-cam", { rotationY: -5, rotationZ: -1.5, duration: D, ease: "sine.inOut" }, 0);
 
-    // 1. Le bon pivote et entre (0 → 0,7 s)
+    // 1. Le prix (0 → 2,4 s) : le bon pivote et entre, la lame se retire d'un balayage, le prix
+    //    tourne, ce qui est inclus s'allume ; puis il se lit.
     tl.to("#t3c-bon", { opacity: 1, duration: 0.12, ease: "power1.out" }, 0.0);
     tl.to("#t3c-bon", { rotationY: 0, x: 0, duration: 0.8, ease: "power4.inOut" }, 0.0);
-    tl.to("#t3c-bon", { filter: "blur(0px)", duration: 0.35, ease: "power2.out" }, 0.0);
+    tl.to("#t3c-bon", { filter: "blur(0px)", duration: 0.28, ease: "power2.out" }, 0.0);
     tl.to("#t3c-voile", { clipPath: "inset(0% 0% 0% 100% round 40px)", duration: 0.45, ease: "power2.inOut" }, 0.28);
-    var lignes = ["#t3c-l-entete", "#t3c-segment", "#t3c-l-prix", "#t3c-puces"];
-    tl.fromTo(lignes, { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.08 }, 0.22);
+    // les lignes montent ; le sélecteur (sa pastille à l'accent) monte sans fondu
+    tl.fromTo(["#t3c-l-entete", "#t3c-l-prix", "#t3c-puces"], { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.08 }, 0.22);
+    tl.fromTo("#t3c-segment", { y: 26 }, { y: 0, duration: 0.5, ease: "power3.out" }, 0.3);
     var arrondi = function (cible) { return function (v) { return euros(Math.abs(v - cible) < 0.005 ? cible : Math.round(v)); }; };
-    K.compteur(tl, $("t3c-prix"), 0, R.prix, 0.45, 0.9, D, arrondi(R.prix), "expo.out");
-    tl.to("#t3c-cam", { rotationY: -5, rotationZ: -1.5, duration: D, ease: "sine.inOut" }, 0);
-    // ce qui est inclus s'allume, une puce après l'autre
-    tl.fromTo("#t3c-puces .t3c-puce", { backgroundColor: "rgba(255,255,255,0.07)" },
-      { backgroundColor: "rgba(255,255,255,0.15)", duration: 0.25, ease: "power2.out", stagger: 0.1 }, 0.95);
-    tl.fromTo("#t3c-puces svg", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.4)", stagger: 0.1 }, 0.95);
+    K.compteur(tl, $("t3c-prix"), 0, EXEMPLE.prix, 0.45, 0.9, D, arrondi(EXEMPLE.prix), "expo.out");
+    tl.fromTo("#t3c-puces .t3c-puce", { backgroundColor: "rgba(0,0,0,0)" }, { backgroundColor: gris1, duration: 0.25, ease: "power2.out", stagger: 0.1 }, 0.95);
+    tl.to("#t3c-puces svg", { scale: 1, duration: 0.35, ease: "back.out(2.4)", stagger: 0.1 }, 0.95);
 
-    // 2. Le nombre de paiements (1,3 → 3,0 s)
+    // 2. Le réglage (recadrage 2,4 → 3,1 s, puis 3,1 → 6 s) : le nombre de paiements, puis le bonus
+    vise(2.4, B);
+    tl.to("#t3c-cam", { scale: cam.s * 1.12, duration: 0.7, ease: "power3.inOut" }, 2.4);
     var piste = $("t3c-piste"), wPiste = piste.offsetWidth, px = x(piste), py = y(piste) + 6;
-    var aujourdhui = function (fois, bonus) { return euros((R.prix + (bonus ? R.bonus : 0)) / fois); };
-    vise(1.25, milieu("t3c-l-fois"), 0.75);
-    tl.to("#t3c-cam", { scale: cam.s * 1.12, duration: 0.75, ease: "power3.inOut" }, 1.25);
-    K.trajet(tl, curseur, [[0, px + wPiste * 0.55, py + 260], [1.45, px + 4, py + 6, 0.5, "power3.out"]]);
-    tl.to(curseur, { opacity: 1, duration: 0.2 }, 1.45);
-    K.clic(tl, curseur, 2.0);
-    tl.fromTo("#t3c-bille", { x: 0 }, { x: wPiste, duration: 0.95, ease: "power2.inOut" }, 2.08);
-    tl.fromTo("#t3c-rempli", { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: "power2.inOut" }, 2.08);
-    tl.to(curseur, { x: px + wPiste + 4, duration: 0.95, ease: "power2.inOut" }, 2.08);
-    var fois = function (t) { var v = t < 2.08 ? 0 : t > 3.03 ? 1 : gsap.parseEase("power2.inOut")((t - 2.08) / 0.95); return 1 + Math.round(v * (R.foisMax - 1)); };
-    K.texteSelon(tl, $("t3c-valeur"), D, function (t) { return fois(t) + "×"; });
-    tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, 2.55);
-    if (R.foisMax > 1) {
-      var wSeg = $("t3c-seg-1").offsetWidth;
-      tl.to("#t3c-seg-pastille", { x: wSeg, duration: 0.4, ease: "power3.inOut" }, 2.5);
-      tl.to("#t3c-seg-1", { color: gris, duration: 0.3 }, 2.55);
-      tl.to("#t3c-seg-2", { color: surAccent, duration: 0.3 }, 2.55);
+    var aujourdhui = function (fois, bonus) { return euros((EXEMPLE.prix + (bonus ? EXEMPLE.bonus : 0)) / fois); };
+    K.trajet(tl, curseur, [[2.85, px + wPiste * 0.55, py + 260], [2.95, px + 4, py + 6, 0.5, "power3.out"]]);
+    tl.to(curseur, { opacity: 1, duration: 0.2 }, 2.95);
+    var G = 3.58;                                // le curseur glisse (G → G + 0,95 s)
+    if (EXEMPLE.foisMax > 1) {
+      K.clic(tl, curseur, G - 0.08);
+      tl.fromTo("#t3c-bille", { x: 0 }, { x: wPiste, duration: 0.95, ease: "power2.inOut" }, G);
+      tl.fromTo("#t3c-rempli", { scaleX: 0 }, { scaleX: 1, duration: 0.95, ease: "power2.inOut" }, G);
+      tl.to(curseur, { x: px + wPiste + 4, duration: 0.95, ease: "power2.inOut" }, G);
+      // la pastille glisse sur l'autre façon de payer, qui passe au clair
+      tl.to("#t3c-seg-pastille", { x: wSeg, duration: 0.4, ease: "power3.inOut" }, G + 0.42);
+      tl.to("#t3c-seg-1", { color: gris, duration: 0.3 }, G + 0.47);
+      tl.to("#t3c-seg-2", { color: clair, duration: 0.3 }, G + 0.47);
+      tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1 }, G + 0.47);
+      tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, G + 0.9);
     }
-    tl.fromTo("#t3c-valeur", { scale: 1 }, { scale: 1.08, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, 2.98);
+    var fois = function (t) { var v = t < G ? 0 : t > G + 0.95 ? 1 : gsap.parseEase("power2.inOut")((t - G) / 0.95); return 1 + Math.round(v * (EXEMPLE.foisMax - 1)); };
+    K.texteSelon(tl, $("t3c-valeur"), D, function (t) { return fois(t) + "×"; });
+    if (EXEMPLE.bonus) {
+      var ix = x($("t3c-inter")), iy = y($("t3c-inter"));
+      tl.to(curseur, { x: ix + 62, y: iy + 30, duration: 0.6, ease: "power3.inOut" }, 4.62);
+      K.clic(tl, curseur, 5.24);
+      tl.to("#t3c-inter-bille", { x: 40, duration: 0.28, ease: "power3.inOut" }, 5.28);
+      tl.to("#t3c-inter-plein", { clipPath: "inset(0% 0% 0% 0% round 26px)", duration: 0.28, ease: "power3.inOut" }, 5.28);
+      // le bonus s'ouvre : ses champs (l'accent de son étiquette) entrent par la hauteur, sans fondu
+      tl.to("#t3c-bonus", { height: hBonus, duration: 0.5, ease: "expo.out" }, 5.37);
+      tl.fromTo("#t3c-champs .t3c-champ", { y: -18 }, { y: 0, duration: 0.45, ease: "back.out(1.8)", stagger: 0.09 }, 5.42);
+    }
 
-    // 3. Le bonus (3,0 → 4,4 s)
-    var ix = x($("t3c-inter")), iy = y($("t3c-inter"));
-    vise(3.05, milieu("t3c-l-bonus") + hBonus / 2, 0.7);
-    tl.to(curseur, { x: ix + 62, y: iy + 30, duration: 0.6, ease: "power3.inOut" }, 3.1);
-    K.clic(tl, curseur, 3.72);
-    tl.to("#t3c-inter-bille", { x: 40, duration: 0.28, ease: "power3.inOut" }, 3.76);
-    tl.to("#t3c-inter-plein", { clipPath: "inset(0% 0% 0% 0% round 26px)", duration: 0.28, ease: "power3.inOut" }, 3.76);
-    tl.to("#t3c-bonus", { height: hBonus, duration: 0.5, ease: "expo.out" }, 3.85);
-    tl.fromTo("#t3c-champs .t3c-champ", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.8)", stagger: 0.09 }, 3.9);
-
-    // 4. Le total et le bouton (4,4 → 6,3 s)
-    K.texteSelon(tl, $("t3c-v-auj"), D, function (t) { return aujourdhui(fois(t), t >= 4.5); });
-    K.compteur(tl, $("t3c-v-total"), R.prix, R.prix + R.bonus, 4.5, 0.7, D, arrondi(R.prix + R.bonus), "expo.out");
+    // 3. Le total et le bouton (recadrage 6 → 6,7 s, puis 6,7 → 9 s) : le total se met à jour, le
+    //    curseur clique, le bouton se défait en points, le bon recule.
+    vise(6.0, C);
+    tl.to("#t3c-cam", { scale: cam.s * 1.2, rotationX: cam.rx - 4, duration: 0.7, ease: "power3.inOut" }, 6.0);
+    K.texteSelon(tl, $("t3c-v-auj"), D, function (t) { return aujourdhui(fois(t), t >= 6.75); });
+    K.compteur(tl, $("t3c-v-total"), EXEMPLE.prix, EXEMPLE.prix + EXEMPLE.bonus, 6.75, 0.7, D, arrondi(EXEMPLE.prix + EXEMPLE.bonus), "expo.out");
     var by = milieu("t3c-bouton") + hBonus, bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
-    vise(4.35, milieu("t3c-l-total") + hBonus - 40, 0.75);
-    // en vertical, le bouton se pose bas dans l'image : le bon remplit l'écran au-dessus de lui
-    vise(5.15, by - 30, 0.7, null, vertical ? -H * 0.1 : 0);
-    tl.to("#t3c-cam", { scale: cam.s * 1.2, rotationX: cam.rx - 4, duration: 1.3, ease: "power2.inOut" }, 4.6);
-    tl.to(curseur, { x: bx, y: by + 6, duration: 0.75, ease: "power3.inOut" }, 5.1);
-    K.clic(tl, curseur, 5.92);
-    tl.to("#t3c-bouton", { scale: 0.965, duration: 0.08, ease: "power2.out" }, 5.92);
-    tl.to("#t3c-bouton", { scale: 1, duration: 0.3, ease: "back.out(3)" }, 6.0);
-    tl.fromTo("#t3c-eclat", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1.2, duration: 0.5, ease: "expo.out" }, 5.95);
-
-    // 5. Le bouton se défait en points, le bon s'éloigne (6,3 → 7,2 s) : un trou s'ouvre depuis le
-    //    clic dans l'accent plein (jamais un fondu de l'accent), ses points restent puis montent.
+    tl.to(curseur, { x: bx, y: by + 6, duration: 0.7, ease: "power3.inOut" }, 6.8);
+    K.clic(tl, curseur, 7.6);
+    tl.to("#t3c-bouton", { scale: 0.965, duration: 0.08, ease: "power2.out" }, 7.6);
+    tl.to("#t3c-bouton", { scale: 1, duration: 0.3, ease: "back.out(3)" }, 7.68);
+    // Le bouton se défait en points : un trou s'ouvre depuis le clic dans l'accent plein, ses points
+    // restent, montent et se retirent par un volet (jamais un fondu de l'accent).
     var rayonMax = $("t3c-bouton").offsetWidth * 0.7;
-    tl.set("#t3c-points-bouton", { opacity: 1 }, 6.28);
-    tl.to("#t3c-bouton-plein", { "--t3c-trou": rayonMax + "px", duration: 0.36, ease: "power2.in" }, 6.32);
-    tl.to("#t3c-points-bouton", { opacity: 0, y: -30, scaleY: 1.4, duration: 0.5, ease: "power2.out" }, 6.6);
-    tl.to(curseur, { opacity: 0, duration: 0.25 }, 6.4);
+    tl.set("#t3c-points-bouton", { opacity: 1 }, 8.06);
+    tl.to("#t3c-bouton-plein", { "--t3c-trou": rayonMax + "px", duration: 0.36, ease: "power2.in" }, 8.1);
+    tl.fromTo("#t3c-points-bouton", { y: 0, clipPath: "inset(0% 0% 0% 0%)" }, { y: -30, clipPath: "inset(0% 0% 100% 0%)", duration: 0.5, ease: "power2.out", immediateRender: false }, 8.38);
+    tl.to(curseur, { opacity: 0, duration: 0.25 }, 8.2);
     // le bon recule sans s'effacer (un fondu passerait tout son accent en transparence) : la coupe
     // vers la scène suivante le fait disparaître
-    tl.to("#t3c-bon", { z: -400, duration: 0.55, ease: "power3.in" }, 6.6);
-    tl.to("#t3c-eclat", { opacity: 0, scale: 1.6, duration: 0.55, ease: "power2.in" }, 6.6);
+    tl.to("#t3c-bon", { z: -400, duration: 0.55, ease: "power3.in" }, 8.35);
     window.__timelines["t3c"] = tl;
   }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(construire); else construire();

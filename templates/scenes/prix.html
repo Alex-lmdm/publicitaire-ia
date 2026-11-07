@@ -1,0 +1,203 @@
+<!-- Scène prête « Le prix en deux temps » (l'offre et le prix : scenes.md, recette 23). Sur
+     l'aplat de sa couleur (ou sa nuit) : ce qu'on reçoit, en 2 à 4 pastilles pleines qui s'ouvrent
+     en volet et se cochent ; elles se referment, le prix claque en très grand, signe par signe
+     (jamais un compteur), ses modalités s'ouvrent dessous, puis l'échéance réelle se lit, sa date
+     surlignée d'un bloc. Sur l'aplat, rien n'entre en fondu ni en transparence : tout paraît plein
+     (claque, volet, échelle). Se met en page seule en 9:16 et en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne doit
+     rester), donne à data-duration la durée demandée (`check` la signale), puis `npm run check` et
+     3 images. Pour la poser deux fois, remplace partout « prix » par un autre identifiant. -->
+<template>
+  <style>
+    #prix .prx-ligne { position: absolute; white-space: nowrap; }
+    #prix .prx-pastille {
+      position: relative; display: inline-flex; align-items: center; gap: 0.36em; padding: 0.18em 0.42em 0.24em 0.32em;
+      color: var(--k-blanc); white-space: nowrap; will-change: transform;
+      font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1;
+    }
+    #prix .prx-fond { position: absolute; inset: 0; border-radius: 0.2em; background: var(--k-encre); }
+    #prix .prx-pastille > span { position: relative; }
+    #prix .prx-coche { display: block; flex: none; width: 0.82em; height: 0.82em; color: var(--brand-accent); }
+    #prix .prx-coche svg { display: block; width: 100%; height: 100%; stroke-width: 3.4; }
+    #prix .prx-titre, #prix .prx-echeance { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; color: var(--k-encre); white-space: nowrap; }
+    #prix .prx-prix { position: absolute; color: var(--k-encre); white-space: nowrap; line-height: 1; }
+    #prix .prx-barre-prix { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; color: var(--k-encre); white-space: nowrap; line-height: 1; }
+    #prix .prx-modalites { position: absolute; white-space: nowrap; }
+    #prix .prx-modalites > span {
+      position: relative; display: inline-block; padding: 0.14em 0.4em 0.2em; color: var(--k-blanc);
+      font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.02em; line-height: 1; white-space: nowrap;
+    }
+    #prix .prx-modalites .prx-fond { border-radius: 0.18em; }
+    #prix .prx-modalites b { position: relative; display: inline-block; font-weight: inherit; }
+    /* Sur l'aplat, la barre et le bloc sont à l'encre (de l'accent sur l'accent ne se verrait pas). */
+    #prix .k-barre { background: var(--k-encre); }
+    /* Sa nuit : les pastilles s'inversent, l'accent revient pour la barre et le bloc de la date. */
+    #prix.prx-nuit .prx-pastille { color: var(--k-encre); }
+    #prix.prx-nuit .prx-fond { background: var(--k-blanc); }
+    #prix.prx-nuit .prx-coche { color: var(--k-encre); }
+    #prix.prx-nuit .prx-titre, #prix.prx-nuit .prx-echeance, #prix.prx-nuit .prx-prix, #prix.prx-nuit .prx-barre-prix { color: var(--k-blanc); }
+    #prix.prx-nuit .prx-modalites > span { color: var(--brand-contrast); }
+    #prix.prx-nuit .prx-modalites .prx-fond { background: var(--brand-accent); }
+    #prix.prx-nuit .k-barre { background: var(--brand-accent); }
+  </style>
+  <div data-composition-id="prix" data-width="1080" data-height="1920" data-duration="6" style="position:absolute; inset:0;">
+    <div id="prix" class="k-scene">
+      <div id="prix-fond" class="k-fond k-fond-accent"></div>
+      <div class="k-mots" id="prix-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "prix";
+
+      // À REMPLACER : le prix, ses modalités et l'échéance viennent de OFFRE.json, tels que sa page
+      // les affiche ; ce qui n'existe pas se met à null (le temps correspondant disparaît). Un prix
+      // barré seulement avec `prix.barre` dans la fiche (`scenes.md`, recette 23).
+      var CONTENU = {
+        fond: "accent",                       // "accent" (l'aplat de sa couleur) ou "nuit" (sa nuit)
+        titre: null,                          // une ligne au-dessus des pastilles (« Tu reçois »), ou null
+        recoit: ["8 séances visio", "Messages illimités", "Plan sur mesure"],   // ce qu'on reçoit : 2 à 4 pastilles de 1 à 3 mots
+        barre: null,                          // l'ancien prix, barré avant que le vrai claque ("890 €"), ou null
+        prix: "690 €",                        // le prix tel qu'affiché (jamais un compteur)
+        modalites: "Paiement unique",         // ou "ou 3 × 230 €", ou null
+        echeance: ["Inscriptions jusqu'au", "30 novembre"],   // [la phrase, sa date qui se surligne], ou null
+        zone: null                            // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      // La durée donnée : celle de sa racine, ou, une fois montée, celle de son hôte (HyperFrames
+      // retire data-duration de la racine intérieure au montage).
+      var duree = (function (e) { for (; e && e.getAttribute; e = e.parentElement) { var d = parseFloat(e.getAttribute("data-duration")); if (d > 0) return d; } return 30; })(racine);
+      var zone = CONTENU.zone || (V ? [0.16, 0.25] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var nuit = CONTENU.fond === "nuit" || CONTENU.fond === "sombre";
+      if (nuit) {
+        racine.classList.add("prx-nuit");
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-sombre";
+        K.el(racine, "div", "k-vignette");   // sur l'aplat, jamais de vignette : elle virerait à l'olive
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+      // Un prix s'estime signe par signe : chiffres larges, espaces et virgules étroites.
+      var chasse = function (texte) {
+        return String(texte).split("").reduce(function (a, ch) { return a + (/[\s ]/.test(ch) ? 0.26 : /[.,]/.test(ch) ? 0.3 : 0.62); }, 0);
+      };
+      var px = function (n) { return Math.round(n) + "px"; };
+      // 9:16 : tout s'aligne à gauche et remplit la largeur ; 16:9 : tout se centre (le prix tient le
+      // milieu de l'écran, l'aplat l'entoure).
+      var x0 = 0.08 * L, col = V ? 0.84 * L : 0.6 * L;
+      var place = function (y) { return (V ? "left:" + px(x0) + "; text-align:left;" : "left:0; right:0; text-align:center;") + " top:" + px(y) + ";"; };
+      var tl = gsap.timeline({ paused: true });
+
+      // --- Premier temps : ce qu'on reçoit, en pastilles pleines empilées ---------------------
+      var recoit = (CONTENU.recoit || []).filter(Boolean).slice(0, 4);
+      var plusLong = recoit.reduce(function (a, r) { return r.length > a.length ? r : a; }, "");
+      var fP = taillePour(plusLong + "  ", col, 60, V ? 92 : 112), pasP = fP * 1.42 + fP * 0.34;
+      var fT = Math.max(56, Math.min(68, fP * 0.75)), hTitre = CONTENU.titre ? fT * 1.12 + fP * 0.45 : 0;
+      var yP = (haut + bas) / 2 - (hTitre + recoit.length * pasP - fP * 0.34) / 2;
+      var titre = null;
+      if (CONTENU.titre) {
+        titre = K.el(mots, "div", "prx-titre", null, place(yP) + " font-size:" + px(fT) + ";");
+        titre.textContent = CONTENU.titre;
+        K.claque(tl, titre, 0, { de: 1.08, duree: 0.4 });
+      }
+      var lignes = recoit.map(function (texte, i) {
+        var ligne = K.el(mots, "div", "prx-ligne", null, place(yP + hTitre + i * pasP) + " font-size:" + px(fP) + ";");
+        gsap.set(ligne, { rotation: [-1.6, 1.2, -0.8, 1.4][i % 4] });   // posées comme des étiquettes, pas alignées au cordeau
+        var p = K.el(ligne, "div", "prx-pastille", '<i class="prx-fond"></i><span class="prx-coche">' + K.ic("check") + "</span>");
+        var mot = K.el(p, "span");
+        mot.textContent = texte;
+        gsap.set(p, { transformOrigin: "100% 50%" });   // elle se refermera vers la droite
+        var coche = p.querySelector(".prx-coche");
+        K.cacher(coche);   // sa coche paraît quand elle se trace (sinon le bout rond du trait laisse un point)
+        return { p: p, fond: p.firstChild, mot: mot, coche: coche, chemin: p.querySelector("path"), texte: texte };
+      });
+      // La première est là dès l'image 0 (l'affiche) ; les suivantes s'ouvrent en volet, une par
+      // temps, et chacune se coche juste après.
+      var pasA = 0.35, tFerme = 0;
+      lignes.forEach(function (l, i) {
+        var ti = i * pasA;
+        // Le bloc s'ouvre en volet, son mot claque dedans (jamais écrasé par le volet).
+        if (i === 0) K.claque(tl, l.p, 0, { de: 1.1, duree: 0.45 });
+        else { K.volet(tl, l.fond, ti, { duree: 0.3 }); K.claque(tl, l.mot, ti + 0.2, { de: 0.86, duree: 0.3 }); }
+        if (l.chemin) { K.trace(tl, l.chemin, ti + 0.24, 0.24, { longueur: 30 }); tl.set(l.coche, { opacity: 1 }, ti + 0.24); }
+        tFerme = Math.max(tFerme, ti + lecture(l.texte));
+      });
+      // Elles se referment vers la droite, en rafale : le prix prend leur place.
+      lignes.forEach(function (l, i) {
+        tl.to(l.p, { scaleX: 0, duration: 0.2, ease: "power3.in" }, tFerme + i * 0.05);
+        tl.set(l.p, { opacity: 0 }, tFerme + i * 0.05 + 0.2);   // refermée : elle ne compte plus comme un texte
+      });
+      if (titre) tl.to(titre, { scale: 0, transformOrigin: "0% 50%", duration: 0.2, ease: "power3.in" }, tFerme).set(titre, { opacity: 0 }, tFerme + 0.2);
+      var t = tFerme + 0.2 + Math.max(0, lignes.length - 1) * 0.05;
+
+      // --- Second temps : le prix, ses modalités, l'échéance ---------------------------------
+      var prix = String(CONTENU.prix || ""), modal = CONTENU.modalites, ech = CONTENU.echeance;
+      var fPrix = Math.max(160, Math.min(V ? 380 : 420, (V ? 0.86 : 0.62) * L / Math.max(2.2, chasse(prix))));
+      var fM = V ? 64 : 60, fE = V ? 62 : 58;
+      var deuxLignes = ech && V && (ech[0] + " " + ech[1]).length * 0.56 * fE > 0.86 * L;
+      var hEch = ech ? fE * 1.12 * (deuxLignes ? 2 : 1) : 0;
+      var fB = fPrix * 0.36, hB = CONTENU.barre ? fB * 1.15 : 0;
+      var hBloc = hB + fPrix + (modal ? fPrix * 0.08 + fM * 1.34 : 0) + (ech ? fM * 0.7 + hEch : 0);
+      var y = (haut + bas) / 2 - hBloc / 2, tPrix = t + 0.15;
+      // L'ancien prix (seulement s'il est dans la fiche) : il claque, se barre, puis le vrai arrive.
+      if (CONTENU.barre) {
+        var ancien = K.el(K.el(mots, "div", "prx-ligne", null, place(y)), "span", "prx-barre-prix", null, "position:relative; display:inline-block; font-size:" + px(fB) + ";");
+        ancien.textContent = CONTENU.barre;
+        K.claque(tl, ancien, tPrix, { de: 1.3, duree: 0.35 });
+        K.barre(tl, ancien, tPrix + 0.3, { angle: -6 });
+        tPrix += 0.62;
+        y += hB;
+      }
+      // Le prix claque signe par signe, puis s'étire d'un geste et se tient.
+      var elPrix = K.el(mots, "div", "k-heros prx-prix", null, place(y) + " font-size:" + px(fPrix) + ";" + (V ? " margin-left:" + px(-fPrix * 0.03) + ";" : ""));
+      elPrix.textContent = prix;
+      var signes = K.lettres(elPrix);
+      K.claque(tl, signes, tPrix, { de: 1.7, y: -fPrix * 0.08, decalage: 0.05, duree: 0.4 });
+      K.etire(tl, elPrix, tPrix + 0.62, { axe: "x", facteur: 1.05, tenue: 0.18, origine: V ? "0% 50%" : "50% 50%" });
+      var finSignes = tPrix + 0.05 * Math.max(0, signes.length - 1) + 0.4;
+      y += fPrix * 1.0;
+      if (modal) {
+        // Son bloc s'ouvre en volet et ses mots claquent dedans (jamais écrasés par le volet).
+        var m = K.el(mots, "div", "prx-modalites", '<span><i class="prx-fond"></i><b></b></span>', place(y + fPrix * 0.08) + " font-size:" + px(fM) + ";");
+        m.querySelector("b").textContent = modal;
+        K.volet(tl, m.querySelector(".prx-fond"), finSignes - 0.05, { duree: 0.3 });
+        K.claque(tl, m.querySelector("b"), finSignes + 0.15, { de: 0.86, duree: 0.3 });
+        y += fPrix * 0.08 + fM * 1.34;
+        t = Math.max(t, finSignes - 0.05 + lecture(modal));
+      }
+      // Chaque texte tient sa lecture depuis son arrivée ; l'échéance arrive une fois les
+      // modalités ouvertes.
+      var tEch = finSignes + (modal ? 0.32 : 0.12);
+      t = Math.max(t, tPrix + lecture(prix), finSignes + 0.6);
+      if (ech) {
+        // L'échéance claque d'un bloc, puis sa date se surligne (son encre change d'un coup).
+        var e = K.el(mots, "div", "prx-echeance", null, place(y + fM * 0.7) + " font-size:" + px(fE) + ";");
+        K.el(e, "span").textContent = ech[0] + (deuxLignes ? "" : " ");
+        if (deuxLignes) K.el(e, "br");
+        var date = K.el(e, "span");
+        date.textContent = ech[1] || "";
+        K.claque(tl, e, tEch, { de: 1.12, duree: 0.38 });
+        K.surligner(tl, date, tEch + 0.45, { couleur: K.jeton(nuit ? "--brand-accent" : "--k-encre") || "#151515" });
+        tl.set(date, { color: K.jeton(nuit ? "--brand-contrast" : "--brand-accent") || "#ffffff" }, tEch + 0.6);
+        t = Math.max(t, tEch + lecture(ech.join(" ")), tEch + 0.45 + 1.2);
+      }
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

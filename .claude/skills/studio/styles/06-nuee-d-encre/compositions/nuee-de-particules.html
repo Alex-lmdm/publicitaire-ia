@@ -3,31 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 2 : LA NUÉE QUI CHERCHE SA FORME (5 s)
+    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 2 : LA NUÉE QUI ÉCRIT SES MOTS (5,5 s)
 
     Ce qu'elle montre : la suite directe de la scène 1 (même page, même bande de points). La nuée
-    se range en trois traits de pinceau en pointillé, puis s'étire en trois colonnes filaires qui
-    tournent (des points reliés par des fils), se cale en trois disques en gros pixels, se resserre
-    en trois points pleins (les points de suspension, d'un coup net), puis se rassemble en
-    l'initiale de l'offre, écrite en points, qui respire. La scène 3 (« planches-en-rafale ») part
-    de cette initiale. Que des formes simples à l'encre : ni sphère, ni lune, ni image.
-    Rôle : la tension du teaser : quelque chose se construit, on ne sait pas encore quoi. Le
-    chiffre trois revient (trois traits, trois colonnes, trois disques, trois points) : c'est le fil
-    du look.
+    écrit les trois parties de l'offre, l'une après l'autre, toujours par trois : une part de la
+    bande vole et écrit le premier mot en points, qui se pose d'un coup en encre pleine ; puis le
+    deuxième, puis le troisième. Les trois mots se lisent ensemble (le pinceau de la scène 1 revient
+    souligner le mot clé), puis se numérisent en gros pixels et s'envolent : leurs points se
+    rassemblent en l'initiale du nom de l'offre, qui respire. La scène 3 (« planches-en-rafale »)
+    part de cette initiale. Chaque point porte une lettre ou le trait du pinceau : leur nombre vient
+    des mots et de l'initiale (une place par case d'encre), jamais d'un effet. Ni forme seule, ni
+    disque, ni image.
+    Rôle : la tension du teaser : ce que l'offre contient se construit, on ignore encore son nom.
 
-    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : les formes
-    par trois s'empilent en hauteur au lieu de s'aligner ; l'initiale reste au centre.
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : les trois
+    mots restent empilés et prennent 80 % de la largeur ; l'initiale reste au centre.
 
-    À REMPLACER :
-      1. L'id « t06-nuee » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. LEGENDES : les mêmes que dans la scène 1 (le cadre d'imprimerie raccorde).
-      3. INITIALE : la première lettre du nom de l'offre (la même que NOM dans la scène 4).
-      4. FORMES (en tête du script) : l'ordre des formes et leurs temps. Le nombre de formes
-         répétées (3 par défaut) peut suivre l'offre : 3 modules, 3 étapes ; jamais un chiffre
-         inventé à l'écran.
-      Couleurs : celles de la marque. La page est var(--brand-clair), l'encre var(--brand-sombre).
-      Police de l'initiale : --t06-titres (celle de la marque, comme le sigle de la scène 4).
-    Ne pas toucher : PARTICULES, GRAINE et bande() (raccord avec la scène 1), lettre() et ses
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t06-nuee » partout
+    (rechercher-remplacer) par l'id de la scène dans index.html.
+    Couleurs : la page var(--brand-clair), l'encre var(--brand-sombre). Police : --t06-titres.
+    Ne pas toucher : GRAINE et bande() (raccord avec la scène 1), lettre(), placesDe() et leurs
     réglages (raccord avec la scène 3, qui dessine la même initiale).
   -->
 </head>
@@ -43,6 +38,9 @@
     }
     #t06-nuee .t06-page { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.045) 100%); }
     #t06-nuee canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-nuee .t06-mots { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    #t06-nuee .t06-mot { position: absolute; display: block; font-family: var(--t06-titres); font-weight: 700; line-height: 1; letter-spacing: -0.01em; white-space: nowrap; }
+    /* le cadre d'imprimerie : une texture (data-layout-ignore), jamais un texte à lire */
     #t06-nuee .t06-legende { position: absolute; font: 400 11px/1.4 var(--t06-texte); letter-spacing: 0.02em; white-space: nowrap; }
     #t06-nuee .t06-legende b { font-weight: 700; letter-spacing: 0.08em; }
     #t06-nuee .t06-legende .t06-petit { font-size: 9px; opacity: 0.75; }
@@ -51,37 +49,53 @@
     #t06-nuee .t06-chiffre { position: absolute; font: 600 11px/1 var(--t06-texte); letter-spacing: 0.04em; white-space: nowrap; }
   </style>
 
-  <div data-composition-id="t06-nuee" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
+  <div data-composition-id="t06-nuee" data-width="1920" data-height="1080" data-duration="5.5" style="position:absolute; inset:0;">
     <div id="t06-nuee" class="k-scene">
       <div class="t06-page"></div>
+      <canvas id="t06-nuee-encre"></canvas>
+      <div class="t06-mots" id="t06-nuee-mots"></div>
       <canvas id="t06-nuee-nuee"></canvas>
-      <div id="t06-nuee-cadre"></div>
+      <div id="t06-nuee-cadre" data-layout-ignore></div>
     </div>
   </div>
 
   <script>
     (function () {
-      var ID = "t06-nuee", D = 5;
-      var LEGENDES = {
-        hautDroite: ["<b>N° 01</b> ESQUISSE", "à l'encre", '<span class="t06-petit">une forme qui se cherche encore</span>', "<b>LANCEMENT</b> EN COURS"],
-        basGauche: ["<b>PROJET 01.</b> TON OFFRE", "bientôt", '<span class="t06-petit">ce qui arrive, page après page</span>'],
-        basDroite: ["<b>P. 03</b>"]
+      var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json ou du script validé, ou la ligne se retire
+        // les trois parties de l'offre (ses modules, ses étapes, ses fonctions), un mot chacune ;
+        // le trois vient de l'offre : deux ou quatre parties font deux ou quatre mots
+        trois: ["Apprendre.", "Pratiquer.", "Réussir."],
+        // le nom de l'offre : son initiale s'écrit en points (la même dans les scènes 3 et 4)
+        nom: "Ton offre",
+        // les repères d'imprimerie : les mêmes que dans la scène 1 (une texture, jamais lue)
+        legendes: {
+          hautDroite: ["<b>N° 01</b> ESQUISSE", "à l'encre", '<span class="t06-petit">une forme qui se cherche</span>', "<b>PLANCHE</b> 01"],
+          basGauche: ["<b>PROJET 01.</b> TON OFFRE", "à suivre", '<span class="t06-petit">page après page</span>'],
+          basDroite: ["<b>P. 03</b>"]
+        }
       };
-      var INITIALE = "T"; // la première lettre du nom de l'offre (NOM de la scène 4)
-      // Les formes, dans l'ordre, avec l'instant où la nuée part vers elle et la durée du passage.
-      var FORMES = [
-        { nom: "traits", depart: 0.1, duree: 0.5 },
-        { nom: "colonnes", depart: 0.85, duree: 0.5 },
-        { nom: "pixels", depart: 1.6, duree: 0.45 },
-        { nom: "points", depart: 2.35, duree: 0.5 },
-        { nom: "initiale", depart: 3.1, duree: 0.55 }
-      ];
-      var PARTICULES = 3400, GRAINE = 61, NOEUDS = 120;
+      var ID = "t06-nuee";
+      // Les temps : chaque mot part de la bande (un toutes les 0,65 s), s'écrit en points en VOL s
+      // (chaque point part avec un retard jusqu'à RETARD s : le vol d'oiseaux), puis se pose d'un
+      // coup en encre (POSE). Les mots se lisent ensemble le temps de leur lecture après le dernier
+      // posé (0,8 s + 0,3 s par mot), se numérisent en gros pixels (T_DEFAIT), puis volent vers
+      // l'initiale (T_INITIALE), qui respire. La scène calcule sa durée D (5,5 s pour trois mots) :
+      // reporte-la dans data-duration (ici et sur l'hôte) et dans FIN_SCENE2 de la scène 3.
+      function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
+      var VOL = 0.5, RETARD = 0.22, VOL_INITIALE = 0.55;
+      var DEPARTS = EXEMPLE.trois.map(function (m, k) { return 0.1 + k * 0.65; });
+      var POSE = DEPARTS.map(function (t) { return t + VOL + RETARD + 0.02; });
+      var T_DEFAIT = Math.round((POSE[POSE.length - 1] + lecture(EXEMPLE.trois) + 0.08) * 100) / 100, T_INITIALE = T_DEFAIT + 0.15;
+      var D = Math.round((T_INITIALE + 1.45) * 10) / 10;
+      // Le pinceau souligne le mot clé (le dernier par défaut) pendant la lecture : un événement de la phrase.
+      var SOULIGNE = { mot: -1, apres: 0.55, duree: 0.35, graine: 5 };
+      var GRAINE = 61, PAS_LETTRE = 9;
 
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
       var tl = gsap.timeline({ paused: true });
       var E = Math.min(L, H) / 1080;
+      var INITIALE = EXEMPLE.nom.trim().charAt(0).toUpperCase();
 
       // --- Outils du look (communs aux scènes du style 6) ---------------------------------
       function rng(g) { var s = (g >>> 0) || 1; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
@@ -91,16 +105,16 @@
       var cs = getComputedStyle(racine), ENCRE = cs.color;
       var TITRES = cs.getPropertyValue("--t06-titres").trim() || "sans-serif";
       function cadreImprimerie(hote) {
-        var m = vertical ? 54 : 68, blocs = [];
+        var m = vertical ? 54 : 68, blocs = [], Lg = EXEMPLE.legendes;
         var lignes = function (l, filetAvant) { return l.map(function (x, i) { return (i === filetAvant ? '<i class="t06-filet"></i>' : "") + "<div>" + x + "</div>"; }).join(""); };
-        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.hautDroite, LEGENDES.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
-        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(LEGENDES.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
-        blocs.push(K.el(hote, "div", "t06-legende", lignes(LEGENDES.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(Lg.hautDroite, Lg.hautDroite.length - 1), "right:" + m + "px; top:" + (vertical ? 120 : 82) + "px; text-align:right;"));
+        blocs.push(K.el(hote, "div", "t06-legende t06-gauche", lignes(Lg.basGauche, 0), "left:" + m + "px; bottom:" + (vertical ? 210 : 112) + "px;"));
+        blocs.push(K.el(hote, "div", "t06-legende", lignes(Lg.basDroite, -1), "right:" + m + "px; bottom:" + (vertical ? 210 : 104) + "px;"));
         var xs = vertical ? [0.12, 0.3, 0.7, 0.88] : [0.14, 0.205, 0.275, 0.45, 0.86, 0.92], chiffres = [];
         xs.forEach(function (x) { chiffres.push(K.el(hote, "div", "t06-chiffre", "00.00", "left:" + (x * L).toFixed(0) + "px; bottom:" + (vertical ? 150 : 28) + "px;")); });
         // Le cadre s'efface quand l'initiale se forme (la page se vide avant la rafale de planches).
-        blocs.concat(chiffres).forEach(function (b, i) { tl.to(b, { opacity: 0, duration: 0.15, ease: "none" }, 3.6 + i * 0.04); });
-        return function (t) { var pas = Math.floor(t * 4) + 18; chiffres.forEach(function (c, i) { c.textContent = (rng(pas * 131 + i * 977 + 7)() * 99.99).toFixed(2); }); };
+        blocs.concat(chiffres).forEach(function (b, i) { tl.to(b, { opacity: 0, duration: 0.15, ease: "none" }, T_INITIALE + 0.05 + i * 0.04); });
+        return function (t) { var pas = Math.floor(t * 4) + 22; chiffres.forEach(function (c, i) { c.textContent = (rng(pas * 131 + i * 977 + 7)() * 99.99).toFixed(2); }); };
       }
       function prog(t, a, b, ease) { return t <= a ? 0 : t >= b ? 1 : gsap.parseEase(ease || "power2.inOut")((t - a) / (b - a)); }
       function bande(rB) {
@@ -109,137 +123,187 @@
         var epais = bh * (0.3 + 0.7 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.06 + u * 1.04)), 0.55));
         return [bx0 + (bx1 - bx0) * u, by + v * epais + Math.sin(u * 5 + 1) * 20 * E - (u - 0.5) * 46 * E];
       }
-      // L'initiale en points : la lettre dessinée en grand dans un canevas caché, puis N places
-      // tirées au hasard (à graine) dans son tracé. La scène 3 fait exactement le même tirage.
-      function lettre(n) {
-        var c = document.createElement("canvas"), x = c.getContext("2d"), taille = Math.round(0.8 * Math.min(L, H));
-        c.width = L; c.height = H;
+      // mesurer() lit une fois la police et la place des lignes ; ecrire() les redessine sans mesure.
+      function mesurer(spans) {
+        var x = document.createElement("canvas").getContext("2d");
+        return spans.map(function (s) {
+          var c = getComputedStyle(s), fs = parseFloat(c.fontSize), font = c.fontWeight + " " + fs + "px " + c.fontFamily;
+          x.font = font; var m = x.measureText(s.textContent), fa = m.fontBoundingBoxAscent || fs * 0.9, fd = m.fontBoundingBoxDescent || fs * 0.25;
+          return { texte: s.textContent, font: font, ls: c.letterSpacing === "normal" ? "0px" : c.letterSpacing, x: s.offsetLeft, y: s.offsetTop + (s.offsetHeight - fa - fd) / 2 + fa };
+        });
+      }
+      function ecrire(x, lignes, couleur) {
+        lignes.forEach(function (l) {
+          x.font = l.font; x.textBaseline = "alphabetic"; x.textAlign = "left"; x.fillStyle = couleur;
+          if ("letterSpacing" in x) x.letterSpacing = l.ls;
+          x.fillText(l.texte, l.x, l.y);
+        });
+      }
+      // Une place par case de `pas` px que l'encre couvre : le nombre de points vient du sujet.
+      function placesDe(x, pas, graine) {
+        var d = x.getImageData(0, 0, L, H).data, r = rng(graine), p = [];
+        for (var y = pas / 2; y < H; y += pas) for (var X = pas / 2; X < L; X += pas) {
+          var qx = Math.min(L - 1, Math.max(0, X + (r() - 0.5) * pas * 0.7)), qy = Math.min(H - 1, Math.max(0, y + (r() - 0.5) * pas * 0.7));
+          if (d[((qy | 0) * L + (qx | 0)) * 4 + 3] > 140) p.push([qx, qy]);
+        }
+        for (var i = p.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), s = p[i]; p[i] = p[j]; p[j] = s; }
+        return p;
+      }
+      // L'initiale en points : la lettre dessinée en grand (80 % du petit côté) dans un canevas caché,
+      // centrée par sa boîte, puis une place par case d'encre. La scène 3 fait exactement le même tirage.
+      function lettre() {
+        var c = document.createElement("canvas"), x = toile(c), taille = Math.round(0.8 * Math.min(L, H));
         x.font = "700 " + taille + "px " + TITRES; x.textBaseline = "alphabetic";
         var m = x.measureText(INITIALE), g = m.actualBoundingBoxLeft || 0, d = m.actualBoundingBoxRight || m.width;
         var h = m.actualBoundingBoxAscent || taille * 0.7, b = m.actualBoundingBoxDescent || 0;
         var ox = L / 2 - (d - g) / 2, oy = H / 2 + (h - b) / 2;   // la boîte de la lettre centrée
         x.fillStyle = "#000"; x.fillText(INITIALE, ox, oy);
-        var px = x.getImageData(0, 0, L, H).data, r = rng(GRAINE + 77), places = [];
-        var x0 = Math.max(0, Math.floor(ox - g)), x1 = Math.min(L - 1, Math.ceil(ox + d)), y0 = Math.max(0, Math.floor(oy - h)), y1 = Math.min(H - 1, Math.ceil(oy + b));
-        for (var essai = 0; places.length < n && essai < n * 60; essai++) {
-          var qx = x0 + r() * (x1 - x0), qy = y0 + r() * (y1 - y0);
-          if (px[((qy | 0) * L + (qx | 0)) * 4 + 3] > 140) places.push([qx, qy]);
+        return { places: placesDe(x, PAS_LETTRE * E, GRAINE + 77), boite: [ox - g, oy - h, ox + d, oy + b] };
+      }
+      // --- Le pinceau de la scène 1 (le même geste), pour souligner le mot clé ----------------
+      function echantillons(g) {
+        var p = g.pts.map(function (q) { return [q[0] * L, q[1] * H]; });
+        var d = [];
+        for (var k = 0; k < p.length - 1; k++) { var a0 = p[k - 1] || p[k], a1 = p[k], a2 = p[k + 1], a3 = p[k + 2] || a2; for (var s = 0; s < 12; s++) { var t = s / 12, t2 = t * t, t3 = t2 * t; d.push([0.5 * (2 * a1[0] + (-a0[0] + a2[0]) * t + (2 * a0[0] - 5 * a1[0] + 4 * a2[0] - a3[0]) * t2 + (-a0[0] + 3 * a1[0] - 3 * a2[0] + a3[0]) * t3), 0.5 * (2 * a1[1] + (-a0[1] + a2[1]) * t + (2 * a0[1] - 5 * a1[1] + 4 * a2[1] - a3[1]) * t2 + (-a0[1] + 3 * a1[1] - 3 * a2[1] + a3[1]) * t3)]); } }
+        d.push(p[p.length - 1]);
+        return d;
+      }
+      function bruit(x) { var i = Math.floor(x), f = x - i, h = function (n) { var s = Math.sin(n * 127.1) * 43758.5453; return s - Math.floor(s); }; return h(i) + (h(i + 1) - h(i)) * f * f * (3 - 2 * f); }
+      function pinceau(g) {
+        var pts = echantillons(g), r = rng(g.graine * 97 + 1), W = g.largeur * E, n = pts.length, court = n < 30;
+        var nx = [], ny = [];
+        for (var i = 0; i < n; i++) { var a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; nx.push(-dy / l); ny.push(dx / l); }
+        // largeur : l'appui (tête ronde), la pression qui varie, le pinceau qui se lève
+        var larg = court ? function (u) { return W * Math.sqrt(Math.max(0.05, Math.sin(Math.PI * Math.min(1, 0.15 + u * 0.85)))); }
+          : function (u) { var appui = 0.32 + 0.68 * Math.sqrt(Math.min(1, u * 16)), leve = 1 - Math.pow(Math.max(0, u - 0.5) / 0.5, 1.4) * 0.8; return W * appui * leve * (0.88 + 0.12 * bruit(u * 6 + g.graine)); };
+        // encre qui s'épuise : 0 au départ (mouillé), jusqu'à 0,75 à la fin (sec : le papier passe)
+        var sec = court ? function () { return 0.04; } : function (u) { return 0.05 + 0.7 * Math.pow(u, 1.8); };
+        var poils = [];
+        for (var p = 0; p < 150; p++) { var k = (p / 149) * 2 - 1; poils.push({ k: k + (r() - 0.5) * 0.02, w: (1.2 + r() * 2.6) * E, a: 0.55 + r() * 0.45, ph: r() * 100, f: 9 + r() * 22, bord: Math.abs(k) }); }
+        // plein : un geste à l'accent se pose sans transparence (l'accent n'est jamais dilué)
+        function dessiner(ctx, avance, couleur, plein) {
+          if (avance <= 0) return;
+          var fin = Math.max(1, Math.floor(avance * (n - 1)));
+          ctx.strokeStyle = couleur; ctx.fillStyle = couleur; ctx.lineCap = "round"; ctx.lineJoin = "round";
+          // un voile d'encre sous les poils, plus dense au départ
+          ctx.globalAlpha = plein ? 1 : 0.5; ctx.beginPath();
+          for (var i = 0; i <= fin; i++) { var w = larg(i / (n - 1)) * 0.36 * (1 - sec(i / (n - 1)) * 0.6); ctx.lineTo(pts[i][0] + nx[i] * w, pts[i][1] + ny[i] * w); }
+          for (var j = fin; j >= 0; j--) { var w2 = larg(j / (n - 1)) * 0.36 * (1 - sec(j / (n - 1)) * 0.6); ctx.lineTo(pts[j][0] - nx[j] * w2, pts[j][1] - ny[j] * w2); }
+          ctx.closePath(); ctx.fill();
+          // la tête du geste : arrondie, là où le pinceau s'est posé
+          ctx.globalAlpha = plein ? 1 : 0.7; ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], larg(0.004) * 0.36, 0, 6.2832); ctx.fill();
+          // les poils : chaque poil laisse une strie ; il saute là où il n'a plus d'encre
+          poils.forEach(function (po) {
+            ctx.globalAlpha = plein ? 1 : po.a; ctx.lineWidth = po.w; ctx.beginPath(); var trace = false;
+            for (var i = 0; i <= fin; i++) {
+              var u = i / (n - 1), seuil = sec(u) + po.bord * 0.25;
+              if (bruit(u * po.f + po.ph) < seuil) { trace = false; continue; }
+              var off = po.k * 0.5 * larg(u) * (1 + (bruit(u * 13 + po.ph) - 0.5) * 0.08 * po.bord), x = pts[i][0] + nx[i] * off, y = pts[i][1] + ny[i] * off;
+              if (!trace) { ctx.moveTo(x, y); trace = true; } else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+          });
+          ctx.globalAlpha = 1;
         }
-        while (places.length < n) places.push([L / 2, H / 2]);
-        return { places: places, boite: [x0, y0, x1, y1] };
+        return { dessiner: dessiner };
       }
 
-      // --- Les formes : pour chaque point, sa place dans chaque forme --------------------------
-      // Trois places en ligne (16:9) ou en colonne (9:16).
-      var place = function (j, ecart) { return vertical ? [L / 2, H / 2 + (j - 1) * ecart * 1.25] : [L / 2 + (j - 1) * ecart, H / 2]; };
-      var ECART3 = vertical ? 330 * E : 0.17 * L, RPOINT = (vertical ? 118 : 128) * E;
-      function gauss(i, k) { return (hache(i, k) + hache(i, k + 1) + hache(i, k + 2) - 1.5) / 1.5; }
-      var LETTRE = null;
-      var formes = {
-        // trois traits de pinceau en pointillé, de longueurs différentes, l'un sous l'autre
-        traits: function (i) {
-          var j = i % 3, longs = [0.27, 0.19, 0.36], ys = [-0.17, 0, 0.17], u = hache(i, 11), lg = longs[j] * (vertical ? 1.9 : 1) * L;
-          var cx = L / 2 + (j === 1 ? -0.02 * L : 0), y0 = H / 2 + ys[j] * H * (vertical ? 0.55 : 1), ep = 72 * E * (0.35 + 0.65 * Math.pow(Math.sin(Math.PI * Math.min(1, 0.05 + u)), 0.5));
-          return [cx - lg / 2 + lg * u, y0 + gauss(i, 12) * ep - (u - 0.5) * 18 * E];
-        },
-        // trois colonnes filaires : un treillis (12 anneaux de 10 nœuds, vrillés) et de la poussière
-        // sur le cylindre, qui tourne
-        colonnes: function (i, t) {
-          // les colonnes restent côte à côte, même en vertical (plus hautes)
-          var j = i % 3, m = Math.floor(i / 3), p = [L / 2 + (j - 1) * (vertical ? 300 * E : 0.13 * L), H / 2], R = (vertical ? 100 : 92) * E, h = (vertical ? 1000 : 640) * E, a, y;
-          if (m < NOEUDS) { var an = Math.floor(m / 10), pl = m % 10; a = pl / 10 * 6.2832 + an * 0.31; y = p[1] - h / 2 + an / 11 * h; }
-          else { a = hache(i, 21) * 6.2832; y = p[1] - h / 2 + hache(i, 22) * h; }
-          a += t * 0.9 * (j === 1 ? -1 : 1);
-          var z = Math.cos(a);
-          return [p[0] + Math.sin(a) * R, y + z * R * 0.18, z];
-        },
-        // trois disques en gros pixels (les points se calent sur une grille et deviennent des carrés)
-        pixels: function (i) {
-          var j = i % 3, p = place(j, ECART3), R = (vertical ? 120 : 132) * E, a = hache(i, 71) * 6.2832, rr = R * Math.sqrt(hache(i, 72));
-          var x = Math.cos(a) * rr, y = Math.sin(a) * rr * 0.9 - (Math.abs(x) < R * 0.3 && y < -R * 0.55 ? R * 0.25 : 0);
-          return [p[0] + x, p[1] + y, 1];
-        },
-        // trois points pleins : la nuée se resserre en trois disques serrés, qui tournent lentement
-        points: function (i, t) {
-          var j = i % 3, p = place(j, ECART3), a = hache(i, 31) * 6.2832 + t * 0.35 * (j === 1 ? -1 : 1), rr = RPOINT * Math.sqrt(hache(i, 32));
-          return [p[0] + Math.cos(a) * rr, p[1] + Math.sin(a) * rr, 1];
-        },
-        // l'initiale de l'offre, en points ; elle respire (une poussée) et ses points frémissent
-        initiale: function (i, t) {
-          var q = LETTRE.places[i], s = 1 + 0.06 * Math.sin(Math.PI * prog(t, 4.05, 4.45, "power2.out"));
+      var ctx = toile($("nuee")), ctxT = toile($("encre")), chiffres = cadreImprimerie($("cadre"));
+      var hoteMots = $("mots"), spans = EXEMPLE.trois.map(function (m) { return K.el(hoteMots, "span", "t06-mot", m, "font-size:100px;"); });
+
+      function construire() {
+        // --- Les mots : empilés, le plus long à 78 % de la largeur (80 % en 9:16) -----------------
+        var w100 = Math.max.apply(null, spans.map(function (s) { return s.offsetWidth; }).concat([1]));
+        var fs = Math.min((vertical ? 0.8 : 0.78) * L / w100 * 100, (vertical ? 0.13 : 0.24) * H), ih = fs * (vertical ? 1.12 : 1.06);
+        var LIGNES_Y = spans.map(function (s, k) { return H / 2 - (spans.length * ih) / 2 + (k + 0.5) * ih; });
+        spans.forEach(function (s, k) {
+          s.style.fontSize = fs.toFixed(1) + "px";
+          s.style.left = (L / 2 - s.offsetWidth / 2).toFixed(1) + "px";
+          s.style.top = (LIGNES_Y[k] - s.offsetHeight / 2).toFixed(1) + "px";
+        });
+        var pas = Math.max(4, Math.min(9, fs * 0.06)), mots = spans.map(function (s, k) {
+          var c = document.createElement("canvas"), x = toile(c); ecrire(x, mesurer([s]), "#000");
+          return placesDe(x, pas, GRAINE + 30 + k);
+        });
+        var LETTRE = lettre(), nI = LETTRE.places.length;
+        // le trait qui souligne le mot clé, sous sa ligne de base, de son début à sa fin
+        var kS = SOULIGNE.mot < 0 ? spans.length + SOULIGNE.mot : SOULIGNE.mot, sS = spans[kS], yS = mesurer([sS])[0].y + fs * 0.17;
+        var xa = sS.offsetLeft - fs * 0.04, xb = sS.offsetLeft + sS.offsetWidth * 0.97;
+        var gS = { pts: [[xa / L, (yS + fs * 0.01) / H], [(xa + xb) / 2 / L, (yS + fs * 0.035) / H], [xb / L, (yS - fs * 0.015) / H]], largeur: fs * 0.13 / E, debut: POSE[kS] + SOULIGNE.apres, duree: SOULIGNE.duree, graine: SOULIGNE.graine };
+        var trait = pinceau(gS), cT = document.createElement("canvas"), xT = toile(cT);
+        trait.dessiner(xT, 1, "#000", false);
+        var groupes = mots.concat([placesDe(xT, pas, GRAINE + 40)]);   // le dernier groupe : le trait
+
+        // --- Les points : chaque mot prend sa part de la bande (autant de points que d'encre) ------
+        var nMots = groupes.reduce(function (a, m) { return a + m.length; }, 0), N = Math.max(nMots, nI), rB = rng(GRAINE), part = [];
+        for (var i = 0, j = 0, k0 = 0; i < N; i++) {
+          while (j < groupes.length && i - k0 >= groupes[j].length) { k0 += groupes[j].length; j++; }
+          var dans = j < groupes.length;
+          part.push({ b: bande(rB), mot: dans && j < mots.length ? j : -1, trait: dans && j === mots.length, place: dans ? groupes[j][i - k0] : null, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45, dl: hache(i, 6) * RETARD });
+        }
+        // Chaque mot se pose d'un coup en encre pleine (ses points s'effacent), à POSE.
+        spans.forEach(function (s, k) {
+          gsap.set(s, { opacity: 0 });
+          tl.to(s, { opacity: 1, duration: 0.1, ease: "none" }, POSE[k] || 0);
+          tl.set(s, { opacity: 0 }, T_DEFAIT);
+        });
+
+        function initiale(i, t) {
+          var q = LETTRE.places[i % nI], s = 1 + 0.06 * Math.sin(Math.PI * prog(t, T_INITIALE + 0.8, T_INITIALE + 1.2, "power2.out"));
           var f = 0.5 + hache(i, 44), ph = hache(i, 45) * 6.2832, amp = 2.2 * E;
           return [L / 2 + (q[0] - L / 2) * s + Math.sin(t * 2.1 * f + ph) * amp, H / 2 + (q[1] - H / 2) * s + Math.cos(t * 1.7 * f + ph) * amp, 0.45 + 0.55 * hache(i, 43)];
         }
-      };
-
-      // --- Construction ---------------------------------------------------------------------
-      var ctx = toile($("nuee")), chiffres = cadreImprimerie($("cadre"));
-      var rB = rng(GRAINE), part = [];
-      for (var i = 0; i < PARTICULES; i++) { var b = bande(rB); part.push({ b: b, ta: (1.5 + (i % 7) * 0.38) * E, al: 0.55 + hache(i, 5) * 0.45, dl: hache(i, 6) * 0.22 }); }
-      // Le treillis des colonnes : chaque nœud relié au suivant sur son anneau et au nœud de l'anneau du dessous.
-      var liens = [];
-      for (var c = 0; c < 3; c++) for (var an = 0; an < 12; an++) for (var pl = 0; pl < 10; pl++) {
-        var id = (an * 10 + pl) * 3 + c, voisin = (an * 10 + (pl + 1) % 10) * 3 + c;
-        liens.push([id, voisin]); if (an < 11) liens.push([id, ((an + 1) * 10 + pl) * 3 + c]);
-      }
-
-      function position(i, t) {
-        var p = part[i], cur = [p.b[0], p.b[1], 1], f, nxt, avance;
-        for (var k = 0; k < FORMES.length; k++) {
-          f = FORMES[k]; avance = prog(t, f.depart + p.dl, f.depart + p.dl + f.duree, "power3.inOut");
-          if (avance <= 0) break;
-          nxt = formes[f.nom](i, t);
-          var bombe = Math.sin(Math.PI * avance) * 40 * E * (hache(i, 50 + k) - 0.5);
-          cur = [cur[0] + (nxt[0] - cur[0]) * avance + bombe, cur[1] + (nxt[1] - cur[1]) * avance - bombe * 0.6, cur[2] + ((nxt[2] == null ? 1 : nxt[2]) - cur[2]) * avance];
+        // La position (x, y), la profondeur et la visibilité de chaque point à l'instant t.
+        function position(i, t) {
+          var p = part[i], x = p.b[0], y = p.b[1], prof = 1, vu = p.mot < 0 ? 0 : 1;
+          if (p.trait) { x = p.place[0]; y = p.place[1]; vu = t >= T_DEFAIT ? 1 : 0; }   // l'encre du trait devient points
+          // ce qui reste de la bande descend à la ligne de son mot pendant que le précédent s'écrit
+          if (p.mot >= 1) y += (LIGNES_Y[p.mot] - H / 2) * prog(t, DEPARTS[p.mot - 1], DEPARTS[p.mot - 1] + VOL);
+          if (p.mot >= 0) {
+            var a = prog(t, DEPARTS[p.mot] + p.dl, DEPARTS[p.mot] + p.dl + VOL, "power3.inOut"), bombe = Math.sin(Math.PI * a) * 40 * E * (hache(i, 50 + p.mot) - 0.5);
+            x += (p.place[0] - x) * a + bombe; y += (p.place[1] - y) * a - bombe * 0.6;
+            if (t < T_DEFAIT) vu = 1 - prog(t, POSE[p.mot], POSE[p.mot] + 0.1, "none");   // le mot posé en encre cache ses points
+          }
+          var v = prog(t, T_INITIALE + p.dl, T_INITIALE + p.dl + VOL_INITIALE, "power3.inOut");
+          if (v > 0) {
+            var q = initiale(i, t), bo = Math.sin(Math.PI * v) * 40 * E * (hache(i, 58) - 0.5);
+            x += (q[0] - x) * v + bo; y += (q[1] - y) * v - bo * 0.6; prof = 1 + (q[2] - 1) * v;
+            // les points en trop rejoignent l'initiale en s'éteignant ; ceux qui manquaient s'allument
+            vu = i < nI ? (p.mot < 0 && !p.trait ? v : 1) : 1 - v;
+          }
+          return [x, y, prof, vu];
         }
-        return cur;
-      }
 
-      function rendre(t) {
-        chiffres(t);
-        ctx.clearRect(0, 0, L, H);
-        var pos = new Array(part.length);
-        for (var i = 0; i < part.length; i++) pos[i] = position(i, t);
-        // les fils des colonnes (visibles autour de la forme « colonnes »)
-        var fil = prog(t, 1.05, 1.25) * (1 - prog(t, 1.6, 1.75));
-        if (fil > 0) {
-          ctx.strokeStyle = ENCRE; ctx.lineWidth = 1.15 * E;
-          liens.forEach(function (l) { var a = pos[l[0]], b = pos[l[1]]; ctx.globalAlpha = fil * (0.3 + 0.6 * Math.max(0, (a[2] + b[2]) / 2)); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); });
-        }
-        // le moment « pixels » : les points se calent sur une grille de gros carrés
-        var pix = prog(t, 1.85, 1.95, "none") * (1 - prog(t, 2.4, 2.5, "none")), G = 15 * E;
-        if (pix > 0) {
-          ctx.fillStyle = ENCRE; var vus = {};
-          for (var n3 = 0; n3 < part.length; n3++) { var q3 = pos[n3], cx3 = Math.round(q3[0] / G), cy3 = Math.round(q3[1] / G), cle3 = cx3 + "," + cy3; vus[cle3] = (vus[cle3] || 0) + 1; }
-          for (var k3 in vus) { var xy = k3.split(","), n4 = vus[k3]; ctx.globalAlpha = pix * Math.min(1, 0.25 + n4 * 0.22); ctx.fillRect(xy[0] * G - G / 2, xy[1] * G - G / 2, G - 1, G - 1); }
+        function rendre(t) {
+          chiffres(t);
+          ctx.clearRect(0, 0, L, H); ctxT.clearRect(0, 0, L, H);
+          if (t < T_DEFAIT) trait.dessiner(ctxT, prog(t, gS.debut, gS.debut + gS.duree, "power2.out"), ENCRE, false);
+          var pos = new Array(part.length);
+          for (var i = 0; i < part.length; i++) pos[i] = position(i, t);
+          // les trois mots se numérisent : leurs points se calent sur une grille de gros carrés
+          var pix = t >= T_DEFAIT && t < T_INITIALE + 0.04 ? 1 : 0, G = 15 * E;
+          if (pix) {
+            ctx.fillStyle = ENCRE; var vus = {};
+            for (var n3 = 0; n3 < part.length; n3++) { if (!pos[n3][3]) continue; var cle = Math.round(pos[n3][0] / G) + "," + Math.round(pos[n3][1] / G); vus[cle] = (vus[cle] || 0) + 1; }
+            for (var k3 in vus) { var xy = k3.split(","); ctx.globalAlpha = Math.min(1, 0.35 + vus[k3] * 0.3); ctx.fillRect(xy[0] * G - G / 2, xy[1] * G - G / 2, G - 1, G - 1); }
+            ctx.globalAlpha = 1;
+            return;
+          }
+          ctx.fillStyle = ENCRE;
+          for (var n2 = 0; n2 < part.length; n2++) {
+            var q = pos[n2]; if (q[3] <= 0) continue;
+            ctx.globalAlpha = q[3] * part[n2].al * (0.3 + 0.7 * Math.max(0, Math.min(1, q[2])));
+            ctx.beginPath(); ctx.arc(q[0], q[1], part[n2].ta * (0.7 + 0.3 * Math.max(0, q[2])), 0, 6.2832); ctx.fill();
+          }
           ctx.globalAlpha = 1;
-          if (pix >= 1) return;
         }
-        // le moment « points » : un coup net, les trois disques deviennent trois points pleins
-        // (les points de suspension), puis se rouvrent en nuée vers l'initiale
-        if (t >= 2.82 && t < 3.08) {
-          ctx.fillStyle = ENCRE; ctx.globalAlpha = 1;
-          for (var j = 0; j < 3; j++) { var c3 = place(j, ECART3); ctx.beginPath(); ctx.arc(c3[0], c3[1], RPOINT * 1.04, 0, 6.2832); ctx.fill(); }
-          return;
-        }
-        // les points
-        ctx.fillStyle = ENCRE;
-        for (var n2 = 0; n2 < part.length; n2++) {
-          var q = pos[n2], prof = q[2] == null ? 1 : q[2];
-          ctx.globalAlpha = part[n2].al * (0.3 + 0.7 * Math.max(0, Math.min(1, prof)));
-          ctx.beginPath(); ctx.arc(q[0], q[1], part[n2].ta * (0.7 + 0.3 * Math.max(0, prof)), 0, 6.2832); ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-      }
-      function construire() {
-        LETTRE = lettre(PARTICULES);
         var horloge = { t: 0 };
         tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);
         rendre(0);
         window.__timelines[ID] = tl;
       }
-      // l'initiale se mesure avec la police chargée (la scène 3 fait le même tirage)
-      if (document.fonts && document.fonts.load) document.fonts.load("700 100px " + TITRES, INITIALE).then(construire, construire); else construire();
+      // les mots et l'initiale se mesurent avec la police chargée (la scène 3 fait le même tirage)
+      if (document.fonts && document.fonts.load) document.fonts.load("700 100px " + TITRES, INITIALE + EXEMPLE.trois.join("")).then(construire, construire); else construire();
     })();
   </script>
 </template>

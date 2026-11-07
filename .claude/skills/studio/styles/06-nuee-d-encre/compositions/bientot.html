@@ -3,32 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 4 : LA RÉVÉLATION, « BIENTÔT » (5,6 s pour 4 mots)
+    STYLE N°6 « NUÉE D'ENCRE » · SCÈNE 4 : LA RÉVÉLATION, « BIENTÔT » (6,6 s pour 4 mots)
 
     Ce qu'elle montre : la page vide, d'un coup (coupe franche sur le temps fort de la musique).
-    L'initiale de l'offre change de forme à chaque quart de seconde (fine, grasse, en contour),
-    trois points arrivent à côté d'elle ; coupe : deux lignes posées au centre (« Ton offre. »
-    puis « Bientôt disponible. ») ; coupe : le nom de l'offre en capitales ; coupe au noir.
-    Rôle : l'offre et l'appel d'un teaser (ce qui arrive, quand, où le suivre). Une page aplat, de
-    l'encre, un seul point à l'accent : ni texture, ni image.
-    Les deux lignes se tiennent ensemble le temps de leur lecture (0,3 s par mot + 0,8 s :
-    `studio_motion.py lecture`), le nom 1,5 s au moins, pendant une dérive lente (3 %). Durée : la
-    scène la calcule (D dans le script) : 5,6 s pour deux lignes de 4 mots et un nom ; reporte-la
-    dans data-duration (ici et sur l'hôte).
+    L'initiale du nom de l'offre, en grand, change de forme à chaque quart de seconde (fine, très
+    grasse, en contour, fine), puis trois points de suspension arrivent après elle, le dernier à
+    l'accent ; coupe : deux lignes posées au centre (le nom, puis quand) ; coupe : le nom de l'offre
+    en capitales, ou son logo ; coupe au noir. Une page aplat, de l'encre, un seul point à
+    l'accent : ni texture, ni image, ni forme seule.
+    Rôle : l'offre et l'appel d'un teaser (ce qui arrive, quand, où le suivre).
+    Les tailles : le sigle, les lignes et le nom occupent 60 à 74 % de la largeur pendant qu'on
+    les lit (la scène les calcule). Les deux lignes se tiennent ensemble le temps de leur lecture
+    (0,8 s + 0,3 s par mot), le nom 2,5 s (l'écran final), pendant une dérive lente de la caméra
+    (3 %, sine.inOut) ; la caméra revient à son cadre sur chaque coupe. Durée : la scène la calcule
+    (D dans le script) ; reporte-la dans data-duration (ici et sur l'hôte).
 
-    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : tout est
-    centré, les tailles se réduisent à la largeur (74 % en 9:16, la zone de texte d'un Reel).
+    Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine : tout reste
+    centré, les tailles suivent la largeur (74 %, la zone de texte d'un Reel).
 
-    À REMPLACER :
-      1. L'id « t06-bientot » partout (rechercher-remplacer) par l'id de la scène dans index.html.
-      2. NOM (le nom de l'offre ; son initiale anime le début), LIGNES (deux lignes courtes : le
-         nom puis la promesse, « Bientôt disponible. », « Ouverture le 3 novembre. » seulement
-         avec une vraie date de OFFRE.json) et LOGO (chemin d'un logo du projet ; vide = le nom en
-         capitales).
-      3. Couleurs : celles de la marque. La page est var(--brand-clair) (un aplat), l'encre et le
-         noir final var(--brand-sombre) ; le troisième point prend l'accent, plein.
-      Police des titres : celle de la marque (--t06-titres). Marque sans police imposée : la serif
-      du look (Source Serif 4, graisse 600), mode d'emploi dans style.md, section 4.
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t06-bientot » partout
+    (rechercher-remplacer) par l'id de la scène dans index.html.
+    Couleurs : celles de la marque. La page est var(--brand-clair) (un aplat), l'encre et le noir
+    final var(--brand-sombre) ; le troisième point prend l'accent, plein.
+    Police des titres : celle de la marque (--t06-titres). Marque sans police imposée : la serif
+    du look (Source Serif 4, graisse 600), mode d'emploi dans style.md, section 4.
   -->
 </head>
 <body>
@@ -41,100 +39,122 @@
       background: var(--t06-papier); color: var(--t06-encre);
     }
     #t06-bientot .t06-page { position: absolute; inset: 0; background: radial-gradient(ellipse 80% 75% at 50% 48%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.045) 100%); }
+    #t06-bientot .t06-cam { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
     #t06-bientot .t06-plan { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-    #t06-bientot .t06-sigle { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 0.12em; font: 400 150px/1 var(--t06-titres); letter-spacing: -0.02em; white-space: nowrap; }
-    #t06-bientot .t06-points { display: flex; gap: 0.1em; align-items: center; height: 0.7em; }
-    #t06-bientot .t06-points i { display: block; width: 0.26em; height: 0.26em; border-radius: 50%; }
-    #t06-bientot .t06-barres { display: flex; gap: 0.07em; align-items: stretch; height: 0.72em; }
-    #t06-bientot .t06-barres i { display: block; width: 0.12em; }
-    #t06-bientot .t06-lignes { text-align: center; font: 600 76px/1.2 var(--t06-titres); letter-spacing: -0.015em; white-space: nowrap; }
+    #t06-bientot .t06-sigle { display: flex; align-items: baseline; gap: 0.1em; font: 400 100px/1 var(--t06-titres); letter-spacing: -0.02em; white-space: nowrap; }
+    /* les états du sigle : coupes franches sur la même lettre */
+    #t06-bientot .t06-lettre[data-etat="1"] { font-weight: 900; }
+    #t06-bientot .t06-lettre[data-etat="2"] { font-weight: 700; color: transparent; -webkit-text-stroke: 0.02em var(--t06-encre); }
+    #t06-bientot .t06-points { display: flex; gap: 0.1em; align-items: center; }
+    #t06-bientot .t06-sigle[data-points="0"] .t06-points { display: none; }   /* la lettre seule reste centrée */
+    #t06-bientot .t06-points i { display: block; width: 0.2em; height: 0.2em; border-radius: 50%; background: var(--t06-encre); }
+    #t06-bientot .t06-points i:last-child { background: var(--brand-accent); }
+    #t06-bientot .t06-lignes { text-align: center; font: 600 100px/1.15 var(--t06-titres); letter-spacing: -0.015em; white-space: nowrap; }
     #t06-bientot .t06-lignes div { display: block; }
-    #t06-bientot .t06-nom { font: 700 104px/1 var(--brand-font-display); letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
-    #t06-bientot .t06-nom img { height: 120px; width: auto; display: block; }
+    #t06-bientot .t06-nom { font: 700 100px/1 var(--brand-font-display); letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap; }
+    #t06-bientot .t06-nom img { display: block; width: auto; height: auto; }
     #t06-bientot .t06-noir { position: absolute; inset: 0; background: var(--t06-encre); }
   </style>
 
-  <div data-composition-id="t06-bientot" data-width="1920" data-height="1080" data-duration="5.6" style="position:absolute; inset:0;">
+  <div data-composition-id="t06-bientot" data-width="1920" data-height="1080" data-duration="6.6" style="position:absolute; inset:0;">
     <div id="t06-bientot" class="k-scene">
       <div class="t06-page"></div>
-      <div class="t06-plan" id="t06-bientot-p1"></div>
-      <div class="t06-plan" id="t06-bientot-p2"><div class="t06-lignes" id="t06-bientot-lignes"></div></div>
-      <div class="t06-plan" id="t06-bientot-p3"><div class="t06-nom" id="t06-bientot-nom"></div></div>
+      <div class="t06-cam" id="t06-bientot-cam">
+        <div class="t06-plan" id="t06-bientot-p1"><div class="t06-sigle" id="t06-bientot-sigle"></div></div>
+        <div class="t06-plan" id="t06-bientot-p2"><div class="t06-lignes" id="t06-bientot-lignes"></div></div>
+        <div class="t06-plan" id="t06-bientot-p3"><div class="t06-nom" id="t06-bientot-nom"></div></div>
+      </div>
       <div class="t06-noir" id="t06-bientot-noir"></div>
     </div>
   </div>
 
   <script>
     (function () {
+      var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json ou du script validé, ou la ligne se retire
+        // le nom de l'offre (son initiale ouvre la scène ; en capitales à la fin)
+        nom: "Ton offre",
+        // deux lignes courtes (2 ou 3 mots chacune) : le produit, puis quand ; une date seulement si
+        // elle est dans OFFRE.json (« Ouverture le 12 janvier. »)
+        lignes: ["Ton offre.", "Bientôt disponible."],
+        // le chemin de son logo dans le projet (ex. "brand/logo.svg") ; vide : son nom en capitales
+        logo: ""
+      };
       var ID = "t06-bientot";
-      var NOM = "Ton offre";
-      var LIGNES = ["Ton offre.", "Bientôt disponible."];
-      var LOGO = ""; // ex. "brand/logo.svg" ; vide : le nom en capitales
       // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au moins.
       function lecture(t) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
-      var XL = 1.82 + lecture(LIGNES), XN = XL + 0.02 + (LOGO ? 1.5 : lecture(NOM));   // les lignes, puis le nom, lus
-      var D = Math.round((XN + 0.3) * 10) / 10;                                         // puis 0,3 s de noir
+      var T_LIGNES = 1.34, XL = 1.82 + lecture(EXEMPLE.lignes);   // les lignes, lues une fois la deuxième posée
+      var XN = XL + 0.02 + Math.max(2.5, lecture(EXEMPLE.nom));    // puis le nom : l'écran final, 2,5 s au moins
+      var D = Math.round((XN + 0.3) * 10) / 10;                    // puis 0,3 s de noir
+      var LARGEUR = 0.74;                                          // la part de la largeur de ce qui se lit (60 à 90 %)
 
       var $ = function (s) { return document.getElementById(ID + "-" + s); };
       var racine = document.getElementById(ID), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur;
       var tl = gsap.timeline({ paused: true });
 
-      // Les couleurs de la marque : l'encre (sa couleur la plus sombre) vient du CSS de la scène ;
-      // l'accent ne colore qu'un détail, plein (le troisième point).
-      var ENCRE = "var(--t06-encre)", ACCENT = "var(--brand-accent)";
-
-      // 1. Le sigle qui change de forme : l'initiale, puis des barres, puis trois points.
-      var I = NOM.trim().charAt(0).toUpperCase(), p1 = $("p1");
-      var FORMES_SIGLE = [
-        { t: 0.06, poids: 400, contour: false, suite: "" },
-        { t: 0.3, poids: 900, contour: false, suite: "barres" },
-        { t: 0.54, poids: 700, contour: true, suite: "barres" },
-        { t: 0.78, poids: 400, contour: false, suite: "points" }
-      ];
-      var etats = FORMES_SIGLE.map(function (f) {
-        var e = K.el(p1, "div", "t06-sigle");
-        var lettre = K.el(e, "span", "", I, "font-weight:" + f.poids + ";" + (f.contour ? "color:transparent; -webkit-text-stroke:3px " + ENCRE + ";" : ""));
-        if (f.suite === "barres") { var b = K.el(e, "span", "t06-barres"); for (var k = 0; k < 3; k++) K.el(b, "i", "", "", "background:" + ENCRE + ";"); }
-        if (f.suite === "points") { var p = K.el(e, "span", "t06-points"); for (var k2 = 0; k2 < 3; k2++) K.el(p, "i", "", "", "background:" + (k2 === 2 ? ACCENT : ENCRE) + ";"); }
-        return e;
-      });
-      // Une seule forme visible à la fois (coupes franches), chacune centrée.
-      gsap.set(etats, { opacity: 0 });
-      etats.forEach(function (e, i) { tl.set(e, { opacity: 1 }, FORMES_SIGLE[i].t); if (i < etats.length - 1) tl.set(e, { opacity: 0 }, FORMES_SIGLE[i + 1].t); });
-      // les trois points arrivent l'un après l'autre
-      var points = etats[3].querySelectorAll(".t06-points i");
-      gsap.set(points, { scale: 0 });
-      points.forEach(function (p, k) { tl.to(p, { scale: 1, duration: 0.14, ease: "back.out(3)" }, 0.8 + k * 0.12); });
-      tl.set($("p1"), { opacity: 0 }, 1.32);
+      // 1. Le sigle qui change de forme : la même lettre, quatre états en coupes franches, puis
+      //    trois points de suspension qui arrivent un à un (le dernier à l'accent, plein).
+      var sigle = $("sigle"), I = EXEMPLE.nom.trim().charAt(0).toUpperCase();
+      var lettre = K.el(sigle, "span", "t06-lettre", I), points = K.el(sigle, "span", "t06-points");
+      for (var k = 0; k < 3; k++) K.el(points, "i");
+      var ETATS = [{ t: 0.06, etat: "0" }, { t: 0.3, etat: "1" }, { t: 0.54, etat: "2" }, { t: 0.78, etat: "0" }];
+      gsap.set(sigle, { opacity: 0 });
+      tl.set(sigle, { opacity: 1 }, ETATS[0].t);
+      ETATS.forEach(function (e) { tl.set(lettre, { attr: { "data-etat": e.etat } }, e.t); });
+      var pts = points.querySelectorAll("i");
+      tl.set(sigle, { attr: { "data-points": "1" } }, ETATS[3].t);
+      gsap.set(pts, { scale: 0 });
+      [].forEach.call(pts, function (p, k) { tl.to(p, { scale: 1, duration: 0.14, ease: "back.out(3)" }, 0.8 + k * 0.12); });
+      tl.set($("p1"), { opacity: 0 }, T_LIGNES - 0.02);
 
       // 2. Les deux lignes, posées d'un coup (la deuxième un temps après la première)
       var lignes = $("lignes");
-      LIGNES.forEach(function (l) { K.el(lignes, "div", "", l); });
+      EXEMPLE.lignes.forEach(function (l) { K.el(lignes, "div", "", l); });
       var ls = lignes.querySelectorAll("div");
       gsap.set(ls, { opacity: 0 });
-      tl.set(ls[0], { opacity: 1 }, 1.34);
+      tl.set(ls[0], { opacity: 1 }, T_LIGNES);
       if (ls[1]) tl.set(ls[1], { opacity: 1 }, 1.82);
-      tl.fromTo(lignes, { scale: 1 }, { scale: 1.03, duration: XL - 1.34, ease: "sine.inOut", immediateRender: false }, 1.34);
       tl.set($("p2"), { opacity: 0 }, XL);
 
       // 3. Le nom (ou le logo), puis coupe au noir
       var nom = $("nom");
-      nom.innerHTML = LOGO ? '<img src="' + LOGO + '" alt="">' : NOM;
+      nom.innerHTML = EXEMPLE.logo ? '<img src="' + EXEMPLE.logo + '" alt="">' : EXEMPLE.nom;
       gsap.set($("p3"), { opacity: 0 });
       tl.set($("p3"), { opacity: 1 }, XL + 0.02);
-      tl.fromTo(nom, { scale: 1.04 }, { scale: 1, duration: XN - XL, ease: "sine.out", immediateRender: false }, XL + 0.02);
       gsap.set($("noir"), { opacity: 0 });
       tl.set($("noir"), { opacity: 1 }, XN);
 
-      // Les tailles suivent la largeur (une ligne trop longue se réduit).
-      var csL = getComputedStyle(lignes);
-      document.fonts.load(csL.fontWeight + " " + csL.fontSize + " " + csL.fontFamily).then(poser, poser);
+      // La caméra : immobile sur le sigle, une dérive lente (3 %) sous les lignes puis sous le nom,
+      // remise à son cadre sur la coupe entre les deux (un recadrage entre deux phrases).
+      var cam = $("cam");
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: XL - T_LIGNES, ease: "sine.inOut", immediateRender: false }, T_LIGNES);
+      tl.fromTo(cam, { scale: 1 }, { scale: 1.03, duration: XN - XL - 0.02, ease: "sine.inOut", immediateRender: false }, XL + 0.02);
+
+      // Les tailles suivent la largeur : ce qui se lit prend LARGEUR du cadre (une ligne trop longue
+      // se coupe dans EXEMPLE, elle ne rétrécit pas sous le mot héros).
+      function ajuster(el, base, maxH) {
+        var w = el.offsetWidth || 1, fs = base * LARGEUR * L / w;
+        if (maxH && el.offsetHeight * fs / base > maxH) fs = base * maxH / el.offsetHeight;
+        el.style.fontSize = fs.toFixed(1) + "px";
+      }
       function poser() {
-        var maxL = L * (H > L ? 0.74 : 0.8);   // en 9:16, la zone de texte d'un Reel (830 px sur 1 080)
-        if (lignes.offsetWidth > maxL) lignes.style.fontSize = (76 * maxL / lignes.offsetWidth).toFixed(1) + "px";
-        if (nom.offsetWidth > maxL) nom.style.fontSize = (104 * maxL / nom.offsetWidth).toFixed(1) + "px";
+        // le sigle : la lettre seule à la taille de l'initiale en points de la scène 3 (80 % du petit
+        // côté, 60 % de la largeur au plus), centrée ; avec ses points, le groupe tient dans LARGEUR
+        // (en 9:16, la lettre se resserre d'un coup quand les points arrivent)
+        sigle.setAttribute("data-points", "0"); var wSeul = sigle.offsetWidth || 1;
+        sigle.setAttribute("data-points", "1"); var wGroupe = sigle.offsetWidth || 1;
+        sigle.setAttribute("data-points", "0");
+        var fsSeul = Math.min(0.8 * Math.min(L, H), 0.6 * L / wSeul * 100), fsGroupe = Math.min(fsSeul, LARGEUR * L / wGroupe * 100);
+        sigle.style.fontSize = fsSeul.toFixed(1) + "px";
+        if (fsGroupe < fsSeul - 1) tl.set(sigle, { fontSize: fsGroupe.toFixed(1) + "px" }, ETATS[3].t);
+        ajuster(lignes, 100, 0.6 * H);
+        // le logo : 60 % de la largeur, 40 % de la hauteur au plus, sans déformation
+        if (EXEMPLE.logo) { var img = nom.querySelector("img"); img.style.width = (0.6 * L).toFixed(0) + "px"; img.style.maxHeight = (0.4 * H).toFixed(0) + "px"; img.style.objectFit = "contain"; }
+        else ajuster(nom, 100, 0.4 * H);
         window.__timelines[ID] = tl;
       }
+      var csL = getComputedStyle(lignes);
+      if (document.fonts && document.fonts.load) Promise.all(["400", "600", "700", "900"].map(function (g) { return document.fonts.load(g + " 100px " + csL.fontFamily, I + EXEMPLE.lignes.join("") + EXEMPLE.nom); })).then(poser, poser);
+      else poser();
     })();
   </script>
 </template>

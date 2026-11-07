@@ -7,10 +7,10 @@
          après le choix de la structure et de l'angle, et le PLAN.md (skill `studio`).
          {{SUPPORT_TITRE}}, format {{FORMAT}} ({{LARGEUR}}×{{HAUTEUR}}), 30 images/s, {{IDEAL}} s visées.
          Zones : `python3 {{MAISON}}tools/studio_motion.py zones {{SUPPORT}} --format {{FORMAT}}`.
-         Le script validé (PLAN.md) se lit phrase par phrase, chacune tenue le temps de la lire
-         (`studio_motion.py lecture`) ; autour d'elle, le monde vit (un événement toutes les
-         demi-secondes), aux seules couleurs de la marque ; `studio_motion.py rythme
-         exports/{{VIDEO}}.mp4` vérifie le rythme après le rendu. -->
+         Le film validé (PLAN.md) se monte plan par plan : sa vraie matière en grand, peu de mots
+         tenus le temps d'être lus (`studio_motion.py lecture`), aux seules couleurs de la marque.
+         Scènes prêtes : {{MAISON}}templates/scenes/. Après le rendu, `rythme`, `cadre` et
+         `palette` sur exports/{{VIDEO}}.mp4. -->
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/CustomEase.min.js"></script>
     <!-- Style de la marque, copié de brand/ (généré depuis marque.json) à la création : polices et

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LE LOGO EN CUBE (ouverture ou fin) · 2,7 s ou 5 s
+    STYLE N°8 « FENÊTRE POSÉE » · SCÈNE : LE LOGO EN CUBE (ouverture ou fin) · 2,7 s ou 5,4 s
     Ce que la scène montre : le vrai logo de la marque, posé sur la face avant d'un cube aux
     couleurs de la marque, arrive en roulant dans l'espace (trois rotations qui se calment), se pose
     et glisse vers la gauche ; le nom de l'offre sort de derrière lui. Le cube ne porte que son
@@ -12,22 +12,20 @@
        se tient le temps de sa lecture (1,5 s au moins) pendant que le cube flotte ;
      - FOND = "sombre" (fin, 5,4 s avec la phrase d'exemple) : la nuit de la marque (var(--brand-sombre)), côtés du cube
        clairs, nom clair, puis la phrase d'appel s'écrit dessous et se tient 3 s (l'écran final).
+    Le nom est le mot héros : la scène règle sa taille pour qu'il occupe, avec le cube, environ 60 %
+    de la largeur (80 % en 9:16) ; le cube suit sa taille ; la phrase d'appel fait 48 px (52 en 9:16).
     La scène calcule sa durée (D dans le script, d'après le nom et la phrase d'appel) : reporte-la
     dans data-duration (ici et sur l'hôte).
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte
     (le nom passe sous le cube).
 
-    À REMPLACER :
-     1. L'id « t08-logo » (racine, constante ID, préfixe CSS) par l'id de la scène (t08-ouverture,
-        t08-fin) ; data-duration = D (2,7 s en clair avec un nom de 2 mots, 5 s en sombre avec la
-        phrase d'appel d'exemple, 5,4 s).
-     2. FOND : "clair" ou "sombre". LOGO : brand/logo.svg ou brand/logo.png ("" : le nom seul,
-        sans cube). FACE : la couleur de la face qui porte le logo : "" (sa nuit sur fond clair,
-        son clair sur fond sombre : un logo posé au centre de la face, LOGO_TAILLE = 0.58), ou
-        "accent" pour un logo carré qui remplit la face comme une icône d'appli (LOGO_TAILLE = 1).
-     3. NOM : le nom de l'offre (ou « Ton offre 2.0 » pour une nouvelle version).
-     4. APPEL (fin seulement) : une phrase calme qui dit où agir, vraie pour le support (page :
-        « Le lien est juste en dessous. » ; pub : « Découvre-le maintenant. »).
+    À remplacer : l'objet EXEMPLE (en tête du script : le logo, le nom, la phrase d'appel), puis
+    l'id « t08-logo » (racine, constante ID, préfixe CSS) par l'id de la scène (t08-ouverture,
+    t08-fin) et data-duration = D (2,7 s en clair avec un nom de 2 mots, 5,4 s en sombre avec la
+    phrase d'appel d'exemple). Les réglages, hors d'EXEMPLE : FOND ("clair" ou "sombre") et FACE,
+    la couleur de la face qui porte le logo : "" (sa nuit sur fond clair, son clair sur fond
+    sombre : un logo posé au centre de la face, LOGO_TAILLE = 0.58), ou "accent" pour un logo carré
+    qui remplit la face comme une icône d'appli (LOGO_TAILLE = 1).
     Couleurs : seulement celles de ta marque (brand/tokens.css) : son clair et sa nuit en fond,
     les faces du cube à son accent, sa nuit, son clair et ses gris (l'ombre des côtés) ; le logo
     garde ses vraies couleurs. Aucun mélange de couleurs.
@@ -42,19 +40,19 @@
   #t08-logo.t08-sombre { --t08-fond: var(--brand-sombre); --t08-texte: var(--brand-clair); --t08-appel: var(--brand-gris-4);
     --t08-face: var(--brand-clair); --t08-face-2: var(--brand-gris-4); --t08-face-3: var(--brand-gris-3); }
   #t08-logo .t08-fond { position: absolute; inset: -2px; background: var(--t08-fond); }
-  #t08-logo .t08-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 36px; }
-  #t08-logo .t08-scene3d { position: relative; width: 150px; height: 150px; perspective: 900px; flex: none; }
+  #t08-logo .t08-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; }
+  #t08-logo .t08-scene3d { position: relative; perspective: 1400px; flex: none; }
   #t08-logo .t08-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
-  #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; display: grid; place-items: center; overflow: hidden; }
+  #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 7%; backface-visibility: hidden; display: grid; place-items: center; overflow: hidden; }
   #t08-logo .t08-face img { width: 58%; height: 58%; object-fit: contain; }
   #t08-logo .t08-masque { overflow: hidden; padding: 10px 6px 18px 0; }
-  #t08-logo .t08-nom { font-family: var(--brand-font-display); font-weight: 400; font-size: 120px; line-height: 1; letter-spacing: -0.035em;
+  #t08-logo .t08-nom { font-family: var(--brand-font-display); font-weight: 400; line-height: 1; letter-spacing: -0.035em;
     color: var(--t08-texte); white-space: pre; }
-  #t08-logo .t08-appel { position: absolute; left: 0; right: 0; text-align: center; font: 400 38px/1.2 var(--brand-font-body);
+  #t08-logo .t08-appel { position: absolute; left: 0; right: 0; text-align: center; font: 400 48px/1.2 var(--brand-font-body);
     letter-spacing: -0.01em; color: var(--t08-appel); white-space: pre; }
   #t08-logo .t08-appel span { opacity: 0; }
-  #t08-logo.t08-vertical .t08-lockup { flex-direction: column; gap: 44px; }
-  #t08-logo.t08-vertical .t08-nom { font-size: 104px; }
+  #t08-logo.t08-vertical .t08-lockup { flex-direction: column; }
+  #t08-logo.t08-vertical .t08-appel { font-size: 52px; }
 </style>
 
 <div data-composition-id="t08-logo" data-width="1920" data-height="1080" data-duration="2.7" style="position:absolute; inset:0;">
@@ -70,11 +68,15 @@
 
 <script>
   (function () {
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      logo: "brand/logo.png",                  // son logo (le fichier de brand/ : logo.png, logo.svg…) ; "" : le nom seul, sans cube
+      nom: "Ton offre",                        // le nom de l'offre (« Ton offre 2.0 » pour une nouvelle version)
+      appel: "Le lien est juste en dessous."   // fin seulement : une phrase calme, vraie pour le support (pub : « Découvre-le maintenant. »)
+    };
+
     var ID = "t08-logo";
-    // ---- À remplacer -------------------------------------------------------------------------
-    var FOND = "clair", LOGO = "brand/logo.svg", FACE = "", LOGO_TAILLE = 0.58;
-    var NOM = "Ton offre", APPEL = "Le lien est juste en dessous.";
-    // -------------------------------------------------------------------------------------------
+    var FOND = "clair", FACE = "", LOGO_TAILLE = 0.58;
+    var LOGO = EXEMPLE.logo, NOM = EXEMPLE.nom, APPEL = EXEMPLE.appel;
     // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
     // moins ; l'écran final 3 s. Le nom est sorti à 1,2 s ; la phrase d'appel s'écrit à partir de 1,45 s.
     function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10; }
@@ -87,8 +89,14 @@
     if (vertical) racine.classList.add("t08-vertical");
     if (FOND === "sombre") racine.classList.add("t08-sombre");
 
+    // Le nom est le mot héros : il occupe avec le cube environ 60 % de la largeur (le nom seul 80 %
+    // en 9:16, sous le cube), d'après le nombre de ses signes ; le cube suit sa taille.
+    var TN = vertical ? Math.min(200, Math.round(0.8 * L / (NOM.length * 0.52)))
+      : Math.min(220, Math.round(0.62 * L / ((LOGO ? 1.5 : 0) + NOM.length * 0.52)));
+    var S = Math.round(TN * 1.2), ECART = Math.round(TN * 0.3);
     // Le cube : six faces aux couleurs de la marque, son vrai logo sur la face avant. Sans logo, pas de cube.
-    var S = 150, cube = q("#t08-logo-cube"), scene3d = q("#t08-logo-scene3d");
+    var cube = q("#t08-logo-cube"), scene3d = q("#t08-logo-scene3d");
+    scene3d.style.width = scene3d.style.height = S + "px";
     var avant = FACE === "accent" ? "var(--brand-accent)" : "var(--t08-face)";
     var FACES = [["rotateY(0deg)", avant, true], ["rotateY(180deg)", "var(--t08-face-3)"], ["rotateY(90deg)", "var(--t08-face-3)"],
       ["rotateY(-90deg)", "var(--t08-face-2)"], ["rotateX(90deg)", "var(--t08-face-2)"], ["rotateX(-90deg)", "var(--t08-face-3)"]];
@@ -102,13 +110,15 @@
       });
     } else { scene3d.style.display = "none"; }
     var lockup = q("#t08-logo-lockup"), nom = q("#t08-logo-nom");
-    nom.textContent = NOM;
-    lockup.style.top = (H / 2 - (vertical ? 190 : 85) - (FOND === "sombre" ? 40 : 0)) + "px";
-    if (!LOGO && vertical) lockup.style.top = (H / 2 - 70 - (FOND === "sombre" ? 40 : 0)) + "px";
+    nom.textContent = NOM; nom.style.fontSize = TN + "px"; lockup.style.gap = ECART + "px";
+    // La hauteur du bloc (cube et nom), centrée ; la phrase d'appel de la fin se pose dessous.
+    var HL = !LOGO ? TN + 28 : vertical ? S + ECART + TN + 28 : S, HA = FOND === "sombre" && APPEL ? 120 : 0;
+    var haut = H / 2 - (HL + HA) / 2;
+    lockup.style.top = haut + "px";
 
     // Le cube roule et se calme au centre de l'écran, puis glisse à sa place ; le nom sort de derrière lui.
     if (LOGO) {
-      var largeurNom = NOM.length * 120 * 0.5, decale = vertical ? 0 : (36 + largeurNom) / 2, monte = vertical ? 120 : 0;
+      var largeurNom = NOM.length * TN * 0.52, decale = vertical ? 0 : (ECART + largeurNom) / 2, monte = vertical ? (ECART + TN + 28) / 2 : 0;
       tl.fromTo(cube, { rotationX: -62, rotationY: 128, rotationZ: 28, scale: 0.55 },
         { rotationX: 0, rotationY: 0, rotationZ: 0, scale: 1, duration: 1.0, ease: "expo.out" }, 0);
       tl.fromTo(scene3d, { x: decale, y: monte }, { x: 0, y: 0, duration: 0.7, ease: "expo.inOut" }, 0.42);
@@ -126,7 +136,7 @@
     // Fin : la phrase d'appel s'écrit sous le nom, lettre à lettre, à sa place.
     var appel = q("#t08-logo-appel");
     if (FOND === "sombre" && APPEL) {
-      appel.style.top = (H / 2 + (vertical ? 220 : 110)) + "px";
+      appel.style.top = (haut + HL + 64) + "px";
       // 33 signes par seconde, par petits paquets irréguliers ; la phrase entière s'écrit en
       // 0,03 s par signe, puis se tient 3 s (l'écran final)
       var r = K.rng(APPEL.length * 13 + 5), spans = APPEL.split("").map(function (c) { return K.el(appel, "span", null, c); }), i = 0;

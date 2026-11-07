@@ -1,0 +1,256 @@
+<!-- Scène prête « Les vrais messages » (prouver : scenes.md, recette 21).
+     Ses vrais messages (ses captures de témoignages, ou des bulles reconstruites d'après sa page :
+     prénom, avatar en initiales, 6 à 14 mots) jaillissent de la profondeur en rafale, de derrière
+     un compteur qui chiffre la preuve (« +190 », « élèves accompagnés ») ; chaque message qui se pose
+     fait avancer le compteur d'un cran ; au dernier, le chiffre se pose à sa vraie valeur et les
+     messages reculent d'un souffle. La caméra s'approche lentement ; les messages restent entiers
+     dans le cadre et ne passent jamais sous le chiffre une fois posés. Les bulles sont de la
+     matière (data-layout-ignore) ; le chiffre et sa légende se lisent, immobiles (calque k-mots).
+     Se met en page seule en 9:16 (messages en haut et en bas) et en 16:9 (sur les côtés) : K.cadre.
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (`check` la signale en erreur
+     si elle manque), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « temoignages » par un autre identifiant. -->
+<template>
+  <style>
+    #temoignages .tem-pose { position: absolute; transform-style: preserve-3d; will-change: transform, filter; }
+    #temoignages .tem-bulle {
+      position: relative; border-radius: 34px 34px 34px 10px; background: var(--k-blanc); color: var(--k-encre);
+      box-shadow: var(--k-ombre); padding: 26px 32px 30px; font-family: "Inter", var(--brand-font-body);
+      will-change: transform;
+    }
+    #temoignages.tem-clair .tem-bulle { box-shadow: var(--k-ombre-claire); }
+    #temoignages .tem-bulle.tem-sombre { background: var(--brand-surface); color: var(--k-blanc); }
+    #temoignages .tem-tete { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; white-space: nowrap; }
+    #temoignages .tem-avatar {
+      flex: none; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center;
+      font: 800 27px/1 var(--brand-font-display); letter-spacing: -0.02em;
+    }
+    #temoignages .tem-av0 { background: var(--k-encre); color: var(--k-blanc); }
+    #temoignages .tem-av1 { background: var(--brand-gris-4); color: var(--k-encre); }
+    #temoignages .tem-av2 { background: var(--brand-gris-2); color: var(--k-blanc); }
+    #temoignages .tem-av3 { background: var(--brand-gris-1); color: var(--k-blanc); }
+    #temoignages .tem-nom { font-weight: 700; font-size: 31px; line-height: 1; }
+    #temoignages .tem-quand { margin-left: auto; font-weight: 600; font-size: 25px; line-height: 1; color: var(--brand-gris-2); }
+    #temoignages .tem-sombre .tem-quand { color: var(--brand-gris-3); }
+    #temoignages .tem-texte { font-weight: 600; font-size: 33px; line-height: 1.3; letter-spacing: -0.012em; }
+    #temoignages .tem-capture { display: block; width: 100%; border-radius: 30px; object-fit: cover; object-position: 50% 0; box-shadow: var(--k-ombre); }
+    #temoignages .tem-chiffre { position: absolute; left: 0; right: 0; text-align: center; color: var(--brand-accent-lisible, var(--k-blanc)); }
+    #temoignages.tem-clair .tem-chiffre { color: var(--k-encre); }
+    #temoignages .tem-contexte {
+      position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; color: var(--k-blanc);
+      font: 700 64px/1.1 var(--brand-font-body); letter-spacing: -0.015em;
+    }
+    #temoignages.tem-clair .tem-contexte { color: var(--k-encre); }
+  </style>
+  <div data-composition-id="temoignages" data-width="1080" data-height="1920" data-duration="4.5" style="position:absolute; inset:0;">
+    <div id="temoignages" class="k-scene">
+      <div id="temoignages-fond" class="k-fond k-fond-sombre"></div>
+      <div class="k-scene3d"><div class="k-camera" id="temoignages-cam"></div></div>
+      <div class="k-vignette" id="temoignages-vignette"></div>
+      <div class="k-mots" id="temoignages-mots"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "temoignages";
+
+      // À REMPLACER : chaque texte, chiffre et image vient de OFFRE.json ou de sources/ ; ce qui
+      // n'existe pas pour son offre se met à null.
+      var CONTENU = {
+        fond: "sombre",                 // "sombre" (sa nuit) ou "clair"
+        messages: [                     // 4 à 8 vrais témoignages de sa page, dans l'ordre d'arrivée :
+                                        // { prenom, texte (6 à 14 mots, ses mots exacts), quand (l'heure ou le jour affiché, ou null) }
+                                        // ou { capture: "assets/images/<sa capture>.png", ratio: hauteur / largeur de l'image }
+          { prenom: "Camille", texte: "J'ai lancé ma première offre trois semaines après le début.", quand: "09:41" },
+          { prenom: "Yanis", texte: "Les modules sont clairs, je les applique le soir même.", quand: "hier" },
+          { prenom: "Inès", texte: "Mes deux premières ventes sont tombées pendant le module 4.", quand: "lun." },
+          { prenom: "Marc", texte: "Je ne pensais pas y arriver aussi vite, franchement.", quand: "10:02" },
+          { prenom: "Sofia", texte: "Ma page convertit enfin. Merci pour les corrections en direct !", quand: "mar." },
+          { prenom: "Léo", texte: "Le meilleur choix de mon année, sans hésiter une seconde.", quand: "08:15" }
+        ],
+        compteur: { de: 0, a: 190, format: "+{}", contexte: "élèves accompagnés" },   // le vrai chiffre et ce qu'il compte (1 à 4 mots)
+        zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
+      var mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      // La durée donnée à la scène : celle de sa racine, ou, une fois montée, celle de son hôte dans
+      // index.html (HyperFrames retire data-duration de la racine intérieure au montage).
+      var duree = 30;
+      for (var nd = racine.parentElement; nd; nd = nd.parentElement) {
+        var dd = parseFloat(nd.getAttribute("data-duration"));
+        if (dd > 0) { duree = dd; break; }
+      }
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var clair = CONTENU.fond === "clair";
+      if (clair) {
+        racine.classList.add("tem-clair");
+        document.getElementById(ID + "-fond").className = "k-fond k-fond-clair";
+        document.getElementById(ID + "-vignette").className = "k-vignette-claire";
+      }
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+
+      // --- Le chiffre et sa légende, au centre ------------------------------------------------
+      var cpt = CONTENU.compteur || { de: 0, a: 0, format: "{}", contexte: "" };
+      var format = function (v) { return String(cpt.format || "{}").replace("{}", String(Math.round(v))); };
+      var contexte = String(cpt.contexte || "");
+      var fC = taillePour(format(cpt.a), V ? 0.84 * L : 0.36 * L, V ? 200 : 170, V ? 330 : 290);
+      var fCtx = taillePour(contexte || "x", V ? 0.86 * L : 0.4 * L, 40, V ? 68 : 60);
+      var centre = V ? (haut + bas) / 2 - 30 : H * 0.45;
+      var yChiffre = centre - fC * 0.55, yCtx = centre + fC * 0.62;
+      // La réserve : la place du chiffre et de sa légende, où aucun message ne se pose.
+      var demiL = Math.max(0.6 * fC * format(cpt.a).length, 0.56 * fCtx * contexte.length) / 2 + 50;
+      var reserve = V
+        ? { x0: 0, x1: L, y0: yChiffre - 20, y1: yCtx + fCtx * 1.2 + 30 }
+        : { x0: L / 2 - demiL, x1: L / 2 + demiL, y0: yChiffre - 30, y1: yCtx + fCtx * 1.2 + 40 };
+
+      var chiffre = K.el(mots, "div", "k-heros tem-chiffre", null,
+        "top:" + yChiffre + "px; font-size:" + fC + "px;");
+      var ctx = K.el(mots, "div", "tem-contexte", null, "top:" + yCtx + "px; font-size:" + fCtx + "px;");
+      ctx.textContent = contexte;
+
+      // --- Les messages : leurs places autour du chiffre ----------------------------------------
+      // Chaque place : le centre où on la VOIT (en part du cadre, caméra au repos), sa profondeur z,
+      // son inclinaison, sa largeur. L'ordre alterne le haut et le bas (9:16) ou la gauche et la
+      // droite (16:9) : l'anneau se construit d'égal à égal ; les lointains comblent les trous.
+      var PLACES = V ? [
+        [0.37, 0.245, 40, -2.5, 650], [0.62, 0.70, 60, 2, 650], [0.64, 0.11, -150, 3, 620],
+        [0.36, 0.855, -110, -2.5, 640], [0.22, 0.085, -420, -3, 560], [0.79, 0.85, -400, 3, 560],
+        [0.83, 0.25, -480, 2.5, 520], [0.18, 0.69, -480, -3, 520]
+      ] : [
+        [0.165, 0.27, 40, -2.5, 480], [0.835, 0.72, 60, 2, 480], [0.835, 0.26, -140, 3, 470],
+        [0.165, 0.73, -110, -3, 470], [0.5, 0.135, -420, 2, 470], [0.5, 0.86, -420, -2, 470],
+        [0.075, 0.5, -520, 3, 440], [0.925, 0.5, -520, -3, 440]
+      ];
+      var P = 1800, S1 = 1.05, marge = 30;   // perspective du kit, échelle de la caméra à la fin
+      // La hauteur d'une bulle, estimée sur le nombre de lettres (aucune mesure à l'écran).
+      var hauteurBulle = function (m, w) {
+        if (m.capture) return w * (m.ratio || 0.6);
+        var parLigne = Math.max(10, Math.floor((w - 64) / (0.5 * 33)));
+        return 26 + 66 + 16 + Math.ceil(String(m.texte || "").length / parLigne) * 33 * 1.3 + 30;
+      };
+      // Une place, calculée à l'écran : f = P / (P - z) est l'agrandissement de la perspective. Le
+      // rectangle vu reste hors de la réserve caméra au repos, et entier dans le cadre caméra au plus
+      // près (avec le recul du dernier cran) ; puis on le ramène dans l'espace de la caméra.
+      var placer = function (pl, m) {
+        var z = pl[2], f = P / (P - z), fMax = S1 * 1.03;
+        var w = Math.min(pl[4], (L - 2 * marge) / (f * fMax));
+        var h = hauteurBulle(m, w), sw = w * f, sh = h * f;   // sa taille vue
+        var sx = pl[0] * L, sy = pl[1] * H;
+        var r = { x0: sx - sw / 2, x1: sx + sw / 2, y0: sy - sh / 2, y1: sy + sh / 2 };
+        var decaler = function (dx, dy) { r.x0 += dx; r.x1 += dx; r.y0 += dy; r.y1 += dy; };
+        var lateral = !V && Math.abs(sx - L / 2) > 0.12 * L;
+        if (r.x0 < reserve.x1 && r.x1 > reserve.x0 && r.y0 < reserve.y1 && r.y1 > reserve.y0) {
+          if (lateral) decaler(sx < L / 2 ? reserve.x0 - r.x1 : reserve.x1 - r.x0, 0);
+          else decaler(0, sy < centre ? reserve.y0 - r.y1 : reserve.y1 - r.y0);
+        }
+        // Entier dans le cadre quand la caméra s'est approchée (agrandi de fMax autour du centre).
+        var bx0 = L / 2 - (L / 2 - marge) / fMax, bx1 = L / 2 + (L / 2 - marge) / fMax;
+        var by0 = H / 2 - (H / 2 - marge) / fMax, by1 = H / 2 + (H / 2 - marge) / fMax;
+        decaler(Math.max(0, bx0 - r.x0) - Math.max(0, r.x1 - bx1), Math.max(0, by0 - r.y0) - Math.max(0, r.y1 - by1));
+        var cx = (r.x0 + r.x1) / 2, cy = (r.y0 + r.y1) / 2;
+        var x3 = L / 2 + (cx - L / 2) / f, y3 = H / 2 + (cy - H / 2) / f;   // le centre dans l'espace de la caméra
+        return { x: x3 - w / 2, y: y3 - h / 2, w: w, h: h, z: z, rot: pl[3], cx: cx, cy: cy };
+      };
+      var initiales = function (nom) {
+        return String(nom || "?").split(/[\s-]+/).filter(Boolean).slice(0, 2).map(function (p) { return p[0]; }).join("").toUpperCase();
+      };
+
+      var liste = (CONTENU.messages || []).filter(Boolean).slice(0, PLACES.length);
+      var tl = gsap.timeline({ paused: true });
+      // Les instants d'arrivée : les trois premiers sont déjà là à la première image (l'affiche), ils
+      // finissent de se poser ; puis la rafale jaillit de derrière le chiffre et s'accélère.
+      var INSTANTS = [0, 0, 0, 0.32, 0.56, 0.78, 0.98, 1.16], DEJA = 3;
+      var poses = [], paliers = [];
+      liste.forEach(function (m, i) {
+        var pl = placer(PLACES[i], m), t0 = INSTANTS[i], deja = i < DEJA;
+        var pose = K.el(cam, "div", "tem-pose", null,
+          "left:" + pl.x + "px; top:" + pl.y + "px; width:" + pl.w + "px;");
+        // Les bulles sont la matière de la preuve : `check` ne les lit pas comme des textes (elles
+        // se recouvrent en profondeur, et leurs mots sont ceux d'une messagerie, au-dessus de 28 px).
+        pose.setAttribute("data-layout-ignore", "");
+        var bulle;
+        if (m.capture) {
+          bulle = K.el(pose, "img", "tem-capture", null, "aspect-ratio:" + (1 / (m.ratio || 0.6)).toFixed(4) + ";");
+          bulle.src = m.capture;
+          bulle.alt = "";
+        } else {
+          bulle = K.el(pose, "div", "tem-bulle" + (i % 3 === 2 ? " tem-sombre" : ""));
+          var tete = K.el(bulle, "div", "tem-tete");
+          K.el(tete, "div", "tem-avatar tem-av" + (i % 4)).textContent = initiales(m.prenom);
+          K.el(tete, "div", "tem-nom").textContent = m.prenom || "";
+          if (m.quand) K.el(tete, "div", "tem-quand").textContent = m.quand;
+          K.el(bulle, "div", "tem-texte").textContent = m.texte || "";
+        }
+        // La profondeur : le lointain flou et plus sombre, le proche net.
+        var flou = pl.z < -200 ? (-pl.z - 200) / 70 : 0, sombre = pl.z < -200 ? 1 - (-pl.z - 200) / 800 : 1;
+        gsap.set(pose, { x: 0, y: 0, z: pl.z, rotation: pl.rot, rotationY: (pl.cx < L / 2 ? 6 : -6), transformOrigin: "50% 50%",
+          filter: "blur(" + flou.toFixed(1) + "px) brightness(" + (clair ? 1 : sombre).toFixed(2) + ")" });
+        // L'arrivée : de très loin derrière le chiffre (la perspective les fait jaillir du centre),
+        // sans fondu ; ceux de l'affiche finissent de se poser, chacun à son instant.
+        if (t0 > 0) { K.cacher(pose); tl.set(pose, { opacity: 1 }, t0); }
+        // (par l'échelle autour de leur centre : un recul en z les tirerait vers le chiffre)
+        if (deja) tl.fromTo(pose, { scale: 0.9 - 0.03 * i, rotationX: 9 },
+          { scale: 1, rotationX: 0, duration: 0.6 + 0.12 * i, ease: "expo.out" }, 0);
+        else tl.fromTo(pose, { z: pl.z - 1700, rotationX: 34, scale: 0.55 },
+          { z: pl.z, rotationX: 0, scale: 1, duration: 0.78, ease: "expo.out" }, t0);
+        poses.push({ el: bulle, pl: pl });
+        if (!deja) paliers.push(t0 + 0.24);
+      });
+
+      // --- Le chiffre avance d'un cran à chaque message posé -----------------------------------
+      // À la première image, il compte déjà les messages de l'affiche (une valeur de passage, sous le
+      // vrai chiffre) ; il ne finit qu'au dernier message.
+      var n = Math.max(1, liste.length), k0 = Math.min(DEJA, liste.length), de = cpt.de || 0, a = cpt.a || 0;
+      var ease = gsap.parseEase("expo.out"), cran = function (k) { return de + (a - de) * Math.min(n, k0 + k) / n; };
+      if (!paliers.length) paliers.push(0.2);
+      K.texteSelon(tl, chiffre, duree, function (t) {
+        var v = liste.length > DEJA ? cran(0) : de;
+        paliers.forEach(function (tp, k) {
+          if (t <= tp) return;
+          var avant = liste.length > DEJA ? cran(k) : de, apres = liste.length > DEJA ? cran(k + 1) : a;
+          var pas = k + 1 < paliers.length ? Math.min(0.32, paliers[k + 1] - tp) : 0.4;
+          v = avant + (apres - avant) * ease(Math.min(1, (t - tp) / pas));
+        });
+        return format(v);
+      });
+      var tPose = paliers.length ? paliers[paliers.length - 1] + 0.4 : 0.4;
+      // Au dernier cran, le chiffre se pose (un coup d'échelle sur place, puis il ne bouge plus) et
+      // les messages reculent d'un souffle, comme poussés par lui.
+      tl.fromTo(chiffre, { scale: 1 }, { scale: 1.1, duration: 0.12, ease: "power2.out", immediateRender: false }, tPose - 0.12);
+      tl.to(chiffre, { scale: 1, duration: 0.5, ease: "expo.out" }, tPose);
+      poses.forEach(function (p) {
+        var dx = p.pl.cx - L / 2, dy = p.pl.cy - centre, d = Math.max(1, Math.sqrt(dx * dx + dy * dy));
+        tl.to(p.el, { x: 26 * dx / d, y: 26 * dy / d, duration: 0.16, ease: "power2.out" }, tPose - 0.1);
+        tl.to(p.el, { x: 0, y: 0, duration: 0.7, ease: "expo.out" }, tPose + 0.06);
+      });
+      // Posés, les messages vivent encore un peu : chacun tourne lentement d'un degré, dans son sens.
+      poses.forEach(function (p, i) {
+        tl.fromTo(p.el, { rotation: 0 }, { rotation: (i % 2 ? 1 : -1) * (0.6 + 0.15 * (i % 3)), duration: Math.max(1, duree - 0.4), ease: "sine.inOut" }, 0.4);
+      });
+
+      // La caméra s'approche lentement pendant toute la scène (les mots, eux, ne bougent pas).
+      var t = tPose + lecture(format(a) + " " + contexte);
+      tl.fromTo(cam, { scale: 1 }, { scale: S1, duration: Math.max(t, duree), ease: "sine.inOut" }, 0);
+
+      // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.
+      if (duree + 0.01 < t) {
+        console.error(ID + " : la scène demande " + t.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(t * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>

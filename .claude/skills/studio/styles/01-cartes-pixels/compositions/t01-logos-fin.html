@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°1 « CARTES PIXELS » · SCÈNE 4 : LES LOGOS RELIÉS ET LA FIN · 6,8 s
+    STYLE N°1 « CARTES PIXELS » · SCÈNE : LES LOGOS RELIÉS ET LA FIN · 9 s
     Ce que la scène montre :
-     0 → 3,2 s : dans la case blanche du centre, le logo de la marque dans un bouton rond ; la caméra
-       recule et les logos des outils sortent de la case sur des tuiles blanches, deux ondes partent du
-       bouton ; puis tout se range : l'outil principal à gauche, la marque à droite, un fil, un point
-       qui voyage de l'un à l'autre, le maillon du milieu qui s'allume, et une étiquette de 3 mots.
-     3,2 → 6,8 s : un chevron en escalier part du bord droit, en couches (grille, couleur, gris,
-       blanc) et blanchit l'écran ; le logo se forme en pixels, le nom de l'offre se décode ; le
-       bouton d'appel s'écrit lettre à lettre et le curseur clique. La fin se tient 1 s.
-    Entrée : raccord d'objet avec t01-chiffre (la case blanche est déjà là) ; seule, mets
-    APRES_CHIFFRE = false (la case surgit de la grille).
+     0 → 3,6 s : dans la case blanche du centre, le logo de la marque dans un bouton rond ; la caméra
+       recule (l'entrée) et les logos des outils sortent de la case sur des tuiles blanches, deux ondes
+       partent du bouton ; l'étiquette (2 à 4 mots) arrive et se lit 2,5 s ; puis tout se range :
+       l'outil principal à gauche, la marque à droite, un fil, un point qui voyage de l'un à l'autre,
+       le maillon du milieu qui s'allume. Pendant ce temps, la caméra ne fait qu'une dérive lente.
+     3,65 → 9 s : un chevron en escalier part du bord droit, en couches (grille, couleur, gris,
+       clair) et blanchit l'écran ; le logo se forme en pixels, le nom de l'offre se décode ; le
+       bouton d'appel s'écrit lettre à lettre et le curseur clique. L'écran final se tient 3 s.
+       En pub, pas de bouton : la fin dit « Découvre-le » et une flèche vers le bas (voir l'index).
+    Sans logo : son nom à la place, dans le bouton rond puis seul à la fin (jamais une initiale ni
+    une icône). Entrée : raccord d'objet avec t01-chiffre (la case blanche est déjà là) ; seule,
+    mets APRES_CHIFFRE = false (la case surgit de la grille).
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte.
 
-    À REMPLACER :
-     1. L'id « t01-logos-fin » (racine, constante ID, préfixe CSS) par l'id de la scène.
-     2. LOGOS : les vrais logos des outils liés à l'offre (6 à 8), posés par
-        `studio_motion.py logos <projet> claude chatgpt …` ; OUTIL : l'index de celui qu'on relie.
-     3. LOGO : brand/logo.svg ou brand/logo.png (sans logo : "" et l'initiale du nom s'affiche).
-     4. NOM : le nom de l'offre ; TITRE_LIEN : 2 à 4 mots, le dernier surligné ; BOUTON : l'appel
-        du support en 2 ou 3 mots (page : « Je découvre », pub : « J'en profite »).
-    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée,
-    l'encre sa nuit (var(--brand-sombre)), les pixels de la case sa nuit et son premier gris ;
-    maillon, fil, point, chevron, bouton et surlignage suivent var(--brand-accent), toujours plein.
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t01-logos-fin » (racine, constante
+    ID, préfixe CSS). Les logos des outils se posent avant avec `studio_motion.py logos <projet>
+    claude chatgpt …` (les vrais outils de l'offre).
+    Couleurs : celles de sa marque, rien d'autre : le papier, la case, les tuiles et la fin sont son
+    clair, l'encre sa nuit (var(--brand-sombre)), le fil et la couche grise du chevron
+    var(--brand-gris-4), l'appui du titre var(--brand-gris-2), les pixels de la case sa nuit et son
+    premier gris ; maillon, point, chevron, bouton et surlignage suivent var(--brand-accent), plein.
   -->
 </head>
 <body>
@@ -39,44 +39,44 @@
       linear-gradient(90deg, var(--t01-trait) 0 2px, transparent 2px),
       linear-gradient(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.028));
     background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
-  #t01-logos-fin .t01-case { position: absolute; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 24px 60px rgba(0,0,0,.06); }
-  #t01-logos-fin .t01-rond { position: absolute; border-radius: 50%; background: #fff; display: grid; place-items: center;
-    box-shadow: 0 0 0 20px rgba(0,0,0,.022), 0 0 0 21px rgba(0,0,0,.035), 0 22px 44px rgba(0,0,0,.10); }
+  #t01-logos-fin .t01-case { position: absolute; background: var(--brand-clair); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.06); }
+  #t01-logos-fin .t01-rond { position: absolute; border-radius: 50%; background: var(--brand-clair); display: grid; place-items: center;
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0.022), 0 0 0 21px rgba(0, 0, 0, 0.035), 0 22px 44px rgba(0, 0, 0, 0.10); }
   #t01-logos-fin .t01-rond img, #t01-logos-fin .t01-rond svg { width: 48%; height: 48%; object-fit: contain; }
-  #t01-logos-fin .t01-initiale { font: 700 72px/1 var(--brand-font-display); color: var(--t01-encre); letter-spacing: -0.04em; }
+  #t01-logos-fin .t01-nom-rond { width: 80%; text-align: center; font-family: var(--brand-font-display); font-weight: 700; line-height: 1.04;
+    letter-spacing: -0.03em; color: var(--t01-encre); text-wrap: balance; }
   #t01-logos-fin .t01-onde { position: absolute; border-radius: 50%; box-shadow: inset 0 0 0 4px var(--brand-accent); }
   #t01-logos-fin.t01-accent-clair .t01-onde { box-shadow: inset 0 0 0 4px var(--brand-accent), 0 0 0 1.5px rgba(0, 0, 0, 0.25); }
-  #t01-logos-fin .t01-tuile { position: absolute; border-radius: 26%; background: #fff; display: grid; place-items: center;
-    box-shadow: 0 0 0 1px #ededed, 0 14px 30px rgba(0,0,0,.09); color: var(--t01-encre); }
+  #t01-logos-fin .t01-tuile { position: absolute; border-radius: 26%; background: var(--brand-clair); display: grid; place-items: center;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.07), 0 14px 30px rgba(0, 0, 0, 0.09); color: var(--t01-encre); }
   #t01-logos-fin .t01-tuile svg { width: 56%; height: 56%; }
-  #t01-logos-fin .t01-fil { position: absolute; height: 3px; background: #dedede; }
+  #t01-logos-fin .t01-fil { position: absolute; height: 3px; background: var(--brand-gris-4); }
   #t01-logos-fin .t01-fil i { position: absolute; inset: 0; background: var(--brand-accent); transform-origin: 0 50%; }
   #t01-logos-fin .t01-voyageur { position: absolute; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: var(--brand-accent); }
   #t01-logos-fin.t01-accent-clair .t01-voyageur { box-shadow: 0 0 0 2px var(--t01-encre); }
-  #t01-logos-fin .t01-maillon { position: absolute; width: 84px; height: 52px; margin: -26px 0 0 -42px; border-radius: 26px; background: #fff;
-    box-shadow: 0 0 0 1.5px #e0e0e0, 0 8px 18px rgba(0,0,0,.06); color: #9a9a9a; padding: 12px 28px; }
+  #t01-logos-fin .t01-maillon { position: absolute; width: 84px; height: 52px; margin: -26px 0 0 -42px; border-radius: 26px; background: var(--brand-clair);
+    box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.12), 0 8px 18px rgba(0, 0, 0, 0.06); color: var(--brand-gris-3); padding: 12px 28px; }
   #t01-logos-fin .t01-maillon-on { position: absolute; inset: 0; border-radius: 26px; background: var(--brand-accent); color: var(--brand-contrast); padding: 12px 28px; }
   #t01-logos-fin .t01-titre { position: absolute; left: 96px; top: 112px; z-index: 40; display: flex; align-items: baseline; gap: 18px;
-    padding: 20px 30px 24px; border-radius: 18px; background: #fff; box-shadow: 0 0 0 1px #ececec, 0 18px 40px rgba(0,0,0,.08);
+    padding: 20px 30px 24px; border-radius: 18px; background: var(--brand-clair); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 18px 40px rgba(0, 0, 0, 0.08);
     font-family: var(--brand-font-display); font-size: 66px; line-height: 1; letter-spacing: -0.03em; white-space: pre; }
-  #t01-logos-fin .t01-leger { font-weight: 400; color: #8a8a8a; }
+  #t01-logos-fin .t01-leger { font-weight: 400; color: var(--brand-gris-2); }
   #t01-logos-fin .t01-fort { font-weight: 700; padding: 4px 12px 8px; margin: -4px 0 -8px; border-radius: 10px; background: var(--brand-accent); color: var(--brand-contrast); }
   #t01-logos-fin .t01-chevron { position: absolute; inset: 0; z-index: 50; overflow: visible; }
   #t01-logos-fin .t01-final { position: absolute; inset: 0; z-index: 60; }
   #t01-logos-fin .t01-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 34px; }
-  #t01-logos-fin .t01-lockup-logo { position: relative; width: 132px; height: 132px; flex: none; display: grid; place-items: center; }
+  #t01-logos-fin .t01-lockup-logo { position: relative; flex: none; display: grid; place-items: center; }
   #t01-logos-fin .t01-lockup-logo img { width: 100%; height: 100%; object-fit: contain; }
   #t01-logos-fin .t01-lockup-logo i { position: absolute; display: block; }
-  #t01-logos-fin .t01-nom { font: 700 124px/1 var(--brand-font-display); letter-spacing: -0.04em; color: var(--t01-encre); white-space: pre; min-width: 10px; }
+  #t01-logos-fin .t01-nom { font: 700 200px/1 var(--brand-font-display); letter-spacing: -0.04em; color: var(--t01-encre); white-space: pre; min-width: 10px; }
   #t01-logos-fin .t01-rangee { position: absolute; left: 0; right: 0; display: flex; justify-content: center; }
   #t01-logos-fin .t01-bouton { position: relative; height: 104px; min-width: 120px; padding: 0 56px; border-radius: 52px;
     background: var(--brand-accent); color: var(--brand-contrast); display: flex; align-items: center; justify-content: center;
     font: 600 42px/1 "Inter", var(--brand-font-body); letter-spacing: -0.02em; white-space: pre; }
   #t01-logos-fin.t01-vertical .t01-titre { left: 100px; top: 330px; font-size: 72px; }
-  #t01-logos-fin.t01-vertical .t01-nom { font-size: 112px; }
 </style>
 
-<div data-composition-id="t01-logos-fin" data-width="1920" data-height="1080" data-duration="6.8" style="position:absolute; inset:0;">
+<div data-composition-id="t01-logos-fin" data-width="1920" data-height="1080" data-duration="9" style="position:absolute; inset:0;">
   <div id="t01-logos-fin" class="k-scene">
     <div class="t01-papier"></div>
     <div class="k-scene3d"><div class="k-camera" id="t01-logos-fin-cam"></div></div>
@@ -95,12 +95,17 @@
 
 <script>
   (function () {
-    var ID = "t01-logos-fin", D = 6.8;
-    // ---- À remplacer -------------------------------------------------------------------------
-    var LOGOS = ["logo-claude", "logo-chatgpt", "logo-notion", "logo-canva", "logo-youtube", "logo-instagram", "logo-stripe", "logo-google"];
-    var OUTIL = 0, LOGO = "brand/logo.svg", NOM = "Ton offre";
-    var TITRE_LIEN = ["Relié à", "tes outils."], BOUTON = "Je découvre", APRES_CHIFFRE = true;
-    // -------------------------------------------------------------------------------------------
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      logos: ["logo-claude", "logo-chatgpt", "logo-notion", "logo-canva", "logo-youtube", "logo-instagram", "logo-stripe", "logo-google"],   // les vrais outils de l'offre (6 à 8)
+      outil: 0,                        // l'index de l'outil qu'on relie à l'offre
+      logo: "brand/logo.png",          // son logo (le fichier de brand/ : logo.png, logo.svg…) ; "" : son nom à la place
+      nom: "Ton offre",                // le nom de l'offre
+      titre: ["Relié à", "tes outils."],   // 2 à 4 mots, le dernier surligné
+      bouton: "Je découvre"            // l'appel du support, 2 ou 3 mots (page : « Je découvre »)
+    };
+    var APRES_CHIFFRE = true;          // false : la scène vient seule, la case surgit de la grille
+
+    var ID = "t01-logos-fin", D = 9;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
@@ -129,23 +134,26 @@
       });
     };
     var poser = function (el, x, y, l, h) { el.style.left = x + "px"; el.style.top = y + "px"; if (l != null) { el.style.width = l + "px"; el.style.height = h + "px"; } };
-    var logoMarque = function (parent) {
-      var initiale = function () { parent.innerHTML = '<span class="t01-initiale">' + NOM.charAt(0) + "</span>"; };
-      if (!LOGO) return initiale();
-      var img = K.el(parent, "img"); img.alt = ""; img.onerror = initiale; img.src = LOGO;
+    // Son logo ; sans logo (ou introuvable), son nom à sa place : jamais une initiale ni une icône.
+    var logoMarque = function (parent, sansLogo) {
+      if (!EXEMPLE.logo) return sansLogo();
+      var img = K.el(parent, "img"); img.alt = ""; img.onerror = sansLogo; img.src = EXEMPLE.logo;
     };
 
     // ================= Les logos reliés ======================================================
     var cam = q("#t01-logos-fin-cam"), cx = L / 2, cy = H / 2 + (vertical ? 0 : 20), HUB = 300, R = 210;
     var caseHub = K.el(cam, "div", "t01-case"); poser(caseHub, cx - HUB / 2, cy - HUB / 2, HUB, HUB);
     var rond = K.el(cam, "div", "t01-rond"); poser(rond, cx - R / 2, cy - R / 2, R, R);
-    logoMarque(rond);
+    logoMarque(rond, function () {
+      var mot = Math.max.apply(null, EXEMPLE.nom.split(" ").map(function (m) { return m.length; }));
+      rond.innerHTML = '<span class="t01-nom-rond" style="font-size:' + Math.max(28, Math.min(64, Math.floor(R * 0.78 / (mot * 0.6)))) + 'px">' + EXEMPLE.nom + "</span>";
+    });
     var PLACES = vertical
       ? [[-300, -430, 130], [60, -540, 104], [330, -360, 120], [-370, -40, 108], [370, 60, 140], [-280, 380, 116], [70, 500, 100], [320, 400, 126]]
       : [[-470, -250, 124], [-250, -330, 100], [250, -320, 112], [480, -170, 104], [-540, 70, 108], [520, 130, 130], [-320, 300, 104], [330, 300, 116]];
     var tuiles = [];
-    LOGOS.forEach(function (nom, i) {
-      var svg = K.ic(nom), pl = PLACES[i % PLACES.length]; if (!svg || !pl) return;
+    EXEMPLE.logos.forEach(function (nom, i) {
+      var svg = K.ic(nom), pl = PLACES[i % PLACES.length]; if (!svg || !pl) return;   // un logo absent : sa tuile se retire
       var t = K.el(cam, "div", "t01-tuile", svg); poser(t, cx + pl[0] - pl[2] / 2, cy + pl[1] - pl[2] / 2, pl[2], pl[2]);
       t.dataset.i = String(i); t.dataset.dx = String(-pl[0]); t.dataset.dy = String(-pl[1]); tuiles.push(t);
     });
@@ -162,10 +170,11 @@
     }
     K.cacher(rond);
     tl.fromTo(rond, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, 0.12);
-    // La caméra part de près et recule pendant que les tuiles sortent de la case.
+    // La caméra part de près et recule pendant que les tuiles sortent (l'entrée, avant tout texte) ;
+    // puis, pendant que l'étiquette se lit, elle ne fait qu'une dérive lente (4 %, sine.inOut).
     tl.fromTo(cam, { scale: 1.35 }, { scale: 1.04, duration: 0.75, ease: "expo.inOut" }, 0.2);
-    tl.to(cam, { scale: 0.98, duration: 0.35, ease: "expo.out" }, 0.97);
-    K.cacher(tuiles);
+    tl.to(cam, { scale: 1, duration: 2.7, ease: "sine.inOut" }, 0.95);
+    if (tuiles.length) K.cacher(tuiles);
     tuiles.forEach(function (t, i) {
       var dx = +t.dataset.dx, dy = +t.dataset.dy, t0 = (i % 2 ? 0.95 : 0.45) + Math.floor(i / 2) * 0.05;
       tl.fromTo(t, { opacity: 0, scale: 0.2, x: dx, y: dy }, { opacity: 1, scale: 1, x: 0, y: 0, duration: 0.7, ease: "expo.out" }, t0);
@@ -178,84 +187,93 @@
       K.cacher(o);
       tl.set(o, { opacity: 1, scale: 1 }, t0).to(o, { opacity: 0, scale: 2.6, duration: 0.8, ease: "power2.out" }, t0);
     });
-    tl.to(cam, { scale: 1.06, duration: 0.7, ease: "expo.inOut" }, 1.35);
-    // Tout se range : l'outil à gauche, la marque à droite, reliés par un fil.
-    var ecart = 300, principal = tuiles.filter(function (t) { return +t.dataset.i === OUTIL; })[0];
+    // Tout se range : l'outil à gauche, la marque à droite, reliés par un fil. Sans le logo de cet
+    // outil, pas de lien : la marque reste seule au centre (jamais un rond vide).
+    var ecart = 300, principal = tuiles.filter(function (t) { return +t.dataset.i === EXEMPLE.outil; })[0];
     tuiles.forEach(function (t, i) {
       if (t === principal) return;
       tl.to(t, { x: +t.dataset.dx * 0.85, y: +t.dataset.dy * 0.85, scale: 0, opacity: 0, duration: 0.42, ease: "power3.in" }, 2.15 + i * 0.03);
     });
-    tl.to(cam, { scale: 1, duration: 0.6, ease: "expo.inOut" }, 2.2);
     tl.to(caseHub, { opacity: 0, scale: 0.8, duration: 0.35, ease: "power2.in" }, 2.2);
-    tl.to(rond, { x: ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
-    var rondOutil = K.el(cam, "div", "t01-rond"); poser(rondOutil, cx - R / 2, cy - R / 2, R, R);
-    if (principal) { rondOutil.innerHTML = principal.innerHTML; tl.to(principal, { opacity: 0, scale: 0.5, duration: 0.3, ease: "power2.in" }, 2.25); }
-    K.cacher(rondOutil, { scale: 0.5 });
-    tl.to(rondOutil, { opacity: 1, scale: 1, x: -ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
-    var long = 2 * ecart - R - 44, x0 = cx - ecart + R / 2 + 22;
-    var fil = K.el(cam, "div", "t01-fil", "<i></i>"); poser(fil, x0, cy - 1.5, long, 3);
-    var maillon = K.el(cam, "div", "t01-maillon", K.ic("link")); poser(maillon, cx, cy);
-    var on = K.el(maillon, "div", "t01-maillon-on", K.ic("link"));
-    var voyageur = K.el(cam, "div", "t01-voyageur"); poser(voyageur, x0, cy);
-    K.cacher([fil, maillon, voyageur, on]);
-    tl.fromTo(fil, { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 2.75);
-    tl.fromTo(maillon, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 2.8);
-    tl.set(voyageur, { opacity: 1 }, 2.85).set(voyageur, { opacity: 0 }, 3.4);
-    tl.to(voyageur, { x: long, duration: 0.55, ease: "power2.inOut" }, 2.85);
-    tl.fromTo(fil.querySelector("i"), { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power2.inOut" }, 2.85);
-    tl.to(on, { opacity: 1, duration: 0.12 }, 3.12);
-    tl.to(maillon, { scale: 1.22, duration: 0.06, ease: "power2.out" }, 3.12).to(maillon, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.18);
-    tl.to(rond, { scale: 1.07, duration: 0.06, ease: "power2.out" }, 3.4).to(rond, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.46);
+    if (principal) {
+      tl.to(rond, { x: ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+      var rondOutil = K.el(cam, "div", "t01-rond"); poser(rondOutil, cx - R / 2, cy - R / 2, R, R);
+      rondOutil.innerHTML = principal.innerHTML; tl.to(principal, { opacity: 0, scale: 0.5, duration: 0.3, ease: "power2.in" }, 2.25);
+      K.cacher(rondOutil, { scale: 0.5 });
+      tl.to(rondOutil, { opacity: 1, scale: 1, x: -ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+      var long = 2 * ecart - R - 44, x0 = cx - ecart + R / 2 + 22;
+      var fil = K.el(cam, "div", "t01-fil", "<i></i>"); poser(fil, x0, cy - 1.5, long, 3);
+      var maillon = K.el(cam, "div", "t01-maillon", K.ic("link")); poser(maillon, cx, cy);
+      var on = K.el(maillon, "div", "t01-maillon-on", K.ic("link"));
+      var voyageur = K.el(cam, "div", "t01-voyageur"); poser(voyageur, x0, cy);
+      K.cacher([fil, maillon, voyageur, on]);
+      tl.fromTo(fil, { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 2.75);
+      tl.fromTo(maillon, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 2.8);
+      tl.set(voyageur, { opacity: 1 }, 2.85).set(voyageur, { opacity: 0 }, 3.4);
+      tl.to(voyageur, { x: long, duration: 0.55, ease: "power2.inOut" }, 2.85);
+      tl.fromTo(fil.querySelector("i"), { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power2.inOut" }, 2.85);
+      tl.to(on, { opacity: 1, duration: 0.12 }, 3.12);
+      tl.to(maillon, { scale: 1.22, duration: 0.06, ease: "power2.out" }, 3.12).to(maillon, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.18);
+      tl.to(rond, { scale: 1.07, duration: 0.06, ease: "power2.out" }, 3.4).to(rond, { scale: 1, duration: 0.35, ease: "back.out(3)" }, 3.46);
+    }
+    // L'étiquette arrive avec les tuiles et se lit 2,5 s avant que le chevron la couvre.
     K.cacher("#t01-logos-fin-titre");
-    tl.fromTo("#t01-logos-fin-titre", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 2.5);
-    decoder(q("#t01-logos-fin-t1"), TITRE_LIEN[0], 2.55, 0.4);
-    decoder(q("#t01-logos-fin-t2"), TITRE_LIEN[1], 2.75, 0.45);
+    tl.fromTo("#t01-logos-fin-titre", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.5, ease: "expo.out" }, 1.25);
+    decoder(q("#t01-logos-fin-t1"), EXEMPLE.titre[0], 1.3, 0.4);
+    decoder(q("#t01-logos-fin-t2"), EXEMPLE.titre[1], 1.5, 0.45);
 
     // ================= Le chevron en escalier ================================================
-    var NS = "http://www.w3.org/2000/svg", svg = q("#t01-logos-fin-chevron");
+    var CH = 3.65, NS = "http://www.w3.org/2000/svg", svg = q("#t01-logos-fin-chevron");
     svg.setAttribute("viewBox", "0 0 " + L + " " + H); svg.setAttribute("width", L); svg.setAttribute("height", H);
     var defs = document.createElementNS(NS, "defs");
     defs.innerHTML = '<pattern id="' + ID + '-cellules" width="54" height="54" patternUnits="userSpaceOnUse">' +
-      '<rect width="54" height="54" fill="#ffffff"/><rect x="0.75" y="0.75" width="52.5" height="52.5" fill="none" stroke="#dedede" stroke-width="1.5"/></pattern>';
+      '<rect width="54" height="54" style="fill:var(--brand-clair)"/><rect x="0.75" y="0.75" width="52.5" height="52.5" style="fill:none; stroke:var(--brand-gris-4); stroke-width:1.5"/></pattern>';
     svg.appendChild(defs);
     var marche = 54, pasX = vertical ? 50 : 62, n = Math.ceil(H / 2 / marche) + 1, LOIN = L * 3, pts = [[LOIN, H / 2 - (n + 0.5) * marche]];
     for (var j = -n; j <= n; j++) pts.push([Math.abs(j) * pasX, H / 2 + (j - 0.5) * marche], [Math.abs(j) * pasX, H / 2 + (j + 0.5) * marche]);
     pts.push([LOIN, H / 2 + (n + 0.5) * marche]);
     var escalier = pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ");
-    ["url(#" + ID + "-cellules)", "var(--brand-accent)", "#d4d4d4", "#ffffff"].forEach(function (fond, i) {
+    ["url(#" + ID + "-cellules)", "var(--brand-accent)", "var(--brand-gris-4)", "var(--brand-clair)"].forEach(function (fond, i) {
       var g = document.createElementNS(NS, "g"), poly = document.createElementNS(NS, "polygon");
       poly.setAttribute("points", escalier); poly.setAttribute("style", "fill:" + fond);
       g.appendChild(poly); svg.appendChild(g);
       gsap.set(g, { x: L + 10 });
-      tl.to(g, { x: -n * pasX - 40, duration: 1.05, ease: "power2.in" }, 3.35 + i * 0.16);
+      tl.to(g, { x: -n * pasX - 40, duration: 1.05, ease: "power2.in" }, CH + i * 0.16);
     });
+    // Une fois l'écran couvert, ce qui est dessous s'éteint (rien ne reste caché sous le clair).
+    tl.set([cam, "#t01-logos-fin-titre"], { opacity: 0 }, CH + 1.55);
 
     // ================= Le logo en pixels, le nom, le bouton ==================================
-    var lockup = q("#t01-logos-fin-lockup"), llogo = q("#t01-logos-fin-llogo");
-    lockup.style.top = (H / 2 - 130) + "px";
-    if (vertical) { lockup.style.flexDirection = "column"; lockup.style.gap = "40px"; lockup.style.top = (H / 2 - 330) + "px"; }
-    logoMarque(llogo);
-    var rp = K.rng(31);
+    // Le nom est le mot héros de la fin : il occupe environ 60 % de la largeur (80 % en 9:16, sous le
+    // logo), d'après le nombre de ses signes ; le logo suit sa taille.
+    var lockup = q("#t01-logos-fin-lockup"), llogo = q("#t01-logos-fin-llogo"), nomEl = q("#t01-logos-fin-nom");
+    var TN = Math.min(vertical ? 220 : 240, Math.round((vertical ? 0.8 : 0.62) * L / (EXEMPLE.nom.length * 0.6))), LG = Math.round(TN * 1.06);
+    nomEl.style.fontSize = TN + "px"; llogo.style.width = llogo.style.height = LG + "px"; lockup.style.gap = Math.round(TN * 0.28) + "px";
+    lockup.style.top = (H / 2 - 50 - LG) + "px";
+    if (vertical) { lockup.style.flexDirection = "column"; lockup.style.top = (H / 2 - 80 - LG - TN) + "px"; }
+    logoMarque(llogo, function () { llogo.style.display = "none"; lockup.style.top = (H / 2 - 50 - TN) + "px"; });
+    var rp = K.rng(31), F = CH + 1.35, c6 = LG / 6;
     for (var yy = 0; yy < 6; yy++) for (var xx = 0; xx < 6; xx++) {
-      var cel = K.el(llogo, "i", null, null, "left:" + (xx * 22) + "px; top:" + (yy * 22) + "px; width:23px; height:23px; background:" +
-        (rp() < 0.22 ? "var(--brand-accent)" : "#ffffff") + ";");
-      tl.set(cel, { opacity: 0 }, 4.75 + rp() * 0.45);
+      var cel = K.el(llogo, "i", null, null, "left:" + (xx * c6) + "px; top:" + (yy * c6) + "px; width:" + (c6 + 1) + "px; height:" + (c6 + 1) + "px; background:" +
+        (rp() < 0.22 ? "var(--brand-accent)" : "var(--brand-clair)") + ";");
+      tl.set(cel, { opacity: 0 }, F + 0.05 + rp() * 0.45);
     }
     K.cacher(llogo);
-    tl.set(llogo, { opacity: 1 }, 4.7);
-    decoder(q("#t01-logos-fin-nom"), NOM, 4.8, 0.6);
-    var bouton = q("#t01-logos-fin-bouton");
-    q("#t01-logos-fin-rbouton").style.top = (H / 2 + (vertical ? 120 : 80)) + "px";
+    tl.set(llogo, { opacity: 1 }, F);
+    decoder(q("#t01-logos-fin-nom"), EXEMPLE.nom, F + 0.1, 0.6);
+    var bouton = q("#t01-logos-fin-bouton"), yb = H / 2 + (vertical ? 120 : 110);
+    q("#t01-logos-fin-rbouton").style.top = yb + "px";
     K.cacher(bouton, { scale: 0.6 });
-    tl.to(bouton, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, 5.3);
-    K.taper(tl, q("#t01-logos-fin-btxt"), BOUTON, 5.4, 5.8, D);
+    tl.to(bouton, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.8)" }, F + 0.6);
+    K.taper(tl, q("#t01-logos-fin-btxt"), EXEMPLE.bouton, F + 0.65, F + 1.0, D);
     var cur = K.curseur(q("#t01-logos-fin-curseur-hote"), ID + "-cur", true);
     K.cacher(cur);
-    tl.set(cur, { opacity: 1 }, 5.6);
-    K.trajet(tl, cur, [[0, L * 0.82, H * 0.95], [5.6, L / 2 + 70, H / 2 + (vertical ? 120 : 80) + 70, 0.5, "power3.out"]]);
-    K.clic(tl, cur, 6.15);
-    tl.to(bouton, { scale: 0.95, duration: 0.07, yoyo: true, repeat: 1 }, 6.15);
-    tl.to(lockup, { y: -6, duration: 1.4, ease: "sine.inOut" }, 5.4);
+    tl.set(cur, { opacity: 1 }, F + 0.9);
+    K.trajet(tl, cur, [[0, L * 0.82, H * 0.95], [F + 0.9, L / 2 + 70, yb + 70, 0.5, "power3.out"]]);
+    K.clic(tl, cur, F + 1.45);
+    tl.to(bouton, { scale: 0.95, duration: 0.07, yoyo: true, repeat: 1 }, F + 1.45);
+    // L'écran final se tient 3 s : une dérive lente seulement.
+    tl.fromTo(lockup, { scale: 1 }, { scale: 1.03, y: -6, duration: D - F - 0.7, ease: "sine.inOut" }, F + 0.7);
 
     window.__timelines[ID] = tl;
   })();

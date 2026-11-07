@@ -3,32 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <!--
-    STYLE N°1 « CARTES PIXELS » · SCÈNE 2 : LA CARTE ANNOTÉE (la solution, le produit) · 6,5 s
+    STYLE N°1 « CARTES PIXELS » · SCÈNE : LA CARTE ANNOTÉE (la solution, le produit) · 6,5 s
     Ce que la scène montre : au centre de la grille claire, un amas de pixels de sa couleur clignote
     (sa couleur et deux gris) comme un chargement ; les pixels s'envolent et deviennent les blocs
     d'une carte blanche (le titre, le prix, les lignes, et l'aperçu s'il a une capture) ; le texte
     s'y décode en glyphes puis se fixe ; l'aperçu se dissout en pixels et découvre sa vraie
-    capture ; enfin des cadres de repérage se posent un par un sur chaque partie de la carte,
-    chacun avec sa petite étiquette (TITRE, PRIX…). C'est le passage du bruit au résultat net.
+    capture ; enfin des cadres de repérage se posent en cascade sur chaque partie de la carte,
+    chacun avec son étiquette (TITRE, PRIX…). C'est le passage du bruit au résultat net.
+    Caméra : un seul recadrage, pendant que les pixels deviennent la carte (aucun texte ne se lit
+    encore), puis une dérive lente (4,5 %, sine.inOut) jusqu'à la fin : les cadres qui se posent
+    sont la vie du plan, la caméra ne fait pas de pas vers eux.
     Format : 16:9 (1920 × 1080) par défaut ; en 9:16, data-width="1080" data-height="1920" ici et
     sur l'hôte : la carte passe en colonne (classe t01-vertical, réglée seule).
     Entrée : idéale juste après t01-raccord-pixels (la mosaïque tombe sur la grille vide).
 
-    À REMPLACER :
-     1. L'id « t01-carte-annotee » (racine, constante ID, préfixe CSS) par l'id de la scène.
-     2. CARTE : le nom de l'offre (titre), sa ligne de genre (format · lieu · durée d'accès), son
-        prix EXACT tiré de OFFRE.json (sinon laisse « Ton prix » hors champ : retire la ligne), la
-        promesse en 3 lignes courtes, 3 pastilles de contenu (ce qu'on reçoit).
-     3. CAPTURE : sa vraie capture pour l'aperçu ("assets/images/…" : la miniature d'une leçon,
-        sa page, l'écran de son produit, une photo de séance), posée en object-fit: cover. Sans
-        capture, "" : la fiche se montre sans aperçu, plus étroite, et le cadre APERÇU disparaît.
-        Jamais un faux lecteur vidéo ni une image inventée à sa place.
-     4. REPERES : l'étiquette de chaque cadre, en capitales, un ou deux mots, et sa cible.
-     5. ETIQUETTE : le label du haut (« [ 02 · LA SOLUTION ] »).
-    Couleurs : celles de sa marque, rien d'autre : le papier est sa couleur claire à peine grisée,
-    l'encre sa nuit (var(--brand-sombre)) ; l'aplat des pixels et des étiquettes est sa couleur
-    pleine, le chargement alterne sa couleur et deux gris ; les cadres sont à l'accent, ou à
-    l'encre si l'accent est clair (jaune…) pour rester lisibles sur le blanc.
+    À remplacer : l'objet EXEMPLE (en tête du script), et l'id « t01-carte-annotee » (racine,
+    constante ID, préfixe CSS). Sans capture, la fiche se montre sans aperçu, plus étroite, et le
+    cadre APERÇU disparaît ; sans prix, la ligne et son cadre se retirent. Jamais un faux lecteur
+    vidéo, une image inventée ni une icône à la place.
+    Tailles (1920 × 1080) : titre 64 px, prix 56 px, promesse 30 px, genre, pastilles et étiquettes
+    des cadres 28 px (le plancher de lecture) ; plus grand en 9:16.
+    Couleurs : celles de sa marque, rien d'autre : le papier est son clair à peine grisé, la carte
+    son clair, l'encre sa nuit (var(--brand-sombre)), les textes d'appui var(--brand-gris-2) ;
+    l'aplat des pixels et des étiquettes est sa couleur pleine, le chargement alterne sa couleur et
+    deux gris (var(--brand-gris-3), var(--brand-gris-4)) ; les cadres sont à l'accent, ou à l'encre
+    si l'accent est clair (jaune…) pour rester lisibles sur le clair.
   -->
 </head>
 <body>
@@ -36,9 +35,7 @@
 <style>
   #t01-carte-annotee { --t01-papier: var(--brand-clair); --t01-trait: rgba(0, 0, 0, 0.07); --t01-encre: var(--brand-sombre);
     --t01-mono: ui-monospace, "SF Mono", Menlo, Consolas, var(--brand-font-mono);
-    --t01-a1: var(--brand-accent);
-    --t01-a2: #cfcfcf;
-    --t01-a3: #e3e3e3;
+    --t01-a1: var(--brand-accent); --t01-a2: var(--brand-gris-3); --t01-a3: var(--brand-gris-4);
     --t01-repere: var(--brand-accent);
     background: var(--t01-papier); }
   #t01-carte-annotee.t01-accent-clair { --t01-repere: var(--t01-encre); }
@@ -50,35 +47,34 @@
       linear-gradient(rgba(0, 0, 0, 0.028), rgba(0, 0, 0, 0.028));
     background-size: 180px 180px, 180px 180px, 180px 180px, 100% 100%; background-position: 60px 30px, 60px 30px, 60px 30px, 0 0; }
   #t01-carte-annotee .t01-case { position: absolute; width: 178px; height: 178px; background: rgba(0, 0, 0, 0.032); }
-  #t01-carte-annotee .t01-label { position: absolute; left: 96px; top: 74px; font: 500 20px/1 var(--t01-mono);
-    letter-spacing: .16em; color: #727272; white-space: pre; z-index: 40; }
+  #t01-carte-annotee .t01-label { position: absolute; left: 96px; top: 66px; font: 500 28px/1 var(--t01-mono);
+    letter-spacing: .14em; color: var(--brand-gris-2); white-space: pre; z-index: 40; }
   /* Les pixels de chargement, puis les blocs de la carte. */
   #t01-carte-annotee .t01-px { position: absolute; background: var(--t01-a1); }
   #t01-carte-annotee .t01-px[data-n="2"] { background: var(--t01-a2); }
-  #t01-carte-annotee .t01-px[data-n="3"] { background: var(--t01-a3); }
-  #t01-carte-annotee .t01-px[data-n="g"] { background: #ececec; }
+  #t01-carte-annotee .t01-px[data-n="3"], #t01-carte-annotee .t01-px[data-n="g"] { background: var(--t01-a3); }
   /* La carte blanche. */
-  #t01-carte-annotee .t01-carte { position: absolute; border-radius: 28px; background: #fff;
-    box-shadow: 0 0 0 1px #ececec, 0 30px 70px rgba(0,0,0,.08); }
+  #t01-carte-annotee .t01-carte { position: absolute; border-radius: 28px; background: var(--brand-clair);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 30px 70px rgba(0, 0, 0, 0.08); }
   /* L'aperçu : seulement sa vraie capture. */
   #t01-carte-annotee .t01-visuel { position: absolute; border-radius: 18px; overflow: hidden; background: var(--t01-encre); }
   #t01-carte-annotee .t01-visuel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   #t01-carte-annotee .t01-dissous { position: absolute; background: var(--t01-a1); }
-  #t01-carte-annotee .t01-t { position: absolute; white-space: pre; color: var(--t01-encre); }
-  #t01-carte-annotee .t01-titre { font: 700 58px/1 "Inter", var(--brand-font-body); letter-spacing: -0.03em; }
-  #t01-carte-annotee .t01-genre { font: 500 20px/1 var(--t01-mono); color: #6f6f6f; letter-spacing: .02em; }
-  #t01-carte-annotee .t01-prix { font: 700 52px/1 "Inter", var(--brand-font-body); letter-spacing: -0.03em; }
-  #t01-carte-annotee .t01-desc { position: absolute; border-radius: 14px; background: #f5f5f5; }
-  #t01-carte-annotee .t01-ligne { font: 400 21px/1 "Inter", var(--brand-font-body); color: #5d5d5d; }
+  #t01-carte-annotee .t01-t { position: absolute; white-space: pre; color: var(--t01-encre); line-height: 1; }
+  #t01-carte-annotee .t01-titre { font-family: "Inter", var(--brand-font-body); font-weight: 700; letter-spacing: -0.03em; }
+  #t01-carte-annotee .t01-genre { font-family: var(--t01-mono); font-weight: 500; color: var(--brand-gris-2); letter-spacing: .02em; }
+  #t01-carte-annotee .t01-prix { font-family: "Inter", var(--brand-font-body); font-weight: 700; letter-spacing: -0.03em; }
+  #t01-carte-annotee .t01-desc { position: absolute; border-radius: 14px; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.07); }
+  #t01-carte-annotee .t01-ligne { font-family: "Inter", var(--brand-font-body); font-weight: 400; color: var(--brand-gris-2); }
   #t01-carte-annotee .t01-pastille { position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 999px;
-    box-shadow: inset 0 0 0 1.5px #e2e2e2; font: 500 17px/1 var(--t01-mono); color: #4d4d4d; white-space: pre; }
-  /* Les cadres de repérage et leurs étiquettes. */
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.12); font-family: var(--t01-mono); font-weight: 500; color: var(--brand-gris-1); white-space: pre; }
+  /* Les cadres de repérage et leurs étiquettes (28 px : elles se lisent). */
   #t01-carte-annotee .t01-repere { position: absolute; border: 2px solid var(--t01-repere); border-radius: 9px; }
   #t01-carte-annotee .t01-eclair { position: absolute; inset: -2px; border-radius: 9px; background: rgba(0, 0, 0, 0.08); }
-  #t01-carte-annotee .t01-tag.t01-droite { right: auto; left: calc(100% + 10px); top: 50%; margin-top: -11px; }
-  #t01-carte-annotee .t01-tag { position: absolute; right: -2px; top: -27px; padding: 5px 8px 4px; border-radius: 5px;
-    background: var(--brand-accent); color: var(--brand-contrast); font: 600 13px/1 var(--t01-mono); letter-spacing: .1em; white-space: pre; }
-  #t01-carte-annotee.t01-vertical .t01-label { left: 100px; top: 314px; font-size: 24px; }
+  #t01-carte-annotee .t01-tag { position: absolute; right: -2px; top: -48px; padding: 7px 10px 6px; border-radius: 6px;
+    background: var(--brand-accent); color: var(--brand-contrast); font: 600 28px/1 var(--t01-mono); letter-spacing: .08em; white-space: pre; }
+  #t01-carte-annotee .t01-tag.t01-droite { right: auto; left: calc(100% + 12px); top: 50%; margin-top: -21px; }
+  #t01-carte-annotee.t01-vertical .t01-label { left: 100px; top: 306px; font-size: 30px; }
 </style>
 
 <div data-composition-id="t01-carte-annotee" data-width="1920" data-height="1080" data-duration="6.5" style="position:absolute; inset:0;">
@@ -100,30 +96,27 @@
 
 <script>
   (function () {
-    var ID = "t01-carte-annotee", D = 6.5;
-    // ---- Les textes à remplacer ----------------------------------------------------------
-    var CARTE = {
-      titre: "Ton offre",
-      genre: "Formation · En ligne · Accès à vie",
-      prix: "Ton prix",
-      lignes: ["Tout ce qu'il faut pour passer à l'action,", "rangé dans l'ordre, étape par étape,", "prêt à suivre dès aujourd'hui."],
-      pastilles: ["Vidéos", "Modèles", "Bonus"]
+    var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
+      etiquette: "[ 02 · LA SOLUTION ]",      // le label du chapitre
+      titre: "Ton offre",                     // le nom de l'offre
+      genre: "Formation · En ligne",          // sa ligne de genre (format · lieu · accès), courte
+      prix: "300 €",                          // un exemple : son prix EXACT (OFFRE.json), sinon "" (la ligne et son cadre se retirent)
+      lignes: ["Tout pour passer à l'action,", "étape par étape."],   // la promesse, 1 ou 2 lignes courtes
+      pastilles: ["Vidéos", "Modèles", "Bonus"],   // ce qu'on reçoit, 3 mots
+      capture: "",                            // sa vraie capture pour l'aperçu ("assets/images/…") ; "" : pas d'aperçu
+      // Les cadres, dans l'ordre : [étiquette en capitales (1 ou 2 mots), cible, place de l'étiquette
+      // (« haut » ou « droite »)] ; cibles : titre, prix, ligne1, pastilles, visuel (avec une capture).
+      reperes: [["TITRE", "titre", "haut"], ["PRIX", "prix", "droite"], ["MÉTHODE", "ligne1", "droite"], ["CONTENU", "pastilles", "haut"], ["APERÇU", "visuel", "haut"]]
     };
-    // Sa vraie capture pour l'aperçu ("assets/images/…") ; "" : pas d'aperçu.
-    var CAPTURE = "";
-    // Les cadres, dans l'ordre d'apparition : [étiquette, cible, place de l'étiquette (« haut » ou « droite »)].
-    // Cibles : titre, prix, ligne1, pastilles, visuel (seulement avec une capture).
-    var REPERES = [["TITRE", "titre", "haut"], ["PRIX", "prix", "droite"], ["MÉTHODE", "ligne1", "haut"], ["CONTENU", "pastilles", "haut"], ["APERÇU", "visuel", "haut"]];
-    var ETIQUETTE = "[ 02 · LA SOLUTION ]";
-    // ----------------------------------------------------------------------------------------
 
+    var ID = "t01-carte-annotee", D = 6.5;
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
     var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
     if (vertical) racine.classList.add("t01-vertical");
-    var apercu = !!CAPTURE;
-    if (!apercu) REPERES = REPERES.filter(function (r) { return r[1] !== "visuel"; });
+    var apercu = !!EXEMPLE.capture, aPrix = !!EXEMPLE.prix;
+    var REPERES = EXEMPLE.reperes.filter(function (r) { return (r[1] !== "visuel" || apercu) && (r[1] !== "prix" || aPrix); });
 
     var rgb = function (css) {
       var e = document.createElement("i"); e.style.color = css; racine.appendChild(e);
@@ -154,50 +147,51 @@
     var chasse = function (texte, taille, k) { return Math.round(texte.length * taille * k); };
 
     // ---- La mise en page de la carte (coordonnées de la scène) ------------------------------
-    var C, M = {};
+    // TX : les tailles des textes (28 px au moins : tout se lit).
+    var TX = vertical ? { titre: 68, genre: 30, prix: 62, ligne: 34, pastille: 30 } : { titre: 64, genre: 28, prix: 56, ligne: 30, pastille: 28 };
+    // Sans prix, tout ce qui suit le prix remonte de SP.
+    var C, M = {}, gx, gy, SP = aPrix ? 0 : 80;
     if (!vertical) {
       // Avec l'aperçu : la capture à gauche, le texte à droite ; sans lui, la carte se resserre sur le texte.
-      C = apercu ? { x: (L - 1180) / 2, y: (H - 600) / 2 + 30, l: 1180, h: 600 } : { x: (L - 722) / 2, y: (H - 568) / 2 + 30, l: 722, h: 568 };
-      var gx = C.x + (apercu ? 550 : 64), gy = C.y;
-      M.visuel = [C.x + 36, C.y + 36, 470, 528];
-      M.titre = [gx, gy + 54, 360, 58]; M.genre = [gx, gy + 136, 430, 20]; M.prix = [gx, gy + 188, 230, 52];
-      M.desc = [gx, gy + 278, 594, 146]; M.lignes = [[gx + 22, gy + 302], [gx + 22, gy + 338], [gx + 22, gy + 374]];
-      M.pastilles = [gx, gy + 470, 116, 44, 130];
+      C = { l: apercu ? 1408 : 860, h: 612 - (apercu ? 0 : SP) }; C.x = (L - C.l) / 2; C.y = (H - C.h) / 2 + 30;
+      gx = C.x + (apercu ? 612 : 64); gy = C.y;
+      M.visuel = [C.x + 36, C.y + 36, 520, 540];
+      M.titre = [gx, gy + 60]; M.genre = [gx, gy + 150]; M.prix = [gx, gy + 204];
+      M.desc = [gx, gy + 300 - SP, 732, 132]; M.lignes = [[gx + 24, gy + 324 - SP], [gx + 24, gy + 376 - SP]];
+      M.pastilles = [gx, gy + 500 - SP, 150, 56, 166];
     } else {
-      C = apercu ? { x: (L - 900) / 2, y: (H - 1180) / 2 + 60, l: 900, h: 1180 } : { x: (L - 900) / 2, y: (H - 620) / 2 + 60, l: 900, h: 620 };
-      var vx = C.x + 44, vy = C.y + (apercu ? 560 : 30);
-      M.visuel = [C.x + 36, C.y + 36, 828, 480];
-      M.titre = [vx, vy + 34, 360, 64]; M.genre = [vx, vy + 124, 430, 22]; M.prix = [vx, vy + 178, 260, 56];
-      M.desc = [vx, vy + 270, 812, 160]; M.lignes = [[vx + 24, vy + 296], [vx + 24, vy + 336], [vx + 24, vy + 376]];
-      M.pastilles = [vx, vy + 470, 150, 52, 170];
+      var haut = apercu ? 580 : 36;
+      C = { l: 920, h: haut + 590 - SP }; C.x = (L - C.l) / 2; C.y = (H - C.h) / 2 + 60;
+      gx = C.x + 44; gy = C.y + haut - 6;
+      M.visuel = [C.x + 36, C.y + 36, 848, 500];
+      M.titre = [gx, gy + 30]; M.genre = [gx, gy + 128]; M.prix = [gx, gy + 188];
+      M.desc = [gx, gy + 290 - SP, 832, 146]; M.lignes = [[gx + 24, gy + 316 - SP], [gx + 24, gy + 374 - SP]];
+      M.pastilles = [gx, gy + 480 - SP, 176, 60, 194];
     }
     var poser = function (el, r) { el.style.left = r[0] + "px"; el.style.top = r[1] + "px"; if (r[2] != null) { el.style.width = r[2] + "px"; el.style.height = r[3] + "px"; } };
     var carte = q("#t01-carte-annotee-carte"); poser(carte, [C.x, C.y, C.l, C.h]);
     var visuel = q("#t01-carte-annotee-visuel");
-    if (apercu) { poser(visuel, M.visuel); K.el(visuel, "img").src = CAPTURE; }
+    if (apercu) { poser(visuel, M.visuel); K.el(visuel, "img").src = EXEMPLE.capture; }
     else visuel.remove();
     var desc = q("#t01-carte-annotee-desc"); poser(desc, M.desc);
 
     // Les textes de la carte (décodés plus tard).
     var textes = q("#t01-carte-annotee-textes"), T = {};
-    T.titre = K.el(textes, "div", "t01-t t01-titre"); poser(T.titre, M.titre.slice(0, 2));
-    T.genre = K.el(textes, "div", "t01-t t01-genre"); poser(T.genre, M.genre.slice(0, 2));
-    T.prix = K.el(textes, "div", "t01-t t01-prix"); poser(T.prix, M.prix.slice(0, 2));
-    T.lignes = M.lignes.map(function (p) { var e = K.el(textes, "div", "t01-t t01-ligne"); poser(e, p); return e; });
-    if (vertical) {
-      T.titre.style.fontSize = "66px"; T.prix.style.fontSize = "60px"; T.genre.style.fontSize = "22px";
-      T.lignes.forEach(function (e) { e.style.fontSize = "25px"; });
-    }
-    T.pastilles = CARTE.pastilles.map(function (txt, i) {
+    var texte = function (classe, place, taille) { var e = K.el(textes, "div", "t01-t " + classe); poser(e, place); e.style.fontSize = taille + "px"; return e; };
+    T.titre = texte("t01-titre", M.titre, TX.titre);
+    T.genre = texte("t01-genre", M.genre, TX.genre);
+    T.prix = aPrix ? texte("t01-prix", M.prix, TX.prix) : null;
+    T.lignes = EXEMPLE.lignes.slice(0, 2).map(function (l, i) { return texte("t01-ligne", M.lignes[i], TX.ligne); });
+    T.pastilles = EXEMPLE.pastilles.slice(0, 3).map(function (txt, i) {
       var p = M.pastilles, e = K.el(textes, "div", "t01-pastille");
-      poser(e, [p[0] + i * p[4], p[1], p[2], p[3]]); if (vertical) e.style.fontSize = "20px"; return e;
+      poser(e, [p[0] + i * p[4], p[1], p[2], p[3]]); e.style.fontSize = TX.pastille + "px"; return e;
     });
 
     // ---- 1. Les pixels de chargement (amas en croix, sa couleur et deux gris qui tournent) ----
     var px = q("#t01-carte-annotee-pixels"), FORME = [[1, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2], [1, 2], [2, 2], [3, 2], [1, 3], [2, 3]];
-    var cote = vertical ? 84 : 72, pas = vertical ? 124 : 104;
+    var cote = 84, pas = 124;   // l'amas fait 496 px : près de la moitié de la hauteur, jamais un point au milieu du vide
     var ax = L / 2 - 2 * pas + (pas - cote) / 2, ay = H / 2 - 2 * pas + (pas - cote) / 2 + (vertical ? 0 : 20);
-    var pixels = FORME.map(function (f, i) {
+    var pixels = FORME.map(function (f) {
       var e = K.el(px, "div", "t01-px"); poser(e, [ax + f[0] * pas, ay + f[1] * pas, cote, cote]);
       e.setAttribute("data-n", "1"); return e;
     });
@@ -214,11 +208,12 @@
     });
 
     // ---- 2. Les pixels deviennent les blocs de la carte -------------------------------------
-    var cibles = [[M.titre[0], M.titre[1] + 4, M.titre[2], M.titre[3] - 8], [M.genre[0], M.genre[1], M.genre[2], M.genre[3]],
-      [M.prix[0], M.prix[1], M.prix[2], M.prix[3]]];
+    var bloc = function (p, txt, taille, k) { return [p[0], p[1] + taille * 0.1, Math.max(80, chasse(txt, taille, k)), taille * 0.8]; };
+    var cibles = [bloc(M.titre, EXEMPLE.titre, TX.titre, 0.58), bloc(M.genre, EXEMPLE.genre, TX.genre, 0.6)];
+    if (aPrix) cibles.push(bloc(M.prix, EXEMPLE.prix, TX.prix, 0.6));
     if (apercu) cibles.unshift(M.visuel);
-    M.lignes.forEach(function (p, i) { cibles.push([p[0], p[1] + 2, [520, 470, 330][i] * (vertical ? 1.3 : 1), vertical ? 22 : 19]); });
-    for (var j = 0; j < 3; j++) cibles.push([M.pastilles[0] + j * M.pastilles[4], M.pastilles[1], M.pastilles[2], M.pastilles[3]]);
+    T.lignes.forEach(function (e, i) { cibles.push(bloc(M.lignes[i], EXEMPLE.lignes[i], TX.ligne, 0.5)); });
+    T.pastilles.forEach(function (e, j) { cibles.push([M.pastilles[0] + j * M.pastilles[4], M.pastilles[1], M.pastilles[2], M.pastilles[3]]); });
     K.cacher(carte, { scale: 0.2 });
     tl.to(carte, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.inOut" }, 1.4);
     // Le pixel garde sa taille de départ ; il glisse (x, y) et s'étire (scaleX, scaleY) depuis son coin.
@@ -234,14 +229,14 @@
     // ---- 3. Le contenu se décode sur les blocs ------------------------------------------------
     K.cacher(desc);
     tl.to(desc, { opacity: 1, duration: 0.3 }, 2.1);
-    decoder(T.titre, CARTE.titre, 2.25, 0.5);
-    decoder(T.genre, CARTE.genre, 2.4, 0.6);
-    decoder(T.prix, CARTE.prix, 2.5, 0.45);
-    CARTE.lignes.forEach(function (txt, i) { decoder(T.lignes[i], txt, 2.6 + i * 0.12, 0.55); });
+    decoder(T.titre, EXEMPLE.titre, 2.25, 0.5);
+    decoder(T.genre, EXEMPLE.genre, 2.4, 0.6);
+    if (aPrix) decoder(T.prix, EXEMPLE.prix, 2.5, 0.45);
+    T.lignes.forEach(function (e, i) { decoder(e, EXEMPLE.lignes[i], 2.6 + i * 0.12, 0.55); });
     T.pastilles.forEach(function (e, i) {
       K.cacher(e);
       tl.set(e, { opacity: 1 }, 2.7 + i * 0.1);
-      decoder(e, CARTE.pastilles[i], 2.75 + i * 0.1, 0.35);
+      decoder(e, EXEMPLE.pastilles[i], 2.75 + i * 0.1, 0.35);
     });
     pixels.forEach(function (e, i) { if (cibles[i] && (i > 0 || !apercu)) tl.to(e, { opacity: 0, duration: 0.25 }, 2.3 + i * 0.06); });
     // L'aplat de l'aperçu se dissout en pixels et découvre sa vraie capture.
@@ -263,12 +258,12 @@
       tl.fromTo(visuel.querySelector("img"), { scale: 1.06 }, { scale: 1, duration: 2.4, ease: "power2.out" }, 2.2);
     }
 
-    // ---- 4. Les cadres de repérage se posent, un par un -----------------------------------------
+    // ---- 4. Les cadres de repérage se posent en cascade (la vie du contenu, pas la caméra) ------
     var zone = function (cible) {
       var marge = 10;
-      if (cible === "titre") return [M.titre[0] - marge, M.titre[1] - marge, Math.max(vertical ? 330 : 290, chasse(CARTE.titre, vertical ? 66 : 58, 0.58)) + 2 * marge, M.titre[3] + 2 * marge];
-      if (cible === "prix") return [M.prix[0] - marge, M.prix[1] - marge, Math.max(120, chasse(CARTE.prix, vertical ? 60 : 52, 0.6)) + 2 * marge, M.prix[3] + 2 * marge];
-      if (cible === "ligne1") return [M.lignes[0][0] - 8, M.lignes[0][1] - 9, Math.min(vertical ? 780 : 570, Math.max(220, chasse(CARTE.lignes[0], vertical ? 25 : 21, 0.5) + 16)), vertical ? 42 : 38];
+      if (cible === "titre") return [M.titre[0] - marge, M.titre[1] - marge, Math.max(vertical ? 330 : 290, chasse(EXEMPLE.titre, TX.titre, 0.58)) + 2 * marge, TX.titre + 2 * marge];
+      if (cible === "prix") return [M.prix[0] - marge, M.prix[1] - marge, Math.max(120, chasse(EXEMPLE.prix, TX.prix, 0.6)) + 2 * marge, TX.prix + 2 * marge];
+      if (cible === "ligne1") return [M.lignes[0][0] - 8, M.lignes[0][1] - 9, Math.min(M.desc[2] - 30, Math.max(220, chasse(EXEMPLE.lignes[0], TX.ligne, 0.5) + 16)), TX.ligne + 18];
       if (cible === "pastilles") return [M.pastilles[0] - marge, M.pastilles[1] - marge, 2 * M.pastilles[4] + M.pastilles[2] + 2 * marge, M.pastilles[3] + 2 * marge];
       return [M.visuel[0] - marge, M.visuel[1] - marge, M.visuel[2] + 2 * marge, M.visuel[3] + 2 * marge];
     };
@@ -285,7 +280,7 @@
       tl.fromTo(tag, { y: 8 }, { y: 0, duration: 0.3, ease: "back.out(2)" }, t + 0.05);
     });
 
-    // ---- La vie autour : les cases de la grille, la caméra -----------------------------------
+    // ---- La vie autour : les cases de la grille ; la caméra -----------------------------------
     var cases = q("#t01-carte-annotee-cases"), places = vertical ? [[0, 2], [4, 3], [1, 9], [4, 8]] : [[0, 1], [9, 1], [1, 4], [8, 5]];
     places.forEach(function (p, i) {
       var c = K.el(cases, "div", "t01-case", null, "left:" + (60 + p[0] * 180 + 2) + "px; top:" + (30 + p[1] * 180 + 2) + "px;");
@@ -293,19 +288,14 @@
       tl.set(c, { opacity: 1 }, 0.4 + i * 0.5).set(c, { opacity: 0 }, 1.1 + i * 0.5);
       tl.set(c, { opacity: 1 }, 3.6 + i * 0.45).set(c, { opacity: 0 }, 4.3 + i * 0.45);
     });
-    tl.fromTo("#t01-carte-annotee-cam", { scale: 1, x: 0, y: 0 }, { scale: 1.03, y: -6, duration: 1.25, ease: "sine.inOut" }, 1.9);
-    // À chaque cadre, la caméra fait un pas vers la partie repérée (0,3 s, expo.out).
-    REPERES.forEach(function (rp, i) {
-      var z = zone(rp[1]), zx = z[0] + z[2] / 2 - L / 2, zy = z[1] + z[3] / 2 - H / 2, s1 = 1.04 + i * 0.012;
-      tl.to("#t01-carte-annotee-cam", { scale: s1, x: -zx * 0.06, y: -zy * 0.06 - 6, duration: 0.3, ease: "expo.out" }, 3.2 + i * 0.32);
-    });
-    // Recadrage final : la caméra s'approche des cadres (et de l'aperçu, vers 42 % de la largeur, s'il y en a un).
-    var s2 = vertical ? 1.08 : (apercu ? 1.24 : 1.18);
-    var Px = vertical || !apercu ? C.x + C.l / 2 : M.visuel[0] + M.visuel[2] * 0.85, Py = vertical ? C.y + C.h * 0.42 : (apercu ? M.visuel[1] + M.visuel[3] * 0.5 : C.y + C.h / 2);
-    var Qx = vertical || !apercu ? L / 2 : L * 0.44, Qy = H / 2;
-    tl.to("#t01-carte-annotee-cam", { scale: s2, x: Qx - (L / 2 + (Px - L / 2) * s2), y: Qy - (H / 2 + (Py - H / 2) * s2), duration: 0.85, ease: "expo.inOut" }, 4.95);
-    tl.to("#t01-carte-annotee-cam", { scale: s2 * 1.025, x: "-=14", duration: 0.75, ease: "none" }, 5.8);
-    decoder(q("#t01-carte-annotee-label"), ETIQUETTE, 0.1, 0.55);
+    // Un seul recadrage net, pendant que les pixels deviennent la carte (rien ne se lit encore) : la
+    // carte vient au centre, un peu plus près ; puis une dérive lente jusqu'à la fin (4,5 %, sine.inOut).
+    var cam = "#t01-carte-annotee-cam", S1 = vertical ? 1.03 : (apercu ? 1.04 : 1.1);
+    var Px = C.x + C.l / 2, Py = C.y + C.h / 2, Qx = L / 2, Qy = H / 2 + (vertical ? 60 : 40);
+    var viser = function (s) { return { scale: s, x: Qx - L / 2 - (Px - L / 2) * s, y: Qy - H / 2 - (Py - H / 2) * s }; };
+    tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, Object.assign(viser(S1), { duration: 0.7, ease: "expo.inOut" }), 1.5);
+    tl.to(cam, Object.assign(viser(S1 * 1.045), { duration: D - 2.25, ease: "sine.inOut" }), 2.25);
+    decoder(q("#t01-carte-annotee-label"), EXEMPLE.etiquette, 0.1, 0.55);
 
     window.__timelines[ID] = tl;
   })();

@@ -5,60 +5,59 @@
 <template>
 <!--
   Style n°3 · Verre sombre · scène « L'adresse et le logo » (l'appel et la fin).
-  Ce qu'elle montre : coupe franche sur un mot à la couleur de ta marque (« Rejoins »), la ligne
-  se complète et se tient le temps de sa lecture (la lueur et la trame s'allument derrière elle,
-  puis la lueur s'élargit), puis se change, dans un flou, en l'adresse de ta page qui brille et se
-  tient le temps de sa lecture. Pendant ces deux tenues, sa vraie page (sa capture) monte de la
-  profondeur dans le verre incliné du look, sous les textes, et dérive doucement : c'est ce que
-  l'appel montre pendant qu'on le lit. Enfin ton logo apparaît et ton nom se dévoile à côté, tenu
-  3 s (l'écran final). Presque rien ne bouge : la fin respire, comme l'original (musique coupée, puis
-  un seul impact sur l'adresse) ; la caméra ne fait que de lentes dérives.
+  Ce qu'elle montre : coupe franche sur le verbe d'appel seul, à l'accent ; la ligne se complète
+  (le verbe passe au clair d'un coup quand la suite entre) et se tient, immobile et grande, le temps
+  de sa lecture, la trame de points allumée derrière elle ; puis elle se change, dans un flou, en
+  l'adresse de sa page, en grand : à l'impact, la fin de l'adresse prend l'accent et un trait plein
+  de l'accent se tire dessous ; elle se tient le temps de sa lecture. Pendant ces deux tenues, sa
+  vraie page (sa capture) monte de la profondeur dans le verre incliné du look, sous les textes, et
+  dérive doucement : c'est ce que l'appel montre pendant qu'on le lit. Enfin son logo s'ouvre et
+  son nom se dévoile à côté, en grand, tenus 3 s (l'écran final). Presque rien ne bouge : la fin
+  respire (musique coupée, puis un seul impact sur l'adresse).
   Durée : la scène tient chaque texte le temps de sa lecture (0,3 s par mot + 0,8 s, 1,5 s au
-  moins ; 3 s pour le nom final : `studio_motion.py lecture`) et en déduit sa durée : 9,2 s avec
-  une ligne de 4 mots et un logo ; +0,3 s par mot de plus. Reporte-la dans data-duration (ici et
-  sur l'hôte dans index.html).
-  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (tout est centré ; une ligne trop
-  longue pour la largeur se réduit seule).
-  À remplacer (objet R en tête du script) : le verbe d'appel, la ligne, l'adresse réelle de ta
-  page (courte, sans https://), sa capture (assets/images/… : la page où mène l'adresse ; "" sans
-  capture : les textes restent au centre et la tenue ne vit que de la lumière, `rythme` la verra
-  figée), ton logo (brand/logo.svg ou brand/logo.png, posé par la marque ; "" s'il n'y en a pas)
-  et ton nom.
-  Couleurs : celles de la marque, rien d'autre. La nuit est var(--brand-sombre), le texte
-  var(--brand-clair), un mot à l'accent sur la nuit var(--brand-accent-lisible) ; la lueur et la
-  trame sont du blanc très faible.
+  moins ; 3 s pour le nom final : `studio_motion.py lecture`) et en déduit sa durée (D dans le
+  script) : 9,2 s avec l'objet EXEMPLE (une ligne de 4 mots et un logo) ; +0,3 s par mot de plus.
+  Reporte-la dans data-duration (ici et sur l'hôte dans index.html).
+  16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 : tout est centré, les textes
+  grandissent jusqu'à 80 % de la largeur (88 % au plus).
+  À remplacer : l'objet EXEMPLE (le verbe d'appel, la suite de la ligne, l'adresse réelle de sa
+  page, sa capture, son logo, son nom). Sans capture, les textes restent au centre et la tenue ne
+  vit que de la trame (`rythme` la verra figée) ; sans logo, le nom seul.
+  Couleurs : la nuit var(--brand-sombre), le texte var(--brand-clair), l'accent d'un texte sur la
+  nuit var(--brand-accent-lisible), le trait l'accent plein ; la trame et la lumière sont du blanc
+  très faible, sans halo ni lueur. L'accent n'entre ni ne sort en fondu ou en flou : il passe au
+  clair d'un coup avant le flou, le trait se tire et se retire par un volet.
   Identifiant : t3f (préfixe de tous les id et classes de la scène).
 -->
 <style>
   #t3f {
-    /* La palette du look : rien que des couleurs de la marque, du blanc et du noir en transparence. */
     --t3-nuit: var(--brand-sombre);
     --t3-texte: var(--brand-clair);
     --t3-accent-texte: var(--brand-accent-lisible);
     --t3-police: var(--brand-font-body);
     background: var(--t3-nuit); font-family: var(--t3-police); color: var(--t3-texte);
   }
-  #t3f .t3f-fond { position: absolute; inset: -2px;
-    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255, 255, 255, 0.05), transparent 70%), var(--t3-nuit); }
-  /* La lueur (blanche, très faible) et la trame de points du look s'allument derrière la ligne
-     d'appel quand elle se complète. */
-  #t3f .t3f-halo { position: absolute; left: 50%; top: 50%; width: 1300px; height: 640px; margin: -320px 0 0 -650px; border-radius: 50%; opacity: 0;
-    background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, 0.12), transparent 70%); }
+  /* La lumière de la scène : du blanc très faible, en coin, qui glisse. */
+  #t3f .t3f-fond { position: absolute; inset: -2px -140px;
+    background: radial-gradient(ellipse 60% 55% at 22% 0%, rgba(255, 255, 255, 0.075), transparent 70%),
+      radial-gradient(ellipse 50% 45% at 88% 105%, rgba(255, 255, 255, 0.04), transparent 70%), var(--t3-nuit); }
+  /* La trame de points du look s'allume derrière la ligne d'appel quand elle se complète. */
   #t3f .t3f-trame { position: absolute; left: 50%; top: 50%; width: 1500px; height: 760px; margin: -380px 0 0 -750px; opacity: 0;
     background-image: radial-gradient(circle, rgba(255,255,255,.22) 1.6px, transparent 2.2px); background-size: 15px 15px;
     -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,.5) 45%, transparent 75%);
     mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 0%, rgba(0,0,0,.5) 45%, transparent 75%); }
-  #t3f .t3f-ligne { position: absolute; left: 0; right: 0; top: 50%; height: 100px; margin-top: -50px; text-align: center; white-space: nowrap;
-    font-size: 64px; font-weight: 600; line-height: 100px; letter-spacing: -0.015em; text-shadow: 0 0 28px rgba(255,255,255,.22); }
+  /* Les lignes, en grand (tailles en em : la police se règle dans le script). */
+  #t3f .t3f-ligne { position: absolute; left: 0; right: 0; top: 50%; height: 1.5em; margin-top: -0.75em; text-align: center; white-space: nowrap;
+    font-size: 64px; font-weight: 600; line-height: 1.5em; letter-spacing: -0.015em; }
   #t3f .t3f-ligne span { display: inline-block; }
-  #t3f .t3f-accent { color: var(--t3-accent-texte); }
   #t3f #t3f-verbe { color: var(--t3-accent-texte); }
-  #t3f .t3f-adresse { font-weight: 500; text-shadow: 0 0 22px rgba(255,255,255,.45), 0 0 60px rgba(255,255,255,.12); }
-  #t3f .t3f-adresse b { font-weight: 500; color: var(--t3-accent-texte); }
-  #t3f .t3f-eclat { position: absolute; left: 50%; top: 50%; width: 900px; height: 6px; margin: -3px 0 0 -450px; border-radius: 3px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent); filter: blur(3px); opacity: 0; }
-  #t3f .t3f-signe { position: absolute; left: 0; right: 0; top: 50%; height: 140px; margin-top: -70px; display: flex; align-items: center; justify-content: center; gap: 30px; }
-  #t3f .t3f-logo { width: 120px; height: 120px; display: grid; place-items: center; filter: drop-shadow(0 0 24px rgba(255,255,255,.35)); }
+  #t3f .t3f-adresse { font-weight: 500; }
+  /* l'impact : la fin de l'adresse prend l'accent, un trait plein se tire dessous (un volet) */
+  #t3f .t3f-adresse b { font-weight: 500; }
+  #t3f .t3f-trait { position: absolute; left: 0; right: 0; bottom: 0.12em; height: 0.07em; border-radius: 0.035em; background: var(--brand-accent);
+    transform-origin: 0% 50%; transform: scaleX(0); }
+  #t3f .t3f-signe { position: absolute; left: 0; right: 0; top: 50%; width: fit-content; height: 140px; margin: -70px auto 0; display: flex; align-items: center; justify-content: center; gap: 30px; }
+  #t3f .t3f-logo { width: 120px; height: 120px; display: grid; place-items: center; }
   #t3f .t3f-logo img { width: 100%; height: 100%; object-fit: contain; }
   /* Sa vraie page, dans le verre incliné du look, sous les textes (qui montent au tiers haut). */
   #t3f .t3f-scene3d { position: absolute; inset: 0; perspective: 1600px; }
@@ -66,115 +65,104 @@
     box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.3), inset 0 0 0 1.5px rgba(255, 255, 255, 0.12), 0 60px 120px rgba(0, 0, 0, 0.55); }
   #t3f .t3f-capture-in { position: absolute; inset: 10px; border-radius: 22px; overflow: hidden; }
   #t3f .t3f-capture img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
-  #t3f.t3f-avec-capture .t3f-ligne, #t3f.t3f-avec-capture .t3f-eclat, #t3f.t3f-avec-capture .t3f-halo, #t3f.t3f-avec-capture .t3f-trame { top: 30%; }
-  #t3f .t3f-nom { font-size: 76px; font-weight: 700; letter-spacing: -0.025em; white-space: nowrap; text-shadow: 0 0 30px rgba(255,255,255,.3); }
+  #t3f.t3f-avec-capture .t3f-ligne, #t3f.t3f-avec-capture .t3f-trame { top: 30%; }
+  #t3f .t3f-nom { font-size: 76px; font-weight: 700; letter-spacing: -0.025em; white-space: nowrap; }
 </style>
 
 <div data-composition-id="t3f" data-width="1920" data-height="1080" data-duration="9.2" style="position:absolute; inset:0;">
   <div id="t3f" class="k-scene">
-    <div class="t3f-fond"></div>
+    <div class="t3f-fond" id="t3f-fond" data-layout-allow-overflow></div>
     <div class="k-vignette"></div>
-    <div class="t3f-halo" id="t3f-halo"></div>
     <div class="t3f-trame" id="t3f-trame" data-layout-ignore></div>
     <div class="t3f-scene3d"><div class="t3f-capture" id="t3f-capture" data-layout-allow-overflow><div class="t3f-capture-in" id="t3f-capture-in"></div></div></div>
     <div class="t3f-ligne" id="t3f-appel"></div>
     <div class="t3f-ligne t3f-adresse" id="t3f-adresse"></div>
-    <div class="t3f-eclat" id="t3f-eclat"></div>
     <div class="t3f-signe" id="t3f-signe"><div class="t3f-logo" id="t3f-logo"></div><div class="t3f-nom" id="t3f-nom"></div></div>
   </div>
 </div>
 
 <script>
 (function () {
-  // ---- À remplacer --------------------------------------------------------------------------
-  var R = {
-    verbe: "Rejoins",                 // le 1er mot, seul, à la couleur de la marque
-    suite: ["Ton offre", "sur"],      // la ligne se complète : « Rejoins Ton offre sur »
-    adresse: ["tonsite.fr", "/offre"],// la 2e partie prend la couleur de la marque
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json (cta) et de sa marque, ou la ligne se retire
+    verbe: "Rejoins",                 // le verbe d'appel, seul d'abord, à l'accent
+    suite: ["Ton offre", "sur"],      // la ligne se complète : verbe + suite (8 mots au plus en tout)
+    adresse: ["tonsite.fr", "/offre"],// son adresse réelle, courte, sans https:// ; la 2e partie prend l'accent
     capture: "",                      // sa vraie page, où mène l'adresse ("assets/images/page.png"), ou deux
                                       // captures de cette page (le haut, puis le bouton) ; "" : aucune
-    logo: "brand/logo.svg",           // son fichier dans brand/ (logo.svg ou logo.png) ; "" : le nom seul
-    nom: "Ta marque"
+    logo: "brand/logo.png",           // son logo dans brand/ (logo.png ou logo.svg, celui que la marque a posé) ; "" : le nom seul
+    nom: "Ta marque"                  // le nom de sa marque
   };
-  // -------------------------------------------------------------------------------------------
   // Le temps de lecture du studio (`studio_motion.py lecture`) : 0,3 s par mot + 0,8 s, 1,5 s au
   // moins, arrondi au dixième supérieur.
   function lecture(texte, plancher) {
     var n = texte.split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length;
     return Math.ceil(Math.max(plancher || 1.5, 0.3 * n + 0.8) * 10 - 1e-9) / 10;
   }
-  var FL = 0.5 + 0.1 * (R.suite.length - 1) + 0.45;            // la ligne est complète
-  var XL = FL + lecture([R.verbe].concat(R.suite).join(" "));   // elle sort, lue
-  var FA = XL + 0.67, XA = FA + lecture(R.adresse.join(""));    // l'adresse, posée puis lue
-  var SIGNE = XA + 0.25, NOM_LU = SIGNE + (R.logo ? 0.65 : 0.5);
-  var D = Math.ceil((NOM_LU + 3) * 10 - 1e-9) / 10;            // 9,2 s avec les textes d'exemple : reporte-la en data-duration
+  var FL = 0.5 + 0.1 * (EXEMPLE.suite.length - 1) + 0.45;               // la ligne est complète
+  var XL = FL + lecture([EXEMPLE.verbe].concat(EXEMPLE.suite).join(" ")); // elle sort, lue
+  var FA = XL + 0.67, XA = FA + lecture(EXEMPLE.adresse.join(""));        // l'adresse, posée puis lue
+  var SIGNE = XA + 0.25, NOM_LU = SIGNE + (EXEMPLE.logo ? 0.65 : 0.5);
+  var D = Math.ceil((NOM_LU + 3) * 10 - 1e-9) / 10;            // 9,2 s avec l'objet EXEMPLE : reporte-la en data-duration
   var $ = function (id) { return document.getElementById(id); };
-  var cadre = K.cadre($("t3f")), L = cadre.largeur;
-  $("t3f-appel").innerHTML = '<span class="t3f-in" id="t3f-appel-in"><span id="t3f-verbe">' + R.verbe + "</span>&nbsp;" +
-    R.suite.map(function (m, i) { return '<span class="t3f-suite' + (i === R.suite.length - 1 ? " t3f-accent" : "") + '">' + m + "</span>"; }).join("&nbsp;") + "</span>";
-  $("t3f-adresse").innerHTML = '<span class="t3f-in" id="t3f-adresse-in">' + R.adresse[0] + "<b>" + R.adresse[1] + "</b></span>";
-  $("t3f-nom").textContent = R.nom;
-  if (R.logo) $("t3f-logo").innerHTML = '<img src="' + R.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t3f-logo").style.display = "none";
+  var cadre = K.cadre($("t3f")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  $("t3f-appel").innerHTML = '<span class="t3f-in" id="t3f-appel-in"><span id="t3f-verbe">' + EXEMPLE.verbe + "</span>&nbsp;" +
+    EXEMPLE.suite.map(function (m) { return '<span class="t3f-suite">' + m + "</span>"; }).join("&nbsp;") + "</span>";
+  $("t3f-adresse").innerHTML = '<span class="t3f-in" id="t3f-adresse-in" style="position:relative">' + EXEMPLE.adresse[0] + '<b id="t3f-fin-adresse">' + EXEMPLE.adresse[1] +
+    '</b><span class="t3f-trait" id="t3f-trait"></span></span>';
+  $("t3f-nom").textContent = EXEMPLE.nom;
+  if (EXEMPLE.logo) $("t3f-logo").innerHTML = '<img src="' + EXEMPLE.logo + '" alt="" onerror="this.parentNode.style.display=\'none\'">'; else $("t3f-logo").style.display = "none";
   K.cacher([".t3f-suite", "#t3f-adresse", "#t3f-signe", "#t3f-capture"]);
-  var H = cadre.hauteur, vertical = H > L, cap = $("t3f-capture");
-  if (R.capture) {
+  var cap = $("t3f-capture"), imgs = [];
+  if (EXEMPLE.capture) {
     $("t3f").classList.add("t3f-avec-capture");
-    var srcs = [].concat(R.capture).slice(0, 2), imgs = srcs.map(function (src) { var im = K.el($("t3f-capture-in"), "img"); im.alt = ""; im.src = src; return im; });
+    imgs = [].concat(EXEMPLE.capture).slice(0, 2).map(function (src) { var im = K.el($("t3f-capture-in"), "img"); im.alt = ""; im.src = src; return im; });
     if (imgs[1]) gsap.set(imgs[1], { xPercent: 100 });
     // une carte au format 16:10 (la capture s'y cadre par le haut), dans la moitié basse de l'image
     var wc = vertical ? 0.88 * L : 0.62 * L, hc = wc * 0.62;
-    gsap.set(cap, { width: wc, height: hc, marginLeft: -wc / 2, top: vertical ? 0.5 * H : 0.5 * H, rotationX: 26, rotationY: -12, rotationZ: -2, transformOrigin: "50% 0%" });
+    gsap.set(cap, { width: wc, height: hc, marginLeft: -wc / 2, top: 0.5 * H, rotationX: 26, rotationY: -12, rotationZ: -2, transformOrigin: "50% 0%" });
   } else cap.style.display = "none";
-  // Les couleurs du verbe, lues sur la scène (GSAP anime des valeurs, pas des var()).
-  var css = getComputedStyle($("t3f"));
-  var C = function (nom, defaut) { return (css.getPropertyValue(nom) || "").trim() || defaut; };
-  var clair = C("--brand-clair", "#ffffff");
 
   function construire() {
-    // Une ligne plus large que 88 % du cadre (en 9:16 surtout) se réduit seule : rien de coupé.
+    var clair = K.jeton("--brand-clair"), accent = K.jeton("--brand-accent-lisible");
+    // Les lignes en grand : la moitié de la largeur au moins en 16:9, 80 % en 9:16, 88 % au plus
+    // (jamais une petite ligne au milieu du vide) ; plus courte, elle grandit, plus longue, elle se réduit.
+    var part = vertical ? 0.8 : 0.5;
     ["t3f-appel", "t3f-adresse"].forEach(function (id) {
-      var w = $(id + "-in").offsetWidth;
-      if (w > 0.88 * L) $(id).style.fontSize = (64 * 0.88 * L / w).toFixed(1) + "px";
+      var w = $(id + "-in").offsetWidth, f = Math.min(Math.max(part * L / w, 1), 0.88 * L / w, 2.4);
+      $(id).style.fontSize = (64 * f).toFixed(1) + "px";
     });
-    var signe = $("t3f-signe"), wSigne = (R.logo ? $("t3f-logo").offsetWidth + 30 : 0) + $("t3f-nom").offsetWidth;
-    if (wSigne > 0.88 * L) gsap.set(signe, { scale: 0.88 * L / wSigne });
-    var s0 = gsap.getProperty(signe, "scale");
+    // Le logo et le nom : 60 % de la largeur en 16:9, 80 % en 9:16
+    var signe = $("t3f-signe"), wSigne = (EXEMPLE.logo ? $("t3f-logo").offsetWidth + 30 : 0) + $("t3f-nom").offsetWidth;
+    gsap.set(signe, { scale: Math.min((vertical ? 0.8 : 0.6) * L / wSigne, 3) });
 
     var tl = gsap.timeline({ paused: true });
-    // 1. Le verbe seul, puis la ligne complète, tenue le temps de sa lecture ; le verbe passe de
-    //    l'accent au clair. Pendant la tenue, la lueur et la trame s'allument derrière la ligne, puis
-    //    la lueur s'élargit doucement : la vie vient de la lumière, la caméra ne fait qu'une dérive.
+    // 1. Le verbe seul (coupe franche), puis la ligne complète, tenue immobile le temps de sa
+    //    lecture ; le verbe passe au clair d'un coup quand la suite entre (jamais un fondu de
+    //    l'accent vers le clair, qui passerait par un jaune pâle). La trame s'allume derrière.
     tl.fromTo("#t3f-appel", { scale: 1.06 }, { scale: 1, duration: 0.5, ease: "expo.out" }, 0);
-    tl.to("#t3f-verbe", { color: clair, duration: 0.3, ease: "power1.inOut" }, 0.42);
+    tl.set("#t3f-verbe", { color: clair }, 0.5);
     K.entreeMots(tl, ".t3f-suite", 0.5, { decalage: 0.1, y: 14, flou: 10, duree: 0.45 });
-    tl.fromTo("#t3f-appel", { x: 0 }, { x: -12, duration: XL - 0.6, ease: "sine.inOut", immediateRender: false }, 0.6);
-    tl.fromTo(["#t3f-halo", "#t3f-trame"], { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out", stagger: 0.08 }, FL - 0.13);
-    // au milieu de la tenue, la ligne brille (sa lueur blanche monte puis retombe) et la lueur s'élargit
-    var ML = (FL + XL) / 2;
-    tl.to("#t3f-appel", { textShadow: "0 0 64px rgba(255,255,255,0.6)", duration: 0.45, ease: "sine.inOut", yoyo: true, repeat: 1 }, ML - 0.45);
-    tl.to("#t3f-halo", { scale: 1.16, opacity: 0.7, duration: 0.6, ease: "sine.inOut" }, ML - 0.3);
-    tl.to(["#t3f-halo", "#t3f-trame"], { opacity: 0, scale: 1.08, duration: 0.35, ease: "power2.in" }, XL - 0.05);
-    // 2. La ligne devient l'adresse, dans un flou ; un seul impact ; l'adresse se tient le temps de sa
-    //    lecture, sa lueur monte et l'éclat repasse dessous
+    tl.fromTo("#t3f-trame", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, FL - 0.13);
+    tl.to("#t3f-trame", { scale: 1.06, duration: D - FL - 0.3, ease: "sine.inOut" }, FL + 0.3);
+    // 2. La ligne devient l'adresse, dans un flou (du clair seulement) ; à l'impact, la fin de
+    //    l'adresse prend l'accent d'un coup et le trait se tire dessous ; elle se tient le temps de sa
+    //    lecture, puis le trait se retire, l'accent repasse au clair et l'adresse se dissout.
     tl.to("#t3f-appel", { opacity: 0, filter: "blur(14px)", scale: 1.08, duration: 0.35, ease: "power2.in" }, XL);
     tl.fromTo("#t3f-adresse", { opacity: 0, filter: "blur(16px)", scale: 1.35 }, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.5, ease: "expo.out" }, XL + 0.17);
-    tl.fromTo("#t3f-eclat", { opacity: 0, scaleX: 0.2 }, { opacity: 0.85, scaleX: 1, duration: 0.4, ease: "expo.out" }, XL + 0.2);
-    tl.to("#t3f-eclat", { opacity: 0, duration: 0.6, ease: "power1.in" }, XL + 0.65);
-    tl.fromTo("#t3f-halo", { opacity: 0, scale: 0.9 }, { opacity: 0.8, scale: 1.05, duration: 0.5, ease: "power2.out", immediateRender: false }, (FA + XA) / 2 - 0.25);
-    tl.to("#t3f-adresse", { textShadow: "0 0 40px rgba(255,255,255,0.75), 0 0 110px rgba(255,255,255,0.3)", duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, (FA + XA) / 2 - 0.4);
-    tl.to("#t3f-halo", { opacity: 0, duration: 0.25, ease: "power2.in" }, XA);
-    tl.fromTo("#t3f-adresse", { y: 0 }, { y: -6, duration: XA - FA, ease: "sine.inOut", immediateRender: false }, FA);
+    tl.set("#t3f-fin-adresse", { color: accent }, FA);
+    tl.fromTo("#t3f-trait", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "expo.out", immediateRender: false }, FA);
+    tl.fromTo("#t3f-adresse", { scale: 1 }, { scale: 1.04, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, FA);
+    tl.to("#t3f-trait", { scaleX: 0, transformOrigin: "100% 50%", duration: 0.2, ease: "power2.in" }, XA - 0.22);
+    tl.set("#t3f-fin-adresse", { color: clair }, XA);
     tl.to("#t3f-adresse", { opacity: 0, filter: "blur(12px)", duration: 0.25, ease: "power2.in" }, XA);
     // Sa vraie page monte de la profondeur dans le verre incliné pendant que la ligne se complète,
-    // dérive lentement sous les deux tenues (elle pivote et remonte un peu), puis repart dans la
+    // dérive lentement sous les deux tenues (elle se redresse un peu), puis repart dans la
     // profondeur ; sans fondu (une capture à demi transparente salit ses couleurs).
-    if (R.capture) {
+    if (EXEMPLE.capture) {
+      var ML = (FL + XL) / 2;
       tl.set(cap, { opacity: 1 }, 0.55);
       tl.fromTo(cap, { z: -1100, y: 260 }, { z: 0, y: 0, duration: 0.9, ease: "expo.out", immediateRender: false }, 0.55);
-      // au milieu de la ligne, la page se redresse vers nous (l'interface entière qui se pose), puis
-      // dérive lentement jusqu'à la fin de l'adresse
-      tl.to(cap, { rotationX: 14, rotationY: -8, y: -36, duration: 0.7, ease: "power2.inOut" }, ML - 0.35);
-      tl.to(cap, { rotationY: -4, rotationX: 11, y: -52, duration: XA - ML - 0.35, ease: "sine.inOut" }, ML + 0.35);
+      tl.to(cap, { rotationX: 14, rotationY: -8, y: -36, duration: XA - 1.45, ease: "sine.inOut" }, 1.45);
       // une seconde capture de sa page (le bouton, l'offre) glisse dans le verre quand l'adresse arrive
       if (imgs[1]) {
         tl.to(imgs[0], { xPercent: -100, duration: 0.6, ease: "power3.inOut" }, XL + 0.05);
@@ -183,14 +171,13 @@
       tl.to(cap, { z: -1300, y: 320, duration: 0.3, ease: "power2.in" }, XA);
       tl.set(cap, { opacity: 0 }, XA + 0.3);
     }
-    // 3. Le logo, puis le nom qui se dévoile, tenu en entier jusqu'à la fin (3 s : l'écran final).
+    // 3. Le logo s'ouvre (un volet rond, sans flou : il garde ses couleurs), puis le nom se dévoile,
+    //    tenus immobiles jusqu'à la fin (3 s : l'écran final) ; la lumière glisse derrière.
     tl.set("#t3f-signe", { opacity: 1 }, SIGNE);
-    if (R.logo) tl.fromTo("#t3f-logo", { opacity: 0, scale: 0.6, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, SIGNE);
-    tl.fromTo("#t3f-nom", { clipPath: "inset(0 100% 0 0)", x: R.logo ? -40 : 0, opacity: R.logo ? 1 : 0 },
+    if (EXEMPLE.logo) tl.fromTo("#t3f-logo", { scale: 0.6, clipPath: "circle(0% at 50% 50%)" }, { scale: 1, clipPath: "circle(75% at 50% 50%)", duration: 0.45, ease: "expo.out" }, SIGNE);
+    tl.fromTo("#t3f-nom", { clipPath: "inset(0 100% 0 0)", x: EXEMPLE.logo ? -40 : 0, opacity: EXEMPLE.logo ? 1 : 0 },
       { clipPath: "inset(0 0% 0 0)", x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, NOM_LU - 0.5);
-    // La tenue respire jusqu'au bout (jamais d'image figée) : une poussée lente et une lueur qui monte.
-    tl.fromTo("#t3f-signe", { scale: s0 }, { scale: s0 * 1.05, duration: D - SIGNE, ease: "sine.inOut", immediateRender: false }, SIGNE);
-    tl.fromTo("#t3f-nom", { textShadow: "0 0 30px rgba(255,255,255,0.3)" }, { textShadow: "0 0 46px rgba(255,255,255,0.5)", duration: D - NOM_LU, ease: "sine.inOut", immediateRender: false }, NOM_LU);
+    tl.fromTo("#t3f-fond", { x: 0 }, { x: 120, duration: D, ease: "sine.inOut" }, 0);
     window.__timelines["t3f"] = tl;
   }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(construire); else construire();

@@ -82,12 +82,12 @@ de fermeture.
 
 Cinq à sept lignes, dans ses mots à lui, pas un JSON :
 
-> Voici ce que j'ai compris de ta page :
-> - **Monteur IA**, pour les créateurs qui postent des Reels : tes Reels montés par ton IA.
-> - Le problème : des heures de montage sur CapCut.
-> - On reçoit : le système complet, les 21 skills, l'app gratuite. Bonus : Reel Cloneur offert.
-> - **97 €**, paiement unique.
-> - Preuve : plus de 3,3 millions de vues sur tes 20 derniers Reels.
+> Voici ce que j'ai compris de ta page (exemple) :
+> - **Freelance en 8 semaines**, pour les illustrateurs qui débutent : trouver tes premiers clients.
+> - Le problème : un portfolio que personne ne voit, des prix qu'on n'ose pas annoncer.
+> - On reçoit : 6 modules vidéo, les modèles de devis, une séance de groupe par semaine.
+> - **297 €**, ou 3 fois 99 €.
+> - Preuve : 212 élèves ont décroché un premier client (page, section « Résultats »).
 >
 > C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si quelque chose est faux ou
 > manque.

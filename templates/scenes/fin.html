@@ -1,0 +1,297 @@
+<!-- Scène prête « La mosaïque qui devient le bouton » (finir : scenes.md, recettes 25 et 26).
+     Les vraies images de cette vidéo reviennent en mosaïque 3D sous le nom de l'offre ; la caméra
+     recule, elles se resserrent au centre et deviennent un bouton ; le curseur le clique, il se
+     remplit de l'accent ; l'appel s'écrit dessous et son point final est le point de sa couleur.
+     En pub (mode "fleche") on ne dessine pas de bouton : la mosaïque se resserre en planche, l'appel
+     (« Découvre-le ») claque dessous et une flèche se trace vers le bas, vers le bouton de la
+     plateforme. Le nom et l'appel se tiennent 2,5 s au moins, immobiles (calque k-mots) ; autour,
+     les images de la vidéo reculent au loin et dérivent lentement. Se met en page seule en 9:16 et
+     en 16:9 (K.cadre).
+     Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne
+     doit rester), mets à data-duration la durée que demande la scène (`check` la signale en erreur
+     si elle manque), puis `npm run check` et 3 images. Pour la poser deux fois, remplace partout
+     « cloture » par un autre identifiant. -->
+<template>
+  <style>
+    #cloture .clo-carte {
+      position: absolute; left: 0; top: 0; border-radius: 22px; overflow: hidden; background: var(--k-noir-2);
+      box-shadow: var(--k-ombre); will-change: transform, width, height;
+    }
+    #cloture .clo-carte img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    /* Les cartes neutres du banc (à la place des images d'une vraie vidéo) : des plans esquissés. */
+    #cloture .clo-n0 { background: var(--k-noir-2); box-shadow: var(--k-ombre), inset 0 0 0 2px rgba(255, 255, 255, 0.07); }
+    #cloture .clo-n1 { background: var(--k-blanc); }
+    #cloture .clo-n2 { background: var(--brand-surface); box-shadow: var(--k-ombre), inset 0 0 0 2px rgba(255, 255, 255, 0.06); }
+    #cloture .clo-n3 {
+      background-color: var(--k-clair);
+      background-image: linear-gradient(var(--k-grille-claire) 1px, transparent 1px), linear-gradient(90deg, var(--k-grille-claire) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    #cloture .clo-trait { position: absolute; border-radius: 999px; }
+    #cloture .clo-bouton {
+      position: absolute; border-radius: 64px; overflow: hidden; background: var(--brand-surface);
+      box-shadow: var(--k-ombre), inset 0 0 0 3px var(--brand-gris-2);
+    }
+    #cloture .clo-libelle, #cloture .clo-plein {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.02em; white-space: nowrap;
+    }
+    #cloture .clo-libelle { color: var(--k-blanc); }
+    #cloture .clo-plein { background: var(--brand-accent); color: var(--brand-contrast); }
+    #cloture .clo-nom { color: var(--k-blanc); text-align: center; }
+    #cloture .clo-appel {
+      position: absolute; left: 0; right: 0; text-align: center; white-space: nowrap; color: var(--k-blanc);
+      font-family: var(--brand-font-body); font-weight: 700; letter-spacing: -0.015em; line-height: 1.1;
+    }
+    #cloture .clo-appel.clo-grand { font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.035em; }
+    #cloture .clo-point {
+      display: inline-block; width: 0.22em; height: 0.22em; margin-left: 0.07em; border-radius: 50%;
+      background: var(--brand-accent);
+    }
+    #cloture .clo-fleche { position: absolute; overflow: visible; }
+    #cloture .clo-fleche path { fill: none; stroke: var(--brand-accent); stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <div data-composition-id="cloture" data-width="1080" data-height="1920" data-duration="7" style="position:absolute; inset:0;">
+    <div id="cloture" class="k-scene">
+      <div class="k-fond k-fond-sombre"></div>
+      <div class="k-scene3d"><div class="k-camera" id="cloture-loin"></div></div>
+      <div class="k-vignette"></div>
+      <div class="k-scene3d"><div class="k-camera" id="cloture-plateau"></div></div>
+      <div class="k-mots" id="cloture-mots"></div>
+      <div id="cloture-main" style="position:absolute; inset:0; z-index:70; pointer-events:none;"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var ID = "cloture";
+
+      // À REMPLACER : chaque texte et image vient de OFFRE.json ou de cette vidéo ; rien d'exemple
+      // ne doit rester.
+      var CONTENU = {
+        mode: "bouton",                 // "bouton" (page de vente : il désigne le bouton sous la vidéo) ou "fleche" (pub : ni bouton ni clic)
+        vignettes: [null, null, null, null, null, null],   // 4 à 8 images de CETTE vidéo ("assets/images/<plan>.jpg", une image par plan,
+                                        // au format de la vidéo) ; null : une carte neutre (le banc seulement)
+        nom: "Planéo",                  // le nom de l'offre, 1 à 3 mots
+        bouton: "Essayer Planéo",       // le texte du bouton, 1 à 3 mots (mode "bouton")
+        appel: "Le lien est sous la vidéo.",   // l'appel, 3 à 6 mots (plus long, la scène demande plus de temps) ; en pub : « Découvre-le » (son point final devient le point de sa couleur)
+        zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
+      };
+
+      var racine = document.getElementById(ID), plateau = document.getElementById(ID + "-plateau");
+      var loin = document.getElementById(ID + "-loin"), mots = document.getElementById(ID + "-mots");
+      var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
+      // La durée donnée à la scène : celle de sa racine, ou, une fois montée, celle de son hôte dans
+      // index.html (HyperFrames retire data-duration de la racine intérieure au montage).
+      var duree = 30;
+      for (var nd = racine.parentElement; nd; nd = nd.parentElement) {
+        var dd = parseFloat(nd.getAttribute("data-duration"));
+        if (dd > 0) { duree = dd; break; }
+      }
+      var zone = CONTENU.zone || (V ? [0.16, 0.27] : [0.08, 0.12]);
+      var haut = zone[0] * H, bas = H - zone[1] * H;
+      var fleche = CONTENU.mode === "fleche";
+
+      // La tenue d'un texte : 0,8 s + 0,3 s par mot, jamais moins de 1,5 s (`lecture`).
+      var lecture = function (texte) {
+        return Math.max(1.5, 0.8 + 0.3 * String(texte).trim().split(/\s+/).length);
+      };
+      // Une taille qui remplit la colonne sans la déborder, estimée sur le nombre de lettres
+      // (aucune mesure à l'écran : la même image à chaque rendu).
+      var taillePour = function (texte, largeur, mini, maxi) {
+        return Math.max(mini, Math.min(maxi, largeur / (0.56 * Math.max(4, String(texte).length))));
+      };
+
+      // --- La mise en page : le nom en haut, l'objet (bouton ou planche) au centre, l'appel dessous ---
+      var nom = String(CONTENU.nom || ""), appel = String(CONTENU.appel || "");
+      var fNom = taillePour(nom, V ? 0.86 * L : 0.6 * L, 110, V ? 230 : 200);
+      var yNom = haut + (V ? 0.03 * H : 10), basNom = yNom + fNom * 0.95;
+      var fAppel = fleche ? taillePour(appel, V ? 0.8 * L : 0.5 * L, 80, V ? 150 : 120)
+                          : taillePour(appel, V ? 0.86 * L : 0.6 * L, 44, V ? 64 : 60);
+      var vignettes = (CONTENU.vignettes || []).slice(0, 8);
+      var n = Math.max(1, vignettes.length);
+      var cols = n <= 4 ? 2 : n <= 6 ? 3 : 4, rangs = Math.ceil(n / cols);
+      var ratio = H / L;                       // une image de la vidéo a le format de la vidéo
+      var objet;                                // le rectangle où la mosaïque se resserre
+      if (fleche) {
+        var hMax = V ? 0.27 * H : 0.33 * H, lMax = V ? 0.8 * L : 0.5 * L, ecart = 10;
+        var ch = Math.min((hMax - (rangs - 1) * ecart) / rangs, ((lMax - (cols - 1) * ecart) / cols) * ratio);
+        var cw = ch / ratio;
+        objet = { l: cols * cw + (cols - 1) * ecart, h: rangs * ch + (rangs - 1) * ecart, ecart: ecart, rayon: 14 };
+        objet.y = basNom + (V ? 50 : 40);
+      } else {
+        objet = { l: V ? 0.8 * L : 0.42 * L, h: V ? 196 : 172, ecart: 4, rayon: 12 };
+        objet.y = (V ? 0.43 * H : 0.52 * H) - objet.h / 2;
+      }
+      objet.x = (L - objet.l) / 2;
+      var yAppel = objet.y + objet.h + (fleche ? 0.3 * fAppel : 0.75 * fAppel + 10);
+
+      // --- Les vignettes : la mosaïque 3D, sous le nom ------------------------------------------
+      // La zone de la mosaïque, caméra posée : sous le nom, et assez basse pour que, la caméra
+      // encore proche (S0) au début, elle ne touche jamais le nom.
+      var S0 = 1.18, bord = V ? 0.95 * H : 0.97 * H;
+      var demiH = (bord - (basNom + 30)) / (1 + S0);
+      var zoneM = { x0: (V ? 0.05 : 0.04) * L, x1: (V ? 0.95 : 0.96) * L, y0: bord - 2 * demiH, y1: bord };
+      var g = V ? 24 : 28, decalage = 0.16;    // l'écart entre deux images ; le décalage des colonnes
+      var cw2 = Math.min((zoneM.x1 - zoneM.x0 - (cols - 1) * g) / cols,
+        ((zoneM.y1 - zoneM.y0 - (rangs - 1) * g) / (rangs + decalage)) / ratio);
+      var ch2 = cw2 * ratio, totalL = cols * cw2 + (cols - 1) * g, totalH = rangs * ch2 + (rangs - 1) * g + decalage * ch2;
+      var mx = (L - totalL) / 2, my = (zoneM.y0 + zoneM.y1) / 2 - totalH / 2;
+      gsap.set(plateau, { transformOrigin: (L / 2) + "px " + ((zoneM.y0 + zoneM.y1) / 2) + "px" });
+
+      // Une carte neutre (le banc) : un plan esquissé aux neutres du kit ; l'accent seulement plein.
+      var esquisse = function (carte, k, avecAccent) {
+        var v = k % 4, clairs = v === 1 || v === 3;
+        carte.classList.add("clo-n" + v);
+        var trait = function (x, y, l, h, fond) {
+          K.el(carte, "div", "clo-trait", null, "left:" + x + "%; top:" + y + "%; width:" + l + "%; height:" + h + "%; background:" + fond + ";");
+        };
+        var fort = clairs ? "var(--k-encre)" : "var(--k-blanc)", doux = clairs ? "var(--brand-gris-4)" : "var(--brand-gris-1)";
+        if (v === 0) { trait(10, 14, 64, 9, fort); trait(10, 28, 44, 9, fort); trait(10, 78, 52, 4, doux); trait(10, 86, 34, 4, doux); }
+        if (v === 1) { trait(10, 10, 22, 22 / ratio, fort); trait(38, 14, 48, 5, doux); trait(38, 23, 30, 5, doux); trait(10, 60, 80, 22, doux); }
+        if (v === 2) { trait(10, 30, 56, 16, fort); trait(10, 54, 36, 6, avecAccent ? "var(--brand-accent)" : fort); trait(10, 84, 60, 4, doux); }
+        if (v === 3) { trait(8, 8, 84, 7, doux); trait(8, 24, 70, 5, fort); trait(8, 34, 56, 5, doux); trait(8, 44, 64, 5, doux); trait(8, 54, 48, 5, doux); }
+      };
+      var remplir = function (carte, src, k, avecAccent) {
+        if (src) { var img = K.el(carte, "img"); img.src = src; img.alt = ""; }
+        else esquisse(carte, k, avecAccent);
+      };
+
+      var tl = gsap.timeline({ paused: true });
+      var r = K.rng(7);
+      var cartes = vignettes.map(function (src, i) {
+        var c = i % cols, rg = Math.floor(i / cols);
+        var dansRang = Math.min(cols, n - rg * cols), centrage = (cols - dansRang) * (cw2 + g) / 2;
+        var x = mx + centrage + c * (cw2 + g), y = my + rg * (ch2 + g) + (c % 2 ? decalage * ch2 : 0);
+        var carte = K.el(plateau, "div", "clo-carte k-plan");
+        // Une image de la vidéo est de la matière : `check` ne la lit pas comme un texte.
+        carte.setAttribute("data-layout-ignore", "");
+        remplir(carte, src, i, true);
+        var z = (r() - 0.5) * 220, rot = (r() - 0.5) * 4;
+        gsap.set(carte, { x: x, y: y, width: cw2, height: ch2, z: z, rotation: rot, transformOrigin: "50% 50%" });
+        // L'arrivée : de la profondeur, sans fondu ; toutes sauf les deux dernières sont là dès
+        // l'affiche (elles finissent de se poser), les deux dernières jaillissent en rafale.
+        var t0 = i < n - 2 ? 0 : 0.12 + 0.14 * (i - n + 2);
+        if (t0 > 0) { K.cacher(carte); tl.set(carte, { opacity: 1 }, t0); }
+        tl.fromTo(carte, { z: z - (t0 > 0 ? 1500 : 260), rotationY: (c - (cols - 1) / 2) * (t0 > 0 ? 18 : 6), scale: t0 > 0 ? 0.62 : 0.94 },
+          { z: z, rotationY: 0, scale: 1, duration: t0 > 0 ? 0.75 : 0.6 + 0.1 * i, ease: "expo.out" }, t0);
+        return { el: carte, c: c, rg: rg };
+      });
+
+      // Le monde au loin : les mêmes images, petites, floues et sombres, sur les bords du cadre
+      // (jamais derrière un texte) ; elles apparaissent quand la caméra recule, puis dérivent.
+      var placesLoin = V
+        ? [[0.12, 0.08], [0.5, 0.05], [0.88, 0.09], [0.07, 0.3], [0.93, 0.32], [0.1, 0.72], [0.9, 0.7], [0.2, 0.93], [0.55, 0.96], [0.86, 0.92]]
+        : [[0.06, 0.12], [0.07, 0.5], [0.08, 0.88], [0.2, 0.9], [0.94, 0.13], [0.93, 0.5], [0.92, 0.87], [0.8, 0.9], [0.22, 0.1], [0.79, 0.08]];
+      placesLoin.forEach(function (p, k) {
+        var zl = -700 - (k % 3) * 220, f = 1800 / (1800 - zl), lw = (V ? 0.17 : 0.11) * L / f * (0.85 + 0.3 * r());
+        var px = L / 2 + (p[0] * L - L / 2) / f, py = H / 2 + (p[1] * H - H / 2) / f;
+        var e = K.el(loin, "div", "clo-carte k-plan");
+        e.setAttribute("data-layout-ignore", "");
+        e.setAttribute("data-layout-allow-overflow", "");
+        remplir(e, vignettes[k % n], k + 1, false);
+        gsap.set(e, { x: px - lw / 2, y: py - lw * ratio / 2, width: lw, height: lw * ratio, z: zl, rotation: (r() - 0.5) * 10,
+          filter: "blur(" + (3 + (k % 3) * 2) + "px) brightness(0.36)" });
+      });
+
+      // --- Le nom : là dès l'affiche, immobile ------------------------------------------------
+      var elNom = K.el(mots, "div", "k-heros k-ligne clo-nom", null, "top:" + yNom + "px; font-size:" + fNom + "px;");
+      elNom.textContent = nom;
+
+      // --- La caméra recule ; la mosaïque se resserre et devient l'objet --------------------------
+      var tRecul = 0.75, tSerre = 1.5, dSerre = 0.62, tObjet = tSerre + dSerre;
+      tl.fromTo(plateau, { scale: S0, rotationX: V ? 16 : 20, rotationZ: -5, y: 0 },
+        { scale: 1, rotationX: 0, rotationZ: 0, y: 0, duration: 1.05, ease: "power2.inOut", immediateRender: true }, tRecul);
+      tl.fromTo(loin, { scale: 1.3 }, { scale: 1, duration: 1.3, ease: "power2.inOut" }, tRecul - 0.1);
+      tl.to(loin, { scale: 0.95, rotationZ: 1.6, duration: Math.max(1, duree - tRecul - 1.2), ease: "sine.inOut" }, tRecul + 1.2);
+      var cellL = (objet.l - (cols - 1) * objet.ecart) / cols, cellH = (objet.h - (rangs - 1) * objet.ecart) / rangs;
+      cartes.forEach(function (k, i) {
+        var dansRang = Math.min(cols, n - k.rg * cols), centrage = (cols - dansRang) * (cellL + objet.ecart) / 2;
+        tl.to(k.el, { x: objet.x + centrage + k.c * (cellL + objet.ecart), y: objet.y + k.rg * (cellH + objet.ecart),
+          width: cellL, height: cellH, z: 0, rotation: 0, borderRadius: objet.rayon, duration: dSerre, ease: "expo.inOut" }, tSerre + i * 0.025);
+      });
+      K.etire(tl, elNom, tObjet + 0.05, { axe: "x", facteur: 1.05, tenue: 0.2, origine: "50% 50%" });
+
+      var tAppel, tFin;
+      if (!fleche) {
+        // Les images deviennent le bouton : il les couvre d'un coup, se pose, son texte claque.
+        var fLib = taillePour(CONTENU.bouton || "", objet.l * 0.78, 44, V ? 78 : 70);
+        var bouton = K.el(mots, "div", "clo-bouton", null,
+          "left:" + objet.x + "px; top:" + objet.y + "px; width:" + objet.l + "px; height:" + objet.h + "px;");
+        var libelle = K.el(bouton, "div", "clo-libelle", null, "font-size:" + fLib + "px;");
+        libelle.textContent = CONTENU.bouton || "";
+        // L'accent qui remplit le bouton depuis le clic, avec son texte dans la couleur lisible sur
+        // lui : un cercle net qui grandit (jamais un fondu sur l'accent).
+        var plein = K.el(bouton, "div", "clo-plein", null, "font-size:" + fLib + "px;");
+        plein.textContent = CONTENU.bouton || "";
+        plein.setAttribute("data-layout-allow-overlap", "");
+        plein.setAttribute("data-layout-allow-occlusion", "");
+        var clicX = objet.l * 0.7, clicY = objet.h * 0.6;
+        gsap.set(plein, { clipPath: "circle(0px at " + clicX + "px " + clicY + "px)" });
+        K.cacher(bouton);
+        tl.set(bouton, { opacity: 1 }, tObjet - 0.02);
+        tl.fromTo(bouton, { scale: 1.05 }, { scale: 1, duration: 0.45, ease: "expo.out", immediateRender: false }, tObjet - 0.02);
+        cartes.forEach(function (k) { tl.set(k.el, { opacity: 0 }, tObjet + 0.04); });
+        K.claque(tl, libelle, tObjet + 0.02, { de: 1.3, duree: 0.38 });
+        // Le curseur arrive, clique ; le bouton se remplit de l'accent.
+        var curseur = K.curseur(document.getElementById(ID + "-main"), ID + "-curseur", true);
+        var cx = objet.x + clicX, cy = objet.y + clicY, tClic = tObjet + 0.55;
+        K.trajet(tl, curseur, [[0, L * 0.9, H * 1.08], [tObjet - 0.15, cx + 4, cy + 2, 0.62, "power3.out"], [tClic + 0.45, objet.x + objet.l + 40, cy + 40, 0.9, "power2.inOut"]]);
+        K.clic(tl, curseur, tClic);
+        tl.to(plein, { clipPath: "circle(" + Math.ceil(Math.hypot(objet.l, objet.h)) + "px at " + clicX + "px " + clicY + "px)", duration: 0.5, ease: "expo.out" }, tClic + 0.03);
+        // Le texte clair, couvert par l'accent, s'efface dessous (il ne se lit plus sur le jaune).
+        tl.set(libelle, { opacity: 0 }, tClic + 0.16);
+        tl.fromTo(bouton, { scale: 1 }, { scale: 0.97, duration: 0.08, ease: "power2.out", immediateRender: false }, tClic);
+        tl.to(bouton, { scale: 1, duration: 0.4, ease: "expo.out" }, tClic + 0.08);
+        tAppel = tClic + 0.3;
+      } else {
+        // Pas de bouton en pub : la planche reste, l'appel claque dessous et la flèche se trace vers
+        // le bas (le bouton de la plateforme).
+        tAppel = tObjet + 0.15;
+      }
+
+      // --- L'appel : dessous ; son point final est le point de sa couleur ----------------------
+      var texteAppel = appel.replace(/\.\s*$/, ""), avecPoint = !/[!?…]\s*$/.test(texteAppel);
+      var elAppel = K.el(mots, "div", "clo-appel" + (fleche ? " k-heros clo-grand" : ""), null,
+        "top:" + yAppel + "px; font-size:" + fAppel + "px;");
+      var motsAppel = texteAppel.split(/\s+/).filter(Boolean).map(function (m, i, tous) {
+        var s = K.el(elAppel, "span", "k-mot", null, "margin:0 0.13em;" + (i === tous.length - 1 && avecPoint ? " margin-right:0;" : ""));
+        s.textContent = m;
+        return s;
+      });
+      var point = avecPoint ? K.el(elAppel, "span", "clo-point") : null;
+      if (fleche) K.claque(tl, motsAppel, tAppel, { de: 1.35, duree: 0.4, decalage: 0.08 });
+      else K.entreeMots(tl, motsAppel, tAppel, { decalage: 0.07, y: 0, flou: 8, duree: 0.4 });
+      var tPoint = tAppel + 0.08 * motsAppel.length + 0.3;
+      if (point) {
+        gsap.set(point, { scale: 0 });
+        tl.to(point, { scale: 1, duration: 0.42, ease: "back.out(2.2)" }, tPoint);
+      }
+      if (fleche) {
+        var hF = V ? 170 : 130, lF = hF * 0.7, ep = V ? 14 : 12;
+        var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "clo-fleche");
+        svg.setAttribute("viewBox", "0 0 " + lF + " " + hF);
+        svg.setAttribute("width", String(lF));
+        svg.setAttribute("height", String(hF));
+        svg.setAttribute("style", "left:" + (L - lF) / 2 + "px; top:" + (yAppel + fAppel * 1.15) + "px;");
+        var chemin = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        chemin.setAttribute("d", "M" + lF / 2 + " " + ep + " V" + (hF - ep) + " M" + ep + " " + (hF - lF / 2) + " L" + lF / 2 + " " + (hF - ep) + " L" + (lF - ep) + " " + (hF - lF / 2));
+        chemin.setAttribute("stroke-width", String(ep));
+        svg.appendChild(chemin);
+        mots.appendChild(svg);
+        K.trace(tl, chemin, tPoint + 0.1, 0.55, { ease: "power3.inOut" });
+        // Un seul coup vers le bas, une seconde plus tard (jamais une boucle qui pulse).
+        tl.to(svg, { y: 26, duration: 0.3, ease: "power2.out" }, tPoint + 1.4);
+        tl.to(svg, { y: 0, duration: 0.6, ease: "expo.out" }, tPoint + 1.7);
+      }
+
+      // La durée qu'il faut à la scène : le nom et l'appel tenus 2,5 s au moins une fois posés.
+      tFin = tPoint + 0.4 + Math.max(2.5, lecture(appel));
+      if (duree + 0.01 < tFin) {
+        console.error(ID + " : la scène demande " + tFin.toFixed(1) + " s pour être lue, data-duration n'en donne que " + duree + " : passe data-duration à " + Math.ceil(tFin * 2) / 2 + " (ici et sur son hôte dans index.html).");
+      }
+      window.__timelines = window.__timelines || {};
+      window.__timelines[ID] = tl;
+    })();
+  </script>
+</template>
