@@ -229,8 +229,20 @@ qui travaille **en dessous** :
 ## Les bruitages
 
 - **Un son par évènement réel** à l'écran (un clic, une carte qui se pose, un prix qui tombe),
-  jamais pour remplir. Un même geste garde le même son (un clic sonne comme un clic) ; varie le
-  volume, et ne répète pas un son marquant (impact, riser, cha-ching).
+  jamais pour remplir. Un même geste garde la même **famille** (un clic sonne comme un clic), mais
+  pas le même fichier : **jamais le même son deux fois de suite** à moins de 3 s, ni trois fois en
+  6 s. Une série (les coches, les formats qui arrivent, les clics d'une démo) alterne deux ou trois
+  sons voisins de la famille (`click-mouse-click`, `starter-click-mouse`, `click-mac-single`,
+  `click-mouse-deep` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `starter-pop-mouth`). Ne répète
+  pas un son marquant (impact, riser, cha-ching). Retour du client du 07/11/2026 : « on répète le
+  même bruitage plusieurs fois d'affilée, c'est un peu chiant ».
+- **Les sons qui trompent** : certains noms du pack cachent une rafale. `click-short-snap` n'est pas
+  un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic
+  tic tic » par le client : posé 11 fois, il a gâché la story v3) ; `click-hard` fait trois clics ;
+  `click-click-sequence`, `click-click-whoosh`, `click-fast-burst` et `ui-counter-tick` sont des
+  rafales. Pour un mot qui claque : `click-single-snap`, `misc-punch`, `starter-drop`, `click-hard`
+  rogné à `[0, 0.2]`. `sons` prévient de ces pièges et de chaque répétition après la pose
+  (« bruitages qui lassent ») : corrige-les avant le rendu.
 - Calé sur l'image de l'évènement : l'attaque du son (son début audible) au moment exact du
   contact, ou 2 à 3 images avant pour un impact. Un décalage de 0,2 s se voit.
 - Dans une cascade (cinq éléments qui tombent), seuls le premier et le dernier sonnent.

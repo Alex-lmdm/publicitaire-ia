@@ -1400,6 +1400,61 @@ def prises_oubliees(evenements, catalogue: list[dict], sfx_dir: Path) -> list[st
     return fautifs
 
 
+# Les sons du Pack SFX dont le nom trompe : ce qu'on entend après l'attaque (relevé à l'oreille et
+# en comptant les attaques, 07/11/2026). Un client a entendu « un truc de molette, tic tic tic » à
+# chaque mot d'une story : c'était click-short-snap, posé 11 fois. id → (fin sûre en s ou None, ce
+# qu'il cache) ; avec une fin sûre, un `trim` qui s'arrête avant elle le rend utilisable.
+SONS_PIEGES = {
+    "click-short-snap": (0.3, "un snap suivi d'un cliquet de molette (12 petits tics, de 0,56 à 0,89 s)"),
+    "click-hard": (0.2, "trois clics à la suite (0,12, 0,25 et 0,37 s)"),
+    "click-click-sequence": (None, "une rafale de 10 clics sur 1,5 s"),
+    "click-click-whoosh": (None, "9 petits clics qui montent avant le souffle"),
+    "click-fast-burst": (None, "des salves de clics, à chaque prise"),
+    "ui-counter-tick": (None, "un tic-tac en boucle"),
+}
+ECART_REPETITION = 3.0     # le même son deux fois de suite à moins de 3 s : il se remarque
+FENETRE_REPETITION = (6.0, 3)   # 3 fois ou plus dans 6 s : on n'entend plus que lui
+
+
+def sons_qui_lassent(evenements, catalogue: list[dict], sfx_dir: Path) -> list[str]:
+    """Ce qui lasse à l'écoute (retour du client du 07/11/2026 : « on répète le même bruitage plusieurs
+    fois d'affilée, c'est un peu chiant ») : le même fichier sur deux évènements qui se suivent, ou
+    trois fois en 6 s, et les sons du pack qui cachent un cliquet ou une rafale. Des avertissements,
+    pas un refus : une rafale voulue (une frappe) peut rester, en le sachant."""
+    par_fichier = {(sfx_dir / s["file"]).resolve(): s for s in catalogue if s.get("file")}
+    nom = lambda e: (par_fichier.get(Path(e["src"]).resolve()) or {}).get("id") or Path(e["src"]).stem
+    suite = sorted(evenements, key=lambda e: float(e.get("start") or 0))
+    avis = []
+    for a, b in zip(suite, suite[1:]):
+        ta, tb = float(a.get("start") or 0), float(b.get("start") or 0)
+        if Path(a["src"]).resolve() == Path(b["src"]).resolve() and tb - ta < ECART_REPETITION:
+            avis.append(f"{nom(a)} deux fois de suite ({ta:.2f} et {tb:.2f} s) : alterne avec un son voisin de la même famille")
+    fenetre, plafond = FENETRE_REPETITION
+    vus = set()
+    for i, e in enumerate(suite):
+        src, t0 = Path(e["src"]).resolve(), float(e.get("start") or 0)
+        if src in vus:
+            continue
+        instants = [float(x.get("start") or 0) for x in suite[i:] if Path(x["src"]).resolve() == src
+                    and float(x.get("start") or 0) - t0 <= fenetre]
+        if len(instants) >= plafond:
+            vus.add(src)
+            avis.append(f"{nom(e)} {len(instants)} fois en {fenetre:.0f} s ("
+                        + ", ".join(f"{t:.2f}" for t in instants) + " s) : varie-le")
+    for e in suite:
+        s = par_fichier.get(Path(e["src"]).resolve())
+        piege = SONS_PIEGES.get((s or {}).get("id"))
+        if not piege:
+            continue
+        fin_sure, cache = piege
+        trim = e.get("trim")
+        if fin_sure is not None and trim and float(trim[1]) <= fin_sure:
+            continue
+        conseil = (f"rogne-le avec \"trim\": [0, {fin_sure}]" if fin_sure is not None else "prends un autre son")
+        avis.append(f"{s['id']} (posé à {float(e.get('start') or 0):.2f} s) cache {cache} : {conseil}")
+    return avis
+
+
 def catalogue_sfx(sfx_dir: Path) -> list[dict]:
     """Les fiches du Pack SFX installé (assets/sfx/catalog.json), ou rien s'il n'est pas là."""
     try:
@@ -1466,7 +1521,8 @@ def cmd_sons(a) -> None:
         if e.get("trim"):
             e["trim"] = tuple(e["trim"])
         evenements.append(e)
-    fautifs = prises_oubliees(evenements, catalogue_sfx(RACINE / "assets" / "sfx"), RACINE / "assets" / "sfx")
+    catalogue = catalogue_sfx(RACINE / "assets" / "sfx")
+    fautifs = prises_oubliees(evenements, catalogue, RACINE / "assets" / "sfx")
     if fautifs:
         sys.exit("ERREUR : rien n'est posé. " + ("Un son contient" if len(fautifs) == 1 else f"{len(fautifs)} sons contiennent")
                  + " plusieurs prises sans \"trim\" : elles joueraient toutes à la suite.\n"
@@ -1499,6 +1555,10 @@ def cmd_sons(a) -> None:
     print("• " + (", ".join(poses[:-1]) + " et " + poses[-1] if len(poses) > 1 else poses[0] if poses else "aucun son")
           + " posés dans index.html")
     print(f"  {sons.resume_niveau(rapport)}")
+    lassants = sons_qui_lassent(evenements, catalogue, RACINE / "assets" / "sfx")
+    if lassants:
+        print(f"⚠️  {len(lassants)} bruitage(s) qui lassent à l'écoute (son.md, « Les bruitages ») :\n"
+              + "\n".join(f"   - {a}" for a in lassants))
 
 
 # ---------------------------------------------------------------------------

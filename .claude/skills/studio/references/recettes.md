@@ -41,8 +41,38 @@ design écrit par une IA, comme ici). Ce qu'elles font, et que toute vidéo du s
 
 Ce que le studio ne reprend pas : leurs couleurs (la marque du client, seulement), leurs images
 générées (photos, 3D réaliste : on montre sa vraie matière), leurs lueurs néon. Les recettes 23 à
-33 traduisent ce langage avec le kit ; la story d'ouverture de Publicitaire IA (v3, 07/11/2026,
-40 s, 9 plans, 36 mots à lire) les enchaîne : 23 → 24 → 25 → 26 → 27 + 28 → 29 → 30 → 31.
+34 traduisent ce langage avec le kit ; la story d'ouverture de Publicitaire IA (v4, 07/11/2026,
+41 s, 8 plans) les enchaîne : 23 → 24 → 25 → 26 → 27 + 34 → 30 → 31.
+
+## Le niveau par défaut : une vidéo qu'on regarde deux fois (07/11/2026)
+
+Le créateur l'a demandé après la story v3 : « par défaut, des choses assez dingues, tout en
+respectant les règles ». Le seuil n'est pas « propre » : c'est « un motion designer en serait
+fier ». Sans qu'on le demande, chaque vidéo le vise :
+
+- **Un moment signature par plan** : un geste qu'on n'attend pas et qu'on a envie de revoir (la
+  vignette cliquée qui vient au centre pendant que les autres pivotent en carrousel, la timeline
+  barrée qui tombe en morceaux, le dossier géant qui devient le nœud d'un schéma). Nomme-le dans le
+  tableau du plan, colonne « Recette », avant d'animer ; un plan sans moment signature se retravaille.
+- **De la profondeur, jamais des aplats posés** : trois plans (un premier plan qui passe, le sujet,
+  un fond qui vit), une perspective (`transformPerspective`, `rotationX`/`rotationY`, `z`), un flou
+  qui grandit avec la distance, une ombre portée qui situe l'objet, une lueur neutre au sol.
+- **Le sujet remplit le cadre** : ce qu'on regarde occupe au moins la moitié de la largeur ; de
+  petits éléments centrés sur un grand fond vide se lisent comme une maquette.
+- **La caméra voyage entre les plans** (elle s'approche, plonge, recule, glisse vers l'objet
+  suivant) et ne fait qu'une dérive lente pendant qu'on lit ([rythme.md](rythme.md)).
+- **Les objets ont du poids et réagissent** : ils arrivent sur un ressort (`back.out`, `expo.out`),
+  se posent, répondent quand on les touche (un pouls, un anneau qui se pose, un reflet qui les
+  traverse).
+- **Les détails d'une vraie interface** : un curseur qui vise et clique, une bulle qui pointe ce
+  qu'elle explique, une barre de lecture qui avance, un bouton lecture qui part du clic.
+- **Des échelles qui contrastent** : un mot géant à côté d'une étiquette minuscule, un objet tout
+  proche et d'autres au loin.
+
+Ce qui ne bouge pas : la palette (ses couleurs, du noir, du blanc, des gris), sa vraie matière, la
+lecture (un mot par seconde au plus), la caméra posée pendant qu'on lit. Impressionner n'est jamais
+décorer : chaque effet montre l'offre ou relie deux idées. La revue le note (critère 10 de
+[revue.md](revue.md)).
 
 23. **La négation montrée** (3,5 s, nuit). Au lieu d'écrire « je ne l'ai ni filmée ni montée » :
     un viseur de caméra qui tourne (quatre coins, « REC » et son point, le temps qui défile), « ni
@@ -72,12 +102,14 @@ générées (photos, 3D réaliste : on montre sa vraie matière), leurs lueurs n
 28. **La vignette qui devient la vidéo** (0,8 s) : le format choisi grandit jusqu'au plein écran
     (`scale` = largeur de l'écran / largeur de la vignette, centre amené au centre), le reste
     s'efface en flou ; à l'arrivée, la vraie vidéo joue à la racine d'`index.html`, et sa première
-    image est exactement la vignette (`ffmpeg -ss 0 -frames:v 1`).
-29. **La bande-démo à volets** (6,5 s). Ses vraies vidéos, l'une après l'autre, chacune dans son
-    format (plein écran en 9:16, son 16:9 sur toute la largeur), avec leur étiquette sous la bande
-    du sticker (« Pub » « faite avec Publicitaire IA ») ; un volet de l'accent en biais couvre
-    chaque coupe (8 de rythme.md), le dernier s'arrête et devient l'aplat du prix. Jamais un
-    exemple qui est lui-même un écran de texte, ni l'accroche « problème » d'une pub.
+    image est exactement la vignette (`ffmpeg -ss 0 -frames:v 1`). Seulement pour une vidéo de son
+    offre à lui ; **jamais pour un exemple fait pour une autre offre** : 34.
+29. **La bande-démo à volets** (6,5 s). **Remplacée par 34 pour les exemples** (retour du client
+    du 07/11/2026) : en plein écran, l'exemple d'une autre offre (la pub de Monteur IA dans la story
+    de Publicitaire IA) se prend pour sa pub ; même avec une grande étiquette « Exemple », les trois
+    relecteurs de la v3 ont cru à la pub d'un autre produit. Gardée seulement pour enchaîner des
+    vidéos qui vendent toutes l'offre de la vidéo : chacune dans son format, un volet de l'accent
+    en biais sur chaque coupe (8 de rythme.md), le dernier devient l'aplat du prix.
 30. **Le prix en deux temps** (5 s, aplat). « 67 € » claque en très grand (jamais un compteur dont
     une valeur de passage se lirait comme un prix), « Paiement unique » s'ouvre dessous ; puis ils
     montent et se resserrent, la page du calendrier de la vraie échéance claque, et l'échéance se
@@ -93,6 +125,32 @@ générées (photos, 3D réaliste : on montre sa vraie matière), leurs lueurs n
     à une avec un compteur qui grimpe (en heures, d'après la page), le fil rouge la tranche et elle
     tombe ; à sa place, les étapes de l'offre en trois pastilles reliées et leur vrai délai. Vrais
     chiffres seulement (les alternatives et `recoit` de la fiche).
+34. **La vitrine des formats** (après 27 : 9,5 s pour quatre formats, nuit ; demande du client du
+    07/11/2026, corrigée après deux relecteurs neufs). Les exemples restent **dans leur vignette**, jamais en plein écran. Le schéma de 27
+    part vers le haut dans le flou, le titre (« Tes vidéos. ») se range en haut, une lueur neutre
+    s'allume au sol ; la rangée des formats monte et grandit (la caméra s'approche, un léger
+    basculement `rotationX` pendant le trajet), tous **sur pause** sur leur première image, chacun
+    avec son étiquette. Le curseur entre et clique le premier ; le titre, lu, s'en va. La vignette
+    cliquée vient au centre en grand, près de la moitié de la largeur (9:16 en 500 × 889, 16:9 en
+    900 × 506, centre à y 700, au-dessus de la bande du sticker), les autres pivotent de biais sur les côtés
+    comme un carrousel (de plus en plus petits, `rotationY` de 40 à 52°, un voile sombre et un flou
+    qui grandissent avec la distance) ; un anneau de l'accent se pose, un reflet traverse la
+    vignette, la vraie vidéo joue 2 s avec sa barre de lecture, et une **bulle claire qui la
+    pointe** dit où va ce format, en 2 ou 3 mots tirés de la page (« Pub · Facebook, Instagram »,
+    « Reel · Instagram », « Story · comme celle-ci »), avec les vrais logos ; elle s'ouvre dès que
+    la vignette se pose et reste jusqu'à l'arrivée de la suivante (1,85 s) ; la dernière, plus
+    longue (« Page de vente · en haut de ta page »), reste 3 s. **Aucun bouton lecture** : dans une
+    story, un bouton invite à toucher l'écran, ce qui fait passer à la story suivante. Puis le curseur clique
+    le suivant, à droite ; un clic toutes les 2 s, sur la grille. À l'arrêt, la dernière image de
+    l'extrait reste (une seconde affiche). Sortie : le volet de l'accent devient l'aplat du prix.
+    Fabrication : les vignettes et leurs `<video>` vivent à la racine d'`index.html` (une seule
+    timeline les place par `x`, `y`, `scale`, `rotationY`, `transformPerspective`), avec deux
+    affiches par vignette (première et dernière image de l'extrait, `ffmpeg -ss 0` et `-ss 1.9`) ;
+    le curseur, les bulles et le volet sont dans une scène transparente devant
+    (`z-index: 3`), aux mêmes instants. Extraits de 2 s préparés par `preparer-video`, choisis sans
+    texte « problème » ni face caméra, et lisibles en petit (un logo qui arrive, un mot barré).
+    Les bruitages alternent : un clic, un passage et un pop différents à chaque format
+    ([son.md](son.md)).
 
 ## Ouvrir : le problème qu'on vit
 

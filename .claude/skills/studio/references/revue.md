@@ -119,7 +119,7 @@ ne doit pas en défaire une autre. Un plan créé avant la 0.9.0 n'a pas cette s
 la fin.
 
 **4. La revue critique.** Change de rôle : tu es un directeur artistique exigeant. Note de 1 à 10,
-avec une phrase de justification, sur ces neuf critères :
+avec une phrase de justification, sur ces dix critères :
 
 1. **Compréhension** : la note vient du relecteur neuf. S'il n'a pas su dire ce qui est vendu, à
    qui et quoi faire, c'est 3 au plus, quel que soit le reste.
@@ -141,6 +141,11 @@ avec une phrase de justification, sur ces neuf critères :
    couleur d'accent ; aucune image inventée. Une teinte dérivée (un brun, un orangé tirés de son
    jaune), c'est 4 au plus.
 9. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
+10. **Le niveau** ([recettes.md](recettes.md), « Le niveau par défaut ») : chaque plan a son moment
+    signature, de la profondeur (perspective, flou de distance, ombres), un sujet qui remplit le
+    cadre, une caméra qui voyage entre les plans. Des petits éléments centrés sur un grand fond
+    vide, ou des plans à plat posés les uns après les autres, c'est 5 au plus : propre ne suffit
+    pas (demande du client du 07/11/2026 : « par défaut, des choses assez dingues »).
 
 Tout critère à 7 ou moins se corrige, puis on refait le rendu et la planche, jusqu'à 8 ou plus
 partout. Liste toujours les trois plus gros défauts, même si tout est à 8. Si le client a donné
@@ -159,7 +164,9 @@ notes.
 ## Porte 4 : le son
 
 `python3 ../../../tools/studio_motion.py son exports/reel.mp4`, puis `mastering` si la mesure n'est pas « ok ».
-Réécoute le début et la révélation : le temps fort tombe-t-il sur l'offre ?
+Réécoute le début et la révélation : le temps fort tombe-t-il sur l'offre ? La pose des sons
+(`sons`) ne doit laisser aucun « bruitage qui lasse » (le même son deux fois de suite, trois fois
+en 6 s, ou un son du pack qui cache un cliquet) : [son.md](son.md), « Les bruitages ».
 
 ## Porte 5 : l'export
 

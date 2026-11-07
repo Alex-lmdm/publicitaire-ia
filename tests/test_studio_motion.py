@@ -721,6 +721,46 @@ class PrisesOubliees(unittest.TestCase):
             self.assertEqual(sm.catalogue_sfx(Path(d)), [])
 
 
+class SonsQuiLassent(unittest.TestCase):
+    """Retour du client du 07/11/2026 : le même bruitage revenait sans cesse, et c'était un cliquet."""
+    SFX = Path(tempfile.gettempdir()) / "studio" / "assets" / "sfx"
+    CATALOGUE = [{"id": i, "file": f"pack/{i}.mp3"} for i in
+                 ("click-short-snap", "click-single-snap", "click-hard", "ui-pop-up", "starter-pop", "click-click-sequence")]
+
+    def ev(self, ident, t, trim=None):
+        e = {"src": self.SFX / f"pack/{ident}.mp3", "start": t}
+        if trim:
+            e["trim"] = trim
+        return e
+
+    def test_la_story_v3_est_signalee(self):
+        # 15,85 et 15,97 (deux fois de suite), puis 18,55 et 21,20 : 4 fois en 6 s, et un cliquet à chaque fois
+        evenements = [self.ev("click-short-snap", t) for t in (15.85, 15.97, 18.55, 21.2)]
+        avis = sm.sons_qui_lassent(evenements, self.CATALOGUE, self.SFX)
+        self.assertTrue(any("deux fois de suite (15.85 et 15.97 s)" in a for a in avis))
+        self.assertTrue(any("4 fois en 6 s" in a for a in avis))
+        self.assertEqual(sum("cliquet de molette" in a for a in avis), 4)
+
+    def test_une_serie_qui_alterne_passe(self):
+        evenements = [self.ev("ui-pop-up", 20.57), self.ev("starter-pop", 20.67), self.ev("ui-pop-up", 22.0),
+                      self.ev("click-single-snap", 23.0), self.ev("ui-pop-up", 30.0)]
+        self.assertEqual(sm.sons_qui_lassent(evenements, self.CATALOGUE, self.SFX), [])
+
+    def test_trois_fois_en_six_secondes(self):
+        evenements = [self.ev("ui-pop-up", 1.0), self.ev("starter-pop", 2.0), self.ev("ui-pop-up", 4.0),
+                      self.ev("starter-pop", 5.0), self.ev("ui-pop-up", 6.5)]
+        avis = sm.sons_qui_lassent(evenements, self.CATALOGUE, self.SFX)
+        self.assertEqual(avis, ["ui-pop-up 3 fois en 6 s (1.00, 4.00, 6.50 s) : varie-le"])
+
+    def test_piege_rogne_ou_sans_fin_sure(self):
+        sur = [self.ev("click-short-snap", 1.0, trim=[0.0, 0.25]), self.ev("click-hard", 5.0, trim=[0.0, 0.2])]
+        self.assertEqual(sm.sons_qui_lassent(sur, self.CATALOGUE, self.SFX), [])
+        avis = sm.sons_qui_lassent([self.ev("click-hard", 1.0, trim=[0.0, 0.4]), self.ev("click-click-sequence", 9.0)],
+                                   self.CATALOGUE, self.SFX)
+        self.assertIn('rogne-le avec "trim": [0, 0.2]', avis[0])
+        self.assertIn("prends un autre son", avis[1])
+
+
 class Export(unittest.TestCase):
     def info(self, largeur=1080, hauteur=1920, duree="20.0", audio=True, **video):
         v = {"codec_type": "video", "codec_name": "h264", "width": largeur, "height": hauteur,

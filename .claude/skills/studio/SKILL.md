@@ -14,7 +14,9 @@ de dire** : ses vraies interfaces qui agissent, le schéma de son mécanisme qui
 vidéos, et peu de mots, très grands, qui jouent ce qu'ils disent (ils claquent, s'étirent, se
 barrent, se changent sur place). La référence de niveau : les vidéos de lancement faites par
 Higgsfield Katana, relevées le 07/11/2026 ([recettes.md](references/recettes.md), « Le langage du
-motion design »). Trois échecs à éviter : une vidéo qu'un inconnu ne comprend pas (des mots isolés,
+motion design »). Le seuil par défaut n'est pas « propre » mais « on la regarde deux fois » : un
+moment signature par plan, de la profondeur, un sujet qui remplit le cadre, une caméra qui voyage
+entre les plans (« Le niveau par défaut », même fichier). Trois échecs à éviter : une vidéo qu'un inconnu ne comprend pas (des mots isolés,
 des chiffres sans contexte, tout qui file trop vite), une suite d'écrans de texte posés sans rien
 montrer (on dirait des slides), et des **sous-titres** (une phrase par écran au-dessus d'une petite
 interface, plus d'un mot à lire par seconde). Tout part de son offre réelle : rien n'est inventé,
@@ -236,6 +238,9 @@ Installation et choix : [son.md](references/son.md) (jamais l'INSTALL.md d'une a
   client en ait donné le chiffre ; s'il le demande sans prix réellement pratiqué, préviens-le une
   fois du risque (réduction trompeuse) et laisse-le décider.
 - Fabriquer l'interface d'un logiciel qu'il n'a pas, ou un écran que sa page ne montre pas.
+- Montrer en plein écran une vidéo d'exemple faite pour une autre offre : on la prend pour la pub
+  d'un autre produit. Elle joue dans sa vignette, au clic (recette 34 de
+  [recettes.md](references/recettes.md)).
 - Animer pour décorer avec des effets génériques (néon, particules sans sujet, dégradés colorés) :
   ce qui bouge vient de l'offre, de ses outils ou de son domaine.
 - Inventer une image : paysage, illustration, objet décoratif, photo factice. Ce qui se montre se
