@@ -32,15 +32,14 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
 
 ## Son compte Epidemic Sound, en option
 
-Demande d'Alexandre du 07/11/2026 : la banque incluse reste le choix par défaut. Un fichier du
-client passe toujours en premier. S'il demande Epidemic Sound (ou a gardé cette préférence),
+La banque incluse reste le choix par défaut ; un fichier du client passe toujours en premier. S'il demande Epidemic Sound (ou a gardé cette préférence),
 cherche avec **son propre compte connecté** par MCP, sans demander sa clé dans la conversation.
 Connexion : [epidemic.md](epidemic.md). Aucun abonnement n'est nécessaire pour utiliser les 35.
 
 - Recherche trois directions adaptées à l'offre, au style visuel et à la présence d'une voix.
   Fais écouter les extraits, puis télécharge le morceau retenu avec les outils du MCP. Ne prétends
   pas l'avoir écouté si tu ne l'as pas fait. Ne lance aucune génération ni adaptation payante.
-- S'il préfère le site, laisse-le choisir et donner le fichier. Playlist conseillée par Alexandre :
+- S'il préfère le site, laisse-le choisir et donner le fichier. Playlist conseillée dans la formation :
   [Sons déformés / Glitchy Sounds](https://www.epidemicsound.com/fr/music/themes/technology/glitchy-sounds/).
 - Range le fichier dans `assets/audio/` du projet ; note titre, artiste, identifiant, source et
   licence déclarée dans `SOURCE.md`. Analyse-le comme tout morceau fourni. Un téléchargement ne
@@ -147,10 +146,9 @@ Ne te contente pas de remplacer `musique.wav` sous des animations restées au m�
 
 Le client peut coller, avec son nouveau fichier :
 
-> Remplace la musique de cette vidéo par le fichier que je te donne. Adapte le motion design au
-> tempo, aux temps forts, aux pauses et aux changements de la nouvelle musique. Fais tomber la
-> révélation sur son entrée forte et soigne la fin. Garde le message et la marque ; s'il y a une
-> voix off, garde les animations calées sur ses mots. Refais les bruitages, le mixage et la livraison.
+> Remplace la musique de cette vidéo par ce fichier et recale tout le motion design dessus : tempo,
+> temps forts, pauses, révélation et fin. Garde le message, la marque et la voix off si j'en ai une.
+> Refais les bruitages, le mixage et la livraison.
 
 ### Choisir le morceau
 

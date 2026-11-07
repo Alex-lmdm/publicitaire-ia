@@ -17,10 +17,17 @@ masquée dans son terminal ou un gestionnaire de secrets. Aucun secret dans Publ
 ses projets, `marque.json` ou un dépôt Git.
 
 La variable `EPIDEMIC_SOUND_MCP_API_KEY` doit être disponible dans le processus qui lance
-l'assistant. Prévois sa persistance et vérifie seulement sa présence, jamais sa valeur. Sur une
-app lancée depuis le Dock, une variable du terminal n'est pas forcément héritée : utilise le
-mécanisme personnel supporté par l'app ou guide le client pour la lancer avec cette variable.
-Ne copie pas la clé en clair dans une commande qui restera dans l'historique.
+l'assistant. Vérifie seulement sa présence et sa longueur, jamais sa valeur. Ne copie pas la clé
+en clair dans une commande qui restera dans l'historique.
+
+Pièges rencontrés le 07/11/2026 (Claude Code, app de bureau sur Mac) :
+- Une saisie masquée (`read -s`) lancée depuis la conversation ne reçoit rien : ouvre-la dans un
+  vrai onglet de terminal (un petit script qui lit la clé et l'ajoute à `~/.zshrc`).
+- L'app ouverte depuis le Dock ne lit pas `~/.zshrc` : le serveur répond 401 alors que la clé est
+  bonne. Pour trancher, teste la clé depuis le terminal (une requête `initialize` au serveur avec
+  l'en-tête `Authorization`) : 200 veut dire que la clé est bonne et que l'app ne la voit pas. Le
+  remède : la recopier, sans l'afficher, dans `env` de `~/.claude/settings.json` (sauvegarde
+  d'abord), puis le client quitte l'app (Cmd+Q) et la rouvre.
 
 ## Claude Code
 

@@ -100,13 +100,9 @@ répond « 7, 2 », décrit un autre style, colle le lien d'une vidéo qu'il aim
 Un style déjà connu ne se redemande pas (`--sans-styles`). Un morceau donné par le client ou choisi
 sur son compte Epidemic Sound remplace ce choix musical ([son.md](references/son.md)).
 
-**La bande-son précède le plan d'animation.** S'il veut une voix, prépare d'abord son fichier,
-ses mots et ses respirations (`voix.md`), puis choisis la musique qui va dessous. Analyse et cale
-le morceau (`son.md`) ; relève dans `PLAN.md` son tempo réel après calage, ses temps forts, son
-entrée franche, ses pauses, ses changements d'énergie et sa fin. Sans voix, ces repères conduisent
-le mouvement ; avec une voix, les mots conduisent les gestes et la musique les respirations.
-Une pause musicale sert une attente ou un arrêt volontaire avant la révélation, jamais un trou
-rempli de bruitages. Ne commence pas l'animation tant que ces repères ne sont pas fixés.
+**La bande-son précède le plan d'animation** : la voix d'abord s'il en veut une (`voix.md`),
+puis le morceau, analysé et calé, ses repères notés dans `PLAN.md` (son.md, « Construire l'image
+sur la bande-son »). Pas d'animation avant que ces repères soient fixés.
 
 Puis le tableau scène par scène de
 `PLAN.md`, qui suit le script : pour chaque plan, la scène (prête, d'un style, ou construite) et
@@ -155,11 +151,8 @@ Une voix off sur une vidéo déjà faite : [voix.md](references/voix.md), la ver
 s'ajoute à côté de l'originale. Pack SFX et musiques : [son.md](references/son.md) (jamais
 l'INSTALL.md d'une archive).
 
-**Changer de musique**, même si le client dit seulement « mets cette musique à la place » :
-reprends aussi le tempo, les coupes, les pauses et la révélation à partir du nouveau morceau,
-puis les bruitages et le mixage. Garde son message et sa marque ; avec une voix, garde les gestes
-sur ses mots. Mets à jour les repères de `PLAN.md`, puis refais la revue et la livraison
-(`son.md`, « Changer de morceau »). Remplacer seulement le fichier audio ne suffit pas.
+**Changer de musique**, même dit « mets cette musique à la place », c'est recaler le motion
+design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « Changer de morceau »).
 
 ## Ce que tu ne fais jamais
 
