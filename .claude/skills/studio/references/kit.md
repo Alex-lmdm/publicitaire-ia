@@ -240,3 +240,10 @@ une liste.
   le reçoit dans le HTML. Cet attribut est réservé à ce qui n'est pas à lire : la typographie
   décorative, et une matière qui sert de texture (une interface qui passe au flou derrière un
   chiffre). Jamais sur un texte qu'on doit lire.
+- **Le point final de l'appel et `check`** (08/11/2026) : `K.longer` suit son trait sur toute la
+  durée de la scène ; dans la scène de fin, `check` croit alors que la dernière ligne (le nom, le
+  bouton) n'est lue que 0,75 s. Pour ce dernier trajet, fais suivre le trait seulement pendant le
+  trajet (un tween de 0 à 1 avec `onUpdate` qui place le point, posé au départ par un premier appel).
+- **Des lettres en désordre** (un mot qui « joue » le chaos avant de se remettre en ligne) se
+  chevauchent pour `check` (`content_overlap`) : écart vertical de ±15 px et rotation de ±7° au
+  plus, puis `data-layout-allow-overlap` sur la ligne, après avoir vérifié à l'image qu'elle se lit.

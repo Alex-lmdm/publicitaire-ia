@@ -73,8 +73,13 @@ peuvent changer pour leur plan.
   - un mot de la phrase qui défile comme une machine à sous avant de se poser (0,1 s par tour).
   Sortie : flou et fondu de 0,13 à 0,25 s, ou le mouvement de la scène.
 - **Flou de bougé** : un mouvement rapide porte un flou dans son sens (6 à 12 px sur un texte, 15 à
-  20 px plein cadre), au plus fort au milieu du geste. Pour une scène qui bouge vite,
-  `data-motion-blur="on"` sur la racine de la composition le calcule au rendu (puis `npm run check`).
+  20 px plein cadre), au plus fort au milieu du geste. Pour une vidéo qui bouge vite,
+  `data-motion-blur="on"` (et `data-motion-blur-shutter="180"`) sur `#root` d'`index.html` le
+  calcule au rendu, puis `npm run check`. Posé seulement sur la racine d'une scène, il ne s'applique
+  pas (constaté le 08/11/2026 : aucune ligne `[motion-blur]` dans le journal du rendu). Le journal
+  doit dire `tier=capture` : un `backface-visibility: hidden` dans une scène en 3D le fait passer en
+  `filter` (flou allégé, rotations et zooms seulement adoucis) ; pour retourner une carte, échange
+  ses deux faces à 90° plutôt que de cacher la face arrière.
 - **Ce qui fait « généré »** : des boucles qui respirent, flottent ou pulsent à la place d'un
   mouvement ; un titre qui continue de glisser ou de grossir une fois posé ; une poussée lente en
   fin de scène ; une onde à chaque clic ; chaque scène qui entre de la même façon ; des oscillations
