@@ -53,15 +53,9 @@ claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel : `t7-
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
-ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
-kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
-l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
-film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
-objets connus »).
-
-Les couleurs viennent de sa marque, et seulement d'elle ([image.md](../../references/image.md),
-« La palette ») ; ses captures et les logos de ses outils gardent leurs vraies couleurs.
+Les couleurs viennent de sa marque ([image.md](../../references/image.md), « La palette ») ; ses
+captures et les objets connus gardent leurs vraies couleurs ([../README.md](../README.md), « La loi
+de toutes les scènes »).
 
 | Rôle dans ce style | Avec la marque du client |
 |---|---|

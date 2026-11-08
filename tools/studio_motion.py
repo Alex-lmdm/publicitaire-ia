@@ -1557,8 +1557,8 @@ def cmd_sons(a) -> None:
         sys.exit(f"ERREUR : {e}")
     poses = ([f"{len(evenements)} bruitage(s)"] if evenements else []) + (["la voix"] if voix_off else []) \
         + (["la musique"] if musique else [])
-    print("• " + (", ".join(poses[:-1]) + " et " + poses[-1] if len(poses) > 1 else poses[0] if poses else "aucun son")
-          + " posés dans index.html")
+    print("• posés dans index.html : " + (", ".join(poses[:-1]) + " et " + poses[-1] if len(poses) > 1
+                                          else poses[0] if poses else "aucun son"))
     print(f"  {sons.resume_niveau(rapport)}")
     lassants = sons_qui_lassent(evenements, catalogue, RACINE / "assets" / "sfx")
     if lassants:
@@ -2201,11 +2201,12 @@ EVENEMENTS_MIN, ECART_MEDIAN_MAX = 0.7, 1.2
 CREUX_SIGNALE, FIN_LIBRE = 2.0, 3.5    # creux entre deux événements montrés ; l'écran final peut se tenir
 
 
-def ecarts_images(ffmpeg: str, video: Path) -> list[float]:
-    """Écart moyen entre deux images successives (10 par seconde, en petit, en gris)."""
-    w, h = RYTHME_TAILLE
-    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf",
-                        f"fps={RYTHME_FPS},scale={w}:{h},format=gray", "-f", "rawvideo", "-"], capture_output=True)
+def ecarts_images(ffmpeg: str, video: Path, fps: int | None = RYTHME_FPS, taille=RYTHME_TAILLE) -> list[float]:
+    """Écart moyen entre deux images successives (10 par seconde par défaut ; `fps=None` : toutes les
+    images de la vidéo), en petit, en gris."""
+    w, h = taille
+    filtre = (f"fps={fps}," if fps else "") + f"scale={w}:{h},format=gray"
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf", filtre, "-f", "rawvideo", "-"], capture_output=True)
     if r.returncode != 0:
         raise RuntimeError(r.stderr.decode("utf-8", "replace")[-400:])
     n, b = w * h, r.stdout
@@ -2342,67 +2343,91 @@ def cmd_rythme(a) -> None:
 
 # ---------------------------------------------------------------------------
 # Le calage du montage sur la bande-son, mesuré sur le projet rendu (son.md, « Construire l'image
-# sur la bande-son ») : chaque scène part sur un temps de la musique ; l'entrée franche de la
-# batterie tombe sur un geste qu'on voit ; avec une voix, chaque scène part avec la phrase qui la
-# porte, aucune ne change au milieu d'un mot, et la batterie n'entre pas sous un mot. Né de l'audit
-# du 08/11/2026 : la méthode calait la musique, mais rien ne vérifiait que l'image suivait ;
-# `rythme` compte les événements, pas leur place. Les pics d'écart entre images tombent au milieu
-# d'un geste, pas sur son départ (essai sur la story d'ouverture) : on contrôle donc les départs
-# des scènes, lus dans index.html, et l'image seulement autour de l'entrée franche.
+# sur la bande-son ») : sans voix, chaque scène part sur un temps de la musique ; avec une voix,
+# avec la phrase qui la porte (ou sur un temps), jamais au milieu d'un mot ; l'entrée franche de la
+# batterie tombe sur un geste qu'on voit, et jamais sous un mot. Né de l'audit du 08/11/2026 : la
+# méthode calait la musique, mais rien ne vérifiait que l'image suivait ; `rythme` compte les
+# événements, pas leur place. Les pics d'écart entre images tombent au milieu d'un geste, pas sur
+# son départ (essai sur la story d'ouverture) : on contrôle donc les départs des scènes, lus dans
+# index.html, et l'image seulement autour de l'entrée franche.
 # ---------------------------------------------------------------------------
 CALAGE_TAILLE = (64, 36)
-CALAGE_GRILLE, CALAGE_PRES_GRILLE = 120.0, 0.012   # un tempo mesuré à 1,2 % de 120 : le morceau y a été ramené
+CALAGE_GRILLE, CALAGE_PRES_GRILLE = 120.0, 0.1   # un tempo à 0,1 battement de 120 : le morceau y a été ramené
 CALAGE_AUTOUR = 0.15         # fenêtre (s) autour de l'entrée franche où un geste doit se voir
 CALAGE_FORT, CALAGE_FORT_X = 10.0, 6.0   # un geste fort : écart entre deux images ≥ 10 (0-255) et ≥ 6 fois la médiane
 CALAGE_BORD_MOT = 0.06       # une coupe à 60 ms d'un bord de mot n'est pas « au milieu »
-CALAGE_PHRASE = 0.75         # avec une voix, une scène part au plus 0,75 s avant le mot qui la porte
+CALAGE_SOUFFLE = 0.25        # un silence d'au moins 0,25 s avant un mot : il ouvre une phrase
+CALAGE_PHRASE = 0.75         # une scène part au plus 0,75 s avant le premier mot de sa phrase
+CALAGE_ACCORD = 0.5          # l'entrée notée dans le projet n'est crue qu'à 0,5 s de celle qu'on entend
 
 
-def pistes_audio(projet: Path) -> dict:
-    """La musique et la voix posées dans index.html par `sons` : {"musique"|"voix": {"src", "debut",
-    "media", "duree"}} (instants en secondes de la vidéo, sauf `media`, du fichier)."""
-    try:
-        source = (projet / "index.html").read_text(encoding="utf-8")
-    except OSError:
-        return {}
-    pistes = {}
-    for balise in re.findall(r"<audio\b[^>]*>", source):
-        # (?<![\w-]) : ni `data-hf-id` (l'identifiant de l'app HyperFrames) ni `data-src`
-        ident, src = re.search(r'(?<![\w-])id="([^"]*)"', balise), re.search(r'(?<![\w-])src="([^"]*)"', balise)
-        if not ident or ident.group(1) not in ("musique", "voix") or not src:
+def pistes_du_mixage(index: Path) -> list[dict]:
+    """Les pistes que tools/sons.py écrit dans index.html (groupe « mixage ») : id, src, début, durée,
+    départ dans le fichier, volume linéaire (le niveau porté par l'enveloppe quand il y en a une)."""
+    pistes = []
+    for balise in re.findall(r"<audio\b[^>]*>", index.read_text(encoding="utf-8")):
+        attr = dict(re.findall(r'([\w-]+)="([^"]*)"', balise))   # `data-hf-id` reste distinct d'`id`
+        if not attr.get("src") or attr.get("data-audio-group") != "mixage":
             continue
-
-        def nombre(nom: str) -> float | None:
-            m = re.search(rf'\b{nom}="([^"]*)"', balise)
+        vol = float(attr.get("data-volume", "1") or 1)
+        if "data-automation" in attr:
             try:
-                return float(m.group(1)) if m else None
-            except ValueError:
-                return None
-        pistes[ident.group(1)] = {"src": (projet / html.unescape(src.group(1))).resolve(),
-                                  "debut": nombre("data-start") or 0.0, "media": nombre("data-media-start") or 0.0,
-                                  "duree": nombre("data-duration")}
+                lanes = json.loads(html.unescape(attr["data-automation"]))["lanes"]
+                vol = max(pt["v"] for l in lanes if l.get("target") == "volume" for pt in l["points"])
+            except (ValueError, KeyError):
+                pass
+        pistes.append({"id": attr.get("id", ""), "src": index.parent / html.unescape(attr["src"]),
+                       "debut": float(attr.get("data-start", 0) or 0), "duree": float(attr.get("data-duration", 0) or 0),
+                       "depart": float(attr.get("data-media-start", 0) or 0), "vol": vol})
     return pistes
 
 
+def pistes_audio(projet: Path) -> dict:
+    """La musique et la voix posées dans index.html : {"musique"|"voix": piste de pistes_du_mixage}."""
+    try:
+        pistes = pistes_du_mixage(projet / "index.html")
+    except OSError:
+        return {}
+    return {p["id"]: p for p in pistes if p["id"] in ("musique", "voix")}
+
+
+def tempo_precis(graves: list[float], fps: float, bpm: float, ecart: float = 1.5, pas: float = 0.02) -> tuple[float, float]:
+    """Le tempo au centième près et l'instant du premier temps (s) : la grille qui ramasse le plus
+    d'attaques de grosse caisse sur tout le morceau, cherchée à ± `ecart` de `bpm`. `tempo_de`, au
+    dixième près, laissait la grille dériver de plusieurs centièmes de seconde en une minute."""
+    lg = [math.log(1e-3 + e) for e in graves]
+    att = [0.0] + [max(0.0, lg[i] - lg[i - 1]) for i in range(1, len(lg))]
+    meilleur, n = (-1.0, bpm, 0.0), int(round(2 * ecart / pas))
+    for i in range(n + 1):
+        b = bpm - ecart + i * pas
+        periode = 60 * fps / b
+        nb = int(len(att) / periode) - 1
+        for k in range(int(periode)):
+            score = sum(att[int(k + j * periode)] for j in range(nb))
+            if score > meilleur[0]:
+                meilleur = (score, round(b, 2), k / fps)
+    return meilleur[1], meilleur[2]
+
+
 def grille_musique(ffmpeg: str, musique: Path) -> dict:
-    """Le tempo (ramené à 120 s'il en est à 1,2 %), le premier temps et l'entrée franche du fichier
-    posé, en secondes du fichier. L'entrée se cherche après le silence de tête que `musique` ajoute
-    quand le morceau démarre plus tard dans la vidéo (un silence ferait passer le début pour l'entrée)."""
+    """Le tempo (120 s'il en est à 0,1 battement : `musique` l'y a ramené), le premier temps, le début
+    du son (après le silence de tête que `musique` ajoute quand le morceau démarre plus tard dans la
+    vidéo) et l'entrée franche du fichier posé, en secondes du fichier."""
     env, graves = enveloppe(ffmpeg, musique), enveloppe(ffmpeg, musique, graves=True)
     fps = MUSIQUE_SR / MUSIQUE_PAS
-    bpm = tempo_de(env, fps)
-    if abs(bpm - CALAGE_GRILLE) / CALAGE_GRILLE <= CALAGE_PRES_GRILLE:
-        bpm = CALAGE_GRILLE
+    bpm, phase = tempo_precis(graves, fps, tempo_de(env, fps))
+    if abs(bpm - CALAGE_GRILLE) <= CALAGE_PRES_GRILLE:
+        bpm, phase = CALAGE_GRILLE, phase_de(graves, fps, CALAGE_GRILLE)
     seuil = 0.02 * max(env, default=0.0)
     tete = next((i for i, e in enumerate(env) if e > seuil), 0)
-    entree = entree_de(env[tete:], fps)
-    return {"bpm": bpm, "phase": phase_de(graves, fps, bpm),
+    entree = entree_de(env[tete:], fps)          # sans le silence de tête, qui passerait pour l'entrée
+    return {"bpm": bpm, "phase": phase, "tete": round(tete / fps, 3),
             "entree": round(entree + tete / fps, 2) if entree is not None else None}
 
 
 def entree_voulue(projet: Path) -> float | None:
-    """L'entrée franche voulue, en secondes de la vidéo : `musique_entree` de work/sons.json, sinon le
-    `--a` de `musiques prendre` (work/musiques.json, une fois le morceau pris)."""
+    """L'entrée franche notée dans le projet, en secondes de la vidéo : `musique_entree` de
+    work/sons.json, sinon le `--a` de `musiques prendre` (work/musiques.json, une fois le morceau pris)."""
     for f, cle in ((projet / "work" / "sons.json", "musique_entree"), (projet / "work" / "musiques.json", "a")):
         try:
             d = json.loads(f.read_text(encoding="utf-8"))
@@ -2413,7 +2438,7 @@ def entree_voulue(projet: Path) -> float | None:
     return None
 
 
-def mots_de_la_voix(projet: Path, debut: float, media: float = 0.0) -> list[tuple[float, float, str]]:
+def mots_de_la_voix(projet: Path, debut: float, depart: float = 0.0) -> list[tuple[float, float, str]]:
     """Les mots de la voix, en secondes de la vidéo : assets/audio/transcript.json (`voix caler`),
     sinon work/voix-mots.json (une voix HeyGen)."""
     for f in (projet / "assets" / "audio" / "transcript.json", projet / "work" / "voix-mots.json"):
@@ -2430,18 +2455,20 @@ def mots_de_la_voix(projet: Path, debut: float, media: float = 0.0) -> list[tupl
             except (KeyError, TypeError, ValueError):
                 continue
             texte = str(m.get("text") or m.get("word") or "").strip()
-            if texte and not texte.startswith("<") and t1 > media:
-                mots.append((round(debut + t0 - media, 3), round(debut + t1 - media, 3), texte))
+            if texte and not texte.startswith("<") and t1 > depart:
+                mots.append((round(debut + t0 - depart, 3), round(debut + t1 - depart, 3), texte))
         if mots:
             return sorted(mots)
     return []
 
 
-def temps_de_la_grille(grille: dict, debut: float, media: float, fin: float) -> list[float]:
-    """Les temps de la musique, en secondes de la vidéo, de son départ à `fin`."""
-    pas, t0 = 60 / grille["bpm"], debut + grille["phase"] - media
-    k0 = math.ceil((debut - t0) / pas - 1e-9)
-    temps, k = [], k0
+def temps_de_la_grille(grille: dict, debut: float, depart: float, fin: float) -> list[float]:
+    """Les temps de la musique, en secondes de la vidéo, du moment où elle sonne (après son silence de
+    tête) jusqu'à `fin`."""
+    pas, t0 = 60 / grille["bpm"], debut + grille["phase"] - depart
+    depuis = debut + max(0.0, grille.get("tete", 0.0) - depart) - 0.02
+    k = math.ceil((depuis - t0) / pas - 1e-9)
+    temps = []
     while t0 + k * pas <= fin + 1e-9:
         temps.append(round(t0 + k * pas, 3))
         k += 1
@@ -2464,71 +2491,68 @@ def _mot_coupe(mots: list, t: float) -> tuple | None:
 
 
 def verdict_calage(debuts: list[float], temps: list[float], mots: list, entree: float | None,
-                   geste: float | None, ips: float = 30.0) -> dict:
+                   geste: float | None, ips: float = 30.0, pas: float = 0.5) -> dict:
     """Le calage d'une vidéo. `debuts` : les départs des scènes (s) ; `temps` : la grille de la musique
-    (vide sans musique) ; `mots` : [(début, fin, texte)] de la voix ; `entree` : l'entrée franche (s de
-    la vidéo) et `geste` sa force à l'image (geste_autour). Rend {"problemes", "calees", "comptees"}."""
+    (vide sans musique), un temps toutes les `pas` s ; `mots` : [(début, fin, texte)] de la voix ;
+    `entree` : l'entrée franche (s de la vidéo) et `geste` sa force à l'image (geste_autour). Une scène
+    pendant la voix part avec une phrase (son premier mot, après un silence) ou sur un temps ; hors de
+    la voix, sur un temps ; sans musique ni voix à cet instant, rien à caler. Rend {"problemes",
+    "calees", "comptees"}."""
     tolerance = max(0.04, 1.2 / ips)
     problemes, calees, comptees = [], 0, 0
-    fin_musique = temps[-1] + 0.5 if temps else 0.0
+    ouvertures = [m[0] for i, m in enumerate(mots) if i == 0 or m[0] - mots[i - 1][1] >= CALAGE_SOUFFLE]
     for d in debuts:
         if d < 0.05:
             continue                                    # la première image
-        coupe = _mot_coupe(mots, d) if mots else None
+        coupe = _mot_coupe(mots, d)
         if coupe:
             comptees += 1
             problemes.append(f"la scène qui commence à {d:.2f} s coupe le mot « {coupe[2]} » ({coupe[0]:.2f} → "
                              f"{coupe[1]:.2f} s) : fais-la partir avant le mot, ou après.")
             continue
-        pres = min(temps, key=lambda b: abs(b - d)) if temps else None
+        dans_musique = bool(temps) and temps[0] - tolerance <= d <= temps[-1] + pas
+        pres = min(temps, key=lambda b: abs(b - d)) if dans_musique else None
         sur_temps = pres is not None and abs(pres - d) <= tolerance
-        avec_phrase = bool(mots) and any(d - 0.1 <= m[0] <= d + CALAGE_PHRASE for m in mots)
-        if not temps and not mots:
-            continue
-        if temps and not mots and not (temps[0] - tolerance <= d <= fin_musique):
-            continue                                    # avant le départ ou après la fin de la musique
-        comptees += 1
-        if sur_temps or avec_phrase:
-            calees += 1
-        elif mots:
-            problemes.append(f"la scène qui commence à {d:.2f} s ne part ni sur un temps de la musique"
-                             + (f" ({pres:.2f} s)" if pres is not None else "") + " ni avec la phrase qui la porte : "
-                             "fais-la partir avec le premier mot de sa phrase (voix.md, « Caler la vidéo sur la voix »).")
-        else:
-            problemes.append(f"la scène qui commence à {d:.2f} s tombe à {abs(pres - d):.2f} s du temps ({pres:.2f} s) : "
-                             "arrondis la durée de la scène d'avant au temps (son hôte et sa racine).")
+        pendant_voix = bool(mots) and mots[0][0] - CALAGE_PHRASE <= d <= mots[-1][1]
+        if pendant_voix:
+            comptees += 1
+            if sur_temps or any(d - 0.1 <= o <= d + CALAGE_PHRASE for o in ouvertures):
+                calees += 1
+            else:
+                problemes.append(f"la scène qui commence à {d:.2f} s ne part ni avec une phrase (son premier mot, "
+                                 "après un silence) ni sur un temps de la musique : fais-la partir avec la phrase "
+                                 "qui la porte (voix.md, « Caler la vidéo sur la voix »).")
+        elif dans_musique:
+            comptees += 1
+            if sur_temps:
+                calees += 1
+            else:
+                problemes.append(f"la scène qui commence à {d:.2f} s tombe à {abs(pres - d):.2f} s du temps ({pres:.2f} s) : "
+                                 "fais finir la scène d'avant sur ce temps (sa durée, sur son hôte et sa racine).")
     if entree is not None and temps:
         if geste is not None and geste < 1:
             problemes.append(f"la batterie entre à {entree:.2f} s et l'image ne fait rien de fort autour "
                              f"(± {CALAGE_AUTOUR:g} s) : pose la révélation dessus (le nom qui claque, un flash, une coupe).")
-        sous = _mot_coupe(mots, entree) if mots else None
+        sous = _mot_coupe(mots, entree)
         if sous:
             problemes.append(f"la batterie entre à {entree:.2f} s sous le mot « {sous[2]} » : ouvre une respiration "
                              "dans la voix (`voix respiration`) ou décale l'entrée (`musiques prendre --a`), puis refais `sons`.")
     return {"problemes": problemes, "calees": calees, "comptees": comptees}
 
 
-def ecarts_images_natifs(ffmpeg: str, video: Path) -> tuple[list[float], float]:
-    """L'écart moyen entre deux images successives, à la cadence de la vidéo (en petit, en gris), et
-    cette cadence."""
-    ips = 30.0
+def cadence(video: Path) -> float:
+    """Les images par seconde de la vidéo (30 si ffprobe manque)."""
     ffprobe = binaire("ffprobe")
     if ffprobe:
         r = subprocess.run([ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=r_frame_rate",
                             "-of", "csv=p=0", str(video)], capture_output=True, text=True)
         try:
             num, den = (float(x) for x in r.stdout.strip().split("/"))
-            ips = num / den if den else ips
+            if num and den:
+                return num / den
         except ValueError:
             pass
-    w, h = CALAGE_TAILLE
-    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf", f"scale={w}:{h},format=gray",
-                        "-f", "rawvideo", "-"], capture_output=True)
-    if r.returncode != 0:
-        raise RuntimeError(r.stderr.decode("utf-8", "replace")[-400:])
-    n, b = w * h, r.stdout
-    images = [b[i:i + n] for i in range(0, len(b) - n + 1, n)]
-    return [sum(abs(x - y) for x, y in zip(images[i], images[i - 1])) / n for i in range(1, len(images))], ips
+    return 30.0
 
 
 def cmd_calage(a) -> None:
@@ -2545,15 +2569,17 @@ def cmd_calage(a) -> None:
         print("ℹ️ ni musique ni voix posées dans index.html (vidéo muette, ou `sons` pas encore lancé) : rien à caler.")
         return
     debuts = [d for d, _l in scenes_du_projet(projet)]
-    mots = mots_de_la_voix(projet, voix["debut"], voix["media"]) if voix else []
+    mots = mots_de_la_voix(projet, voix["debut"], voix["depart"]) if voix else []
+    avant = []
     if voix and not mots:
-        print("⚠️ voix posée sans le temps de ses mots (assets/audio/transcript.json) : `voix caler` d'abord "
-              "(voix.md) ; seuls les temps de la musique sont contrôlés.")
-    temps, entree, geste, ligne = [], None, None, []
+        avant.append("la voix est posée sans le temps de ses mots (assets/audio/transcript.json) : `voix caler` "
+                     "d'abord (voix.md), puis refais ce contrôle.")
     try:
-        ecarts, ips = ecarts_images_natifs(ffmpeg, video)
+        ips = cadence(video)
+        ecarts = ecarts_images(ffmpeg, video, fps=None, taille=CALAGE_TAILLE)
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    temps, entree, geste, pas, ligne = [], None, None, 0.5, []
     if musique:
         if not musique["src"].is_file():
             sys.exit(f"ERREUR : la musique posée est introuvable : {musique['src']}")
@@ -2561,21 +2587,26 @@ def cmd_calage(a) -> None:
             grille = grille_musique(ffmpeg, musique["src"])
         except RuntimeError as e:
             sys.exit(f"ERREUR : lecture de la musique impossible : {e}")
-        fin = musique["debut"] + (musique["duree"] or len(ecarts) / ips)
-        temps = temps_de_la_grille(grille, musique["debut"], musique["media"], fin)
+        pas = 60 / grille["bpm"]
+        temps = temps_de_la_grille(grille, musique["debut"], musique["depart"],
+                                   musique["debut"] + (musique["duree"] or len(ecarts) / ips))
+        entendue = (round(musique["debut"] + grille["entree"] - musique["depart"], 2)
+                    if grille["entree"] is not None else None)
         voulue = entree_voulue(projet)
-        entree = voulue if voulue is not None else (
-            round(musique["debut"] + grille["entree"] - musique["media"], 2) if grille["entree"] is not None else None)
+        entree = voulue if voulue is not None and entendue is not None and abs(voulue - entendue) <= CALAGE_ACCORD \
+            else entendue
+        if voulue is not None and entree != voulue:
+            print(f"ℹ️ l'entrée notée dans le projet ({voulue:g} s) n'est pas celle qu'on entend"
+                  + (f" ({entendue:.2f} s) : c'est celle qu'on entend qui compte." if entendue is not None
+                     else " (le morceau n'a pas d'entrée franche) : le pivot se marque à l'image."))
         geste = geste_autour(ecarts, ips, entree) if entree is not None else None
-        ligne.append(f"tempo {grille['bpm']:g} (un temps toutes les {60 / grille['bpm']:.3f} s)")
+        ligne.append(f"tempo {grille['bpm']:g} (un temps toutes les {pas:.3f} s)")
         ligne.append(f"entrée franche à {entree:.2f} s" if entree is not None else "pas d'entrée franche")
     if mots:
         ligne.append(f"{len(mots)} mots de la voix")
-    v = verdict_calage(debuts, temps, mots, entree, geste, ips)
+    v = verdict_calage(debuts, temps, mots, entree, geste, ips, pas)
+    v["problemes"] = avant + v["problemes"]
     print("• " + " · ".join(ligne + [f"{v['calees']}/{v['comptees']} scènes calées"]))
-    if musique and entree is None:
-        print("  sans entrée franche, le pivot se marque à l'image (son.md, « Le caler ») : seuls les départs de scènes "
-              "sont contrôlés.")
     if v["problemes"]:
         for pb in v["problemes"]:
             print(f"✗ {pb}")
@@ -2605,6 +2636,10 @@ COULEURS_CONNUES = ("#2f8fe6", "#5db6f7", "#8dcffb",                       # le 
                     "#d42d28", "#2b67d1", "#1a7f45", "#c54d1d", "#7d4fe0", "#0b7d88", "#d02a59",   # les fichiers
                     "#ff5f57", "#febc2e", "#28c840",                       # les boutons d'une fenêtre du Mac
                     "#0a6cf0", "#d9fdd3")                                  # les bulles de messagerie
+# Une couleur connue ne couvre qu'un voisinage serré : avec la marge de la marque (ECART_MARQUE), l'orangé
+# d'un fichier PowerPoint laissait passer les bruns et les orangés tirés d'un accent jaune (relecture du
+# 08/11/2026 : #b5651d, #a0522d, #d2691e, #e8a317 passaient).
+ECART_CONNU = 0.03
 
 
 def oklab(rgb: tuple[int, int, int]) -> tuple[float, float, float]:
@@ -2663,8 +2698,10 @@ def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_F
     """Pour chaque image (rgb24), la part de pixels qui ne sont ni des gris ni proches d'une couleur
     chromatique de la marque ou d'un objet connu (`connues` : le kit, les logos du projet) ; les plages
     signalées et leurs couleurs dominantes."""
-    chromatiques = [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in [*marque, *connues])
-                    if math.hypot(c[1], c[2]) >= NEUTRE_MAX]
+    def chroma(hexas):
+        return [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in hexas)
+                if math.hypot(c[1], c[2]) >= NEUTRE_MAX]
+    chromatiques = [(c, ECART_MARQUE) for c in chroma(marque)] + [(c, ECART_CONNU) for c in chroma(connues)]
     cache: dict[int, bool] = {}
 
     def hors(cle: int) -> bool:
@@ -2672,7 +2709,7 @@ def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_F
             rgb = (((cle >> 10) & 31) << 3 | 4, ((cle >> 5) & 31) << 3 | 4, (cle & 31) << 3 | 4)
             L, a, b = oklab(rgb)
             cache[cle] = math.hypot(a, b) >= NEUTRE_MAX and all(
-                math.dist((L, a, b), c) > ECART_MARQUE for c in chromatiques)
+                math.dist((L, a, b), c) > ecart for c, ecart in chromatiques)
         return cache[cle]
 
     parts, dominantes = [], []
@@ -3448,27 +3485,12 @@ EMERGENCE_MIN, EMERGENCE_MAX, FENETRE_50MS = 4.0, 16.0, 2400   # 50 ms à 48 kHz
 
 
 def sons_poses(index: Path) -> tuple[dict | None, list[dict]]:
-    """(musique, bruitages) écrits par tools/sons.py dans index.html : src, début, durée, départ dans
-    le fichier, volume linéaire (le niveau porté par l'enveloppe quand il y en a une)."""
-    import html as _html
-    page = index.read_text(encoding="utf-8")
+    """(musique, bruitages) écrits par tools/sons.py dans index.html (pistes_du_mixage), la voix à part."""
     musique, bruitages = None, []
-    for balise in re.findall(r"<audio\b[^>]*>", page):
-        attr = dict(re.findall(r'([\w-]+)="([^"]*)"', balise))
-        if not attr.get("src") or attr.get("data-audio-group") != "mixage":
-            continue
-        vol = float(attr.get("data-volume", "1") or 1)
-        if "data-automation" in attr:
-            try:
-                pistes = json.loads(_html.unescape(attr["data-automation"]))["lanes"]
-                vol = max(pt["v"] for l in pistes if l.get("target") == "volume" for pt in l["points"])
-            except (ValueError, KeyError):
-                pass
-        son = {"src": index.parent / attr["src"], "debut": float(attr.get("data-start", 0)),
-               "duree": float(attr.get("data-duration", 0)), "depart": float(attr.get("data-media-start", 0)), "vol": vol}
-        if attr.get("id") == "musique":
+    for son in pistes_du_mixage(index):
+        if son["id"] == "musique":
             musique = son
-        elif not attr.get("id", "").startswith("voix"):
+        elif not son["id"].startswith("voix"):
             bruitages.append(son)
     return musique, bruitages
 

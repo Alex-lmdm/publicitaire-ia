@@ -40,13 +40,6 @@ Une vidéo de page de 60 à 90 s qui raconte un problème puis sa solution :
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
-ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
-kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
-l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
-film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
-objets connus »).
-
 | Rôle | Avec la marque du client |
 |---|---|
 | Fond de toute la vidéo | son clair (`var(--brand-clair)`), à peine grisé par un noir à 3 % |

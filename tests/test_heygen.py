@@ -181,7 +181,7 @@ class VoixDansLeMixage(unittest.TestCase):
             self.assertIn('id="voix" src="assets/audio/voix.wav" data-start="0.500" data-duration="4.000"', page)
             self.assertIn('id="musique"', page)
             self.assertIn("sous la voix pendant qu'elle parle", sortie.getvalue())  # niveau mesuré, pas un gain fixe
-            self.assertIn("la voix et la musique posés", sortie.getvalue())
+            self.assertIn("posés dans index.html : la voix et la musique", sortie.getvalue())
             self.assertIn("gain", sortie.getvalue())                             # voix audible : niveau final réglé
 
 

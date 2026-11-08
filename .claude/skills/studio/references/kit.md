@@ -97,9 +97,9 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 ### Les objets connus, dans leurs vraies couleurs
 
 Ce que tout le monde reconnaît garde son vrai visage ([image.md](image.md), « Les objets connus ») :
-ils sont chargés par `kit/objets.js` (un projet créé avant la version qui les apporte : recopie
-`objets.js`, `kit.js` et `kit.css` du dossier `templates/kit/` et ajoute `<script
-src="kit/objets.js"></script>` après `icones.js` dans son `index.html`).
+ils sont chargés par `kit/objets.js` (s'il manque dans le projet : recopie `objets.js`, `kit.js`
+et `kit.css` du dossier `templates/kit/` et ajoute `<script src="kit/objets.js"></script>` après
+`icones.js` dans son `index.html`).
 
 | Objet | Ce que c'est |
 |---|---|
@@ -112,7 +112,7 @@ src="kit/objets.js"></script>` après `icones.js` dans son `index.html`).
 | `k-feux` | les trois boutons rouge, jaune, vert d'une fenêtre du Mac (`k-fenetre`) |
 
 Partout où une scène prend une icône (`icone` d'un `CONTENU`, `K.ic`), un `objet-…` se met à la
-place d'une icône d'un seul trait. Ces couleurs ne débordent jamais sur un fond, un texte ou un
+place d'une icône d'un seul trait quand l'idée a un objet connu. Ces couleurs ne débordent jamais sur un fond, un texte ou un
 trait ; `palette` les connaît.
 
 ### Le mot qui joue, le schéma, le fil conducteur, la coupe

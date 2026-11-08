@@ -46,8 +46,8 @@ On n'en reprend jamais les couleurs (sa marque seulement), les images générée
 avec leur rôle, leur durée et ce qu'elles attendent du client, et dit comment s'en servir. Chacune
 lit `K.cadre` et se met en page seule en 9:16 comme en 16:9. Remplis `CONTENU` (rien d'exemple ne
 doit rester : un chiffre ou un nom d'exemple qui passe au rendu est un fait inventé), donne-lui la
-durée qu'elle demande, arrondie au temps suivant de la musique (pas davantage : elle tiendrait sa
-dernière image), puis `npm run check` et 3
+durée qu'elle demande, jusqu'au temps suivant de la musique (pas davantage : elle tiendrait sa
+dernière image ; [son.md](son.md), « Construire l'image sur la bande-son »), puis `npm run check` et 3
 images. Le raccord entre deux scènes prêtes est à toi : la fin de l'une devient le début de la
 suivante ([mouvement.md](mouvement.md), « Les transitions »).
 

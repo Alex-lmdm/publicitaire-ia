@@ -129,10 +129,11 @@ les repères **du fichier qui sera posé** : tempo après calage, temps forts, e
 pauses ou ruptures, changements d'énergie, dernier accent et fin. Les outils mesurent le tempo
 et l'entrée ; relève les autres repères sur l'onde ou avec `ffmpeg silencedetect`, sans inventer
 une écoute. Vérifie les instants dans le fichier final, pas seulement dans la fiche du catalogue.
-Après le rendu, `calage exports/<vidéo>.mp4` le contrôle sur la vidéo finie ([revue.md](revue.md),
-porte 4) : chaque scène part sur un temps (sa durée arrondie au temps suivant), un geste fort se
-voit sur l'entrée franche, et avec une voix, chaque scène part avec sa phrase, aucune ne change au
-milieu d'un mot, la batterie n'entre pas sous un mot.
+**Les scènes partent sur les temps** : sans voix, chaque scène commence sur un temps noté dans
+`PLAN.md` (la fin de la scène d'avant y tombe, au plus un temps après la durée qu'elle demande) ;
+avec une voix, elle commence avec la phrase qui la porte, sur un temps quand c'est possible. Après
+le rendu, `calage exports/<vidéo>.mp4` le vérifie sur la vidéo finie ([revue.md](revue.md),
+porte 4).
 
 Sans voix, le mouvement suit les phrases musicales : révélation sur une entrée forte, rafale
 sur une accélération, attente ou arrêt volontaire dans une pause, écran final sur la résolution.

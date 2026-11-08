@@ -28,13 +28,6 @@ Un style de teaser, sans démonstration : une interface s'y montre en capture, p
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
-ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
-kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
-l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
-film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
-objets connus »).
-
 Rien que la marque ([image.md](../../references/image.md), « La palette ») :
 
 | Rôle | Chez le client |

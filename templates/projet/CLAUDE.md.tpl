@@ -49,6 +49,7 @@ référence `composition.md`.
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check` (zéro erreur,
   et aucun texte à lire trop petit ou parti trop tôt). Puis `studio_motion.py rythme`, `calage`, `cadre` et
   `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses
-  vraies captures et les logos de ses outils peuvent rester signalés). Puis `studio_motion.py relecture
+  vraies captures, les interfaces des plateformes et les objets connus construits pour la vidéo
+  peuvent rester signalés). Puis `studio_motion.py relecture
   exports/{{VIDEO}}.mp4` : un relecteur neuf (un sous-agent qui ne voit que ses planches) doit
   dire ce qui est vendu, à qui et quoi faire (`references/revue.md`, porte 3).

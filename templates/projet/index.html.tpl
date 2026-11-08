@@ -8,7 +8,7 @@
          {{SUPPORT_TITRE}}, format {{FORMAT}} ({{LARGEUR}}×{{HAUTEUR}}), 30 images/s, {{IDEAL}} s visées.
          Zones : `python3 {{MAISON}}tools/studio_motion.py zones {{SUPPORT}} --format {{FORMAT}}`.
          Le film validé (PLAN.md) se monte plan par plan : sa vraie matière en grand, peu de mots
-         tenus le temps d'être lus (`studio_motion.py lecture`), aux seules couleurs de la marque.
+         tenus le temps d'être lus (`studio_motion.py lecture`), aux couleurs de la marque (les objets connus gardent les leurs).
          Scènes prêtes : {{MAISON}}templates/scenes/. Après le rendu, `rythme`, `cadre` et
          `palette` sur exports/{{VIDEO}}.mp4. -->
     <script src="assets/vendor/gsap.min.js"></script>

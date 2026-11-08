@@ -48,7 +48,7 @@ Ce qu'on peut montrer selon ce qu'il vend :
 
 Sa marque peint le film : les fonds, les mots, les formes, les accents. **Ce qui est réel et connu
 garde son vrai visage et ses vraies couleurs**, et c'est ce qui donne de la fraîcheur : une vidéo
-toute dans les trois couleurs de la marque (jaune, noir, blanc, et rien d'autre) fait fade.
+toute dans les trois couleurs de la marque (par exemple jaune, noir, blanc, et rien d'autre) fait fade.
 
 **Le réflexe, à chaque plan** : qu'est-ce que son public reconnaîtrait ici d'un coup d'œil ? Une
 interface qu'il utilise, une icône qu'il voit tous les jours, un objet de son métier ou de sa vie.
@@ -86,7 +86,7 @@ vidéo y restent signalées : la revue vérifie que ce sont bien les siennes, pa
 l'accent.
 
 - **Une icône d'un seul trait (Lucide) seulement pour une idée sans objet connu** : une coche, une
-  flèche, un éclair. Jamais un dossier, un fichier, une enveloppe ou un téléphone génériques teintés
+  flèche, un euro. Jamais un dossier, un fichier, une enveloppe ou un téléphone génériques teintés
   de l'accent quand l'objet a un vrai visage.
 - **Des touches, pas un décor** : ces couleurs restent sur leur objet. Jamais un fond, un texte, un
   trait ni un dégradé tiré d'elles ; le film reste à sa marque.
@@ -97,7 +97,8 @@ l'accent.
   lisible (un prix, une date, un nom, une vente) vient de la fiche ; sinon c'est une texture
   illisible, jamais un chiffre inventé.
 - **Le seuil** : toute vidéo de plus de 15 s montre au moins trois objets connus dans leurs vraies
-  couleurs (logos compris), un Reel au moins un. Le repérage les liste ([reperage.md](reperage.md)).
+  couleurs (logos compris), une vidéo plus courte au moins un. Le repérage les liste
+  ([reperage.md](reperage.md)).
 
 Une forme simple à ses couleurs (disque, aplat, case, cadre, trait) sert de **cadre** (elle porte
 une capture, un chiffre, un logo, un mot), de **transition** (elle couvre, s'ouvre, devient l'objet
@@ -127,9 +128,10 @@ jamais de sujet d'un plan. Il manque une matière importante : c'est la question
   vignette cliquée qui vient au centre pendant que les autres pivotent, le dossier qui devient le
   nœud d'un schéma, la liste barrée qui tombe en morceaux). Nomme-le dans le plan avant d'animer.
 
-## La palette : ses couleurs, rien d'autre
+## La palette : ses couleurs, et les vraies couleurs des objets connus
 
-Tout ce que la vidéo dessine prend ses couleurs dans `brand/tokens.css`, et seulement là :
+Tout ce que la vidéo dessine, hors objets connus (plus haut), prend ses couleurs dans
+`brand/tokens.css`, et seulement là :
 `--brand-bg`, `--brand-surface`, `--brand-text`, `--brand-muted`, `--brand-accent`,
 `--brand-secondary`, `--brand-contrast` (le texte sur l'accent), `--brand-sombre` (les fonds de
 nuit), `--brand-clair`, `--brand-accent-lisible` (l'accent d'un texte sur la nuit), les gris
@@ -143,9 +145,10 @@ l'encre à l'accent change d'un coup, sous un volet ou un mouvement. Les dégrad
 un neutre. Un texte garde un contraste d'au moins 4,5:1 avec son fond.
 
 Seuls ses **vraies captures**, les **logos de ses outils**, les **interfaces des plateformes** et
-les **objets connus** du kit gardent leurs propres couleurs (« Les objets connus », plus haut).
-`studio_motion.py palette` connaît celles du kit et des logos posés dans le projet, et relève tout le
-reste sur le MP4.
+les **objets connus** (ceux du kit et ceux construits pour la vidéo) gardent leurs propres couleurs
+(« Les objets connus », plus haut). `studio_motion.py palette` connaît celles du kit et des logos
+posés dans le projet, et relève tout le reste sur le MP4 : chaque instant relevé est l'un d'eux, ou
+une teinte à corriger.
 
 ## Les fonds et les objets
 

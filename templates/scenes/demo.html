@@ -234,11 +234,13 @@
       // planche : ils partagent sa perspective, mais aucun cadre ne les coupe).
       var lAp = V ? 370 : 480, fApT = V ? 40 : 50, fApD = V ? 30 : 34, padAp = V ? 20 : 24;
       var apercus = etapes.map(function (et) {
-        var a = K.el(planche, "div", "dem-apercu" + (V || clair ? " dem-ap-sombre" : ""), null, "width:" + px(lAp) + ";"), ap = et.apercu || [];
+        // L'icône d'un objet connu s'ajoute à côté des textes : l'aperçu s'élargit d'autant, ses textes
+        // gardent leur place (une ligne coupée ne se verrait pas : les titres ne passent pas à la ligne).
+        var icone = !et.image && et.icone ? K.ic(et.icone) : "", tIc = fApT * 1.7, l = lAp + (icone ? tIc + padAp : 0);
+        var a = K.el(planche, "div", "dem-apercu" + (V || clair ? " dem-ap-sombre" : ""), null, "width:" + px(l) + ";"), ap = et.apercu || [];
         a.setAttribute("data-layout-allow-overlap", "");   // ils flottent devant la fenêtre, voulu
         a.setAttribute("data-layout-allow-overflow", "");
         if (et.image) { var im = K.el(a, "img", null, null, "height:" + px(lAp * 0.56) + ";"); im.src = et.image; im.alt = ""; }
-        var icone = !et.image && et.icone ? K.ic(et.icone) : "", tIc = fApT * 1.7;
         var corps = K.el(a, "div", null, null, "padding:" + px(padAp) + " " + px(padAp + 8) + ";" +
           (icone ? " display:flex; align-items:center; gap:" + px(padAp) + ";" : ""));
         if (icone) K.el(corps, "div", "dem-ap-icone", icone, "flex:none; width:" + px(tIc) + "; height:" + px(tIc) + ";");
@@ -247,7 +249,7 @@
         if (ap[1]) K.el(textes, "div", "dem-ap-detail", null, "font-size:" + px(fApD) + "; line-height:1.2; margin-top:4px;").textContent = ap[1];
         K.cacher(a);
         var hTextes = (ap[0] ? fApT * 1.15 : 0) + (ap[1] ? fApD * 1.2 + 4 : 0);
-        return { el: a, h: (et.image ? lAp * 0.56 : 0) + 2 * padAp + Math.max(hTextes, icone ? tIc : 0) };
+        return { el: a, l: l, h: (et.image ? lAp * 0.56 : 0) + 2 * padAp + Math.max(hTextes, icone ? tIc : 0) };
       });
 
       // --- La projection : où tombe à l'écran un point de la planche (perspective du kit, 1800 px
@@ -316,7 +318,7 @@
         tl.set(ln.roue, { opacity: 0 }, tCoche).set(ln.texte, { color: encre }, tCoche).set(ln.fond, { opacity: 0 }, tCoche + 0.12);
         tl.fromTo(ln.coche, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(2.2)", immediateRender: false }, tCoche);
         var x0 = liste.x + ln.cx, y0 = liste.y + ln.cy - ap.h / 2;
-        var x1 = V ? pl.l - lAp - 46 + v[0] : pl.l + 10 + v[0], y1 = V ? liste.y - 4 + v[1] * (hautV - ap.h) * 0.9 : v[1] * (pl.h - ap.h);
+        var x1 = V ? pl.l - ap.l - 46 + v[0] : pl.l + 10 + v[0], y1 = V ? liste.y - 4 + v[1] * (hautV - ap.h) * 0.9 : v[1] * (pl.h - ap.h);
         gsap.set(ap.el, { x: x0, y: y0, scale: 0.3, transformOrigin: "0% 50%" });
         tl.set(ap.el, { opacity: 1 }, tCoche + 0.02);
         tl.fromTo(ap.el, { x: x0, y: y0, z: 0, scale: 0.3, rotationY: 0, rotation: 0 },

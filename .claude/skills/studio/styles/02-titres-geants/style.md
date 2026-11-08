@@ -1,6 +1,6 @@
 # Style n°2 · Titres géants · d'après Cyera (https://x.com/motionimo/status/2103703350017433670)
 
-**Ce qu'on voit :** une charte graphique qui prend vie, aux seules couleurs de la marque, autour de sa vraie matière. Des titres géants sur sa couleur d'accent, qui débordent du cadre à leur entrée et à leur sortie, un spécimen tapé sur une grille, une carte à coins ronds qui s'ouvre sur sa vraie capture et change de palette sur les temps, une mosaïque de cartes qui portent ses captures, ses chiffres, ses modules et le bouton de sa page, un disque qui porte son logo et pose le nom de l'offre avec sa phrase, une grille d'une case par élément réel de l'offre, et le slogan géant dont le point devient le bouton. Les cadres à poignées et les repères attrapent, mesurent et révèlent ; aucune étiquette technique.
+**Ce qu'on voit :** une charte graphique qui prend vie, aux couleurs de la marque, autour de sa vraie matière. Des titres géants sur sa couleur d'accent, qui débordent du cadre à leur entrée et à leur sortie, un spécimen tapé sur une grille, une carte à coins ronds qui s'ouvre sur sa vraie capture et change de palette sur les temps, une mosaïque de cartes qui portent ses captures, ses chiffres, ses modules et le bouton de sa page, un disque qui porte son logo et pose le nom de l'offre avec sa phrase, une grille d'une case par élément réel de l'offre, et le slogan géant dont le point devient le bouton. Les cadres à poignées et les repères attrapent, mesurent et révèlent ; aucune étiquette technique.
 **Souvent utile pour :** une vidéo de lancement ou d'accueil (la nouvelle offre, la nouvelle marque, l'ouverture d'un programme), en haut d'une page de vente ou en ouverture d'un webinaire.
 
 **D'après :** le film de marque de Cyera réalisé par Motionimo · 16:9 · 30 s · musique seule, sans voix.
@@ -31,14 +31,7 @@ Des points de départ quand le plan s'y prête, jamais une obligation. Une vidé
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
-ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
-kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
-l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
-film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
-objets connus »).
-
-Ses couleurs, rien d'autre ([../../references/image.md](../../references/image.md), « La palette ») : la nuit, le clair et les gris de sa marque, et son accent posé plein.
+Ses couleurs ([../../references/image.md](../../references/image.md), « La palette ») : la nuit, le clair et les gris de sa marque, et son accent posé plein ; les objets connus gardent les leurs ([../README.md](../README.md), « La loi de toutes les scènes »).
 
 | Rôle dans le style | Chez le client |
 |---|---|

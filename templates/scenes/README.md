@@ -42,10 +42,10 @@ vidéo. Le langage, les recettes et le moment de s'en servir : skill `studio`,
 elles se suivent en coupes franches nues : la fin de l'une doit devenir le début de la suivante (un
 objet qui grandit, un flash depuis un clic, un volet : `references/mouvement.md`, « Les
 transitions »). `rythme` le relève sur le film (« coupes franches nues », au plus un tiers des
-raccords). Donne aussi à chaque scène **la durée qu'elle demande, arrondie au temps suivant de la
-musique** (0,5 s de plus au plus, pour que la scène suivante parte sur un temps : `calage` le
-vérifie) ; pas davantage : une scène trop longue tient sa dernière image, et `rythme` relève une
-image figée.
+raccords). Donne aussi à chaque scène **la durée qu'elle demande, jusqu'au temps suivant de la
+musique** (un temps de plus au plus, pour que la scène suivante parte sur un temps : skill
+`studio`, `references/son.md`) ; pas davantage : une scène trop longue tient sa dernière image, et
+`rythme` relève une image figée.
 
 Tu peux retoucher une scène copiée (une durée, une position, un geste en plus) : c'est ta copie. Ce
 qui doit rester : sa matière en grand, ses mots dans le calque `k-mots` (immobiles pendant qu'on les

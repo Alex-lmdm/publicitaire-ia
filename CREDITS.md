@@ -30,6 +30,7 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 | 14 sons Freesound | `assets/sfx/starter/` | CC0 1.0 (domaine public), vérifiée sur chaque page | numéros dans `assets/sfx/starter/sounds.md` |
 | 8 sons Kenney « Interface Sounds » | `assets/sfx/starter/` | CC0 | https://kenney.nl/assets/interface-sounds |
 | Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
+| Objets connus (dossier, fichiers PDF, Word, Excel…, barre d'état et notification d'iPhone, bulles) | `templates/kit/objets.js`, `templates/kit/kit.js`, `kit.css` | dessinés par nous d'après leur allure courante, sans reprendre de fichier d'Apple ni de Microsoft ; les noms de ces marques restent les leurs | |
 | Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
 | Aperçus des 9 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |
 
@@ -64,7 +65,7 @@ ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monte
 Aucun code n'en est copié tel quel ; les règles ci-dessous ont été traduites, comparées entre
 elles (la plus stricte a été retenue) et adaptées au format vertical d'Instagram.
 
-Les 8 styles (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
+Les styles 1 à 8 (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
 mouvements) de vidéos de lancement publiques : Firecrawl, Cyera (studio Motionimo), Polymarket,
 ElevenLabs, ClaudeDevs, Kimi, Zaro et Cursor, dont chaque fiche donne le lien. Aucun de leurs textes,
 logos, images, produits ni musiques n'est repris ; les scènes sont refaites par nous. Le style 0

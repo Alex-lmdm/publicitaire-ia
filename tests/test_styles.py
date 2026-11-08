@@ -135,7 +135,7 @@ class Maison(unittest.TestCase):
 
     def test_ses_gestes_existent(self):
         """Chaque nom de la colonne « Dans le kit » est une scène prête, une fonction `K.` du kit ou une
-        classe `k-` du kit ; ses dix scènes prêtes sont toutes à sa table des compositions."""
+        classe `k-` du kit ; chaque scène prête y est nommée."""
         kit_js = (KIT / "kit.js").read_text(encoding="utf-8")
         kit_css = (KIT / "kit.css").read_text(encoding="utf-8")
         lignes = gestes(self.fiche())
@@ -150,9 +150,9 @@ class Maison(unittest.TestCase):
                         self.assertIn(f".{nom}", kit_css, nom)
                     else:
                         self.assertTrue((SCENES_PRETES / f"{nom}.html").is_file(), f"{nom} n'est pas une scène prête")
-        compositions = self.fiche().split("## Les compositions du kit", 1)[1]
+        dans_le_kit = " ".join(c[3] for c in lignes)
         for s in sorted(SCENES_PRETES.glob("*.html")):
-            self.assertIn(f"`{s.stem}`", compositions, f"{s.stem} absente de sa table")
+            self.assertIn(f"`{s.stem}`", dans_le_kit, f"{s.stem} absente de ses gestes")
 
     def test_sa_musique_suit_le_but(self):
         self.assertEqual(styles.ambiances(0), [])

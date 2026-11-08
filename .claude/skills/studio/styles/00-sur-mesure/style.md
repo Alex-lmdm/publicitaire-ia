@@ -3,8 +3,8 @@
 **Ce qu'on voit :** sa vraie matière en grand et en perspective, que la caméra parcourt ; peu de
 mots, énormes, qui jouent ce qu'ils disent (ils claquent, se barrent, se surlignent, se changent
 sur place) ; le point de sa couleur qui relie tout, d'un schéma qui se trace jusqu'au point final
-de l'appel ; l'objet de son offre qui grandit et porte son nom ; trois fonds qui se relaient avec
-une cause (sa nuit à grille fine, son clair, l'aplat de son accent).
+de l'appel ; l'objet de son offre qui grandit et porte son nom ; des fonds qui changent avec une
+cause (sa nuit à grille fine, son clair, l'aplat de son accent).
 **Souvent utile pour :** tout, et d'abord sa première vidéo. C'est le style conseillé par défaut.
 **D'après :** le langage des vidéos de lancement faites par des studios de motion design (relevé
 notamment sur celles de Higgsfield), refait par nous : c'est lui que portent le kit et les scènes
@@ -19,18 +19,11 @@ le niveau et quelques gestes qui font qu'on le reconnaît (section 2).
 
 ## 1. Le rythme
 
-- **Des vitesses qui contrastent** ([mouvement.md](../../references/mouvement.md), « Le rythme ») :
-  une rafale (une liste en cascade, des plans de 0,13 à 0,8 s), puis une démonstration qui tient le
-  même cadrage 5 à 8 s pendant que l'interface agit ; des plans de 1,8 à 3 s en moyenne, jamais tous
-  de la même durée.
-- **Peu de mots, et ils jouent** : 20 à 30 mots en 30 à 40 s. Chaque groupe de mots tient sa
-  lecture sans bouger (`studio_motion.py lecture`) ; la vie, pendant ce temps, vient de ce qu'il
-  montre (l'interface qui répond, une coche, un compteur, une capture qui glisse).
-- **Une pause avant la révélation** (0,3 à 0,75 s : le nom, le résultat, le prix), puis l'entrée
-  franche.
-- **Chez toi :** grille de 0,5 s ; chaque scène commence sur un temps (sa durée arrondie au temps
-  suivant), les coupes et la révélation sur les repères du morceau ([son.md](../../references/son.md),
-  « Construire l'image sur la bande-son ») ; avec une voix, les gestes suivent ses mots.
+Celui de [mouvement.md](../../references/mouvement.md) (« Le rythme »), calé sur la bande-son
+([son.md](../../references/son.md), « Construire l'image sur la bande-son »). Ce style y tient
+surtout à deux choses : **des vitesses qui contrastent** (une rafale, puis une démonstration qui
+tient son cadrage pendant que l'interface agit) et **une pause avant la révélation** (0,3 à
+0,75 s), puis l'entrée franche.
 
 ## 2. Les gestes signature et leur place
 
@@ -49,13 +42,8 @@ le niveau et quelques gestes qui font qu'on le reconnaît (section 2).
 
 **Le garde-fou de ce style** : le mot qui joue est dans toute vidéo, le fil conducteur dans toute
 vidéo de plus de 15 s, puis au moins un autre geste de la table (trois gestes en tout, deux sous
-15 s). Et des objets connus dans leurs vraies couleurs : trois au moins au-delà de 15 s, un dans un
-Reel ([image.md](../../references/image.md), « Les objets connus »). Le reste du film se construit avec les recettes de [scenes.md](../../references/scenes.md)
-(28 recettes par rôle), dans la même grammaire.
-
-**Pour montrer son produit** : son interface reconstruite, de près, dans l'espace 3D du kit (une
-fenêtre, un téléphone) ; la caméra s'approche du geste (le champ où l'on tape, le bouton qu'on
-clique) puis recule sur le résultat ([image.md](../../references/image.md), « La vraie matière »).
+15 s). Le reste du film se construit avec les recettes de [scenes.md](../../references/scenes.md),
+dans la même grammaire.
 
 ### Des enchaînements qui marchent
 
@@ -67,16 +55,8 @@ coaching : `situation` → (le titre qui se change sur place) → `parcours` →
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
-ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
-kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
-l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
-film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
-objets connus »).
-
-Les couleurs du film viennent de sa marque ([image.md](../../references/image.md), « La
-palette ») ; ses captures, les logos de ses outils et les objets connus gardent leurs vraies
-couleurs (le paragraphe d'avant).
+Les couleurs de sa marque, plus les vraies couleurs des objets connus
+([styles/README.md](../README.md), « La loi de toutes les scènes »), dans ces rôles :
 
 | Rôle dans ce style | Avec la marque du client |
 |---|---|
@@ -88,31 +68,18 @@ couleurs (le paragraphe d'avant).
 | Les mots d'appui, ce qui s'éteint | `var(--brand-gris-2)` à `var(--brand-gris-4)` |
 | Les étiquettes de fonction | `k-blocs` : un bloc de l'accent, un bloc clair, un bloc sombre |
 
-- **Le fond est un acteur** : il change quand le film change de temps (le nom, un chapitre, le
-  prix, un avant / après), avec une cause à l'écran (un clic, un volet, un objet qui grandit, un
-  disque parti du clic).
-- **Trois fonds dans toute vidéo de plus de 15 s** ; un Reel peut en garder deux. Le fond qui
-  domine suit sa marque : une marque claire prend plus de clair, une marque sombre plus de nuit.
+- Le fond change quand le film change de temps, avec une cause à l'écran
+  ([image.md](../../references/image.md), « Les fonds et les objets ») ; celui qui domine suit sa
+  marque : une marque claire prend plus de clair, une marque sombre plus de nuit.
 - Sur l'aplat, rien n'entre en fondu, en flou ni avec une ombre sombre ([kit.md](../../references/kit.md),
   « Les pièges »).
 
 ## 4. La typographie
 
-- **Police :** `var(--brand-font-display)` en très gras (800) pour le mot héros et les titres, à
-  l'espacement serré (−3 à −4,5 %) ; `var(--brand-font-body)` pour les étiquettes ; Inter pour ses
-  interfaces reconstruites (`assets/fonts/interfaces.css`).
-- **Deux tons** : le plein et l'accent (« Ton **lien.** »), ou le gris d'appui et le plein
-  (`k-titre`, `k-leger`, `k-accent`).
-- **Trois tailles, jamais plus** ([image.md](../../references/image.md), « La typographie ») :
-
-| Rôle | Mots | 1080 × 1920 | 1920 × 1080 |
-|---|---|---|---|
-| Le mot héros (`k-heros`) | 1 à 3 | 60 à 90 % de la largeur (130 à 400 px) | 60 à 90 % de la largeur, la moitié de la hauteur au plus |
-| La ligne d'appui | 3 à 6 | 56 à 72 px | 56 à 72 px |
-| Les étiquettes posées sur ce qu'on montre | 1 à 4 | 30 à 40 px | 30 à 40 px |
-
-- Un contour net (`k-contour`) peut doubler un mot plein ; jamais une lueur ni un dégradé. La frappe
-  au clavier seulement dans un champ de saisie.
+Celle de [image.md](../../references/image.md) (« La typographie » : trois tailles, le mot héros sur
+60 à 90 % de la largeur), avec `var(--brand-font-display)` très grasse (800) et serrée (−3 à −4,5 %)
+pour le mot héros et les titres, en deux tons (`k-titre`, `k-leger`, `k-accent`) ;
+`var(--brand-font-body)` pour les étiquettes ; Inter pour ses interfaces reconstruites.
 
 ## 5. Les mouvements signature
 
@@ -137,30 +104,20 @@ signature :
 ## 6. Les transitions
 
 - **Un objet devient le suivant** : trois à cinq sortes par vidéo, chacune causée par quelque chose
-  à l'écran ([mouvement.md](../../references/mouvement.md), « Les transitions ») : le raccord d'objet,
-  l'objet qui devient le monde, la traversée d'un bouton, le disque parti du clic (`K.flash`), le
-  report, le volet, le fil conducteur qui allume l'objet d'arrivée.
+  à l'écran ([mouvement.md](../../references/mouvement.md), « Les transitions »).
 - **La coupe** (`K.tranche`) une ou deux fois par vidéo, sur un temps fort de la musique.
-- Au plus un tiers de coupes franches entre les plans, jamais de fondu enchaîné ; un sens dominant
-  dans toute la vidéo.
 
 ## 7. Le produit à l'écran
 
 - Sa vraie matière, en descendant l'échelle de [image.md](../../references/image.md) (« La vraie
-  matière ») : une vraie capture, son interface reconstruite et animée, un vrai chiffre mis en
-  scène, le schéma de son vrai mécanisme, les vrais logos de ses outils, puis seulement ses mots.
-- **Ce qui est connu se montre tel qu'on le connaît**, par exemple : un dossier est le dossier bleu du Mac
-  (`objet-dossier`, ou `nom-objet` avec `objet: "dossier"`, qui le prend par défaut), un document est
-  un vrai PDF ou un vrai fichier Word (`objet-pdf`, `objet-doc`…), un outil est son vrai logo, un
-  message arrive en notification d'iPhone (`K.notification`) ou en bulle (`K.bulle`), le téléphone a
-  sa barre d'état (`K.statut`). Et tout ce que son métier a de reconnaissable, au-delà de ces
-  exemples (l'annonce, le ticket, la montre, la carte d'embarquement). Les icônes d'un seul trait,
-  seulement pour une idée sans objet connu.
+  matière »), et ce que son public reconnaît dans ses vraies couleurs (« Les objets connus ») : le
+  dossier de `nom-objet` est le dossier bleu du Mac par défaut.
+- Son produit : son interface reconstruite, de près, dans l'espace 3D du kit (une fenêtre, un
+  téléphone) ; la caméra s'approche du geste (le champ où l'on tape, le bouton qu'on clique) puis
+  recule sur le résultat.
 - L'objet de son offre se choisit au début de la fabrication et revient : il grandit au pivot
   (`nom-objet`), devient le nœud du schéma, se pose dans l'outil que son public a déjà (scenes.md,
   recette 9), finit dans la mosaïque.
-- Une matière qui manque retire son élément : jamais une carte vide, une icône de remplacement ni
-  une forme seule à la place d'un sujet.
 
 ## 8. Le son
 
@@ -169,9 +126,7 @@ signature :
 - **Chez toi :** ce style n'impose aucune ambiance : la musique suit le but et le support de la vidéo
   ([son.md](../../references/son.md), « Choisir le morceau »). Entrée franche sur le pivot (le nom
   sur l'objet, le résultat), une pause du morceau sur la pause qui précède la révélation, l'écran
-  final sur le dernier temps fort.
-- **Avec une voix off** : les gestes suivent ses mots (un élément arrive avec le mot qui le nomme),
-  la batterie entre dans une respiration de la voix, jamais sous le nom.
+  final sur le dernier temps fort ; avec une voix off, la batterie entre dans une respiration.
 - **Bruitages, un par geste, jamais le même deux fois de suite** : un coup sec sur le mot qui claque,
   un souffle court quand le fil conducteur part, un petit clic par coche, un impact sur la coupe,
   un glissement sur le travelling, un pop par objet d'une rafale.
@@ -182,8 +137,8 @@ signature :
   (l'objet de l'ancienne façon, sa vraie capture, ou la preuve d'abord), et un mot héros qui la
   ponctue ; lisible dès 0,5 s, sur une image stable.
 - **La fin :** la mosaïque qui devient le bouton (`fin`), ou le produit qui se pose avec son nom et
-  l'appel, le fil conducteur en point final ; le nom et l'appel tenus 2,5 s au moins. En pub,
-  « Découvre-le » et une flèche vers le bas, sans dessiner de bouton (`fin`, mode flèche).
+  l'appel, le fil conducteur en point final. En pub, « Découvre-le » et une flèche vers le bas, sans
+  dessiner de bouton (`fin`, mode flèche).
 
 ## Sur une autre offre
 
@@ -197,16 +152,14 @@ C'est le style fait pour toutes les offres : chaque vidéo y trouve sa forme.
   vidéo ; le schéma montre ce qui entre et ce qui sort.
 - **Template, guide, communauté :** le document qui se remplit, les pages qui défilent ; les
   espaces et le rythme de la communauté, sans inventer de membres.
-- **Toujours :** le mot qui joue, le fil conducteur, la caméra qui voyage, un objet qui devient le
-  suivant, trois fonds qui se relaient avec une cause, et les objets connus dans leurs vraies
-  couleurs.
 
 ## Quand il décrit un autre style
 
-Il répond « aucun de ces styles » sans rien dire de plus : c'est ce style, tel quel. Il décrit ce
-qu'il veut (« plus calme », « tout sur fond clair », « de la 3D partout », « une typo énorme »,
-« façon vieux papier ») : pars de ce style et applique ses mots, notés en une ligne dans `PLAN.md`
-(« Style 0, ce qu'il a décrit : … ») :
+Il décrit ce qu'il veut (« plus calme », « tout sur fond clair », « de la 3D partout », « une typo
+énorme », « façon vieux papier ») : pars de ce style et applique ses mots, notés en une ligne dans
+`PLAN.md` (« Style 0, ce qu'il a décrit : … »). Il répond « aucun » sans rien dire de plus : une
+seule question à choix sur ce qu'il veut de différent (les lignes de la table, ou le lien d'une
+vidéo qu'il aime), avec ta recommandation, puis la même chose.
 
 | Il dit | Ce qui change |
 |---|---|
@@ -235,23 +188,10 @@ marque se dit en une phrase, avec ce qu'on fera à la place. Il colle le lien d'
 ## Les compositions du kit
 
 Les gestes de ce style sont les **scènes prêtes** de la racine du dossier (`templates/scenes/`,
-depuis un projet : `../../../templates/scenes/`), construites avec le kit, contrôlées en 9:16 et en
-16:9 ; leur mode d'emploi est dans `templates/scenes/README.md`. Copie la scène dans `compositions/`
-du projet et remplis son objet `CONTENU` avec sa vraie matière (rien d'exemple ne doit rester).
-
-| Scène | Le geste | Durée |
-|---|---|---|
-| `situation` | la négation montrée, la corvée et son coût | 7 à 10 s |
-| `nom-objet` | le nom sur l'objet | environ 4 s |
-| `schema` | le fil conducteur, le schéma qui se trace | 4,5 à 5,5 s |
-| `demo` | la démo qui sort de la fenêtre | 7 s |
-| `parcours` | le travelling des étapes | 7,5 à 9,5 s |
-| `preuve` | l'éventail et le grand chiffre | 6,5 s |
-| `messages` | ses vrais messages en rafale autour d'un compteur | 4,5 s |
-| `avant-apres` | l'écran coupé | 5,5 s |
-| `prix` | le prix qui claque | 6 s |
-| `fin` | la mosaïque qui devient le bouton | 7 s (5,5 s en mode flèche) |
-
-Une scène que la table n'a pas se construit avec une recette de [scenes.md](../../references/scenes.md)
-et les fonctions du kit ([kit.md](../../references/kit.md)). Le raccord entre deux scènes prêtes est
-à toi : la fin de l'une devient le début de la suivante.
+depuis un projet : `../../../templates/scenes/`), nommées dans la colonne « Dans le kit » de la
+section 2. Contrairement aux scènes des styles 1 à 8, elles se remplissent : copie la scène dans
+`compositions/` du projet et remplis son objet `CONTENU` avec sa vraie matière ; leur mode d'emploi
+et leurs durées sont dans `templates/scenes/README.md`. Une scène qu'elles n'ont pas se construit
+avec une recette de [scenes.md](../../references/scenes.md) et les fonctions du kit
+([kit.md](../../references/kit.md)). Le raccord entre deux scènes est à toi : la fin de l'une
+devient le début de la suivante.

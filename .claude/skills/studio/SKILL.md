@@ -96,12 +96,11 @@ ce script est le texte de la voix ([voix.md](references/voix.md)).
 ### 4. Le style, la musique, puis le plan
 
 `musiques choisir --ouvrir` lui montre en vidéo le style 0, **« Sur mesure », notre style maison**,
-puis les 8 styles, et trois musiques. Ton conseil est le style 0 (la page le marque sans `--style`) :
-toujours pour sa première vidéo, et ensuite sauf quand sa vidéo appelle nettement un des 8
-([styles/README.md](styles/README.md), « Appliquer un style », point 1 ; `--style <N>` le marque). Il
-répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime (`reference`),
-ou répond « aucun », « un autre », ou décrit ce qu'il veut : c'est le style 0 avec ses mots (sa fiche,
-« Quand il décrit un autre style »), jamais un style improvisé. Un style déjà connu ne se redemande
+puis les 8 styles, et trois musiques ; la page marque ton conseil, le style 0 sans `--style`
+([styles/README.md](styles/README.md), « Appliquer un style », point 1, dit quand en conseiller un
+autre). Il répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime
+(`reference`), décrit ce qu'il veut ou répond « aucun » : la fiche du style 0, « Quand il décrit un
+autre style », jamais un style improvisé. Un style déjà connu ne se redemande
 pas (`--sans-styles`). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
 remplace ce choix musical ([son.md](references/son.md)).
 
@@ -127,8 +126,8 @@ sous-composition de `compositions/`, montée dans `index.html`. Pour chaque scè
 Vérifie chaque raccord (dernière image d'une scène, première de la suivante). Commence par le support
 principal ; les autres formats sont des **mises en page** de la même vidéo, jamais des recadrages.
 Lis la fiche de son style (le style 0 compris) : c'est une grammaire, pas un film à refaire.
-Chaque scène commence sur un temps de la musique (sa durée arrondie au temps suivant) ; avec une
-voix, avec la phrase qui la porte.
+Chaque scène part sur un temps de la musique, ou avec sa phrase s'il y a une voix
+([son.md](references/son.md), « Construire l'image sur la bande-son »).
 
 ### 6. La revue (personne d'autre ne la fera)
 
@@ -167,15 +166,14 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
 - **Inventer** un fait : chiffre, témoignage, résultat, nombre de places, remise, date de fin, bonus.
   Un prix barré ou un compteur qui descend d'un prix plus haut seulement avec un chiffre donné par
   le client ; sans prix réellement pratiqué, préviens-le une fois du risque et laisse-le décider.
-- **Inventer une image** : paysage, illustration, objet décoratif, photo factice, l'interface d'un
+- **Inventer une image** : paysage, illustration, objet décoratif (un objet connu dont le plan parle
+  n'en est pas un), photo factice, l'interface d'un
   logiciel qu'il n'a pas, un écran que sa page ne montre pas. Ce qui se montre est sa vraie matière
   ([image.md](references/image.md), « La vraie matière »).
 - Sortir de sa palette : ses couleurs, du noir, du blanc, des gris neutres ; jamais une teinte tirée
   de son accent. Seuls ses vraies captures, les logos de ses outils, les interfaces des plateformes
-  et les objets connus (tout ce que son public reconnaît : par exemple le dossier bleu du Mac, un
-  PDF, une notification d'iPhone, un objet de son métier) gardent leurs
-  couleurs, et la vidéo en montre : c'est sa touche de couleur vraie
-  ([image.md](references/image.md), « Les objets connus »).
+  et les objets connus gardent leurs couleurs, et la vidéo en montre : c'est sa touche de couleur
+  vraie ([image.md](references/image.md), « Les objets connus »).
 - Livrer une vidéo qui tombe dans un des défauts interdits ([image.md](references/image.md)), qui
   fait lire plus d'un mot par seconde ou plus de 8 mots sur une image, dont un texte part avant
   d'être lu, ou qu'un inconnu ne comprend pas : elle n'est pas finie.

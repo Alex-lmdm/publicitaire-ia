@@ -1,10 +1,8 @@
 # Les styles du catalogue
 
 **Le style 0, « Sur mesure », est le style maison** : celui que portent le kit et les scènes prêtes,
-qui ne copie aucune vidéo et prend une forme à lui pour chaque offre. C'est le conseil par défaut,
-et toujours celui de sa première vidéo. Le client le prend aussi quand il répond « aucun de ces
-styles », « fais-moi un style à part » ou décrit ce qu'il veut (sa fiche, « Quand il décrit un autre
-style »).
+qui ne copie aucune vidéo et prend une forme à lui pour chaque offre. C'est le conseil par défaut
+(point 1 ci-dessous).
 
 Puis huit styles de motion design, chacun repris d'une vraie vidéo de lancement de logiciel qui a fait
 ses preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé en 16:9
@@ -21,7 +19,7 @@ le même style.
 choses : sa typographie, ses mises en page, ses mouvements, ses transitions, ses motifs (un cadre
 de sélection, des repères de maquette, une phrase tapée, une fenêtre inclinée) et ses gestes
 signature. Il ne donne ni ses images ni ses couleurs : ce qu'on voit vient du client (sa matière
-réelle) et se peint aux seules couleurs de sa marque. La structure, elle, vient toujours de la
+réelle) et se peint aux couleurs de sa marque (point 6). La structure, elle, vient toujours de la
 vidéo du client : son but, l'idée qu'il a choisie, son script validé, ce qu'il veut montrer. On ne
 refait pas l'original séquence par séquence : on adapte tout. Un style se fait donc sur n'importe
 quelle offre (une formation, un coaching, un logiciel, un template) et pour n'importe quel but
@@ -63,8 +61,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    l'indice) ou qu'il a aimé ce look. Dis-le en une phrase, avec ce que la vidéo va montrer. Il
    hésite (« lequel tu me conseilles ? ») : demande-lui ce qu'il aime voir (fond clair ou sombre,
    interface en 3D, typo géante, phrase tapée, fenêtres), puis propose 2 ou 3 styles, numéro et
-   nom, chacun avec sa raison en une ligne. Il répond « aucun », « un autre », ou décrit ce qu'il
-   veut : c'est le style 0 avec ses mots (sa fiche, « Quand il décrit un autre style »).
+   nom, chacun avec sa raison en une ligne. Il décrit ce qu'il veut, ou répond « aucun » : sa fiche
+   du style 0, « Quand il décrit un autre style ».
 2. **La structure vient de sa vidéo**, jamais de l'original : celle de son but
    ([structures.md](../references/structures.md)), l'idée qu'il a choisie, son script validé. Le
    style ne change ni la structure, ni les idées, ni le script : il ne raccourcit aucune phrase et
@@ -80,10 +78,9 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    repris (la phrase et ses objets, le désordre rangé, l'orbite autour de l'offre) ; deux scènes
    construites pour son cas, dans le style (le fichier déposé dans l'outil, la réponse qui arrive).
 4. **Le garde-fou** : chaque vidéo garde au moins trois gestes signature de son style (deux sous
-   15 s), sinon on ne le reconnaît plus ; en style 0, le mot qui joue et le fil conducteur en font
-   toujours partie (sa fiche, section 2). Un geste signature est un mouvement, une mise en page ou
+   15 s), sinon on ne le reconnaît plus ; le style 0 dit lesquels (sa fiche, section 2). Un geste signature est un mouvement, une mise en page ou
    un motif ; jamais une image (un paysage, une sphère, une gravure ne sont pas des gestes).
-5. **Les scènes du kit** sont des démonstrations de ces gestes, pas des scènes à remplir : on en
+5. **Les scènes du kit** (styles 1 à 8) sont des démonstrations de ces gestes, pas des scènes à remplir : on en
    reprend le mouvement (le code d'une entrée, d'un cadre de sélection, d'un recul de caméra),
    jamais le décor. Lis la fiche en entier, puis écris les scènes du plan à partir du script : une
    phrase, ce qu'elle montre (sa vraie matière), et le geste du style qui la présente. Tu peux
@@ -92,7 +89,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    valeur se remplace par une donnée d'`OFFRE.json` ou sa ligne se retire, avec ce qu'elle montrait.
    Une icône, un logo ou une capture qui manque retire son élément : jamais une icône de
    remplacement (une étoile), jamais un autre logo (son nom, à la place d'un logo absent). En
-   style 0, les scènes sont les scènes prêtes (`templates/scenes/`), avec leur objet `CONTENU`.
+   style 0, au contraire, les scènes prêtes (`templates/scenes/`) se remplissent : leur objet
+   `CONTENU` ([scenes.md](../references/scenes.md)).
 6. **La loi de toutes les scènes**, quel que soit le style (le détail : [image.md](../references/image.md)
    et [mouvement.md](../references/mouvement.md)) :
    - **Les mots** : au plus 8 mots à lire par image (hors mots d'une interface montrée), au plus un

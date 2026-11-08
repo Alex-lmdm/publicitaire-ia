@@ -37,7 +37,7 @@ sa typographie signale la matière à demander (section 3), jamais une forme à 
 
 Note aussi, plan par plan, **les objets connus** qu'il montrera dans leurs vraies couleurs (pour
 chaque plan : qu'est-ce que son public reconnaîtrait ici ? La réponse est souvent propre à son
-métier, et absente de toute liste) : trois au moins dans une vidéo de plus de 15 s, un dans un Reel ([image.md](image.md), « Les objets
+métier, et absente de toute liste), autant que [image.md](image.md) le demande (« Les objets
 connus »). Une vidéo dont la liste reste vide finira toute dans les trois couleurs de la marque.
 
 Puis choisis **les logos qui flotteront**, scène par scène : seulement ceux des outils dont la

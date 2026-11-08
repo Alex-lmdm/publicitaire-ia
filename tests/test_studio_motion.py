@@ -218,15 +218,17 @@ class Palette(unittest.TestCase):
                          ("#28c840", 6))
         self.assertEqual(sm.verdict_palette([img] * 3, self.MARQUE)["plages"], [])
         self.assertEqual(len(sm.verdict_palette([img] * 3, self.MARQUE, connues=())["plages"]), 1)
-        brun = self.image(("#6c440c", 60), ("#202022", 40))
-        self.assertEqual(len(sm.verdict_palette([brun] * 3, self.MARQUE)["plages"]), 1)
+        for teinte in ("#6c440c", "#b5651d", "#a0522d", "#d2691e", "#e8a317"):   # tirées du jaune, près d'un orangé connu
+            brun = self.image((teinte, 60), ("#202022", 40))
+            self.assertEqual(len(sm.verdict_palette([brun] * 3, self.MARQUE)["plages"]), 1, teinte)
 
     def test_le_kit_et_la_palette_connaissent_les_memes_couleurs(self):
         """Chaque teinte d'un objet connu du kit (objets.js, lignes « couleur d'outil » de kit.css) est
         dans COULEURS_CONNUES : sinon `palette` refuserait le kit lui-même."""
         kit = RACINE / "templates" / "kit"
         textes = [(kit / "objets.js").read_text(encoding="utf-8")]
-        textes += [l for l in (kit / "kit.css").read_text(encoding="utf-8").splitlines() if "couleur d'outil" in l]
+        for f in (kit / "kit.css", RACINE / "templates" / "scenes" / "nom-objet.html"):
+            textes += [l for l in f.read_text(encoding="utf-8").splitlines() if "couleur d'outil" in l]
         teintes = set()
         for h in re.findall(r"#([0-9a-fA-F]{6})\b", "\n".join(textes)):
             L, a, b = sm.oklab(tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)))
@@ -465,7 +467,7 @@ class Calage(unittest.TestCase):
         v = sm.verdict_calage([0, 3.9, 8.0], self.GRILLE, [], None, None)
         self.assertEqual(len(v["problemes"]), 1)
         self.assertIn("3.90 s tombe à 0.10 s du temps (4.00 s)", v["problemes"][0])
-        self.assertIn("arrondis la durée", v["problemes"][0])
+        self.assertIn("fais finir la scène d'avant sur ce temps", v["problemes"][0])
 
     def test_une_image_pres_du_temps_suffit(self):
         self.assertEqual(sm.verdict_calage([4.033], self.GRILLE, [], None, None)["problemes"], [])
@@ -483,6 +485,22 @@ class Calage(unittest.TestCase):
         v = sm.verdict_calage([0, 2.7], self.GRILLE, mots, None, None)     # ni temps ni phrase
         self.assertIn("ni sur un temps", v["problemes"][0])
 
+    def test_une_parole_continue_ne_couvre_pas_tout(self):
+        """Relecture du 08/11/2026 : n'importe quel mot à moins de 0,75 s validait une scène. Seul le
+        premier mot d'une phrase (après un silence) la porte ; sinon elle part sur un temps."""
+        mots = [(round(1.0 + 0.3 * i, 2), round(1.25 + 0.3 * i, 2), f"m{i}") for i in range(25)]   # 1 → 8,5 s sans pause
+        v = sm.verdict_calage([0, 2.78, 5.17], self.GRILLE, mots, None, None)   # entre deux mots, hors temps
+        self.assertEqual(len(v["problemes"]), 2)
+        self.assertTrue(all("ni avec une phrase" in p for p in v["problemes"]))
+        self.assertEqual(sm.verdict_calage([0, 4.0], self.GRILLE, mots, None, None)["problemes"], [])   # sur un temps, au début d'un mot
+
+    def test_l_ecran_final_apres_la_voix(self):
+        mots = [(1.0, 1.4, "Ton"), (1.45, 1.9, "offre")]
+        v = sm.verdict_calage([0, 4.3], [], mots, None, None)        # sans musique : rien à caler après la voix
+        self.assertEqual((v["problemes"], v["comptees"]), ([], 0))
+        v = sm.verdict_calage([0, 4.3], self.GRILLE, mots, None, None)   # avec musique : sur un temps
+        self.assertEqual(len(v["problemes"]), 1)
+
     def test_la_batterie_n_entre_pas_sous_un_mot(self):
         mots = [(3.3, 3.8, "Publicitaire")]
         v = sm.verdict_calage([0], self.GRILLE, mots, 3.5, 2.0)
@@ -498,6 +516,21 @@ class Calage(unittest.TestCase):
         self.assertEqual(temps, [0.01, 0.51, 1.01, 1.51])
         temps = sm.temps_de_la_grille({"bpm": 120.0, "phase": 0.2}, 1.0, 0.0, 2.5)    # posée à 1 s
         self.assertEqual(temps, [1.2, 1.7, 2.2])
+        temps = sm.temps_de_la_grille({"bpm": 120.0, "phase": 0.01, "tete": 3.0}, 0.0, 0.0, 4.0)   # 3 s de silence
+        self.assertEqual(temps, [3.01, 3.51])
+
+    def test_le_tempo_au_centieme(self):
+        """Au dixième près, la grille d'un morceau à 121,4 dérivait de plus d'une image en une minute."""
+        fps = sm.MUSIQUE_SR / sm.MUSIQUE_PAS
+        for bpm in (121.4, 120.0):
+            graves = [0.0] * int(60 * fps)
+            t = 0.25
+            while t < 60:
+                graves[int(round(t * fps))] = 1.0
+                t += 60 / bpm
+            trouve, phase = sm.tempo_precis(graves, fps, round(bpm, 0))
+            self.assertAlmostEqual(trouve, bpm, delta=0.03)
+            self.assertAlmostEqual(phase, 0.25, delta=0.02)
 
     def test_le_geste_autour_de_l_entree(self):
         ecarts = [0.5] * 300
@@ -510,9 +543,10 @@ class Calage(unittest.TestCase):
             projet = Path(t)
             (projet / "index.html").write_text(
                 '<audio data-hf-id="hf-1" id="musique" src="assets/audio/musique.wav" data-start="0.5" '
-                'data-duration="20" data-media-start="0"></audio>'
+                'data-duration="20" data-media-start="0" data-audio-group="mixage"></audio>'
                 '<audio id="voix" src="assets/audio/voix.wav" data-start="0.300" data-duration="18" '
-                'data-media-start="0"></audio><audio id="sfx-01" src="a.mp3" data-start="1"></audio>', encoding="utf-8")
+                'data-media-start="0" data-audio-group="mixage"></audio>'
+                '<audio id="sfx-01" src="a.mp3" data-start="1" data-audio-group="mixage"></audio>', encoding="utf-8")
             pistes = sm.pistes_audio(projet)
             self.assertEqual(sorted(pistes), ["musique", "voix"])               # pas l'identifiant de l'app
             self.assertEqual((pistes["musique"]["debut"], pistes["musique"]["duree"]), (0.5, 20.0))
@@ -552,12 +586,18 @@ class Calage(unittest.TestCase):
                                 "-pix_fmt", "yuv420p", str(video)], check=True)
                 return video
 
-            def monter(debuts: list[float]) -> None:
+            def monter(debuts: list[float], piste: str = "musique", fichier: str = "musique.wav") -> None:
                 hotes = "".join(f'<div data-composition-src="compositions/s{i}.html" data-start="{t}" data-duration="4" '
                                 f'data-track-index="1"></div>' for i, t in enumerate(debuts))
-                (projet / "index.html").write_text(hotes + '<audio id="musique" src="assets/audio/musique.wav" '
-                                                   'data-start="0" data-duration="12" data-media-start="0"></audio>',
-                                                   encoding="utf-8")
+                (projet / "index.html").write_text(hotes + f'<audio id="{piste}" src="assets/audio/{fichier}" '
+                                                   'data-start="0" data-duration="12" data-media-start="0" '
+                                                   'data-audio-group="mixage"></audio>', encoding="utf-8")
+
+            def morceau(nom: str, kick: str, fond: str) -> None:
+                subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"aevalsrc='{kick}':d=12:s=44100",
+                                "-f", "lavfi", "-i", "sine=f=330:d=12", "-filter_complex",
+                                f"[1]volume='{fond}':eval=frame[b];[0][b]amix=inputs=2:normalize=0",
+                                "-ar", "44100", str(projet / "assets" / "audio" / nom)], check=True)
 
             def calage(video: Path) -> tuple[int, str]:
                 sortie = io.StringIO()
@@ -582,6 +622,29 @@ class Calage(unittest.TestCase):
             code, texte = calage(rendre(6.3))
             self.assertEqual(code, 1, texte)
             self.assertIn("l'image ne fait rien de fort autour", texte)
+
+            # Un morceau sans entrée franche, mais un `--a` noté par `musiques prendre` : pas d'entrée à chercher.
+            morceau("sans-entree.wav", "sin(2*PI*55*t)*exp(-30*mod(t,0.5))*0.9", "0.2")
+            (projet / "work").mkdir()
+            (projet / "work" / "musiques.json").write_text(json.dumps({"a": 8.0, "pris": "x"}), encoding="utf-8")
+            monter([0, 4.0, 8.0], fichier="sans-entree.wav")
+            code, texte = calage(rendre(6.3))
+            self.assertEqual(code, 0, texte)
+            self.assertIn("pas d'entrée franche", texte)
+
+            # 3 s de silence en tête (le morceau démarre plus tard) : une scène avant lui ne se compte pas.
+            morceau("tard.wav", "if(gte(t,3),sin(2*PI*55*t)*exp(-30*mod(t-3,0.5)),0)", "if(lt(t,3),0,0.2)")
+            monter([0, 1.3, 4.0, 8.0], fichier="tard.wav")
+            code, texte = calage(rendre(6.3))
+            self.assertEqual(code, 0, texte)
+            self.assertIn("2/2 scènes calées", texte)
+
+            # Une voix sans le temps de ses mots : rien n'est contrôlé, c'est un refus.
+            (projet / "work" / "musiques.json").unlink()
+            monter([0, 4.0], piste="voix", fichier="tard.wav")
+            code, texte = calage(video)
+            self.assertEqual(code, 1, texte)
+            self.assertIn("`voix caler` d'abord", texte)
 
 
 class Scenes(unittest.TestCase):
