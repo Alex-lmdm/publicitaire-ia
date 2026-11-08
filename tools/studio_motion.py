@@ -631,6 +631,7 @@ def cmd_verifier(_a) -> None:
         ("style de la marque (brand/)", (r / "brand" / "tokens.css").is_file()),
         ("HyperFrames", hyperframes_cli() is not None),
         ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
+        ("three.js (la 3D)", (r / "assets" / "vendor" / "three.module.min.js").is_file()),
         ("ffmpeg", binaire("ffmpeg") is not None),
         ("ffprobe", binaire("ffprobe") is not None),
         ("Node 22.12 ou plus" + (f" (trouvé : {node_version})" if node_version and not node_bon else ""), node_bon),

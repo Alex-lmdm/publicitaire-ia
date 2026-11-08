@@ -126,6 +126,8 @@ sous-composition de `compositions/`, montée dans `index.html`. Pour chaque scè
 Vérifie chaque raccord (dernière image d'une scène, première de la suivante). Commence par le support
 principal ; les autres formats sont des **mises en page** de la même vidéo, jamais des recadrages.
 Lis la fiche de son style (le style 0 compris) : c'est une grammaire, pas un film à refaire.
+Un plan en vraie 3D seulement là où le volume montre quelque chose (scenes.md, « La 3D, quand elle
+sert »).
 Chaque scène part sur un temps de la musique, ou avec sa phrase s'il y a une voix
 ([son.md](references/son.md), « Construire l'image sur la bande-son »).
 

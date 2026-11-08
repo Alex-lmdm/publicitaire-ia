@@ -222,5 +222,31 @@ class ObjetsConnus(unittest.TestCase):
             self.assertIn(nom, md, nom)
 
 
+
+class TroisD(unittest.TestCase):
+    """La 3D du kit (three.js, 08/11/2026) : un outil, pas des plans imposés. Il importe three.js copié par
+    `npm run sync`, ne lit aucune horloge, et son mode d'emploi le nomme."""
+
+    def test_le_module_et_son_contrat(self):
+        js = (KIT / "plan3d.js").read_text(encoding="utf-8")
+        self.assertIn('from "../assets/vendor/three.module.min.js"', js)
+        self.assertIn("export function plan3d(", js)
+        self.assertIn('addEventListener("hf-seek"', js)           # chaque image d'après son instant
+        self.assertIn("buildReady", js)
+        self.assertIn("preserveDrawingBuffer: true", js)
+        code = re.sub(r"/\*.*?\*/|//[^\n]*", "", js, flags=re.S)   # hors commentaires
+        for horloge in ("requestAnimationFrame(", "Date.now(", "performance.now(", "setTimeout(", "setInterval("):
+            self.assertNotIn(horloge, code, horloge)
+
+    def test_sync_le_copie_et_le_mode_d_emploi_le_nomme(self):
+        sync = (RACINE / "scripts" / "sync.mjs").read_text(encoding="utf-8")
+        self.assertIn('"build/three.module.min.js"', sync)
+        md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
+        for nom in ("plan3d(", "poser(t)", "jeton(", "texture(", "arrondi(", "plaquer(", "sol("):
+            self.assertIn(nom, md, nom)
+        scenes = (RACINE / ".claude" / "skills" / "studio" / "references" / "scenes.md").read_text(encoding="utf-8")
+        self.assertIn("## La 3D, quand elle sert", scenes)
+
+
 if __name__ == "__main__":
     unittest.main()

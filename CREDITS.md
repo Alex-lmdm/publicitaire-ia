@@ -30,6 +30,7 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 | 14 sons Freesound | `assets/sfx/starter/` | CC0 1.0 (domaine public), vérifiée sur chaque page | numéros dans `assets/sfx/starter/sounds.md` |
 | 8 sons Kenney « Interface Sounds » | `assets/sfx/starter/` | CC0 | https://kenney.nl/assets/interface-sounds |
 | Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
+| **three.js** 0.170.0 (la 3D du kit, `templates/kit/plan3d.js`) | `node_modules/three`, copié dans `assets/vendor/` par `npm run sync` | MIT, © 2010-2024 three.js authors | https://threejs.org |
 | Objets connus (dossier, fichiers PDF, Word, Excel…, barre d'état et notification d'iPhone, bulles) | `templates/kit/objets.js`, `templates/kit/kit.js`, `kit.css` | dessinés par nous d'après leur allure courante, sans reprendre de fichier d'Apple ni de Microsoft ; les noms de ces marques restent les leurs | |
 | Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
 | Aperçus des 9 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |

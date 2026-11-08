@@ -141,6 +141,71 @@ une liste.
 | `k-noeud` (`k-noeud-sombre`, `k-noeud-accent`) | un nœud de schéma (logo + nom) |
 | `k-fil` | le fil conducteur : le point de l'accent |
 
+## La 3D : `kit/plan3d.js`
+
+Un plan en vraie 3D (three.js, copié dans `assets/vendor/` par `npm run sync`), à l'usage décrit
+dans [scenes.md](scenes.md) (« La 3D, quand elle sert »). C'est une sous-composition comme une
+autre : un canvas, et un script **module** qui appelle `plan3d`. Les mots se posent en HTML
+par-dessus (le calque `k-mots`, comme partout).
+
+```html
+<template>
+  <div data-composition-id="s5" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+    <div id="s5" class="k-scene">
+      <div class="k-fond k-fond-sombre"></div>
+      <canvas id="s5-vue" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+      <div class="k-mots" id="s5-mots"><!-- ses mots, en HTML --></div>
+    </div>
+  </div>
+  <script type="module">
+    import { plan3d } from "./kit/plan3d.js";
+    plan3d(document.getElementById("s5-vue"), async ({ THREE, scene, camera, jeton, texture, arrondi, sol, plaquer }) => {
+      sol(-1.05);                                        // l'ombre au sol (pas sur l'aplat)
+      const ecran = await texture("assets/images/page.png");
+      const objet = new THREE.Mesh(
+        new THREE.ExtrudeGeometry(arrondi(2.6, 1.62, 0.1), { depth: 0.07, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025 }),
+        new THREE.MeshPhysicalMaterial({ color: jeton("--brand-surface"), roughness: 0.35, clearcoat: 1 }));
+      objet.castShadow = true;
+      const face = new THREE.Mesh(plaquer(new THREE.ShapeGeometry(arrondi(2.5, 1.52, 0.08), 24), 2.5, 1.52),
+        new THREE.MeshBasicMaterial({ map: ecran, toneMapped: false }));
+      face.position.z = 0.1;
+      objet.add(face);
+      scene.add(objet);
+      return (t) => {                                    // t : secondes depuis le début du plan
+        const e = Math.min(1, t / 4), d = e * e * (3 - 2 * e);
+        objet.rotation.y = -0.6 + 0.8 * d;
+        camera.position.set(-0.6 + 0.4 * d, 0.3, 5.6 - 0.5 * d);   // le sujet remplit le cadre (image.md)
+        camera.lookAt(0, 0, 0);
+      };
+    });
+  </script>
+</template>
+```
+
+Le script module tourne dans la sous-composition comme un script ordinaire. Le canvas peut aussi se
+poser à la racine d'`index.html`, comme une vraie vidéo (avec `data-start` et `data-duration` sur
+lui).
+
+| Outil | Ce qu'il donne |
+|---|---|
+| `plan3d(canvas, construire, {focale, reflets, ombre})` | le rendu, la lumière de studio, la synchronisation sur le temps de la vidéo ; `construire` crée les objets (elle peut attendre des textures) et rend `poser(t)` ; `ombre: false` sans ombre |
+| `THREE`, `scene`, `camera`, `renderer`, `lumiere` | three.js et la scène prête : une caméra (focale 26° par défaut), une lumière principale qui porte l'ombre, des reflets de studio, un fond transparent (le fond du kit se voit derrière) |
+| `jeton("--brand-accent")` | une couleur de sa marque, pour une matière |
+| `texture("assets/images/…")` | une image du projet (sa capture, son logo en PNG) prête à poser |
+| `arrondi(l, h, r)` | un rectangle aux coins ronds, centré : à extruder (`ExtrudeGeometry`) ou à poser à plat (`ShapeGeometry`) |
+| `plaquer(geometrie, l, h)` | une capture qui remplit une forme `arrondi` posée à plat |
+| `sol(y, opacite)` | un sol invisible qui ne garde que l'ombre, neutre |
+
+- **`poser(t)` ne lit que t** : jamais d'horloge, de minuterie, de `requestAnimationFrame` ni de
+  boucle ; le hasard de `construire` est fixé. Sinon deux rendus diffèrent et l'aperçu ment.
+- **Les mêmes courbes qu'ailleurs** (une arrivée qui se pose, une caméra qui accélère et freine) :
+  écris-les à la main dans `poser` (`d = e * e * (3 - 2 * e)` pour un `sine.inOut`).
+- **Le contrôle** : `npm run check`, puis des images (`npx hyperframes snapshot --at …`) comme
+  pour toute scène. Le rendu passe par la carte graphique ; sans elle, il se fait en logiciel, plus
+  lentement : garde peu d'objets, des textures de 2048 px au plus.
+- Un projet dont `kit/plan3d.js` ou `assets/vendor/three.module.min.js` manque : recopie `kit/`
+  depuis `templates/kit/` et `assets/vendor/` depuis la racine du dossier (après `npm run sync`).
+
 ## Les pièges (tous rencontrés)
 
 - **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :

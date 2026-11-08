@@ -2,7 +2,8 @@
 /**
  * sync.mjs : régénère ce qui se déduit du dépôt, sur la machine du client.
  *
- *   1. GSAP, installé par npm, copié dans assets/vendor/ (jamais redistribué dans le dépôt) ;
+ *   1. GSAP et three.js (la 3D), installés par npm, copiés dans assets/vendor/ (jamais redistribués
+ *      dans le dépôt) ;
  *   2. le style de la marque (brand/) et l'accueil de l'app HyperFrames, par l'outil Python
  *      (`studio_motion.py style`, seul propriétaire de la marque) ;
  *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl ;
@@ -50,25 +51,34 @@ export function ecrireSiDifferent(file, contenu) {
 }
 
 // ---------------------------------------------------------------------------
-// 1. GSAP
+// 1. GSAP et three.js
 // ---------------------------------------------------------------------------
-const GSAP = ["gsap.min.js", "CustomEase.min.js"];
+// [nom, paquet npm, ses fichiers à copier (chemin dans le paquet -> nom dans assets/vendor), ce qui manque sans lui]
+export const BIBLIOTHEQUES = [
+  ["GSAP", "gsap", [["dist/gsap.min.js", "gsap.min.js"], ["dist/CustomEase.min.js", "CustomEase.min.js"]],
+    "les vidéos ne s'animeraient pas"],
+  ["three.js", "three", [["build/three.module.min.js", "three.module.min.js"], ["LICENSE", "three.LICENSE.txt"]],
+    "les plans en 3D ne s'afficheraient pas"],
+];
 
-export function copierGsap(racine = ROOT) {
-  const source = path.join(racine, "node_modules", "gsap", "dist");
-  if (!fs.existsSync(source)) {
-    warn("GSAP absent de node_modules : lance `npm ci` (les vidéos ne s'animeraient pas).");
-    return false;
-  }
+export function copierBibliotheques(racine = ROOT) {
   const dest = path.join(racine, "assets", "vendor");
-  fs.mkdirSync(dest, { recursive: true });
-  for (const nom of GSAP) {
-    const de = path.join(source, nom);
-    const vers = path.join(dest, nom);
-    if (!fs.existsSync(vers) || !fs.readFileSync(de).equals(fs.readFileSync(vers))) fs.copyFileSync(de, vers);
+  let ok = true;
+  for (const [nom, paquet, fichiers, sinon] of BIBLIOTHEQUES) {
+    const source = path.join(racine, "node_modules", paquet);
+    if (!fs.existsSync(source)) {
+      warn(`${nom} absent de node_modules : lance \`npm ci\` (${sinon}).`);
+      ok = false;
+      continue;
+    }
+    fs.mkdirSync(dest, { recursive: true });
+    for (const [de, vers] of fichiers) {
+      const a = path.join(source, de), b = path.join(dest, vers);
+      if (!fs.existsSync(b) || !fs.readFileSync(a).equals(fs.readFileSync(b))) fs.copyFileSync(a, b);
+    }
+    log(`  copié   ${rel(dest)}/ (${nom}, depuis node_modules)`);
   }
-  log(`  copié   ${rel(dest)}/ (GSAP, depuis node_modules)`);
-  return true;
+  return ok;
 }
 
 // ---------------------------------------------------------------------------
@@ -244,7 +254,7 @@ function main() {
   log(`🔄 ${produit.nom} ${produit.version} : préparation du dossier\n`);
   const echecs = lancerEtapes([
     ["fichiers périmés", () => retirerPerimes()],
-    ["GSAP", () => copierGsap()],
+    ["GSAP et three.js", () => copierBibliotheques()],
     ["style et accueil", () => genererStyle()],
     ["consignes CLAUDE.md et AGENTS.md", () => genererInstructions()],
     ["skills pour Codex", () => copierSkills()],

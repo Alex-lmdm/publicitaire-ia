@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import {
   resoudreBlocs, remplir, genererInstructions, copierSkills, lireProduit, tamponner, lancerEtapes, messageIncomplet,
-  retirerPerimes, RETIRES,
+  retirerPerimes, RETIRES, copierBibliotheques, BIBLIOTHEQUES,
 } from "./sync.mjs";
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -165,4 +165,28 @@ test("une mise à jour par archive ne laisse aucun fichier retiré du produit, n
   for (const r of RETIRES) assert.ok(!/^(videos|marque|assets\/(sfx|musiques))\b/.test(r), r);
   // Ni un fichier encore livré : la mise à jour l'effacerait chez le client.
   for (const r of RETIRES) assert.equal(fs.existsSync(path.join(RACINE, r)), false, `${r} est encore dans le produit`);
+});
+
+test("GSAP et three.js sont copiés de node_modules dans assets/vendor", (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "studio-vendor-"));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  for (const [, paquet, fichiers] of BIBLIOTHEQUES) {
+    for (const [de] of fichiers) {
+      const f = path.join(dir, "node_modules", paquet, de);
+      fs.mkdirSync(path.dirname(f), { recursive: true });
+      fs.writeFileSync(f, `// ${paquet} ${de}`);
+    }
+  }
+  assert.equal(copierBibliotheques(dir), true);
+  for (const nom of ["gsap.min.js", "CustomEase.min.js", "three.module.min.js", "three.LICENSE.txt"]) {
+    assert.ok(fs.existsSync(path.join(dir, "assets", "vendor", nom)), nom);
+  }
+  fs.rmSync(path.join(dir, "node_modules", "three"), { recursive: true });
+  assert.equal(copierBibliotheques(dir), false);          // three.js absent : signalé, GSAP toujours copié
+});
+
+test("la version de three.js est figée : un seul fichier module, sans three.core", () => {
+  const paquet = JSON.parse(fs.readFileSync(path.join(RACINE, "package.json"), "utf8"));
+  assert.match(paquet.devDependencies.three, /^\d+\.\d+\.\d+$/);
+  assert.equal(paquet.devDependencies.three, "0.170.0");  // à partir de 0.171, three.module importe three.core
 });

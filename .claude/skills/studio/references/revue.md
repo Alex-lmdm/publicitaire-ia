@@ -149,7 +149,8 @@ avec une phrase de justification, sur ces dix critères :
 6. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources ; chaque
    chiffre avec son contexte.
 7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
-   suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
+   suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet). Un
+   plan en 3D qui décore sans rien montrer de plus que le plat, c'est 5 au plus.
 8. **Marque et couleurs vraies** : ses couleurs pour le film (plus noir, blanc, gris), ses polices,
    une seule couleur d'accent ; aucune image inventée ; et les objets connus dans leurs vraies
    couleurs, autant que [image.md](image.md) le demande (« Les objets connus »). Une teinte dérivée

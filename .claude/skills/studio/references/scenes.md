@@ -11,6 +11,9 @@ Chaque plan du film devient une scène. Trois sources, dans cet ordre :
    les scènes prêtes et les recettes ci-dessous (sa fiche : `styles/00-sur-mesure/style.md`).
 3. **Une recette** décrite plus bas, construite avec le kit (`kit.md`).
 
+Et, quand elle sert, **un plan en vraie 3D** (« La 3D, quand elle sert », plus bas), dans l'une ou
+l'autre de ces sources.
+
 Une story courte = une ou deux scènes ; une story de lancement = une scène par plan (huit ou neuf,
 de 2,5 à 6,5 s) ; un Reel = trois à cinq ; une vidéo de page = huit à dix, reliées par des raccords
 d'objet. Chaque scène porte un plan du film : elle montre ce qu'il dit et pose ses quelques mots.
@@ -173,6 +176,30 @@ cause.
     image est exactement la vignette (`ffmpeg -ss 0 -frames:v 1`). Seulement pour une vidéo de son
     offre à lui.
 28. **La coupe** (0,6 s) : `K.tranche(tl, calque, t)`, appelée en dernier ; sur un temps fort.
+
+## La 3D, quand elle sert
+
+Le kit sait rendre de la vraie 3D (three.js, `kit.md`, « La 3D ») : des objets en volume, sous une
+lumière de studio, avec leurs reflets et leur ombre. C'est un outil, pas une obligation. **Pose-toi
+la question à chaque plan fort : ici, le volume montre-t-il quelque chose que le plat ne montre
+pas ?** Si oui, un plan en 3D peut donner ce petit cran de plus ; sinon, aucun : beaucoup de très
+bonnes vidéos n'en ont pas.
+
+- **Quand** : un moment fort (le pivot, le nom, le produit, la révélation, la fin), où l'objet gagne
+  à être tenu, tourné, éclairé. Par exemple, sans que ce soit une liste : son téléphone ou son
+  ordinateur en volume avec sa vraie capture, son nom ou son prix en relief, l'objet de son offre
+  (sa boîte, son carnet, son dossier) qui tourne et s'ouvre, son vrai produit physique sous la
+  lumière, un schéma dont les nœuds flottent dans l'espace, ses vraies captures en cartes épaisses
+  qui volent en vraie perspective. Chaque offre a les siens : pars de son sujet.
+- **Combien** : un à trois plans dans une vidéo de page, un dans un Reel, quelques secondes chacun.
+  Jamais toute la vidéo, jamais pour décorer ; dans le doute, pas de 3D.
+- **Simple** : un ou deux objets, des formes nettes (un rectangle aux coins ronds extrudé, un
+  cylindre, un panneau qui porte une capture), une seule lumière principale, un seul mouvement de
+  caméra par plan. Ce qui se lit (ses mots) reste en HTML par-dessus, immobile pendant sa lecture.
+- **Les mêmes règles** : sa vraie matière (une capture, son logo, son produit), aucune image
+  inventée (pas de pièce, de paysage, de planète, de particules décoratives), les couleurs de sa
+  marque et des objets connus, pas d'ombre sombre sur l'aplat, la grammaire des mouvements
+  ([mouvement.md](mouvement.md)). Le plan passe la revue comme les autres.
 
 ## Combiner
 
