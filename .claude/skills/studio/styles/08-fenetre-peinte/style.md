@@ -36,6 +36,12 @@ Une vidéo de page de 45 à 90 s qui annonce, puis démontre :
 
 ## 3. Les fonds et les couleurs
 
+**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : le
+dossier bleu du Mac et les fichiers du kit (`K.ic("objet-…")`), le téléphone et sa barre d'état, la
+notification et les bulles d'iPhone, les vrais logos de ses outils, l'interface d'une plateforme
+reconstruite d'après capture. Ce sont les touches de couleur vraie du film ; tout le reste prend
+les rôles ci-dessous ([image.md](../../references/image.md), « Les objets connus »).
+
 Ses captures gardent leurs vraies couleurs ; tout le reste vient de sa marque
 ([image.md](../../references/image.md), « La palette ») :
 

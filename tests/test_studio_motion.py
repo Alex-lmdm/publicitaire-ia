@@ -211,6 +211,40 @@ class Palette(unittest.TestCase):
         css = "--brand-bg: #202022;\n--brand-accent: #ffee00;\n--brand-text: #FFFFFF;\n--brand-sombre: #202022;"
         self.assertEqual(sm.couleurs_marque(css), ["#202022", "#ffffff", "#ffee00"])
 
+    def test_les_objets_connus_gardent_leurs_couleurs(self):
+        """08/11/2026 : « jaune, noir, blanc, on ne voit que ça ». Le dossier bleu du Mac, un PDF, les
+        boutons d'une fenêtre passent ; le brun tiré du jaune reste signalé."""
+        img = self.image(("#ffee00", 30), ("#202022", 30), ("#5db6f7", 20), ("#2f8fe6", 8), ("#d42d28", 6),
+                         ("#28c840", 6))
+        self.assertEqual(sm.verdict_palette([img] * 3, self.MARQUE)["plages"], [])
+        self.assertEqual(len(sm.verdict_palette([img] * 3, self.MARQUE, connues=())["plages"]), 1)
+        brun = self.image(("#6c440c", 60), ("#202022", 40))
+        self.assertEqual(len(sm.verdict_palette([brun] * 3, self.MARQUE)["plages"]), 1)
+
+    def test_le_kit_et_la_palette_connaissent_les_memes_couleurs(self):
+        """Chaque teinte d'un objet connu du kit (objets.js, lignes « couleur d'outil » de kit.css) est
+        dans COULEURS_CONNUES : sinon `palette` refuserait le kit lui-même."""
+        kit = RACINE / "templates" / "kit"
+        textes = [(kit / "objets.js").read_text(encoding="utf-8")]
+        textes += [l for l in (kit / "kit.css").read_text(encoding="utf-8").splitlines() if "couleur d'outil" in l]
+        teintes = set()
+        for h in re.findall(r"#([0-9a-fA-F]{6})\b", "\n".join(textes)):
+            L, a, b = sm.oklab(tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)))
+            if math.hypot(a, b) >= sm.NEUTRE_MAX:
+                teintes.add("#" + h.lower())
+        self.assertTrue(teintes)
+        self.assertLessEqual(teintes, set(sm.COULEURS_CONNUES))
+
+    def test_les_logos_du_projet(self):
+        with tempfile.TemporaryDirectory() as t:
+            projet = Path(t)
+            self.assertEqual(sm.couleurs_des_logos(projet), [])
+            (projet / "kit").mkdir()
+            (projet / "kit" / "ajouts.js").write_text('window.K_ICONES = Object.assign(window.K_ICONES || {}, '
+                                                       '{"logo-stripe": "<svg fill=\\"#635BFF\\"><path fill=\\"#fff\\"/></svg>"});',
+                                                       encoding="utf-8")
+            self.assertEqual(sm.couleurs_des_logos(projet), ["#635bff", "#ffffff"])
+
 
 class Zones(unittest.TestCase):
     def test_reel_en_pixels(self):

@@ -44,6 +44,34 @@ Ce qu'on peut montrer selon ce qu'il vend :
 | Une communauté | les espaces, le rythme (lives, défis), ce qu'on y trouve, sans inventer de membres |
 | Des résultats | les vraies captures (ventes, vues, avant / après) avec leurs vrais chiffres |
 
+## Les objets connus : la touche de couleur vraie
+
+Sa marque peint le film : les fonds, les mots, les formes, les accents. **Ce qui est réel et connu
+garde son vrai visage et ses vraies couleurs**, et c'est ce qui donne de la fraîcheur : une vidéo
+toute dans les trois couleurs de la marque (jaune, noir, blanc, et rien d'autre) fait fade. Dès
+qu'un plan parle d'une chose que son public connaît, montre-la telle qu'il la connaît :
+
+| Le plan parle de… | On montre |
+|---|---|
+| un dossier, un fichier, un document | le dossier bleu du Mac, le fichier PDF, Word, Excel, PowerPoint, la vidéo, l'image, le son, l'archive : `K.ic("objet-dossier")`, `objet-pdf`, `objet-doc`, `objet-tableur`, `objet-presentation`, `objet-video`, `objet-image`, `objet-audio`, `objet-zip`, `objet-fichier` (le kit, `objets.js`) |
+| un outil, une app, un moyen de paiement | son vrai logo en couleurs (`studio_motion.py logos`, 7 432 marques), nu ou en icône d'app |
+| une plateforme (Instagram, YouTube, TikTok, Stripe, Gmail, Notion, Zoom…) | son interface, reconstruite d'après une vraie capture, dans ses couleurs et sa police : le post, le lecteur, la page de paiement, la boîte de réception |
+| son téléphone, une notification, un message | le téléphone du kit (`k-tel`) avec sa barre d'état (`K.statut` : 9:41, réseau, batterie) ; la notification d'iPhone (`K.notification`, l'icône d'app = le vrai logo) ; les bulles bleues, grises ou WhatsApp (`K.bulle`) |
+| une fenêtre d'ordinateur | la fenêtre du kit (`k-fenetre`) et ses trois boutons rouge, jaune, vert (`k-feux`) |
+
+- **Une icône du kit (Lucide, d'un seul trait) seulement pour une idée sans objet connu** : une
+  coche, une flèche, un éclair. Jamais un dossier, un fichier, une enveloppe ou un téléphone
+  génériques teintés de l'accent quand l'objet a un vrai visage.
+- **Des touches, pas un décor** : ces couleurs restent sur leur objet. Jamais un fond, un texte, un
+  trait ni un dégradé tiré d'elles ; le film reste à sa marque.
+- **Toujours vrai** : un logo seulement pour un outil que l'offre utilise ou dont sa page parle ;
+  une plateforme seulement là où son offre vit vraiment (sa pub sur Instagram, son paiement par
+  Stripe) ; les objets génériques (dossier, fichier, téléphone, message) se montrent quand le plan
+  parle d'eux, sans faux contenu (une notification dit un vrai fait de la fiche, jamais une vente
+  inventée).
+- **Le seuil** : toute vidéo de plus de 15 s montre au moins trois objets connus dans leurs vraies
+  couleurs (logos compris), un Reel au moins un. Le repérage les liste ([reperage.md](reperage.md)).
+
 Une forme simple à ses couleurs (disque, aplat, case, cadre, trait) sert de **cadre** (elle porte
 une capture, un chiffre, un logo, un mot), de **transition** (elle couvre, s'ouvre, devient l'objet
 suivant) ou de **fil conducteur** (le point de sa couleur qui relie, raye, devient le point final) ;
@@ -87,8 +115,10 @@ gris, jamais dérivé (`oklch(from …)`, `color-mix`, une « nuit » teintée).
 l'encre à l'accent change d'un coup, sous un volet ou un mouvement. Les dégradés vont d'un neutre à
 un neutre. Un texte garde un contraste d'au moins 4,5:1 avec son fond.
 
-Seules ses **vraies captures** et les **logos de ses outils** gardent leurs propres couleurs.
-`studio_motion.py palette` relève tout le reste sur le MP4.
+Seuls ses **vraies captures**, les **logos de ses outils**, les **interfaces des plateformes** et
+les **objets connus** du kit gardent leurs propres couleurs (« Les objets connus », plus haut).
+`studio_motion.py palette` connaît celles du kit et des logos posés dans le projet, et relève tout le
+reste sur le MP4.
 
 ## Les fonds et les objets
 
@@ -145,6 +175,7 @@ la vraie matière du client ou sa vidéo de référence le contient, et alors se
 | Des étiquettes dans les coins, des cadres et des crochets décoratifs, des compteurs « 01 / 02 » | Des étiquettes posées sur ce qu'on montre |
 | Le logo rangé dans un coin pendant toute la vidéo | Le logo arrive à son moment (le nom, la fin) |
 | Des icônes génériques, des emoji, des logos posés sur des tuiles | Les vrais logos nus de ses outils, là où ils ont un sens |
+| Un dossier, un fichier, une enveloppe ou un téléphone génériques aux couleurs de la marque ; une vidéo toute en trois couleurs | L'objet connu dans ses vraies couleurs : le dossier bleu du Mac, le vrai PDF, la vraie notification, le vrai logo |
 | Une fausse interface vague dans un faux navigateur | Son interface réelle, reconstruite d'après capture |
 | Le même enchaînement d'une vidéo à l'autre | Change l'angle, la matière, les gestes, les fonds et les transitions d'une vidéo à l'autre |
 

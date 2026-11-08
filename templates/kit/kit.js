@@ -214,6 +214,47 @@
       return e;
     };
   };
+  // --- Les objets connus, dans leurs vraies couleurs (image.md, « Les objets connus ») ----------
+  // La barre d'état d'un iPhone dans l'écran du téléphone (`k-tel-ecran`) : l'heure, le réseau, le
+  // Wi-Fi, la batterie. `clair` : blanche, sur un écran sombre (le défaut) ; false : noire.
+  K.statut = function (ecran, o) {
+    o = o || {};
+    var encre = o.clair === false ? "#000000" : "#ffffff";
+    var barre = K.el(ecran, "div", "k-statut", null, "color:" + encre + ";");
+    K.el(barre, "span", "k-statut-heure").textContent = o.heure || "9:41";
+    K.el(barre, "span", "k-statut-icones",
+      '<svg viewBox="0 0 18 12" width="34" height="22"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/>' +
+      '<rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/>' +
+      '<rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>' +
+      '<svg viewBox="0 0 16 12" width="30" height="22"><path d="M8 11.5l2.4-3a3.5 3.5 0 0 0-4.8 0z" fill="currentColor"/>' +
+      '<path d="M3.2 6.3a7 7 0 0 1 9.6 0M.6 3.4a10.8 10.8 0 0 1 14.8 0" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>' +
+      '<svg viewBox="0 0 27 13" width="50" height="24"><rect x="0.8" y="0.8" width="22.4" height="11.4" rx="3.6" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.4" fill="none"/>' +
+      '<rect x="2.6" y="2.6" width="18.8" height="7.8" rx="2.2" fill="currentColor"/><path d="M24.8 4.6v3.8a2 2 0 0 0 0-3.8z" fill="currentColor" fill-opacity="0.45"/></svg>');
+    return barre;
+  };
+  // Une notification d'iPhone : l'icône de l'app (un vrai logo : K.ic("logo-stripe")), son nom, l'instant,
+  // un titre et un texte. o = {icone, app, quand, titre, texte, sombre, largeur} ; rend l'élément, à placer
+  // (left, top) et à animer. Ses mots se lisent : titre 34 px, texte 32 px, en-tête 28 px.
+  K.notification = function (parent, o) {
+    o = o || {};
+    var n = K.el(parent, "div", "k-notif" + (o.sombre ? " k-notif-sombre" : ""), null,
+      "width:" + (o.largeur || 860) + "px;");
+    K.el(n, "div", "k-notif-icone", o.icone || "");
+    var corps = K.el(n, "div", "k-notif-corps");
+    var tete = K.el(corps, "div", "k-notif-tete");
+    K.el(tete, "span").textContent = o.app || "";
+    K.el(tete, "span").textContent = o.quand || "maintenant";
+    if (o.titre) K.el(corps, "div", "k-notif-titre").textContent = o.titre;
+    if (o.texte) K.el(corps, "div", "k-notif-texte").textContent = o.texte;
+    return n;
+  };
+  // Une bulle de messagerie : "bleue" (le message envoyé d'un iPhone), "grise" (le message reçu),
+  // "whatsapp" (le vert clair d'un message WhatsApp envoyé). Rend l'élément, à placer et à animer.
+  K.bulle = function (parent, texte, genre) {
+    var b = K.el(parent, "div", "k-bulle k-bulle-" + (genre || "grise"));
+    b.textContent = texte;
+    return b;
+  };
   // Dérive lente et continue (parallaxe : le proche bouge plus que le lointain). Finie.
   K.derive = function (tl, els, debut, duree, amplitude) {
     amplitude = amplitude || 60;

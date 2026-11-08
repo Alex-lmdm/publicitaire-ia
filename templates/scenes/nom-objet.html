@@ -23,6 +23,10 @@
       --nob-encre: var(--brand-clair); --nob-appui: var(--brand-gris-4); --nob-ombre: var(--k-ombre);
     }
     #nomobjet.nob-clair { --nob-encre: var(--k-encre); --nob-appui: var(--brand-gris-2); --nob-ombre: var(--k-ombre-claire); }
+    /* Le dossier bleu du Mac (couleurs: "connues", le défaut d'un dossier) : un objet connu garde ses
+       vraies couleurs, quelle que soit la marque (image.md, « Les objets connus »). */
+    #nomobjet.nob-connu { --nob-dos: #2f8fe6; --nob-face: #5db6f7; --nob-icone: #2f8fe6; } /* couleur d'outil : le dossier du Mac */
+    #nomobjet.nob-connu .nob-face { box-shadow: var(--nob-ombre), inset 0 6px 0 #8dcffb; } /* couleur d'outil : le dossier du Mac */
     #nomobjet .nob-objet { position: absolute; transform-style: preserve-3d; will-change: transform; }
     #nomobjet .nob-dos, #nomobjet .nob-face, #nomobjet .nob-contenu { position: absolute; left: 0; top: 0; }
     #nomobjet .nob-dos > div { position: absolute; background: var(--nob-dos); }
@@ -65,6 +69,7 @@
       var CONTENU = {
         fond: "accent",                 // "accent" (l'aplat de sa couleur), "sombre" (sa nuit) ou "clair"
         objet: "dossier",               // l'objet de l'offre : "dossier", "carnet", "carte" (de membre), "app" (son icône) ou "image"
+        couleurs: "connues",            // dossier : "connues" (le dossier bleu du Mac, le défaut) ou "marque" (à ses couleurs)
         icone: "book-open",             // posée sur l'objet : une icône du kit ou son logo ajouté (« logo-… ») ; null : aucune
         image: null,                    // objet "image" : "assets/images/<sa vraie couverture, sa boîte>.png"
         ratio: 1.33,                    // objet "image" : sa largeur divisée par sa hauteur
@@ -117,6 +122,7 @@
       };
       var genre = FORMES[CONTENU.objet] && (CONTENU.objet !== "image" || CONTENU.image) ? CONTENU.objet : "dossier";
       var forme = FORMES[genre];
+      if (genre === "dossier" && CONTENU.couleurs !== "marque") racine.classList.add("nob-connu");
 
       // --- La mise en page ----------------------------------------------------------------
       // 9:16 : une colonne calée à gauche (l'objet, son nom, l'appui), centrée dans la zone.

@@ -198,5 +198,29 @@ class KitTexte(unittest.TestCase):
         self.assertEqual(manquantes, [])
 
 
+
+class ObjetsConnus(unittest.TestCase):
+    """Les objets connus, dans leurs vraies couleurs (08/11/2026 : « jaune, noir, blanc, on ne voit que
+    ça ») : chargés par chaque projet, sans identifiant qui se dédouble, tous au mode d'emploi."""
+    OBJETS = ("dossier", "fichier", "pdf", "doc", "tableur", "presentation", "video", "image", "audio", "zip")
+
+    def test_chaque_objet_existe_et_se_copie_sans_conflit(self):
+        js = (KIT / "objets.js").read_text(encoding="utf-8")
+        for nom in self.OBJETS:
+            self.assertIn(f'"objet-{nom}"', js, nom)
+        self.assertNotIn(' id="', js)                   # deux copies d'un même objet ne se gênent pas
+        self.assertNotIn("<script", js.split("*/", 1)[1])
+
+    def test_chaque_projet_les_charge_avant_le_kit(self):
+        gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")
+        ordre = [gabarit.index(f'src="kit/{f}"') for f in ("icones.js", "objets.js", "ajouts.js", "kit.js")]
+        self.assertEqual(ordre, sorted(ordre))
+
+    def test_le_mode_d_emploi_les_nomme(self):
+        md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
+        for nom in ("objet-dossier", "objet-pdf", "K.statut", "K.notification", "K.bulle", "k-objet"):
+            self.assertIn(nom, md, nom)
+
+
 if __name__ == "__main__":
     unittest.main()

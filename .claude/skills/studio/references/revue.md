@@ -66,11 +66,13 @@ vraiment :
   l'ordre, on sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le
   croire, combien et quoi faire. Une réponse manque : la vidéo n'est pas finie. Ce test se refait
   à la porte 3 par un relecteur neuf, qui ne connaît pas le script.
-- Les couleurs : uniquement celles de la marque, du noir, du blanc et des gris neutres ; ni brun,
-  ni olive, ni orangé tirés de l'accent ; aucune image inventée (paysage, illustration). Seules les
-  vraies captures du client et les logos de ses outils gardent leurs couleurs. `studio_motion.py
-  palette exports/<vidéo>.mp4` liste les instants hors palette : chacun est une vraie capture, ou
-  se corrige.
+- Les couleurs : celles de la marque, du noir, du blanc et des gris neutres ; ni brun, ni olive,
+  ni orangé tirés de l'accent ; aucune image inventée (paysage, illustration). Les vraies captures
+  du client, les logos de ses outils, les interfaces des plateformes et les objets connus du kit
+  gardent leurs couleurs, et il y en a (trois au moins au-delà de 15 s, un dans un Reel : une
+  vidéo toute en trois couleurs est un défaut). `studio_motion.py palette exports/<vidéo>.mp4`
+  connaît les couleurs du kit et des logos du projet, et liste les autres instants hors palette :
+  chacun est une vraie capture ou l'interface d'une plateforme, ou se corrige.
 - Le fond change quand le film change de temps, avec une cause visible (avec un style du catalogue,
   les fonds de sa fiche) ; aucun écran ne fait vide.
 - Aucune image clé dont le seul sujet est une forme ou un aplat (un disque, un carré, une case
@@ -149,9 +151,12 @@ avec une phrase de justification, sur ces dix critères :
    chiffre avec son contexte.
 7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
    suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
-8. **Marque** : ses couleurs et seulement elles (plus noir, blanc, gris), ses polices, une seule
-   couleur d'accent ; aucune image inventée. Une teinte dérivée (un brun, un orangé tirés de son
-   accent), c'est 4 au plus.
+8. **Marque et couleurs vraies** : ses couleurs pour le film (plus noir, blanc, gris), ses polices,
+   une seule couleur d'accent ; aucune image inventée ; et les objets connus dans leurs vraies
+   couleurs (le dossier bleu du Mac, le vrai PDF, le vrai logo, la notification d'iPhone). Une
+   teinte dérivée (un brun, un orangé tirés de son accent), c'est 4 au plus. Une vidéo toute en
+   trois couleurs, ou un dossier, un fichier, un téléphone génériques à la couleur de la marque
+   alors que l'objet connu existe, c'est 6 au plus.
 9. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
 10. **Le niveau** ([image.md](image.md), « Le cadre ») : chaque plan a son moment signature, de la
     profondeur (perspective, flou de distance, ombres), un sujet qui remplit le cadre, une caméra

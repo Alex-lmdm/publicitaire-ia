@@ -8,10 +8,10 @@ vidéo. Le langage, les recettes et le moment de s'en servir : skill `studio`,
 | Scène | Rôle | Durée | Ce qu'elle attend du client (`CONTENU`) |
 |---|---|---|---|
 | `situation.html` | ouvrir : la situation qu'on reconnaît, son coût, le ressenti (recette 1) | 7 à 10 s | la corvée en 2 à 6 lignes (ou une capture), 1 ou 2 temps de mots, un compteur chiffré avec son contexte, un ressenti |
-| `nom-objet.html` | le pivot et le nom : l'objet de l'offre grandit, son nom claque lettre par lettre, son contenu en jaillit puis retombe (recette 6) | environ 4 s | l'objet (dossier, carnet, carte, app ou sa vraie image), son icône, le nom (1 à 3 mots), une ligne d'appui (3 à 6 mots), 2 à 4 vrais éléments de l'offre, la sortie (nœud ou volet) |
+| `nom-objet.html` | le pivot et le nom : l'objet de l'offre grandit, son nom claque lettre par lettre, son contenu en jaillit puis retombe (recette 6) | environ 4 s | l'objet (dossier, bleu comme celui du Mac par défaut ; carnet, carte, app ou sa vraie image), son icône, le nom (1 à 3 mots), une ligne d'appui (3 à 6 mots), 2 à 4 vrais éléments de l'offre, la sortie (nœud ou volet) |
 | `schema.html` | comment ça marche : les liens se tracent, le fil conducteur les parcourt, chaque nœud se coche, puis la caméra plonge dans l'offre (recette 12) | 4,5 à 5,5 s | le nœud de l'offre (nom, icône), 1 à 3 entrées, 2 à 4 sorties (nom, icône ou logo), une ligne d'appui ou un mot héros, le mot à surligner |
 | `parcours.html` | le parcours en étapes : la caméra glisse de station en station derrière le fil conducteur, puis recule pour tout voir (recettes 11 et 22) | 7,5 s (3 étapes) à 9,5 s (4 étapes) | 3 à 5 étapes vraies : titre court, délai, matière (une liste qui se coche, un agenda qui se remplit, ou sa capture) |
-| `demo.html` | comment ça marche : la démo dans son interface, le curseur agit, les étapes se cochent et leurs aperçus sortent de la fenêtre (recette 10) | 7 s | une ligne d'appui (3 à 6 mots), l'écran de son produit (titre, invite, demande tapée) ou sa capture avec la place de son champ, 3 ou 4 étapes vraies avec l'aperçu de chacune (2 textes ou une image), le statut obtenu, le bouton du résultat |
+| `demo.html` | comment ça marche : la démo dans son interface, le curseur agit, les étapes se cochent et leurs aperçus sortent de la fenêtre (recette 10) | 7 s | une ligne d'appui (3 à 6 mots), l'écran de son produit (titre, invite, demande tapée) ou sa capture avec la place de son champ, 3 ou 4 étapes vraies avec l'aperçu de chacune (2 textes ou une image, et l'objet connu qu'elle produit : `icone`), le statut obtenu, le bouton du résultat |
 | `preuve.html` | prouver : l'éventail de ses vrais résultats, puis le grand chiffre (recettes 19 et 20) | 6,5 s | une ligne d'appui, 3 à 5 vraies captures et leur format, chacune avec son vrai chiffre et son contexte, le total arrondi vers le bas avec son repère et le mot à surligner |
 | `prix.html` | l'offre et le prix : ce qu'on reçoit, puis le prix en deux temps et sa vraie échéance (recette 23) | 6 s | ce qu'on reçoit en 2 à 4 pastilles, le prix tel qu'affiché, ses modalités, l'échéance et sa date (ou null), l'ancien prix seulement si `prix.barre` est dans la fiche |
 | `avant-apres.html` | comparer : l'écran coupé, l'ancienne façon et son chrono d'un côté, le résultat et son vrai délai de l'autre (recette 16) | 5,5 s | les étiquettes ; l'avant (titre, 3 à 6 lignes ou une capture, le chrono) ; l'après (résultat, 2 à 4 étapes ou une capture, le délai) |
@@ -25,6 +25,9 @@ vidéo. Le langage, les recettes et le moment de s'en servir : skill `studio`,
    `OFFRE.json` ou de `sources/` ; ce qui n'existe pas pour son offre se met à `null`, et le temps
    correspondant disparaît. **Rien d'exemple ne doit rester** : un chiffre d'exemple qui passe au
    rendu est un fait inventé.
+   Une icône (`icone`) : d'abord ce qu'on reconnaît, dans ses vraies couleurs, le vrai logo de
+   l'outil (`logos`) ou un objet connu du kit (`objet-pdf`, `objet-dossier`, `objet-tableur`…) ; une
+   icône d'un seul trait seulement pour une idée (une coche, un euro).
 3. Monte-la dans `index.html` comme toute scène (`kit.md`, « Le squelette d'une scène ») et donne à
    son hôte et à sa racine la durée qu'elle demande (le commentaire de `CONTENU` la donne) : si
    `data-duration` est trop court, `npm run check` relève des mots partis avant d'être lus

@@ -7,6 +7,7 @@ d'une vidéo à l'autre. Les scènes prêtes et les recettes sont dans [scenes.m
 contrat que toute scène respecte, dans [composition.md](composition.md).
 
 Fichiers : `kit.css` (classes `k-*`), `kit.js` (objet `K`), `icones.js` (82 icônes Lucide),
+`objets.js` (les objets connus dans leurs vraies couleurs : le dossier du Mac, les fichiers),
 `ajouts.js` (les logos et icônes ajoutés par `studio_motion.py logos`). Inter, la police des
 interfaces reconstruites, se déclare dans `assets/fonts/interfaces.css`, écrit à la création du
 projet à côté de ses fichiers : une feuille ne pointe jamais vers `../` (le rendu la refuse).
@@ -92,6 +93,27 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 | `K.flash(tl, disque, x, y, t, duree)` | un disque de couleur part de (x, y) et couvre l'écran |
 | `K.chapitre(tl, racine, curseur, t, {depart, cible})` | chapitre complet (mot fantôme, étiquette, curseur, interrupteur) ; rend l'instant de la plongée. Le clic vise l'interrupteur d'après la taille de la composition, en 9:16 comme en 16:9 ; `cible: [x, y]` seulement si le CSS de la scène a déplacé l'interrupteur |
 | `K.jeton(nom)` | la valeur d'un jeton de la marque (`K.jeton("--brand-gris-2")`), pour un tween de couleur (GSAP n'interpole pas une variable CSS) |
+
+### Les objets connus, dans leurs vraies couleurs
+
+Ce que tout le monde reconnaît garde son vrai visage ([image.md](image.md), « Les objets connus ») :
+ils sont chargés par `kit/objets.js` (un projet créé avant la version qui les apporte : recopie
+`objets.js`, `kit.js` et `kit.css` du dossier `templates/kit/` et ajoute `<script
+src="kit/objets.js"></script>` après `icones.js` dans son `index.html`).
+
+| Objet | Ce que c'est |
+|---|---|
+| `K.ic("objet-dossier")` | le dossier bleu du Mac |
+| `K.ic("objet-fichier")`, `objet-pdf`, `objet-doc`, `objet-tableur`, `objet-presentation`, `objet-video`, `objet-image`, `objet-audio`, `objet-zip` | un document, et les fichiers PDF, Word, Excel, PowerPoint, vidéo, image, son, archive, avec leur couleur et leur étiquette |
+| `K.statut(ecran, {heure, clair})` | la barre d'état d'un iPhone (9:41, réseau, Wi-Fi, batterie) en haut de `k-tel-ecran` ; `clair: false` : noire, sur un écran clair |
+| `K.notification(parent, {icone, app, quand, titre, texte, sombre, largeur})` | une notification d'iPhone ; `icone` : le vrai logo (`K.ic("logo-stripe")`) ; ses mots se lisent (titre 34 px, texte 32 px) ; rend l'élément, à placer et animer |
+| `K.bulle(parent, texte, genre)` | une bulle de messagerie : `"bleue"` (envoyé d'un iPhone), `"grise"` (reçu), `"whatsapp"` |
+| `k-objet` | le porteur d'un objet en grand (`K.el(cam, "div", "k-objet", K.ic("objet-pdf"), "width:…; height:…")`), avec son ombre |
+| `k-feux` | les trois boutons rouge, jaune, vert d'une fenêtre du Mac (`k-fenetre`) |
+
+Partout où une scène prend une icône (`icone` d'un `CONTENU`, `K.ic`), un `objet-…` se met à la
+place d'une icône d'un seul trait. Ces couleurs ne débordent jamais sur un fond, un texte ou un
+trait ; `palette` les connaît.
 
 ### Le mot qui joue, le schéma, le fil conducteur, la coupe
 

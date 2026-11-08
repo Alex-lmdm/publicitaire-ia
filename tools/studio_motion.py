@@ -2597,6 +2597,14 @@ ECART_MARQUE = 0.09      # distance OKLab tolérée autour d'une couleur de la m
 HORS_PALETTE_MAX = 0.04  # part d'une image hors palette au-delà de laquelle l'instant est signalé
 JETONS_PALETTE = ("bg", "surface", "text", "muted", "accent", "secondary", "contrast",
                   "sombre", "clair", "gris-1", "gris-2", "gris-3", "gris-4")
+# Les objets connus du kit, dans leurs vraies couleurs (templates/kit/objets.js et kit.css : le dossier
+# bleu du Mac, les fichiers, les boutons d'une fenêtre, les bulles et notifications d'iPhone) : la touche
+# de couleur vraie qu'Alex a demandée le 08/11/2026 (« jaune, noir, blanc, on ne voit que ça »). Ce ne
+# sont pas des teintes tirées de l'accent : `palette` les accepte, comme les logos posés dans le projet.
+COULEURS_CONNUES = ("#2f8fe6", "#5db6f7", "#8dcffb",                       # le dossier du Mac
+                    "#d42d28", "#2b67d1", "#1a7f45", "#c54d1d", "#7d4fe0", "#0b7d88", "#d02a59",   # les fichiers
+                    "#ff5f57", "#febc2e", "#28c840",                       # les boutons d'une fenêtre du Mac
+                    "#0a6cf0", "#d9fdd3")                                  # les bulles de messagerie
 
 
 def oklab(rgb: tuple[int, int, int]) -> tuple[float, float, float]:
@@ -2635,10 +2643,27 @@ def nom_teinte(hexa: str) -> str:
     return "couleur"
 
 
-def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_FPS) -> dict:
+def couleurs_des_logos(projet: Path | None) -> list[str]:
+    """Les couleurs des logos posés dans le projet par `logos` (kit/ajouts.js) : un vrai logo garde les
+    siennes, `palette` ne le signale plus."""
+    try:
+        texte = (projet / "kit" / "ajouts.js").read_text(encoding="utf-8") if projet else ""
+    except OSError:
+        return []
+    vues = []
+    for h in re.findall(r"#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b", texte):
+        h = (h if len(h) == 6 else "".join(x * 2 for x in h)).lower()
+        if f"#{h}" not in vues:
+            vues.append(f"#{h}")
+    return vues
+
+
+def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_FPS,
+                    connues: tuple | list = COULEURS_CONNUES) -> dict:
     """Pour chaque image (rgb24), la part de pixels qui ne sont ni des gris ni proches d'une couleur
-    chromatique de la marque ; les plages signalées et leurs couleurs dominantes."""
-    chromatiques = [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in marque)
+    chromatique de la marque ou d'un objet connu (`connues` : le kit, les logos du projet) ; les plages
+    signalées et leurs couleurs dominantes."""
+    chromatiques = [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in [*marque, *connues])
                     if math.hypot(c[1], c[2]) >= NEUTRE_MAX]
     cache: dict[int, bool] = {}
 
@@ -2705,19 +2730,21 @@ def cmd_palette(a) -> None:
     if not tokens:
         sys.exit("ERREUR : brand/tokens.css introuvable (`studio_motion.py style` depuis le dossier).")
     marque = couleurs_marque(tokens.read_text(encoding="utf-8"))
+    logos = couleurs_des_logos(projet_de(Path(a.video)))
     try:
-        v = verdict_palette(images_rgb(ffmpeg, Path(a.video)), marque)
+        v = verdict_palette(images_rgb(ffmpeg, Path(a.video)), marque, connues=[*COULEURS_CONNUES, *logos])
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
-    print(f"• palette de la marque : {', '.join(marque)} (plus noir, blanc et gris)")
+    print(f"• palette de la marque : {', '.join(marque)} (plus noir, blanc et gris), plus les vraies couleurs des "
+          f"objets connus du kit" + (f" et des {len(logos)} couleurs de ses logos" if logos else ""))
     if not v["plages"]:
         print("ok : rien hors de la palette (regarde quand même la planche).")
         return
     for pl in v["plages"]:
         print(f"✗ {pl['debut']:.1f} → {pl['fin']:.1f} s : {pl['part'] * 100:.0f} % de l'image hors palette "
               f"({', '.join(pl['couleurs'])})")
-    print("→ chacun de ces instants est une vraie capture du client ou le logo d'un outil (ils gardent leurs "
-          "couleurs) ; sinon il se corrige : jamais de teinte tirée de l'accent, ni d'image inventée.")
+    print("→ chacun de ces instants est une vraie capture du client, l'interface d'une plateforme ou un objet connu "
+          "(ils gardent leurs couleurs) ; sinon il se corrige : jamais de teinte tirée de l'accent, ni d'image inventée.")
     sys.exit(1)
 
 

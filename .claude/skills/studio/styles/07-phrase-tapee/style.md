@@ -53,6 +53,12 @@ claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel : `t7-
 
 ## 3. Les fonds et les couleurs
 
+**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : le
+dossier bleu du Mac et les fichiers du kit (`K.ic("objet-…")`), le téléphone et sa barre d'état, la
+notification et les bulles d'iPhone, les vrais logos de ses outils, l'interface d'une plateforme
+reconstruite d'après capture. Ce sont les touches de couleur vraie du film ; tout le reste prend
+les rôles ci-dessous ([image.md](../../references/image.md), « Les objets connus »).
+
 Les couleurs viennent de sa marque, et seulement d'elle ([image.md](../../references/image.md),
 « La palette ») ; ses captures et les logos de ses outils gardent leurs vraies couleurs.
 

@@ -71,12 +71,15 @@
       var CONTENU = {
         fond: "sombre",                 // "sombre" (sa nuit) ou "clair"
         offre: { nom: "Klasso", icone: "layers" },        // le nœud de l'offre : son nom et son icône (ou son logo « logo-… »)
-        entrees: [                      // ce qui entre (1 à 3) : nom court, icône du kit ou logo de l'outil (`logos`)
-          { nom: "Tes e-mails", icone: "mail" }, { nom: "Tes reçus", icone: "file-text" }
+        // Chaque icône : d'abord ce qu'on reconnaît, dans ses vraies couleurs : le vrai logo de l'outil
+        // (« logo-gmail », posé par `logos`), un objet connu du kit (« objet-pdf », « objet-dossier »,
+        // « objet-tableur »…) ; une icône d'un seul trait (« mail », « euro ») seulement pour une idée.
+        entrees: [                      // ce qui entre (1 à 3) : nom court et icône
+          { nom: "Tes e-mails", icone: "mail" }, { nom: "Tes reçus", icone: "objet-pdf" }
         ],
         sorties: [                      // ce qui sort (2 à 4), dans l'ordre où ça arrive
-          { nom: "Factures classées", icone: "folder" }, { nom: "TVA calculée", icone: "euro" },
-          { nom: "Export comptable", icone: "download" }
+          { nom: "Factures classées", icone: "objet-dossier" }, { nom: "TVA calculée", icone: "euro" },
+          { nom: "Export comptable", icone: "objet-tableur" }
         ],
         titre: "Ta compta se range seule",   // la ligne d'appui (3 à 6 mots), ou le mot héros (1 à 3 mots, avec heros: true) ; ou null
         heros: false,                   // true : le titre est un mot héros, en très grand

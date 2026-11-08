@@ -171,7 +171,10 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
   logiciel qu'il n'a pas, un écran que sa page ne montre pas. Ce qui se montre est sa vraie matière
   ([image.md](references/image.md), « La vraie matière »).
 - Sortir de sa palette : ses couleurs, du noir, du blanc, des gris neutres ; jamais une teinte tirée
-  de son accent. Seules ses vraies captures et les logos de ses outils gardent leurs couleurs.
+  de son accent. Seuls ses vraies captures, les logos de ses outils, les interfaces des plateformes
+  et les objets connus (le dossier bleu du Mac, un PDF, une notification d'iPhone) gardent leurs
+  couleurs, et la vidéo en montre : c'est sa touche de couleur vraie
+  ([image.md](references/image.md), « Les objets connus »).
 - Livrer une vidéo qui tombe dans un des défauts interdits ([image.md](references/image.md)), qui
   fait lire plus d'un mot par seconde ou plus de 8 mots sur une image, dont un texte part avant
   d'être lu, ou qu'un inconnu ne comprend pas : elle n'est pas finie.

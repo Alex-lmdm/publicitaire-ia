@@ -27,12 +27,17 @@ Liste, avec sa source, tout ce que la vidéo peut montrer de vrai :
 | **Le résultat** | ses Reels, un avant / après, un tableau de ventes, une page créée | Les vraies images et vidéos du dossier `sources/` |
 | **Les preuves** | captures de témoignages, chiffres de la page | Les vraies captures, les chiffres de la fiche |
 | **Le problème** | la façon pénible d'avant (un tableur, dix onglets, un agenda saturé, une boîte mail qui déborde) | Reconstruit en simple, reconnaissable, sans marque inventée |
+| **Les objets connus** | un dossier, des fichiers (PDF, Word, Excel, une vidéo), le téléphone et ses notifications, des messages, une fenêtre d'ordinateur | Dans leurs vraies couleurs : `K.ic("objet-dossier")`, `objet-pdf`…, `K.statut`, `K.notification`, `K.bulle`, `k-feux` ([kit.md](kit.md)) |
 
 Range cette matière dans l'ordre de l'échelle de [image.md](image.md) (« La vraie matière ») :
 les vraies captures, les interfaces à reconstruire, les vrais chiffres de la fiche à mettre en
 scène, les logos des outils, et ce qui ne pourra être dit que par ses mots. Au moment du script,
 chaque phrase prendra le plus haut barreau qui existe pour elle ; une phrase qui ne trouverait que
 sa typographie signale la matière à demander (section 3), jamais une forme à dessiner.
+
+Note aussi, plan par plan, **les objets connus** qu'il montrera dans leurs vraies couleurs : trois au
+moins dans une vidéo de plus de 15 s, un dans un Reel ([image.md](image.md), « Les objets
+connus »). Une vidéo dont la liste reste vide finira toute dans les trois couleurs de la marque.
 
 Puis choisis **les logos qui flotteront**, scène par scène : seulement ceux des outils dont la
 scène parle (l'outil du problème, la plateforme des résultats, les IA de l'offre), récupérés par

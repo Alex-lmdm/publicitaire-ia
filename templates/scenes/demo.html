@@ -61,6 +61,7 @@
       box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), 0 10px 24px rgba(0, 0, 0, 0.25); will-change: transform;
     }
     #demo .dem-apercu img { display: block; width: 100%; object-fit: cover; }
+    #demo .dem-ap-icone svg { display: block; width: 100%; height: 100%; }
     /* Sur du clair (la fenêtre en 9:16, le fond clair), les aperçus sont sombres : ils s'en détachent. */
     #demo .dem-apercu.dem-ap-sombre { background: var(--k-noir-2); box-shadow: 0 34px 70px rgba(0, 0, 0, 0.38), 0 8px 20px rgba(0, 0, 0, 0.22), inset 0 0 0 1.5px rgba(255, 255, 255, 0.08); }
     #demo .dem-ap-sombre .dem-ap-titre { color: var(--k-blanc); }
@@ -104,7 +105,9 @@
           { texte: "Client retrouvé", apercu: ["Studio Lumen", "Lyon 2e"], image: null },   // image : "assets/images/…" posée sur l'aperçu
           { texte: "Lignes ajoutées", apercu: ["3 jours", "Montage vidéo"], image: null },
           { texte: "Total calculé", apercu: ["1 850 €", "TVA comprise"], image: null },
-          { texte: "PDF généré", apercu: ["Facture 041", "Une page"], image: null }
+          // icone : ce que l'étape produit, tel qu'on le reconnaît (un objet connu du kit : « objet-pdf »,
+          // « objet-dossier »… ; ou le vrai logo de l'outil, « logo-… ») ; sans image
+          { texte: "PDF généré", apercu: ["Facture 041", "Une page"], image: null, icone: "objet-pdf" }
         ],
         attente: "En attente de ta demande",  // le statut du pied avant la réponse
         resultat: "Facture prête",            // le statut obtenu (2 ou 3 mots)
@@ -235,11 +238,16 @@
         a.setAttribute("data-layout-allow-overlap", "");   // ils flottent devant la fenêtre, voulu
         a.setAttribute("data-layout-allow-overflow", "");
         if (et.image) { var im = K.el(a, "img", null, null, "height:" + px(lAp * 0.56) + ";"); im.src = et.image; im.alt = ""; }
-        var corps = K.el(a, "div", null, null, "padding:" + px(padAp) + " " + px(padAp + 8) + ";");
-        if (ap[0]) K.el(corps, "div", "dem-ap-titre", null, "font-size:" + px(fApT) + "; line-height:1.15;").textContent = ap[0];
-        if (ap[1]) K.el(corps, "div", "dem-ap-detail", null, "font-size:" + px(fApD) + "; line-height:1.2; margin-top:4px;").textContent = ap[1];
+        var icone = !et.image && et.icone ? K.ic(et.icone) : "", tIc = fApT * 1.7;
+        var corps = K.el(a, "div", null, null, "padding:" + px(padAp) + " " + px(padAp + 8) + ";" +
+          (icone ? " display:flex; align-items:center; gap:" + px(padAp) + ";" : ""));
+        if (icone) K.el(corps, "div", "dem-ap-icone", icone, "flex:none; width:" + px(tIc) + "; height:" + px(tIc) + ";");
+        var textes = icone ? K.el(corps, "div", null, null, "min-width:0;") : corps;
+        if (ap[0]) K.el(textes, "div", "dem-ap-titre", null, "font-size:" + px(fApT) + "; line-height:1.15;").textContent = ap[0];
+        if (ap[1]) K.el(textes, "div", "dem-ap-detail", null, "font-size:" + px(fApD) + "; line-height:1.2; margin-top:4px;").textContent = ap[1];
         K.cacher(a);
-        return { el: a, h: (et.image ? lAp * 0.56 : 0) + 2 * padAp + (ap[0] ? fApT * 1.15 : 0) + (ap[1] ? fApD * 1.2 + 4 : 0) };
+        var hTextes = (ap[0] ? fApT * 1.15 : 0) + (ap[1] ? fApD * 1.2 + 4 : 0);
+        return { el: a, h: (et.image ? lAp * 0.56 : 0) + 2 * padAp + Math.max(hTextes, icone ? tIc : 0) };
       });
 
       // --- La projection : où tombe à l'écran un point de la planche (perspective du kit, 1800 px

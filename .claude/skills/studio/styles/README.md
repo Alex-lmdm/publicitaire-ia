@@ -115,8 +115,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
      ni d'allers-retours sous un texte. La vie, pendant la lecture, vient de ce que la phrase montre :
      un `rythme` trop bas se corrige par un événement de contenu, jamais par un recadrage ajouté
      ([mouvement.md](../references/mouvement.md), « La caméra » et « Le rythme »).
-   - **Les couleurs : celles de sa marque, rien d'autre** ([image.md](../references/image.md), « La
-     palette »). Tout vient de `brand/tokens.css` : `--brand-bg`, `--brand-surface`, `--brand-text`,
+   - **Les couleurs : celles de sa marque, plus les vraies couleurs des objets connus**
+     ([image.md](../references/image.md), « La palette »). Tout vient de `brand/tokens.css` : `--brand-bg`, `--brand-surface`, `--brand-text`,
      `--brand-muted`, `--brand-accent`, `--brand-secondary`, `--brand-contrast`, `--brand-sombre`,
      `--brand-clair`, `--brand-accent-lisible`, `--brand-gris-1` à `--brand-gris-4`. Les fonds de nuit
      d'un style prennent `var(--brand-sombre)` (sa couleur la plus sombre : son fond s'il est sombre,
@@ -124,7 +124,12 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
      `var(--brand-accent)`, ses gris `var(--brand-gris-1)` à `var(--brand-gris-4)`. Le texte posé
      sur la nuit est `var(--brand-clair)`, sur l'accent `var(--brand-contrast)`. Du blanc ou du noir
      en transparence seulement pour une grille fine ou une ombre neutre. Aucune couleur en dur hors
-     ces neutres, aucune teinte tirée de l'accent (`oklch(from…)`, `color-mix` avec l'accent, l'accent
+     ces neutres, sauf celles des **objets connus**, dans tous les styles : le dossier bleu du Mac et
+     les fichiers du kit (`objets.js`), la notification et les bulles d'iPhone, les vrais logos de ses
+     outils, l'interface d'une plateforme reconstruite d'après capture. Ils gardent leurs vraies
+     couleurs, ce sont les touches qui évitent une vidéo toute en trois couleurs
+     ([image.md](../references/image.md), « Les objets connus ») ; leurs couleurs ne débordent jamais
+     sur un fond, un texte ou un trait. Aucune teinte tirée de l'accent (`oklch(from…)`, `color-mix` avec l'accent, l'accent
      mêlé de blanc ou de noir, un dégradé vers lui, l'accent en transparence sur du sombre) : avec un
      jaune, cela fait du brun, de l'olive ou de l'orangé. Tout texte garde un contraste d'au moins
      4,5:1 avec son fond. Aucun halo, néon ni dégradé coloré ; les ombres sont neutres.
