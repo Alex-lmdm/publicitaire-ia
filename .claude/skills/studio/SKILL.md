@@ -46,7 +46,7 @@ Windows : `python` (ou `py -3`) au lieu de `python3`.
 | 2 bis. Le repérage | [reperage.md](references/reperage.md) | l'inventaire de sa vraie matière |
 | 3. La structure et trois idées | [structures.md](references/structures.md), [angles.md](references/angles.md) | l'idée choisie |
 | 3 bis. Le script | [ecriture.md](references/ecriture.md) | le film en plans, validé par le client |
-| 4. Le style, la musique, le plan | [styles/README.md](styles/README.md), [supports.md](references/supports.md), [son.md](references/son.md) | `PLAN.md` scène par scène |
+| 4. Le style, la musique, la 3D, le plan | [styles/README.md](styles/README.md), [supports.md](references/supports.md), [son.md](references/son.md) | `PLAN.md` scène par scène |
 | 5. La fabrication | [image.md](references/image.md), [mouvement.md](references/mouvement.md), [scenes.md](references/scenes.md), [kit.md](references/kit.md), [composition.md](references/composition.md) | les scènes, le MP4 |
 | 6. La revue | [revue.md](references/revue.md) | une vidéo qui passe ses portes |
 | 7. La livraison | [livraison.md](references/livraison.md) | `livraison/` complet |
@@ -93,16 +93,27 @@ tenue et le compte : **au plus un mot à lire par seconde**. Montre-le plan par 
 accord** : deuxième validation obligatoire, c'est ici qu'une vidéo se réussit. Avec une voix off,
 ce script est le texte de la voix ([voix.md](references/voix.md)).
 
-### 4. Le style, la musique, puis le plan
+### 4. Le style, la musique, la 3D, puis le plan
 
 `musiques choisir --ouvrir` lui montre en vidéo le style 0, **« Sur mesure », notre style maison**,
-puis les 8 styles, et trois musiques ; la page marque ton conseil, le style 0 sans `--style`
+puis les 8 styles, trois musiques, et pose **la question de la 3D** ; la page marque tes conseils,
+le style 0 sans `--style`
 ([styles/README.md](styles/README.md), « Appliquer un style », point 1, dit quand en conseiller un
 autre). Il répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime
 (`reference`), décrit ce qu'il veut ou répond « aucun » : la fiche du style 0, « Quand il décrit un
 autre style », jamais un style improvisé. Un style déjà connu ne se redemande
 pas (`--sans-styles`). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
 remplace ce choix musical ([son.md](references/son.md)).
+
+**La 3D**, une seule question à choix, sur la même page : « Des plans en 3D dans ta vidéo ? a) non,
+ou quelques touches simples (plus rapide) ; b) oui, des plans 3D poussés et détaillés (plus
+spectaculaires, mais ils utilisent davantage ton abonnement Claude ou ChatGPT) ». Il répond avec le
+reste (« 0, 1, b ») ; sans réponse sur la 3D : a. Ton conseil (`--3d b`) : a par défaut, b quand son
+offre a un moment qui gagne à être vu comme une photo de produit ([scenes.md](references/scenes.md),
+« La 3D, quand elle sert »). Sans page (sa propre musique, un style déjà connu et pas de musique à
+choisir), pose-la dans ton message, en une ligne. Note sa réponse dans `PLAN.md` (« 3D : a » ou
+« 3D : b ») ; « garde-le pour mes prochaines vidéos » : `3D poussée` ou `3D simple` dans ses
+préférences, et la page ne la repose plus (`--sans-3d`, ou `--3d` pour la rouvrir).
 
 **La bande-son précède le plan d'animation** : la voix d'abord s'il en veut une (`voix.md`),
 puis le morceau, analysé et calé, ses repères notés dans `PLAN.md` (son.md, « Construire l'image
@@ -126,8 +137,8 @@ sous-composition de `compositions/`, montée dans `index.html`. Pour chaque scè
 Vérifie chaque raccord (dernière image d'une scène, première de la suivante). Commence par le support
 principal ; les autres formats sont des **mises en page** de la même vidéo, jamais des recadrages.
 Lis la fiche de son style (le style 0 compris) : c'est une grammaire, pas un film à refaire.
-Un plan en vraie 3D seulement là où le volume montre quelque chose (scenes.md, « La 3D, quand elle
-sert »).
+Un plan en vraie 3D seulement là où le volume montre quelque chose, au niveau qu'il a choisi
+(« 3D : a » ou « 3D : b », scenes.md, « La 3D, quand elle sert »).
 Chaque scène part sur un temps de la musique, ou avec sa phrase s'il y a une voix
 ([son.md](references/son.md), « Construire l'image sur la bande-son »).
 
@@ -171,11 +182,13 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
 - **Inventer une image** : paysage, illustration, objet décoratif (un objet connu dont le plan parle
   n'en est pas un), photo factice, l'interface d'un
   logiciel qu'il n'a pas, un écran que sa page ne montre pas. Ce qui se montre est sa vraie matière
-  ([image.md](references/image.md), « La vraie matière »).
+  ([image.md](references/image.md), « La vraie matière ») ; le plateau de la 3D poussée, s'il l'a
+  choisie, l'entoure sans la remplacer (image.md, « Le plateau de la 3D poussée »).
 - Sortir de sa palette : ses couleurs, du noir, du blanc, des gris neutres ; jamais une teinte tirée
   de son accent. Seuls ses vraies captures, les logos de ses outils, les interfaces des plateformes
   et les objets connus gardent leurs couleurs, et la vidéo en montre : c'est sa touche de couleur
-  vraie ([image.md](references/image.md), « Les objets connus »).
+  vraie ([image.md](references/image.md), « Les objets connus »). Un plan de plateau de la 3D
+  poussée garde celles de la vraie vie (`data-plateau`) ; ses mots restent à sa marque.
 - Livrer une vidéo qui tombe dans un des défauts interdits ([image.md](references/image.md)), qui
   fait lire plus d'un mot par seconde ou plus de 8 mots sur une image, dont un texte part avant
   d'être lu, ou qu'un inconnu ne comprend pas : elle n'est pas finie.
@@ -191,4 +204,4 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
 
 `marque.json` : nom, couleurs, polices, logo, mot-clé, musique, et son dossier Monteur IA s'il en a
 un ([marque.md](references/marque.md)). `studio.config.json` : son profil et ses préférences (un
-style gardé : `style N`), relus à chaque vidéo.
+style gardé : `style N` ; la 3D gardée : `3D poussée` ou `3D simple`), relus à chaque vidéo.

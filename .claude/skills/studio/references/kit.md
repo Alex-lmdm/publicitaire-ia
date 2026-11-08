@@ -58,7 +58,7 @@ Son hôte dans `index.html`, sur la piste 1, à la suite de la scène d'avant :
 
 Le repère de départ du gabarit (`#attente`, et ses deux lignes dans le script d'`index.html`) se
 retire à la première scène montée ; `data-duration` de `#root` et de `#fond` prend la durée totale
-de la vidéo (90 s au départ : une fin plus courte tiendrait la dernière image).
+de la vidéo (au départ, la durée visée de son support : une fin plus courte tiendrait la dernière image).
 
 ## Les classes
 
@@ -67,6 +67,7 @@ de la vidéo (90 s au départ : une fin plus courte tiendrait la dernière image
 | `k-scene` | conteneur plein cadre de la scène |
 | `k-fond k-fond-sombre` · `k-fond-clair` · `k-fond-accent` | fonds : gris anthracite neutre (`#1b1b1d`) avec grille fine, blanc à peine gris (`#f3f3f3`) avec grille, couleur d'accent pleine ; pour une nuit à sa marque, `var(--brand-sombre)` |
 | `k-vignette` · `k-vignette-claire` | assombrit les bords (à placer sous le sujet si un plein écran de couleur doit rester pur) |
+| `k-mots` | le calque des mots, devant tout ce que la scène montre (un canvas 3D compris) |
 | `k-scene3d` > `k-camera` | l'espace en perspective et la caméra qu'on anime (`scale`, `rotationX/Y/Z`, `x`, `y`) |
 | `k-plan` | un objet placé dans l'espace 3D |
 | `k-titre`, `k-mot`, `k-leger`, `k-accent` | titres à deux graisses ; chaque `k-mot` entre séparément |
@@ -153,11 +154,20 @@ une liste.
 
 ## La 3D : `kit/plan3d.js`
 
-Un plan en vraie 3D (three.js, copié dans `assets/vendor/` par `npm run sync`), à l'usage décrit
-dans [scenes.md](scenes.md) (« La 3D, quand elle sert »). C'est une sous-composition comme une
-autre : un canvas, un script **module** qui appelle `plan3d`, et ses mots en HTML par-dessus, dans
-le calque `k-mots`, animés par la timeline de la scène comme partout. Ce squelette se cadre seul en
-9:16 comme en 16:9 (`distance`) :
+Un plan en vraie 3D (three.js, copié dans `assets/vendor/` par `npm run sync`), au niveau choisi
+par le client et à l'usage décrit dans [scenes.md](scenes.md) (« La 3D, quand elle sert »). C'est
+une sous-composition comme une autre : un canvas, un script **module** qui appelle `plan3d`, et ses
+mots en HTML par-dessus, dans le calque `k-mots`, animés par la timeline de la scène comme partout.
+`plan3d` fait la plomberie (le rendu, la lumière, la synchronisation sur le temps de la vidéo) et
+donne à la scène ses outils, ses **briques** (des objets du quotidien déjà construits pièce par
+pièce) et ses **matières** ; la scène pose ses objets et rend `poser(t)`. L'unité est **10 cm** :
+un ordinateur portable fait 3 unités de large, une tasse un peu moins d'une. Le repère : y vers le
+haut, la caméra regarde de face depuis +z vers -z ; une brique se pose sur y = 0 (la table, le sol),
+le mur d'un plateau est à z = -`recul`.
+
+### Niveau a : un objet détaillé sur le fond de sa marque
+
+Ce squelette se cadre seul en 9:16 comme en 16:9 (`distance`) :
 
 ```html
 <template>
@@ -174,27 +184,20 @@ le calque `k-mots`, animés par la timeline de la scène comme partout. Ce squel
   </div>
   <script type="module">
     import { plan3d } from "./kit/plan3d.js";
-    plan3d(document.getElementById("s5-vue"), async ({ THREE, scene, camera, distance, courbe, jeton, aplat, texture, arrondi, plaquer, sol }) => {
-      sol(-1.2);                                          // l'ombre au sol, neutre (jamais sur l'aplat)
-      const l = 2.6, h = 1.62;                            // un écran épais : sa vraie page sur la face
-      const objet = new THREE.Mesh(
-        new THREE.ExtrudeGeometry(arrondi(l, h, 0.1), { depth: 0.07, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025 }),
-        new THREE.MeshPhysicalMaterial({ color: jeton("--brand-gris-1"), roughness: 0.35, clearcoat: 1 }));   // éclairée : neutre
-      objet.castShadow = true;
-      const face = new THREE.Mesh(plaquer(new THREE.ShapeGeometry(arrondi(l - 0.1, h - 0.1, 0.08), 24), l - 0.1, h - 0.1),
-        aplat(0xffffff, { map: await texture("assets/images/page.png") }));   // une image, une couleur : en aplat
-      face.position.z = 0.1;
-      objet.add(face);
-      scene.add(objet);
-      const d0 = distance(l, h, 0.6), arrivee = courbe("expo.out"), derive = courbe("sine.inOut");
+    plan3d(document.getElementById("s5-vue"), async ({ scene, camera, briques, distance, courbe, sol }) => {
+      sol(-0.8);                                          // l'ombre au sol, neutre (jamais sur l'aplat)
+      const tel = await briques.telephone({ ecran: "assets/images/app.png" });   // sa vraie capture, en aplat
+      scene.add(tel);
+      const d0 = distance(tel.dimensions.l, tel.dimensions.h, 0.62), arrivee = courbe("expo.out"), derive = courbe("sine.inOut");
       return (t) => {                                     // t : secondes depuis le début du plan
         const a = arrivee(Math.min(1, t / 0.8)), b = derive(Math.min(1, t / 4));
-        objet.rotation.y = -0.9 + 0.75 * a;               // il arrive en pivotant, puis se tient
-        objet.position.y = -0.4 * (1 - a);
-        camera.position.set(0.15, 0.2, d0 * (1.02 - 0.03 * b));   // puis une dérive lente, 3 %
+        tel.rotation.y = -1 + 0.8 * a;                    // il arrive en pivotant, puis se tient
+        tel.position.y = -0.3 * (1 - a);
+        tel.defiler(0.3 * b);                             // sa capture défile doucement sur l'écran
+        camera.position.set(0.1, 0.1, d0 * (1.02 - 0.03 * b));   // puis une dérive lente, 3 %
         camera.lookAt(0, 0, 0);
       };
-    });
+    }, { focale: 50 });
   </script>
   <script>
     (function () {                                        // ses mots : la timeline de la scène, comme partout
@@ -209,36 +212,167 @@ le calque `k-mots`, animés par la timeline de la scène comme partout. Ce squel
 </template>
 ```
 
-| Outil | Ce qu'il donne |
+### Niveau b : un plateau
+
+Une photo de produit qui bouge : la table, le mur, sa vraie matière au centre, des objets du
+quotidien autour, le soleil d'une fenêtre, l'objectif et la finition film. Le même plan se cadre en
+16:9 (un plan large, à hauteur de table) et en 9:16 (une plongée sur le bureau, la tasse au premier
+plan). Son hôte dans `index.html` porte **`data-plateau`**, son canvas **`data-layout-allow-overflow`**
+(un plateau remplit l'image : il touche les bords exprès).
+
+```html
+<template>
+  <style>
+    #s3-titre { position: absolute; left: 6%; top: 7%; font: 800 140px/0.95 var(--brand-font-display); letter-spacing: -0.04em; color: var(--brand-sombre); }
+    #s3-titre span { background: var(--brand-accent); color: var(--brand-contrast); padding: 0 0.12em; }
+  </style>
+  <!-- 16:9. En 9:16 (Reel, story) : data-width="1080" data-height="1920" ici et sur l'hôte ; le code choisit sa caméra (vertical). -->
+  <div data-composition-id="s3" data-width="1920" data-height="1080" data-duration="4.5" style="position:absolute; inset:0;">
+    <div id="s3" class="k-scene">
+      <canvas id="s3-vue" data-layout-allow-overflow style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+      <div class="k-mots"><div id="s3-titre">Ta <span>page.</span></div></div>
+    </div>
+  </div>
+  <script type="module">
+    import { plan3d } from "./kit/plan3d.js";
+    const NOM = "…";              // le nom de son offre, recopié de OFFRE.json (offre.nom) comme tous ses mots, imprimé sur son carnet
+    plan3d(document.getElementById("s3-vue"), async ({ scene, briques, jeton, courbe, orbite, net, largeur, hauteur }) => {
+      const vertical = hauteur > largeur;
+      scene.add(briques.plateau({ bois: "chene", mur: "#e4ded4", recul: 7 }));     // la table (dessus à y = 0), le mur
+      const ordi = await briques.ordinateur({ ecran: "assets/images/page.png", ouvert: 0.3 });   // sa vraie page
+      ordi.position.set(-0.5, 0, 0.3); ordi.rotation.y = 0.1;
+      const carnet = await briques.carnet({ couverture: jeton("--brand-sombre"), titre: NOM, encre: jeton("--brand-accent") });
+      carnet.position.set(2.75, 0, 0.75); carnet.rotation.y = -0.32;
+      const crayon = briques.crayon();
+      crayon.position.set(2.65, carnet.dimensions.e, 0.9); crayon.rotation.y = 0.95;
+      const tasse = briques.tasse({ cafe: true });
+      tasse.position.set(...(vertical ? [-0.9, 0, 4.1] : [-3.9, 0, -2.6])); tasse.rotation.y = 2.2;
+      scene.add(ordi, carnet, crayon, tasse);
+      const arrivee = courbe("expo.out"), derive = courbe("sine.inOut");
+      // la caméra : le point regardé, sa distance (unités), sa hauteur et son côté (degrés). 16:9 : à hauteur
+      // de table, le mur derrière ; 9:16 : une plongée sur le bureau, la tasse au premier plan.
+      const cible = vertical ? [0.45, 0.2, 0.2] : [-0.5, 0.85, 0], d0 = vertical ? 13.5 : 12.8;
+      const haut = vertical ? 57 : 21, cote = vertical ? 6 : 9;
+      return (t) => {
+        const a = arrivee(Math.min(1, Math.max(0, (t - 0.2) / 1.3))), b = derive(Math.min(1, t / 4.5));
+        ordi.ouvrir(0.3 + 0.7 * a);                                    // il s'ouvre...
+        ordi.defiler(0.32 * derive(Math.min(1, Math.max(0, (t - 1.6) / 2.9))));   // ...puis sa page défile
+        orbite(cible, d0 * (1.04 - 0.05 * b), haut, cote);             // une avancée lente
+        net(ordi.ecran);                                               // la mise au point sur sa page
+      };
+    }, { focale: 50, lumiere: "fenetre", ouverture: 2.8, contact: true, finition: true });
+  </script>
+  <!-- … ses mots : la timeline de la scène, comme au niveau a … -->
+</template>
+```
+
+```html
+<div id="s3-hote" data-composition-id="s3" data-composition-src="compositions/s3.html" data-start="8" data-duration="4.5" data-track-index="1" data-width="1920" data-height="1080" data-plateau></div>
+```
+
+### Les réglages du plan
+
+| Option de `plan3d(canvas, construire, {…})` | Ce qu'elle fait |
 |---|---|
-| `plan3d(canvas, construire, {angle, ombre})` | le rendu, la lumière de studio et ses reflets, la synchronisation sur le temps de la vidéo ; `construire` crée les objets (elle peut attendre des textures) et rend `poser(t)` ; `angle` : l'angle de vue vertical (26° par défaut, plus petit = plus serré) ; `ombre: false` sans ombre |
-| `THREE`, `scene`, `camera`, `renderer`, `lumiere`, `largeur`, `hauteur` | three.js et la scène prête : la caméra, la lumière principale qui porte l'ombre, un fond transparent (le fond du kit se voit derrière), la taille de la composition |
+| `focale: 35`, `50`, `85` | l'objectif, en millimètres : 35 large (un décor), 50 naturel, 85 serré (un objet, un détail) ; sinon `angle`, l'angle de vue vertical (26° par défaut) |
+| `lumiere: "studio"` (par défaut) | la lumière produit : une principale douce qui porte l'ombre (ajustée seule aux objets), un remplissage neutre, les reflets d'une pièce |
+| `lumiere: "fenetre"`, ou `{ type: "fenetre", cote: "droite", motif: "store" \| "fenetre" \| "aucun", force, couleur, inclinaison, position, cible }` | un soleil chaud qui entre de côté et dessine l'ombre d'un store (ou des carreaux d'une fenêtre) sur la table et le mur, le bleu du ciel dans les ombres, un rendu photographique. Le soleil est à 13 unités à gauche (`cote: "droite"` : à droite), 12 au-dessus, 6 devant, et vise [0, 0, -1,5] ; pour un grand décor (une salle de classe), éloigne-le (`position: [-60, 45, 10]`) et vise le centre du décor |
+| `ouverture: 1.4` à `8` | la profondeur de champ d'un vrai objectif : 2 très flou, 2.8 un fond doux, 5.6 presque tout net ; la mise au point se fait par `net()` |
+| `contact: true` | l'ombre de contact, là où deux objets se touchent |
+| `finition: true`, ou `{ grain, vignette }` | la finition film : un grain fin qui change à chaque image (toujours le même à un instant donné) et un léger vignettage |
+| `fond: "--brand-sombre"` | avec `ouverture`, `contact` ou `finition`, l'image est opaque : la couleur de ce qui n'est couvert par rien (un plateau couvre tout) |
+| `exposition`, `ombre: false` | plus clair (1.3) ou plus sombre (0.9) ; sans ombre |
+
+| Outil donné à `construire` | Ce qu'il donne |
+|---|---|
+| `THREE`, `scene`, `camera`, `renderer`, `largeur`, `hauteur` | three.js et la scène prête : la caméra, un fond transparent au niveau a (le fond du kit se voit derrière), la taille de la composition |
+| `lumiere`, `lumieres` | la lumière principale (le soleil à la fenêtre), et toutes (`soleil`, `ciel`, `rebond`), à déplacer si le plan le demande |
+| `briques`, `matiere` | les objets et les matières, plus bas |
+| `orbite(cible, d, hauteur, cote)` | la caméra autour d'un point (`[x, y, z]`) : à `d` unités, `hauteur` degrés au-dessus de l'horizon (0 à hauteur du point, 90 à la verticale), `cote` degrés vers la droite (0 de face) ; elle le regarde. À appeler dans `poser(t)` |
+| `net(cible)` | la mise au point, à appeler dans `poser(t)` : sur un objet (`ordi.ecran`), un point (`[x, y, z]`) ou une distance ; sans elle, sur l'origine |
 | `distance(l, h, part)` | la distance de la caméra pour qu'un objet de l × h, face à elle, occupe `part` du cadre (0,6 par défaut) : le même plan se cadre en 9:16 comme en 16:9 |
 | `courbe("expo.out")` | une courbe de GSAP, à appliquer à une progression de 0 à 1 : les mêmes arrivées et dérives qu'ailleurs ([mouvement.md](mouvement.md)) |
 | `jeton("--brand-gris-1")` | une couleur de sa marque (`THREE.Color`) |
-| `aplat(couleur, {map})` | une matière sans lumière : la couleur reste exactement elle (l'accent, un objet connu, une capture) |
+| `aplat(couleur, {map})` | une matière sans lumière : la couleur reste exactement elle (l'accent, un objet connu, une capture), même sous le soleil et l'objectif |
 | `texture(src, {taille, couleur})` | une image du projet (`"assets/images/page.png"`) ou un SVG du kit (`K.ic("logo-stripe")`, `K.ic("objet-pdf")`) prête à poser ; `couleur` pour un SVG d'un seul trait |
 | `arrondi(l, h, r)`, `plaquer(geometrie, l, h)` | un rectangle aux coins ronds, centré, à extruder (`ExtrudeGeometry`) ou à poser à plat (`ShapeGeometry`) ; une image qui remplit une forme posée à plat |
-| `sol(y, opacite)` | un sol invisible qui ne garde que l'ombre, neutre |
+| `sol(y, opacite)` | un sol invisible qui ne garde que l'ombre, neutre (niveau a) |
 | `hasard()` | un hasard toujours le même, pour placer des objets « au hasard » |
 
-- **Les couleurs** : une matière éclairée (`MeshStandardMaterial`, `MeshPhysicalMaterial`) reste
-  neutre (les gris de sa marque, du blanc, du noir, l'alu, le verre) ; l'accent et les couleurs des
-  objets connus se posent en `aplat`. Éclairée, une couleur s'assombrit sur ses côtés en teintes
-  hors de sa palette (un jaune vire à l'olive), et `palette` le refuse.
-- **En 9:16**, un objet couché (un écran en largeur) reste petit dans un cadre haut : préfère un objet
-  debout (un téléphone, une carte, une boîte) ou rapproche-le (`distance(l, h, 0.85)`).
+### Les briques : des objets du quotidien, pièce par pièce
+
+Chaque brique est un groupe three.js, à la taille réelle, posé sur sa base (y = 0 : sur la table)
+sauf le téléphone et la tablette, centrés et debout, écran vers la caméra. Un écran prend sa **vraie
+capture** (`ecran` : son chemin, ou une texture déjà chargée), en aplat, cadrée comme une page (le
+haut d'abord) ; sans capture il reste éteint. Une vitre légère passe devant (`reflet: false` pour
+l'ôter). Aucune marque n'est dessinée (ni logo sur une coque, ni lettre sur les touches).
+
+| Brique | Ses pièces | Ce qu'on en fait |
+|---|---|---|
+| `briques.ordinateur({ ecran, teinte: "argent" \| "gris" \| "noir", ouvert, cadrage })` | coque d'alu brossé, clavier touche par touche, pavé tactile, pieds, ports, charnière, écran et sa caméra | `ouvrir(p)` (0 fermé, 1 ouvert à 110°), `defiler(p)` (sa page défile : 0 le haut, 1 le bas), `ecran`, `couvercle`, `dimensions` |
+| `briques.telephone({ ecran, teinte: "graphite" \| "argent" \| "noir" \| "blanc" })` | cadre de métal, vitre, écran, île, dos de verre dépoli, bloc photo et ses objectifs, flash, boutons | `defiler(p)`, `ecran`, `epaisseur` ; couché sur la table : `rotation.x = -Math.PI / 2`, `position.y = epaisseur / 2` |
+| `briques.tablette({ ecran, teinte })` | coque d'alu, vitre, écran, caméras | comme le téléphone |
+| `briques.carnet({ couverture, titre, encre, pages: "lignes" \| "carreaux" \| "seyes" \| "blanc", ouvert })` | couvertures, bloc de pages et sa tranche, page lignée (ou Seyès, le cahier d'écolier), spirale de métal et ses trous | `ouvrir(p)` (la couverture se rabat), `dimensions` ; `titre` : le nom de son offre (`OFFRE.json`), imprimé dans la police de sa marque |
+| `briques.crayon({ couleur, gomme })` | corps hexagonal laqué, bois taillé, mine, virole et ses rainures, gomme | couché sur un pan, la pointe vers +x |
+| `briques.tasse({ couleur, cafe })` | corps tourné en céramique émaillée, anse, café | l'anse vers +x |
+| `briques.pupitre({ bois, metal })`, `briques.chaise({ bois, metal })` | le pupitre d'écolier (plateau de bois, casier, pieds en tube) et sa chaise (assise, dossier) | posés sur y = 0 ; l'élève est côté +z, le dossier de la chaise aussi : mets la chaise 3 unités devant le pupitre |
+| `briques.tableau({ l, h, ardoise, cadre })` | le tableau noir (2,4 × 1 m par défaut) : ardoise verte, cadre de bois, rebord, deux craies, la brosse ; rien n'y est écrit | centré, face à +z : sur le mur, `position.set(0, 14, -recul + 0.3)` |
+| `briques.plateau({ bois, mur, recul, largeur, profondeur, hauteurMur, sansMur })` | une table de bois (dessus à y = 0) et un mur peint à `recul` derrière ; par défaut 40 × 22 unités de table, un mur de 24 de haut à 7 derrière ; agrandi (`largeur: 90, profondeur: 70, recul: 30, hauteurMur: 40`), la table devient le parquet d'une pièce | `table`, `mur` |
+| `briques.boite`, `dalle`, `coque`, `plaque`, `cylindre`, `ecran` | les formes de base aux arêtes arrondies : `boite(l, h, p, r, matiere)` (centrée), `dalle(l, p, e, rCoins, rBords, matiere, echelleUV)` (une planche couchée, posée sur y = 0), `coque(l, h, e, r, b, matiere, echelleUV)` (une coque debout, centrée, face à +z), `plaque(l, h, r, matiere)` (une face plate, centrée, face à +z, sa texture la remplit), `cylindre(rHaut, rBas, h, matiere)` (centré, debout selon y), `ecran(source, l, h, r)` ; `echelleUV: 8` pour du bois (une texture couvre 80 cm) | construire, pièce par pièce, un objet que le kit n'a pas : une boîte d'envoi, une étagère, une montre |
+
+| Matière (`matiere.…`) | Ce qu'elle donne |
+|---|---|
+| `bois({ essence: "chene" \| "noyer" \| "clair" \| "fonce" \| "cedre", planches, repetition })` | un bois veiné, ses cernes, ses pores, ses lames |
+| `papier({ l, h, lignes: "lignes" \| "carreaux" \| "seyes" \| "blanc", marge })`, `tranche()` | une page crème, fibreuse, lignée ; la tranche d'un bloc de pages |
+| `alu({ teinte, brosse })`, `chrome()` | l'aluminium brossé ou poli, le métal d'une spirale |
+| `plastique({ couleur, mat })`, `verre({ couleur, depoli })`, `ceramique({ couleur })`, `laque({ couleur })`, `mat({ couleur, rugosite })` | une touche, une coque, l'écran éteint, une tasse, un crayon peint, une gomme |
+| `mur({ couleur })`, `carton({ couleur })` | un mur peint, du kraft |
+| `impression(texte, { police, encre, fond })` | un texte imprimé dans la police de sa marque (le nom de son offre sur une couverture) ; jamais un texte à lire, qui reste en HTML |
+
+Toutes sortent d'un hasard à graine : la même texture à chaque rendu, sans fichier à fournir.
+
+### Les règles du plan
+
+- **Les couleurs** : une matière éclairée (le bois, le papier, l'alu) garde les couleurs de la vraie
+  vie ; sa marque se pose en `aplat` (et ses mots en HTML). Au niveau a, une matière éclairée reste
+  neutre (les gris de sa marque, du blanc, du noir, l'alu, le verre) : éclairée, une couleur
+  s'assombrit sur ses côtés en teintes hors de sa palette (un jaune vire à l'olive), et `palette` le
+  refuse. Au niveau b, l'hôte du plateau porte `data-plateau` : `palette` laisse ses couleurs à la
+  revue, et refuse la vidéo si les plateaux en couvrent plus de la moitié.
+- **Ses mots sur un plateau** : un mur clair et une table au soleil font un fond changeant ; ses mots
+  prennent son encre sombre (`--brand-sombre`) sur un décor clair, son encre claire sur un décor sombre
+  (un tableau noir, un mur foncé), ou, partout, un bloc plein (son accent, ou sa couleur sombre sous son
+  texte clair).
+- **Cadrer un plateau** : `orbite`. En 16:9, à hauteur de table, 15 à 25° ; en 9:16, une plongée de
+  45 à 60° sur un bureau (la table remplit le cadre haut), ou 15 à 25° pour garder le mur et le décor
+  (une salle de classe) ; 10 à 14 unités pour un bureau à 50 mm, davantage pour une pièce (35 mm).
+  Vérifie à l'image : le héros (sa capture) occupe au moins 40 % de la largeur dans le plan qui le montre.
+- **Sortir d'un plateau** vers un plan à plat : un bloc de ses mots (son accent) qui grandit jusqu'à
+  couvrir l'écran et devient le fond du plan suivant, ou un disque qui part de l'écran de l'ordinateur
+  (`K.flash`). Ce raccord joué par-dessus le plateau compte dans sa durée (celle de son hôte), donc
+  dans la moitié de la vidéo que les plateaux ne dépassent pas.
+- **La capture qui va avec l'objet** : sa page de bureau sur l'ordinateur ou la tablette, une capture
+  de téléphone sur le téléphone (une page de bureau y serait illisible).
+- **En 9:16**, un objet couché (un ordinateur ouvert) reste petit dans un cadre haut : plonge sur la
+  table (la caméra au-dessus), préfère un objet debout (un téléphone, une carte), ou rapproche-le
+  (`distance(l, h, 0.85)`).
 - **`poser(t)` ne lit que t** : jamais d'horloge, de minuterie, de `requestAnimationFrame`, de boucle
   ni de `Math.random` (`hasard`). La preuve : `npx hyperframes snapshot --at 2,0,2` donne deux images
   identiques à 2 s.
 - **Ce que `check` ne voit pas** : rien de ce qui est dessiné dans le canvas (taille, contraste, temps
   de lecture). Les mots à lire restent donc en HTML ; regarde les images du plan. Un objet qui sort du
   cadre exprès (`canvas_content_at_edge`) : `data-layout-allow-overflow` sur le canvas, après avoir
-  vérifié l'image.
-- **Le rendu** passe par la carte graphique ; sans elle, en logiciel, trois fois plus lentement, avec
-  les mêmes images : garde peu d'objets et des textures de 2048 px au plus.
-- Un projet dont `kit/plan3d.js` ou `assets/vendor/three.module.min.js` manque : recopie `kit/`
-  depuis `templates/kit/` et `assets/vendor/` depuis la racine du dossier (après `npm run sync`).
+  vérifié l'image ; un plateau le porte toujours.
+- **Pas de texte en relief** : ses mots à lire restent en HTML (lisibles, contrôlés par `check`, dans
+  sa police). Un nom posé sur un objet s'imprime (`impression`, le `titre` du carnet).
+- **Le rendu** passe par la carte graphique : un plateau de 4,5 s se rend en une dizaine de secondes.
+  Sans elle, en logiciel, environ quinze fois plus lentement, avec les mêmes images : un plateau par
+  vidéo de Reel, des textures de 2048 px au plus.
+- **Un projet créé avant le 8 novembre 2026** n'a pas l'import map de three (la ligne
+  `<script type="importmap">` du gabarit `templates/projet/index.html.tpl`, avant les autres scripts
+  de son `index.html`) ni `assets/vendor/three-addons/` : ses plans simples marchent, un plateau
+  s'arrête avec ce message. Recopie la ligne, et `assets/vendor/` depuis la racine du dossier (après
+  `npm run sync`). Un projet dont `kit/plan3d.js` manque : recopie `kit/` depuis `templates/kit/`.
 
 ## Les pièges (tous rencontrés)
 
@@ -275,6 +409,10 @@ le calque `k-mots`, animés par la timeline de la scène comme partout. Ce squel
 - Le kit d'un projet est une copie : si le kit du dossier change pendant la fabrication,
   recopie `kit.js` et `kit.css` dans le projet, sinon une fonction manque et la scène reste figée
   (toutes ses images identiques).
+- **Une forme tournée** (`LatheGeometry`, une tasse, un vase) se décrit par son profil, de
+  l'extérieur du dessous vers l'intérieur : à l'envers, ses faces regardent vers dedans, la lumière
+  le cache (`DoubleSide`), mais l'objectif la prend pour du vide et fait un halo flou autour
+  (essai du 08/11/2026). Pas de `DoubleSide` pour cacher une forme retournée : retourne son profil.
 - Un panneau plein écran qui doit couvrir la scène 3D lui donne un `z-index` plus haut que
   `k-scene3d`, ou donne `z-index` à `k-scene3d` pour qu'elle reste devant.
 - Une vraie vidéo à la racine d'`index.html` (le Reel qui joue dans le téléphone, un résultat

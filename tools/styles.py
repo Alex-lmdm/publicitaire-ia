@@ -7,6 +7,9 @@ Appelé par `studio_motion.py musiques choisir` : le style se choisit avec la mu
 page (SKILL.md, étape 4). Un style gardé par le client (« garde ce style pour mes prochaines
 vidéos ») est `style N` dans les préférences de `studio.config.json` ; ses premières vidéos
 disaient `template N`, qui vaut pareil.
+
+La même page pose la question de la 3D (scenes.md, « La 3D, quand elle sert ») : a, pas de 3D ou
+quelques touches simples ; b, des plans 3D poussés. Gardée, elle est `3D poussée` ou `3D simple`.
 """
 from __future__ import annotations
 
@@ -20,6 +23,18 @@ APERCUS = Path("assets") / "styles"
 LIGNE = re.compile(r"^\| (\d+) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| `([^`]+)` \|$")
 GARDE = re.compile(r"(?:style|template)\s*(?:n°\s*)?(\d+)", re.I)
 MAISON = 0              # le style maison : le conseil par défaut, et toujours celui de la première vidéo
+# La question de la 3D, sur la page des styles et des musiques. Sans réponse : a.
+QUESTION_3D = "Des plans en 3D dans ta vidéo ?"
+CHOIX_3D = {
+    "a": ("Non, ou quelques touches simples",
+          "Plus rapide : ta vraie matière en motion design, et au plus un objet en volume (ton téléphone, ton "
+          "ordinateur, ouvert sur ta page) sur le fond de ta marque."),
+    "b": ("Oui, des plans 3D poussés et détaillés",
+          "Plus spectaculaires : un ou deux plans comme une photo de produit (ton ordinateur ouvert sur ta page, "
+          "posé sur un bureau au soleil). Ils utilisent davantage ton abonnement Claude ou ChatGPT : plus de travail "
+          "à fabriquer et à vérifier."),
+}
+GARDE_3D = re.compile(r"3\s*d\s*:?\s*(pouss[ée]e?s?|simples?|[ab])", re.I)
 # La musique de chaque style (section 8 « Le son » de sa fiche, qui les nomme) : ces ambiances passent
 # devant celles du but de la vidéo, jamais devant une voix off sur une page (musiques.choisir). Le style
 # maison (0) n'en impose aucune : sa musique suit le but et le support.
@@ -58,6 +73,25 @@ def garde(racine: Path) -> int | None:
         if m:
             return int(m.group(1))
     return None
+
+
+def garde_3d(racine: Path) -> str | None:
+    """La 3D gardée dans ses préférences (`3D poussée` : "b", `3D simple` : "a"), sinon None."""
+    try:
+        conf = json.loads((racine / "studio.config.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    for p in conf.get("preferences") or []:
+        m = GARDE_3D.fullmatch(str(p).strip())
+        if m:
+            v = m.group(1).lower()
+            return "b" if v.startswith("pouss") or v == "b" else "a"
+    return None
+
+
+def vitrine_3d(conseil: str = "a") -> list[dict]:
+    """La question de la 3D telle que la page la montre : [{lettre, nom, detail, conseil}]."""
+    return [{"lettre": k, "nom": nom, "detail": detail, "conseil": k == conseil} for k, (nom, detail) in CHOIX_3D.items()]
 
 
 def ambiances(n: int | None) -> list[str]:

@@ -263,5 +263,160 @@ class TroisD(unittest.TestCase):
         self.assertIn("## La 3D, quand elle sert", scenes)
 
 
+# Les briques et les matières de la 3D, construites dans Node : three.js vient de node_modules (comme
+# l'import map le fait dans le navigateur), un faux canvas note chaque texture peinte (son empreinte),
+# et Math.random lève une erreur s'il est appelé depuis nos fichiers.
+HARNAIS_3D = r"""
+import { pathToFileURL } from "node:url";
+const [briquesJs] = process.argv.slice(-1);
+let empreinte = 2166136261;
+const noter = (d) => { for (let i = 0; i < d.length; i += 7) empreinte = Math.imul(empreinte ^ d[i], 16777619) >>> 0; };
+const ctx = new Proxy({}, { get: (o, k) => k in o ? o[k]
+  : k === "createImageData" ? (l, h) => ({ data: new Uint8ClampedArray(l * h * 4) })
+  : k === "putImageData" ? (img) => noter(img.data) : () => {}, set: (o, k, v) => { o[k] = v; return true; } });
+globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ctx }), fonts: { load: async () => [] } };
+globalThis.window = { K: {
+  rng: (g) => { let s = (g >>> 0) || 1; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; },
+  jeton: () => "" } };
+const hasard = Math.random;   // three.js en tire ses identifiants internes (sans effet sur l'image) ; nos fichiers jamais
+Math.random = () => { if (/briques3d|matieres3d/.test(new Error().stack.split("\n")[2] || "")) throw new Error("Math.random appelé"); return hasard(); };
+const THREE = await import("three");
+const { fabriquerBriques } = await import(pathToFileURL(briquesJs).href);
+const arrondi = (l, h, r) => { const s = new THREE.Shape(), x = -l / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + l - r, y); s.quadraticCurveTo(x + l, y, x + l, y + r); s.lineTo(x + l, y + h - r);
+  s.quadraticCurveTo(x + l, y + h, x + l - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; };
+const outils = { arrondi, plaquer: (g) => g, aplat: (c, e = {}) => new THREE.MeshBasicMaterial({ color: c, toneMapped: false, ...e }),
+  texture: async () => { const t = new THREE.Texture(); t.image = { width: 1440, height: 3240 }; return t; } };
+const b = fabriquerBriques(outils);
+const ordi = await b.ordinateur({ ecran: "page.png", ouvert: 0 });
+const ferme = ordi.couvercle.rotation.x; ordi.ouvrir(1);
+const tel = await b.telephone({ ecran: "app.png" }), tab = await b.tablette({}), carnet = await b.carnet({ titre: "Offre" });
+const crayon = b.crayon(), plateau = b.plateau({}), classe = [b.pupitre(), b.chaise(), b.tableau()];
+const tasse = b.tasse({ cafe: true }), corps = tasse.children[0].geometry;
+const p = corps.attributes.position, n = corps.attributes.normal;   // la paroi extérieure : ses normales regardent dehors
+let dehors = 0, total = 0;
+for (let i = 0; i < p.count; i++) {
+  const r = Math.hypot(p.getX(i), p.getZ(i));
+  if (Math.abs(r - 0.41) < 1e-3 && p.getY(i) > 0.03 && p.getY(i) < 0.97) { total++; if (n.getX(i) * p.getX(i) + n.getZ(i) * p.getZ(i) > 0) dehors++; }
+}
+const meshes = (o) => { let k = 0; o.traverse((x) => { if (x.isMesh) k++; }); return k; };
+console.log(JSON.stringify({ empreinte, ferme, ouvert: ordi.couvercle.rotation.x, touches: meshes(ordi), tel: meshes(tel),
+  tab: meshes(tab), carnet: meshes(carnet), crayon: meshes(crayon), plateau: meshes(plateau), classe: classe.map(meshes), dehors, total,
+  dims: [ordi.dimensions.l, tel.dimensions.h, carnet.dimensions.e], defiler: typeof tel.defiler, cote: tasse.side }));
+"""
+
+
+@unittest.skipUnless(shutil.which("node") and (RACINE / "node_modules" / "three").is_dir(), "Node ou three.js absent")
+class Briques3D(unittest.TestCase):
+    """Les briques de la 3D poussée (08/11/2026) : construites pièce par pièce, sans hasard du navigateur,
+    les mêmes textures à chaque chargement (le rendu ouvre plusieurs navigateurs en parallèle)."""
+
+    @classmethod
+    def setUpClass(cls):
+        def lancer():
+            r = subprocess.run(["node", "--input-type=module", "-e", HARNAIS_3D, str(KIT / "briques3d.js")],
+                               cwd=RACINE, capture_output=True, text=True, timeout=120)
+            if r.returncode != 0:
+                raise AssertionError(r.stderr[-1500:])
+            return json.loads(r.stdout.strip().splitlines()[-1])
+        cls.a, cls.b = lancer(), lancer()
+
+    def test_les_briques_se_construisent_piece_par_piece(self):
+        self.assertGreater(self.a["touches"], 80)          # l'ordinateur : chaque touche est une pièce
+        self.assertGreater(self.a["tel"], 10)
+        self.assertGreater(self.a["carnet"], 40)           # la spirale, anneau par anneau
+        self.assertGreaterEqual(self.a["crayon"], 7)
+        self.assertEqual(len(self.a["classe"]), 3)         # le pupitre, la chaise, le tableau : un décor de classe
+        self.assertTrue(all(n >= 6 for n in self.a["classe"]), self.a["classe"])
+        self.assertEqual(self.a["defiler"], "function")
+        self.assertAlmostEqual(self.a["dims"][0], 3.04)    # 1 unité = 10 cm : un 13 pouces fait 30,4 cm
+
+    def test_l_ordinateur_s_ouvre(self):
+        self.assertAlmostEqual(self.a["ferme"], 3.14159 / 2, places=3)                  # fermé : à plat
+        self.assertAlmostEqual(self.a["ouvert"], 3.14159 / 2 - 110 * 3.14159 / 180, places=3)
+
+    def test_les_textures_sont_les_memes_a_chaque_chargement(self):
+        self.assertEqual(self.a["empreinte"], self.b["empreinte"])
+
+    def test_la_tasse_regarde_dehors(self):
+        """Un profil tourné à l'envers : la lumière le cache, l'objectif non (un halo flou autour)."""
+        self.assertGreater(self.a["total"], 0)
+        self.assertEqual(self.a["dehors"], self.a["total"])
+
+
+class TroisDPoussee(unittest.TestCase):
+    """Le niveau b : l'import map, les modules de three copiés par sync, les effets déterministes, les
+    aplats exacts sous le rendu photographique, et le mode d'emploi qui nomme tout."""
+
+    def test_l_import_map_vient_avant_tout_script(self):
+        gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")
+        m = re.search(r'<script type="importmap">(.*?)</script>', gabarit, re.S)
+        self.assertIsNotNone(m)
+        self.assertEqual(json.loads(m.group(1))["imports"], {"three": "./assets/vendor/three.module.min.js",
+                                                             "three/addons/": "./assets/vendor/three-addons/"})
+        self.assertLess(m.start(), gabarit.index("<script src="))
+
+    def test_chaque_module_appele_est_copie_par_sync(self):
+        sync = (RACINE / "scripts" / "sync.mjs").read_text(encoding="utf-8")
+        liste = re.search(r"export const MODULES_THREE = \[(.*?)\];", sync, re.S).group(1)
+        for f in ("plan3d.js", "briques3d.js", "matieres3d.js"):
+            for module in re.findall(r'"three/addons/([^"]+)"', (KIT / f).read_text(encoding="utf-8")):
+                self.assertIn(f'"{module}"', liste, f"{f} : {module}")
+
+    def test_rien_ne_depend_de_l_horloge_ni_du_hasard(self):
+        for f in ("plan3d.js", "briques3d.js", "matieres3d.js"):
+            code = re.sub(r"/\*.*?\*/|//[^\n]*", "", (KIT / f).read_text(encoding="utf-8"), flags=re.S)
+            for horloge in ("requestAnimationFrame(", "Date.now(", "performance.now(", "setTimeout(", "setInterval(",
+                            "Math.random"):
+                self.assertNotIn(horloge, code, f"{f} : {horloge}")
+        js = (KIT / "plan3d.js").read_text(encoding="utf-8")
+        self.assertIn("generateNoise(", js)              # le bruit de l'ombre de contact, à graine fixe
+        self.assertIn("new SimplexNoise({ random: K.rng(", js)
+        self.assertIn("Math.round(t * 30)", js)          # le grain suit le numéro de l'image
+
+    def test_les_aplats_restent_exacts_sous_le_rendu_photographique(self):
+        """Le tampon des effets applique le rendu de chaque matière (les aplats aucun) ; la sortie ne
+        fait que convertir. Sans cela, la capture du client sur un écran prendrait la teinte du film."""
+        js = (KIT / "plan3d.js").read_text(encoding="utf-8")
+        self.assertIn("rt.isXRRenderTarget = true", js)
+        self.assertIn("rt.texture.colorSpace = THREE.LinearSRGBColorSpace", js)
+        self.assertIn("r.toneMapping = THREE.NoToneMapping", js)
+        self.assertIn("toneMapped: false", js)
+        # la vitre d'un écran ne garde qu'un peu de la pièce : un reflet franc voilait sa capture (essai du 08/11/2026)
+        self.assertIn("m.userData?.reflet !== undefined", js)
+        force = re.search(r"export function reflet\(\{ force = ([\d.]+) \}", (KIT / "matieres3d.js").read_text(encoding="utf-8"))
+        self.assertLessEqual(float(force.group(1)), 0.2)
+
+    def test_le_mode_d_emploi_nomme_les_outils_et_les_briques(self):
+        md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
+        for nom in ("focale:", 'lumiere: "fenetre"', "ouverture:", "contact: true", "finition: true", "net(",
+                    "briques.ordinateur(", "briques.telephone(", "briques.tablette(", "briques.carnet(",
+                    "briques.crayon(", "briques.tasse(", "briques.plateau(", "briques.pupitre(", "briques.chaise(",
+                    "briques.tableau(", "orbite(", "bois(", "papier(", "alu(",
+                    "impression(", "data-plateau", "data-layout-allow-overflow", "importmap"):
+            self.assertIn(nom, md, nom)
+        plateau = re.findall(r"```html\n(.*?)```", md.split("### Niveau b : un plateau", 1)[1], re.S)
+        self.assertIn('lumiere: "fenetre"', plateau[0])
+        self.assertIn("data-layout-allow-overflow", plateau[0])
+        self.assertIn("jeton(", plateau[0])               # la couverture à sa marque, jamais en dur
+        self.assertNotRegex(plateau[0], r"couverture: \"#")
+        self.assertIn("data-plateau", plateau[1])         # l'hôte du plateau
+
+    def test_les_deux_niveaux_sont_ecrits(self):
+        ref = RACINE / ".claude" / "skills" / "studio"
+        scenes = (ref / "references" / "scenes.md").read_text(encoding="utf-8")
+        section = scenes.split("## La 3D, quand elle sert", 1)[1].split("## Combiner", 1)[0]
+        for mot in ("3D : a", "3D : b", "plateau", "Détaillé", "data-plateau", "Le héros reste sa vraie matière"):
+            self.assertIn(mot, section, mot)
+        self.assertNotIn("**Simple**", section)
+        self.assertIn("Le plateau de la 3D poussée", (ref / "references" / "image.md").read_text(encoding="utf-8"))
+        self.assertIn("data-plateau", (ref / "styles" / "README.md").read_text(encoding="utf-8"))
+        self.assertIn("plan de plateau", (ref / "references" / "revue.md").read_text(encoding="utf-8"))
+        skill = (ref / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("Des plans en 3D dans ta vidéo ?", skill)
+        self.assertIn("abonnement Claude ou ChatGPT", skill)
+
+
 if __name__ == "__main__":
     unittest.main()

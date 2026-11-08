@@ -131,14 +131,20 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
      sur un fond, un texte ou un trait. Aucune teinte tirée de l'accent (`oklch(from…)`, `color-mix` avec l'accent, l'accent
      mêlé de blanc ou de noir, un dégradé vers lui, l'accent en transparence sur du sombre) : avec un
      jaune, cela fait du brun, de l'olive ou de l'orangé. Tout texte garde un contraste d'au moins
-     4,5:1 avec son fond. Aucun halo, néon ni dégradé coloré ; les ombres sont neutres.
+     4,5:1 avec son fond. Aucun halo, néon ni dégradé coloré ; les ombres sont neutres. Seule
+     exception : un plan de plateau de la 3D poussée, quand le client l'a choisie (son hôte marqué
+     `data-plateau`, [scenes.md](../references/scenes.md), « La 3D, quand elle sert »). Ses matières
+     et sa lumière gardent les couleurs de la vraie vie (le bois, le mur, le soleil chaud) ; ses mots,
+     ses accents et ses fonds à plat restent à sa marque, et les autres plans dans sa palette.
    - **Les images** : celles de l'original (paysages, photos, illustrations, sphères, gravures,
      fonds peints) deviennent sa vraie matière, en descendant l'échelle : une capture de sa page, de
      son produit ou d'un résultat, son interface reconstruite, un vrai chiffre mis en scène, les vrais
      logos de ses outils, puis seulement ses mots. Une forme du kit (disque, aplat, case, cadre,
      points) porte cette matière, sert de transition ou de fil conducteur, jamais de sujet : pas de
      particules ni de nuée décoratives, pas de caractères `●` ou `▬` posés comme objets
-     ([image.md](../references/image.md), « Les défauts interdits »).
+     ([image.md](../references/image.md), « Les défauts interdits »). Le plateau de la 3D poussée
+     n'en est pas une image inventée : il entoure sa vraie matière ([image.md](../references/image.md),
+     « Le plateau de la 3D poussée »).
    - **Une pub ne dessine pas de bouton** ([structures.md](../references/structures.md), publicité) :
      la fin du style garde son geste et finit sur « Découvre-le » et une flèche vers le bas.
 7. **Les autres formats** : section « En vertical et en carré » de la fiche. Une mise en page,

@@ -281,6 +281,25 @@ class Outil(unittest.TestCase):
                 self.assertEqual(styles.garde(r), attendu, prefs)
             self.assertEqual(styles.catalogue(r), [])                     # sans index : aucun style
 
+    def test_la_3d_gardee_dans_les_preferences(self):
+        with tempfile.TemporaryDirectory() as t:
+            r = Path(t)
+            self.assertIsNone(styles.garde_3d(r))
+            for prefs, attendu in ((["style 4"], None), (["3D poussée"], "b"), (["3d poussee"], "b"), (["3D : b"], "b"),
+                                   (["3D simple"], "a"), (["3D a"], "a"), (["style 2", "3D Poussée"], "b")):
+                (r / "studio.config.json").write_text(json.dumps({"preferences": prefs}), encoding="utf-8")
+                self.assertEqual(styles.garde_3d(r), attendu, prefs)
+                self.assertEqual(styles.garde(r), 2 if "style 2" in prefs else (4 if "style 4" in prefs else None))
+
+    def test_la_question_de_la_3d(self):
+        """Deux choix, ton conseil marqué, et le coût dit simplement (plus d'abonnement pour le b)."""
+        choix = styles.vitrine_3d("b")
+        self.assertEqual([c["lettre"] for c in choix], ["a", "b"])
+        self.assertEqual([c["conseil"] for c in choix], [False, True])
+        self.assertIn("abonnement Claude ou ChatGPT", choix[1]["detail"])
+        self.assertIn("Plus rapide", choix[0]["detail"])
+        self.assertEqual([c["conseil"] for c in styles.vitrine_3d()], [True, False])   # sans réponse : a
+
 
 if __name__ == "__main__":
     unittest.main()

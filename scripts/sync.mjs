@@ -2,8 +2,8 @@
 /**
  * sync.mjs : régénère ce qui se déduit du dépôt, sur la machine du client.
  *
- *   1. GSAP et three.js (la 3D), installés par npm, copiés dans assets/vendor/ (jamais redistribués
- *      dans le dépôt) ;
+ *   1. GSAP et three.js (la 3D) avec les modules d'exemples dont le kit se sert, installés par npm,
+ *      copiés dans assets/vendor/ (jamais redistribués dans le dépôt) ;
  *   2. le style de la marque (brand/) et l'accueil de l'app HyperFrames, par l'outil Python
  *      (`studio_motion.py style`, seul propriétaire de la marque) ;
  *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl ;
@@ -61,6 +61,49 @@ export const BIBLIOTHEQUES = [
     "les plans en 3D ne s'afficheraient pas"],
 ];
 
+// Les modules d'exemples de three.js dont se sert la 3D du kit (kit/plan3d.js, kit/briques3d.js) : la
+// pièce qui donne ses reflets, les arêtes arrondies, l'objectif (profondeur de champ), l'ombre de contact,
+// la sortie. Leurs propres dépendances (./Pass.js, ../shaders/…) suivent seules. Tous importent 'three',
+// que l'import map d'index.html (templates/projet/index.html.tpl) fait pointer vers three.module.min.js.
+export const MODULES_THREE = [
+  "environments/RoomEnvironment.js", "geometries/RoundedBoxGeometry.js", "postprocessing/EffectComposer.js",
+  "postprocessing/RenderPass.js", "postprocessing/OutputPass.js", "postprocessing/ShaderPass.js",
+  "postprocessing/BokehPass.js", "postprocessing/GTAOPass.js", "math/SimplexNoise.js",
+];
+export const DOSSIER_MODULES_THREE = "three-addons";
+
+/** Les modules à copier depuis examples/jsm : les entrées et tout ce qu'elles importent par un chemin
+ *  relatif, dans l'ordre alphabétique. Un module absent fait échouer (son chemin dans le message). */
+export function dependancesThree(jsm, entrees = MODULES_THREE) {
+  const vus = new Set(), file = [...entrees];
+  while (file.length) {
+    const r = path.posix.normalize(file.pop());
+    if (vus.has(r)) continue;
+    const texte = fs.readFileSync(path.join(jsm, ...r.split("/")), "utf8");
+    vus.add(r);
+    for (const m of texte.matchAll(/\b(?:from|import)\s*\(?\s*['"](\.{1,2}\/[^'"]+)['"]/g)) {
+      file.push(path.posix.join(path.posix.dirname(r), m[1]));
+    }
+  }
+  return [...vus].sort();
+}
+
+function copierModulesThree(source, dest) {
+  const jsm = path.join(source, "examples", "jsm"), vers = path.join(dest, DOSSIER_MODULES_THREE);
+  const modules = dependancesThree(jsm);
+  for (const r of modules) {
+    const a = path.join(jsm, ...r.split("/")), b = path.join(vers, ...r.split("/"));
+    fs.mkdirSync(path.dirname(b), { recursive: true });
+    if (!fs.existsSync(b) || !fs.readFileSync(a).equals(fs.readFileSync(b))) fs.copyFileSync(a, b);
+  }
+  // Un module qui ne sert plus (une version précédente) disparaît de la copie.
+  const garder = new Set(modules.map((r) => path.join(vers, ...r.split("/"))));
+  for (const f of fs.readdirSync(vers, { recursive: true }).map((r) => path.join(vers, String(r)))) {
+    if (fs.statSync(f).isFile() && !garder.has(f)) fs.rmSync(f);
+  }
+  return modules.length;
+}
+
 export function copierBibliotheques(racine = ROOT) {
   const dest = path.join(racine, "assets", "vendor");
   let ok = true;
@@ -76,7 +119,16 @@ export function copierBibliotheques(racine = ROOT) {
       const a = path.join(source, de), b = path.join(dest, vers);
       if (!fs.existsSync(b) || !fs.readFileSync(a).equals(fs.readFileSync(b))) fs.copyFileSync(a, b);
     }
-    log(`  copié   ${rel(dest)}/ (${nom}, depuis node_modules)`);
+    let detail = "";
+    if (paquet === "three") {
+      try {
+        detail = ` et ${copierModulesThree(source, dest)} de ses modules`;
+      } catch (error) {
+        warn(`modules de three.js incomplets (${error.message}) : relance \`npm ci\` (les plans 3D poussés ne s'afficheraient pas).`);
+        ok = false;
+      }
+    }
+    log(`  copié   ${rel(dest)}/ (${nom}${detail}, depuis node_modules)`);
   }
   return ok;
 }

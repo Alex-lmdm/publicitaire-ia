@@ -11,6 +11,9 @@
          tenus le temps d'être lus (`studio_motion.py lecture`), aux couleurs de la marque (les objets connus gardent les leurs).
          Scènes prêtes : {{MAISON}}templates/scenes/. Après le rendu, `rythme`, `cadre` et
          `palette` sur exports/{{VIDEO}}.mp4. -->
+    <!-- La 3D (kit/plan3d.js) : three.js et ses modules d'exemples, copiés dans assets/vendor/ par
+         `npm run sync`. Cette ligne vient avant tout autre script. -->
+    <script type="importmap">{ "imports": { "three": "./assets/vendor/three.module.min.js", "three/addons/": "./assets/vendor/three-addons/" } }</script>
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/CustomEase.min.js"></script>
     <!-- Style de la marque, copié de brand/ (généré depuis marque.json) à la création : polices et

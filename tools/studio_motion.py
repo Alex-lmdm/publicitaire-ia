@@ -18,7 +18,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py style                         # régénère brand/ depuis marque.json
     python3 tools/studio_motion.py pack-sfx [installer [<pack-sfx.zip ou dossier>] | reprendre <dossier Monteur IA> | chercher <mots>]
     python3 tools/studio_motion.py musiques [installer [--lien <url>] [<zip ou dossier>…]]   # les 35 musiques de lancement (bonus)
-    python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --style 7 | --sans-styles --ouvrir]   # depuis le projet : le style maison, les 8 styles et 3 musiques
+    python3 tools/studio_motion.py musiques choisir [--duree 30 --a 8 --ambiance tech --autres --style 7 | --sans-styles --3d b | --sans-3d --ouvrir]   # depuis le projet : le style maison, les 8 styles, 3 musiques et la question de la 3D
     python3 tools/studio_motion.py musiques prendre <n> [--a 8 --duree 30]   # la copie dans le projet, calée
     python3 tools/studio_motion.py supports                      # supports, formats, durées
     python3 tools/studio_motion.py nouvelle "<sujet>" --objectif vente --videos reel,page [--ouvrir]
@@ -631,7 +631,8 @@ def cmd_verifier(_a) -> None:
         ("style de la marque (brand/)", (r / "brand" / "tokens.css").is_file()),
         ("HyperFrames", hyperframes_cli() is not None),
         ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
-        ("three.js (la 3D)", (r / "assets" / "vendor" / "three.module.min.js").is_file()),
+        ("three.js (la 3D)", (r / "assets" / "vendor" / "three.module.min.js").is_file()
+         and (r / "assets" / "vendor" / "three-addons" / "postprocessing" / "EffectComposer.js").is_file()),
         ("ffmpeg", binaire("ffmpeg") is not None),
         ("ffprobe", binaire("ffprobe") is not None),
         ("Node 22.12 ou plus" + (f" (trouvé : {node_version})" if node_version and not node_bon else ""), node_bon),
@@ -1080,17 +1081,20 @@ def cmd_musiques(a) -> None:
             meta = meta_de(projet) or {}
             objectif, support = a.objectif or meta.get("objectif") or "vente", meta.get("support") or "reel"
             vitrine = _vitrine_styles(r, a)
+            trois_d = _vitrine_3d(r, a)
             page_f = projet / "work" / "ecoute-musiques.html"
 
             def styles_seuls(raison: str) -> None:
                 # Le style se choisit même sans musique de lancement (boucle muette, musiques absentes, vidéo
                 # plus longue que les morceaux, sa propre musique) : la page ne montre alors que les styles.
                 print(raison)
-                if vitrine:
-                    page = heygen.page_ecoute("Le style de ta vidéo", CONSIGNE_STYLE, [], page_f, styles=vitrine)
+                if vitrine or trois_d:
+                    page = heygen.page_ecoute("Le style de ta vidéo" if vitrine else "La 3D de ta vidéo",
+                                              consigne_page(bool(vitrine), False, bool(trois_d)), [], page_f,
+                                              styles=vitrine, trois_d=trois_d, question_3d=catalogue_styles.QUESTION_3D)
                     ouverte = a.ouvrir and heygen.ouvrir(page)
                     print(f"• page des styles : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
-                    _dire_conseil(vitrine, musique=False)
+                    _dire_conseil(vitrine, musique=False, trois_d=trois_d)
 
             if support in banque.MUETS:
                 return styles_seuls("• cette vidéo est une boucle muette de section de page : pas de musique.")
@@ -1124,16 +1128,12 @@ def cmd_musiques(a) -> None:
                 print(f"• dans l'ambiance du style {style_musique} : "
                       + ", ".join(banque.AMBIANCES[x] for x in preferees if x in banque.AMBIANCES) + ".")
             pistes = [{"numero": i, **banque.page(m)} for i, m in enumerate(choix, 1)]
-            if vitrine:
-                titre, consigne = "Le style et la musique de ta vidéo", CONSIGNE_STYLE_MUSIQUE
-            else:
-                titre, consigne = ("Les musiques pour cette vidéo",
-                                   "Chaque extrait démarre quelques secondes avant l'entrée de la batterie. Dis le numéro de celle "
-                                   "que tu préfères (ou « choisis » : je prends la 1, la plus juste pour ta vidéo).")
-            page = heygen.page_ecoute(titre, consigne, pistes, page_f, styles=vitrine)
+            titre = "Le style et la musique de ta vidéo" if vitrine else "Les musiques pour cette vidéo"
+            page = heygen.page_ecoute(titre, consigne_page(bool(vitrine), True, bool(trois_d)), pistes, page_f,
+                                      styles=vitrine, trois_d=trois_d, question_3d=catalogue_styles.QUESTION_3D)
             ouverte = a.ouvrir and heygen.ouvrir(page)
             print(f"• page d'écoute : {page}" + (" (ouverte dans le navigateur)" if ouverte else ""))
-            _dire_conseil(vitrine)
+            _dire_conseil(vitrine, trois_d=trois_d)
             print(f"  puis `musiques prendre <numéro> --a <instant de l'entrée> --duree {duree:g}` depuis ce projet.")
             return
         if a.action == "prendre":
@@ -1182,13 +1182,38 @@ def cmd_musiques(a) -> None:
         sys.exit(f"ERREUR : {e}")
 
 
-CONSIGNE_STYLE = ("Regarde les styles, puis réponds par le numéro de celui que tu veux. Le 0, « Sur mesure », est notre "
-                  "style maison, construit pour ta vidéo. Tu veux autre chose ? Décris-le, ou colle le lien d'une vidéo "
-                  "dont tu aimes le style. « Choisis » : je prends mon conseil.")
-CONSIGNE_STYLE_MUSIQUE = ("Regarde les styles, écoute les musiques (chaque extrait démarre quelques secondes avant l'entrée "
-                          "de la batterie), puis réponds par exemple « 0, 1 » : le style, puis la musique. Le 0, « Sur mesure », "
-                          "est notre style maison, construit pour ta vidéo. Tu veux autre chose ? Décris-le, ou colle le lien "
-                          "d'une vidéo dont tu aimes le style. « Choisis » : je prends mes conseils.")
+def consigne_page(styles: bool, musique: bool, trois_d: bool) -> str:
+    """La consigne en tête de la page de l'étape 4 : ce qu'il y regarde, puis sa réponse en une ligne, dans
+    l'ordre des blocs (le style, la musique, la 3D)."""
+    gestes = (["regarde les styles"] if styles else []) + (
+        ["écoute les musiques (chaque extrait démarre quelques secondes avant l'entrée de la batterie)"] if musique else []) + (
+        ["dis si tu veux de la 3D"] if trois_d else [])
+    blocs = [(n, e) for n, e, la in (("le style", "0", styles), ("la musique", "1", musique), ("la 3D", "a", trois_d)) if la]
+    if not blocs:
+        return ""
+    reponse = (f"réponds par exemple « {', '.join(e for _n, e in blocs)} » : "
+               + (", ".join(n for n, _e in blocs[:-1]) + ", puis " + blocs[-1][0] if len(blocs) > 1 else blocs[0][0]))
+    texte = (", ".join(gestes[:-1]) + " et " + gestes[-1] if len(gestes) > 1 else gestes[0]) + ", puis " + reponse + "."
+    texte = texte[0].upper() + texte[1:]
+    if styles:
+        texte += (" Le 0, « Sur mesure », est notre style maison, construit pour ta vidéo. Tu veux autre chose ? Décris-le, "
+                  "ou colle le lien d'une vidéo dont tu aimes le style.")
+    return texte + (" « Choisis » : je prends mes conseils." if len(blocs) > 1 else " « Choisis » : je prends mon conseil.")
+
+
+def _vitrine_3d(r: Path, a) -> list[dict]:
+    """La question de la 3D (scenes.md, « La 3D, quand elle sert »), ton conseil marqué (`--3d a|b`, a par
+    défaut) ; aucune quand la réponse est déjà connue (`--sans-3d`, ou gardée dans ses préférences :
+    `--3d` rouvre alors la question)."""
+    if getattr(a, "sans_3d", False):
+        return []
+    conseil = getattr(a, "trois_d", None)
+    garde = catalogue_styles.garde_3d(r)
+    if garde is not None and conseil is None:
+        print(f"• sa 3D gardée : {garde} (préférences de studio.config.json) : la page ne la redemande pas "
+              "(`--3d a|b` la rouvre s'il change d'avis).")
+        return []
+    return catalogue_styles.vitrine_3d(conseil or "a")
 
 
 def _vitrine_styles(r: Path, a) -> list[dict]:
@@ -1212,7 +1237,11 @@ def _vitrine_styles(r: Path, a) -> list[dict]:
     return vitrine
 
 
-def _dire_conseil(vitrine: list[dict], musique: bool = True) -> None:
+def _dire_conseil(vitrine: list[dict], musique: bool = True, trois_d: list[dict] | None = None) -> None:
+    if trois_d:
+        c = next(x for x in trois_d if x["conseil"])
+        print(f"  la question de la 3D est sur la page, ton conseil : {c['lettre']} ({c['nom'].lower()}). Sans réponse : a. "
+              "Note sa réponse dans PLAN.md (« 3D : a » ou « 3D : b »).")
     if vitrine:
         conseil = next((s for s in vitrine if s["conseil"]), None)
         print(f"  {len(vitrine)} styles sur la page" + (f", ton conseil : {conseil['numero']} « {conseil['nom']} »" if conseil
@@ -1646,7 +1675,8 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
             "## Script\n\n(le film en plans numérotés : ce qu'on voit se passer, puis les mots à l'écran (0 à 8), leur "
             "tenue et la clé de OFFRE.json ; validé par le client avant le style et la musique : references/ecriture.md, "
             "« Le film »)\n",
-            "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence)\n", "## Vidéos\n"]
+            "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence ; et la 3D : « 3D : a » "
+            "(pas de 3D, ou quelques touches simples) ou « 3D : b » (des plans 3D poussés), a sans réponse)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
         lo, hi = s["ideal"]
@@ -2694,11 +2724,39 @@ def couleurs_des_logos(projet: Path | None) -> list[str]:
     return vues
 
 
+# Les plans de plateau 3D (la 3D poussée : scenes.md, « La 3D, quand elle sert ») : une table de bois, un
+# mur, un soleil chaud, des objets du quotidien autour de sa vraie matière. Leurs couleurs sont celles de
+# la vraie vie, pas de sa marque : `palette` laisse ces plages à la revue (critère 8), sur la marque
+# `data-plateau` de leur hôte dans index.html. Mais la 3D poussée sert certains plans, jamais le film.
+PLATEAU_PART_MAX = 0.5
+PLATEAU_MARGE = 0.25      # s après la fin du plan : la sortie (un volet, une coupe) peut encore le montrer
+
+
+def plateaux_du_projet(projet: Path | None) -> list[tuple[float, float]]:
+    """(début, durée) des plans marqués `data-plateau` dans index.html (sur l'hôte de leur scène), dans
+    l'ordre ; les commentaires du fichier ne comptent pas."""
+    try:
+        source = (projet / "index.html").read_text(encoding="utf-8") if projet else ""
+    except OSError:
+        return []
+    source = re.sub(r"<!--.*?-->", "", source, flags=re.S)
+    plages = []
+    for m in re.finditer(r"<[a-zA-Z][^>]*\bdata-plateau\b[^>]*>", source):
+        balise = m.group(0)
+        d, l = re.search(r'\bdata-start="([^"]*)"', balise), re.search(r'\bdata-duration="([^"]*)"', balise)
+        try:
+            plages.append((float(d.group(1)), float(l.group(1))))
+        except (AttributeError, ValueError):
+            continue
+    return sorted(plages)
+
+
 def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_FPS,
-                    connues: tuple | list = COULEURS_CONNUES) -> dict:
+                    connues: tuple | list = COULEURS_CONNUES, plateaux: list | tuple = ()) -> dict:
     """Pour chaque image (rgb24), la part de pixels qui ne sont ni des gris ni proches d'une couleur
     chromatique de la marque ou d'un objet connu (`connues` : le kit, les logos du projet) ; les plages
-    signalées et leurs couleurs dominantes."""
+    signalées et leurs couleurs dominantes. Les images d'un plan de plateau (`plateaux` : (début, durée))
+    ne comptent pas ; `plateau` dit quelle part de la vidéo ils couvrent."""
     def chroma(hexas):
         return [c for c in (oklab(tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))) for h in hexas)
                 if math.hypot(c[1], c[2]) >= NEUTRE_MAX]
@@ -2714,7 +2772,11 @@ def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_F
         return cache[cle]
 
     parts, dominantes = [], []
-    for img in images:
+    for i, img in enumerate(images):
+        if any(d <= i / fps < d + l + PLATEAU_MARGE for d, l in plateaux):
+            parts.append(0.0)
+            dominantes.append([])
+            continue
         cles = [((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3) for r, g, b in zip(img[0::3], img[1::3], img[2::3])]
         comptes: dict[int, int] = {}
         for c in cles:
@@ -2736,7 +2798,9 @@ def verdict_palette(images: list[bytes], marque: list[str], fps: int = PALETTE_F
             plages.append({"debut": round(debut / fps, 1), "fin": round(i / fps, 1),
                            "part": round(parts[pire], 3), "couleurs": couleurs})
             debut = None
-    return {"images": len(images), "plages": plages}
+    duree = len(images) / fps if images else 0.0
+    couvert = sum(max(0.0, min(d + l, duree) - max(d, 0.0)) for d, l in plateaux)
+    return {"images": len(images), "plages": plages, "plateau": round(couvert / duree, 3) if duree else 0.0}
 
 
 def images_rgb(ffmpeg: str, video: Path, fps: int = PALETTE_FPS, taille=PALETTE_TAILLE) -> list[bytes]:
@@ -2768,13 +2832,24 @@ def cmd_palette(a) -> None:
     if not tokens:
         sys.exit("ERREUR : brand/tokens.css introuvable (`studio_motion.py style` depuis le dossier).")
     marque = couleurs_marque(tokens.read_text(encoding="utf-8"))
-    logos = couleurs_des_logos(projet_de(Path(a.video)))
+    projet = projet_de(Path(a.video))
+    logos = couleurs_des_logos(projet)
+    plateaux = plateaux_du_projet(projet)
     try:
-        v = verdict_palette(images_rgb(ffmpeg, Path(a.video)), marque, connues=[*COULEURS_CONNUES, *logos])
+        v = verdict_palette(images_rgb(ffmpeg, Path(a.video)), marque, connues=[*COULEURS_CONNUES, *logos],
+                            plateaux=plateaux)
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
     print(f"• palette de la marque : {', '.join(marque)} (plus noir, blanc et gris), plus les vraies couleurs des "
           f"objets connus du kit" + (f" et des {len(logos)} couleurs de ses logos" if logos else ""))
+    if plateaux:
+        print("• plans de plateau 3D (data-plateau), leurs couleurs laissées à la revue (critère 8) : "
+              + ", ".join(f"{d:.1f} → {d + l:.1f} s" for d, l in plateaux))
+    if v["plateau"] > PLATEAU_PART_MAX:
+        print(f"✗ les plans de plateau couvrent {v['plateau'] * 100:.0f} % de la vidéo (au plus "
+              f"{PLATEAU_PART_MAX * 100:.0f} %) : la 3D poussée sert certains plans, jamais le film "
+              "(scenes.md, « La 3D, quand elle sert »)")
+        sys.exit(1)
     if not v["plages"]:
         print("ok : rien hors de la palette (regarde quand même la planche).")
         return
@@ -4170,6 +4245,9 @@ def main(argv: list[str] | None = None) -> None:
     mz.add_argument("--ouvrir", action="store_true", help="choisir : ouvre la page d'écoute dans le navigateur.")
     mz.add_argument("--style", type=int, help="choisir : le style que tu conseilles, marqué sur la page (0, le style maison, par défaut ; 1 à 8).")
     mz.add_argument("--sans-styles", action="store_true", help="choisir : son style est déjà connu, la page ne montre que les musiques.")
+    mz.add_argument("--3d", dest="trois_d", choices=("a", "b"), help="choisir : ton conseil pour la question de la 3D (a par défaut : "
+                    "pas de 3D ou quelques touches ; b : des plans 3D poussés).")
+    mz.add_argument("--sans-3d", action="store_true", help="choisir : sa réponse sur la 3D est déjà connue, la page ne la pose pas.")
     mz.set_defaults(f=cmd_musiques)
     hg = s.add_parser("heygen", help="HeyGen : relier le compte, chercher et prendre une musique (gratuit), écouter et générer une voix (payant).")
     hg.add_argument("action", nargs="?", default="etat", choices=("etat", "connecter", "musiques", "bruitages", "prendre", "voix", "parler"))

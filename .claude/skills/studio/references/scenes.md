@@ -11,8 +11,8 @@ Chaque plan du film devient une scène. Trois sources, dans cet ordre :
    les scènes prêtes et les recettes ci-dessous (sa fiche : `styles/00-sur-mesure/style.md`).
 3. **Une recette** décrite plus bas, construite avec le kit (`kit.md`).
 
-Et, quand elle sert, **un plan en vraie 3D** (« La 3D, quand elle sert », plus bas), dans l'une ou
-l'autre de ces sources.
+Et, quand elle sert, **un plan en vraie 3D** (« La 3D, quand elle sert », plus bas), au niveau
+choisi par le client (`PLAN.md`), dans l'une ou l'autre de ces sources.
 
 Une story courte = une ou deux scènes ; une story de lancement = une scène par plan (huit ou neuf,
 de 2,5 à 6,5 s) ; un Reel = trois à cinq ; une vidéo de page = huit à dix, reliées par des raccords
@@ -179,33 +179,66 @@ cause.
 
 ## La 3D, quand elle sert
 
-Le kit sait rendre de la vraie 3D (three.js, `kit.md`, « La 3D ») : des objets en volume, sous une
-lumière de studio, avec leurs reflets et leur ombre. C'est un outil, pas une obligation. **Pose-toi
-la question à chaque plan fort : ici, le volume montre-t-il quelque chose que le plat ne montre
-pas ?** Si oui, un plan en 3D peut donner ce petit cran de plus, et tu as le droit d'être inventif
-dans ces règles ; sinon, aucun : beaucoup de très bonnes vidéos n'en ont pas.
+Le kit sait rendre de la vraie 3D (three.js, `kit.md`, « La 3D ») : des objets du quotidien
+construits pièce par pièce, sous une vraie lumière, avec leurs reflets et leur ombre. C'est un
+outil, pas une obligation. **Pose-toi la question à chaque plan fort : ici, le volume montre-t-il
+quelque chose que le plat ne montre pas ?** Si oui, un plan en 3D peut donner ce cran de plus, et
+tu as le droit d'être inventif dans ces règles ; sinon, aucun : beaucoup de très bonnes vidéos n'en
+ont pas.
+
+**Le niveau, c'est le client qui le choisit** à l'étape 4, sur la page des styles et des musiques
+(« Des plans en 3D dans ta vidéo ? »), et tu l'as noté dans `PLAN.md` (« 3D : a » ou « 3D : b » ;
+sans réponse : a). Ton conseil : a par défaut ; b quand son offre a un moment qui gagne à être vu
+comme une photo de produit (son ordinateur ouvert sur sa page, son carnet, sa boîte, un lieu de son
+métier). Un plan poussé coûte plus cher à fabriquer : plus de code, plus d'images à vérifier, un
+rendu plus long ; c'est pour cela qu'il le choisit.
+
+- **a. Pas de 3D, ou quelques touches simples** : au plus un plan dans un Reel ou une story, un à
+  trois dans une vidéo de page, quelques secondes chacun. Des objets **détaillés** (les briques du
+  kit : l'ordinateur, le téléphone, la tablette, le carnet), seuls ou à deux, sur le fond du kit, sous
+  la lumière de studio ; ses couleurs en aplat, rien d'autre que sa palette.
+- **b. Des plans 3D poussés** : un ou deux plans dans un Reel, deux à quatre dans une vidéo de page,
+  plus des touches du niveau a si elles servent. Chacun est **un plateau** : une photo de produit
+  qui bouge. Une surface (une table de bois, un bureau), un mur, sa vraie matière au centre (sa
+  capture sur l'écran de l'ordinateur, le nom de son offre imprimé sur la couverture de son carnet),
+  des objets du quotidien autour (un carnet, un crayon, une tasse, un téléphone posé), des matières
+  naturelles (bois, papier, alu, céramique), une lumière chaude de fenêtre qui dessine l'ombre d'un
+  store, un objectif (une focale, une profondeur de champ) et la finition film. **Un décor complet**
+  s'il sert l'offre et qu'on le reconnaît d'un coup d'œil : une salle de classe pour une formation
+  d'enseignants (le kit a le tableau, le pupitre et la chaise), un atelier pour un artisan, une cuisine
+  pour une offre de recettes ; jamais un décor sans rapport avec son offre (un loft, une plage,
+  l'espace).
+
+**Détaillé, jamais grossier.** Un objet en 3D est construit à partir de ses vraies pièces, aux
+arêtes arrondies : l'ordinateur a sa coque, son clavier touche par touche, son pavé tactile, sa
+charnière, son écran ; le carnet sa spirale et ses pages lignées ; le crayon sa mine, son bois taillé,
+sa virole et sa gomme. Pars des briques du kit. Un objet qu'elles n'ont pas se monte de la même
+façon, pièce par pièce, avec les formes et les matières du kit (`kit.md`) ; une boîte nue à la place
+d'un objet, c'est la maquette, pas le film. Un mouvement de caméra par plan (une arrivée, un pivot,
+une plongée), puis au plus la dérive lente permise pendant une lecture ([mouvement.md](mouvement.md),
+« La caméra »).
 
 - **Quand** : un moment fort (le pivot, le nom, le produit, la révélation, la fin), où un objet
-  gagne à être tenu, tourné, ouvert, éclairé. Par exemple, sans que ce soit une liste : son écran,
-  son téléphone ou son ordinateur en volume, qui s'ouvre sur sa vraie capture ; l'objet de son
-  offre (sa boîte, son carnet, son dossier bleu) qui tourne et s'ouvre ; le vrai logo de ses outils
-  sur des tuiles épaisses qui se rangent ; ses vraies captures en cartes épaisses qui volent en
-  vraie perspective ; un schéma dont les nœuds flottent dans l'espace. Chaque offre a les siens :
-  pars de son sujet.
-- **Combien** : un à trois plans dans une vidéo de page, un dans un Reel, quelques secondes chacun.
-  Jamais toute la vidéo, jamais pour décorer ; dans le doute, pas de 3D.
-- **Simple** : un ou deux objets, des formes nettes (un rectangle aux coins ronds extrudé, un
-  cylindre, un panneau qui porte une image), une lumière principale. Un mouvement de caméra par
-  plan (une arrivée, un pivot, une plongée), puis au plus la dérive lente permise pendant une
-  lecture ([mouvement.md](mouvement.md), « La caméra »).
-- **Ce qu'on modélise** : un objet courant ou connu (un écran, un ordinateur, un téléphone, une
-  boîte, un carnet, une carte, une tuile), jamais le résultat promis dessiné (le pain réussi, le
-  corps transformé, la maison vendue) : le résultat se montre par sa vraie photo, posée en texture.
-  Pas de décor non plus (pièce, paysage, planète, particules).
-- **Les mêmes règles** : ses mots à lire en HTML par-dessus, immobiles pendant leur lecture ; sa
-  vraie matière ; les couleurs de sa marque et des objets connus, en aplat sur les objets (une
-  matière éclairée reste neutre : `kit.md`) ; pas d'ombre sombre sur l'aplat ; le sujet qui remplit
-  le cadre. Le plan passe la revue comme les autres.
+  gagne à être tenu, tourné, ouvert, éclairé. Par exemple, sans que ce soit une liste : son
+  ordinateur qui s'ouvre sur sa vraie page ; son téléphone qui pivote et fait défiler sa vraie
+  capture ; l'objet de son offre (son carnet, sa boîte) qui s'ouvre ; ses vraies captures en cartes
+  épaisses qui volent en vraie perspective. Chaque offre a les siens : pars de son sujet.
+- **Les garde-fous, aux deux niveaux** :
+  - **Le héros reste sa vraie matière** : sa capture sur l'écran, son produit, son nom. Le plateau
+    l'entoure, il ne la remplace jamais ; un plan où l'on retient la tasse plutôt que sa page est raté.
+  - **Jamais de faux** : pas de texte lisible inventé (une page, un écran ou un carnet qui affiche ce
+    qui n'est ni dans sa capture ni dans `OFFRE.json`), pas de fausse marque (un logo sur une coque,
+    des lettres sur un clavier), pas de résultat promis dessiné (le pain réussi, le corps transformé,
+    la maison vendue : le résultat se montre par sa vraie photo, posée en texture). Un écran sans
+    capture reste éteint.
+  - **La marque garde les mots, les accents et les fonds à plat** : ses mots à lire en HTML
+    par-dessus, immobiles pendant leur lecture, à ses couleurs (sur un mur clair, son encre sombre ou
+    un bloc plein de son accent) ; les plans hors plateau restent dans sa palette.
+  - **De la 3D sur certains plans seulement**, jamais toute la vidéo : le plateau est marqué
+    `data-plateau` sur l'hôte de sa scène dans `index.html` ; `palette` laisse ses couleurs à la
+    revue et refuse la vidéo si les plateaux en couvrent plus de la moitié.
+  - Le sujet remplit le cadre, l'image passe la revue comme les autres ([revue.md](revue.md),
+    critères 7, 8 et 10).
 
 ## Combiner
 

@@ -86,7 +86,9 @@ dossier Monteur IA ».
   styles de motion design (une fiche et des scènes chacun).
 - `templates/scenes/` : les scènes prêtes, déjà construites et contrôlées en 9:16 et en 16:9, que
   l'IA remplit avec la vraie matière du client ; `templates/kit/` : les briques de chaque scène,
-  dont la 3D (`plan3d.js`, three.js), pour un plan où le volume montre quelque chose.
+  dont la 3D (`plan3d.js`, three.js, ses briques et ses matières), pour un plan où le volume montre
+  quelque chose : des objets détaillés sur le fond de la marque, ou des plateaux photographiques si le
+  client choisit la 3D poussée.
 - `tools/studio_motion.py` : marque, création des vidéos par support et par format, vérification
   de la fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones,
   planche, rythme, calage de la musique, pose et émergence des sons, mastering, couverture,
