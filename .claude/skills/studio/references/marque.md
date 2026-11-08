@@ -39,7 +39,7 @@ L'outil la télécharge depuis Google Fonts (polices libres). Dans le doute, gar
 et dis-le.
 
 **c : le style.** La vidéo sert deux fois : ici pour la marque, puis à l'étape 4 de chaque vidéo,
-proposée avec les 8 styles (s'il la reprend : `studio_motion.py reference`, section 4 de
+proposée avec les styles (s'il la reprend : `studio_motion.py reference`, section 4 de
 reperage.md). Note son lien dans `studio.config.json` (`reference_style`).
 
 **d : où est son dossier ?** S'il ne sait pas, cherche dans son dossier personnel (trois niveaux

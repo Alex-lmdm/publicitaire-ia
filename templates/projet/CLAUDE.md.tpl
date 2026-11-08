@@ -23,9 +23,9 @@ référence `composition.md`.
   chargé par `index.html` : pars de lui (mode d'emploi : `references/kit.md` du skill), ne le
   réécris pas scène par scène. Logos des outils montrés : `studio_motion.py logos . claude openai`.
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
-  musiques (le style et la musique : `musiques choisir --duree <durée> --style <N> --ouvrir`, puis
+  musiques (le style et la musique : `musiques choisir --duree <durée> --ouvrir`, le style 0 conseillé par défaut, puis
   `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
-  sons, planche, rythme, cadre, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
+  sons, planche, rythme, calage, cadre, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
   plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans idée retenue,
@@ -47,7 +47,7 @@ référence `composition.md`.
   la fiche de l'offre ni la marque de cette vidéo.
 - Jamais `hyperframes feedback`, `events`, `usage`, `publish`, `cloud`, `lambda`, `cloudrun` ni `auth`.
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check` (zéro erreur,
-  et aucun texte à lire trop petit ou parti trop tôt). Puis `studio_motion.py rythme`, `cadre` et
+  et aucun texte à lire trop petit ou parti trop tôt). Puis `studio_motion.py rythme`, `calage`, `cadre` et
   `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses
   vraies captures et les logos de ses outils peuvent rester signalés). Puis `studio_motion.py relecture
   exports/{{VIDEO}}.mp4` : un relecteur neuf (un sous-agent qui ne voit que ses planches) doit

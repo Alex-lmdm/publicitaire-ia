@@ -175,7 +175,18 @@ notes.
 
 ## Porte 4 : le son
 
-`python3 ../../../tools/studio_motion.py son exports/reel.mp4`, puis `mastering` si la mesure n'est pas « ok ».
+```bash
+python3 ../../../tools/studio_motion.py calage exports/reel.mp4
+python3 ../../../tools/studio_motion.py son exports/reel.mp4
+```
+
+`calage` doit répondre « ok » : le montage suit la bande-son. Chaque scène part sur un temps de la
+musique (une scène « à 0,12 s du temps » : arrondis la durée de celle d'avant au temps suivant) ; un
+geste fort se voit sur l'entrée franche de la batterie (le nom qui claque, un flash, une coupe) ;
+avec une voix, chaque scène part avec la phrase qui la porte, aucune ne change au milieu d'un mot,
+et la batterie n'entre jamais sous un mot (une respiration : `voix respiration`). Chaque refus est
+un P1 : il se corrige avant la livraison. `son` mesure le niveau, puis `mastering` si la mesure
+n'est pas « ok ».
 Réécoute le début et la révélation : le temps fort tombe-t-il sur l'offre ? La pose des sons
 (`sons`) ne doit laisser aucun « bruitage qui lasse » (le même son deux fois de suite, trois fois
 en 6 s, ou un son du pack qui cache un cliquet) : [son.md](son.md), « Les bruitages ».

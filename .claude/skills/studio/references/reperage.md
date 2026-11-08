@@ -66,7 +66,7 @@ matière, une vidéo finit en disques et en carrés seuls à l'écran) :
 
 Sans réponse, ou « c », avance avec la matière disponible et dis dans la livraison ce qu'une
 capture aurait apporté. Le style de la vidéo ne se demande pas ici : il se choisit à l'étape 4,
-parmi les 8 styles ou d'après une vidéo qu'il aime (section 4).
+le style maison (0), un des 8 styles, ou d'après une vidéo qu'il aime (section 4).
 
 ## 4. La vidéo de référence (si le client en donne une)
 

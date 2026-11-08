@@ -6,7 +6,9 @@ Chaque plan du film devient une scène. Trois sources, dans cet ordre :
    construite avec le kit, en 9:16 et en 16:9, contrôlée. Copie-la dans `compositions/` du projet,
    remplace son objet `CONTENU` par les vrais textes, chiffres et images du client (clés de
    `OFFRE.json`, fichiers de `sources/`), et garde son mouvement.
-2. **Un geste d'un style** du catalogue, si la vidéo a un style (`styles/<NN>/compositions/`).
+2. **Un geste d'un style** du catalogue, si la vidéo est dans un des styles 1 à 8
+   (`styles/<NN>/compositions/`). Le style 0, « Sur mesure », est ce langage même : ses gestes sont
+   les scènes prêtes et les recettes ci-dessous (sa fiche : `styles/00-sur-mesure/style.md`).
 3. **Une recette** décrite plus bas, construite avec le kit (`kit.md`).
 
 Une story courte = une ou deux scènes ; une story de lancement = une scène par plan (huit ou neuf,
@@ -44,7 +46,8 @@ On n'en reprend jamais les couleurs (sa marque seulement), les images générée
 avec leur rôle, leur durée et ce qu'elles attendent du client, et dit comment s'en servir. Chacune
 lit `K.cadre` et se met en page seule en 9:16 comme en 16:9. Remplis `CONTENU` (rien d'exemple ne
 doit rester : un chiffre ou un nom d'exemple qui passe au rendu est un fait inventé), donne-lui la
-durée qu'elle demande (pas plus : elle tiendrait sa dernière image), puis `npm run check` et 3
+durée qu'elle demande, arrondie au temps suivant de la musique (pas davantage : elle tiendrait sa
+dernière image), puis `npm run check` et 3
 images. Le raccord entre deux scènes prêtes est à toi : la fin de l'une devient le début de la
 suivante ([mouvement.md](mouvement.md), « Les transitions »).
 

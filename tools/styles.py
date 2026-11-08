@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""LES STYLES DU CATALOGUE : les 8 looks de `.claude/skills/studio/styles/`, lus dans leur index, et
-leurs aperçus (`assets/styles/<dossier>.mp4|.jpg`).
+"""LES STYLES DU CATALOGUE : le style maison (0, « Sur mesure », le conseil par défaut) et les 8 looks
+de `.claude/skills/studio/styles/`, lus dans leur index, et leurs aperçus
+(`assets/styles/<dossier>.mp4|.jpg`).
 
 Appelé par `studio_motion.py musiques choisir` : le style se choisit avec la musique, sur la même
 page (SKILL.md, étape 4). Un style gardé par le client (« garde ce style pour mes prochaines
@@ -18,8 +19,10 @@ APERCUS = Path("assets") / "styles"
 # | N° | Style | Ce qu'on voit | D'après | Souvent utile pour | Dossier |
 LIGNE = re.compile(r"^\| (\d+) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| ([^|]+?) \| `([^`]+)` \|$")
 GARDE = re.compile(r"(?:style|template)\s*(?:n°\s*)?(\d+)", re.I)
+MAISON = 0              # le style maison : le conseil par défaut, et toujours celui de la première vidéo
 # La musique de chaque style (section 8 « Le son » de sa fiche, qui les nomme) : ces ambiances passent
-# devant celles du but de la vidéo, jamais devant une voix off sur une page (musiques.choisir).
+# devant celles du but de la vidéo, jamais devant une voix off sur une page (musiques.choisir). Le style
+# maison (0) n'en impose aucune : sa musique suit le but et le support.
 AMBIANCES = {1: ["tech-minimale"], 2: ["lancement-energique", "montee-cinematique"],
              3: ["tech-minimale", "montee-cinematique"], 4: ["premium-calme", "montee-cinematique"],
              5: ["premium-calme", "tech-minimale"], 6: ["montee-cinematique"], 7: ["lancement-energique"],
@@ -44,7 +47,8 @@ def catalogue(racine: Path) -> list[dict]:
 
 
 def garde(racine: Path) -> int | None:
-    """Le numéro du style gardé dans ses préférences (`studio.config.json`), sinon None."""
+    """Le numéro du style gardé dans ses préférences (`studio.config.json`), sinon None. Le style
+    maison vaut 0 : compare toujours à None, jamais à faux."""
     try:
         conf = json.loads((racine / "studio.config.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
@@ -57,8 +61,9 @@ def garde(racine: Path) -> int | None:
 
 
 def ambiances(n: int | None) -> list[str]:
-    """Les ambiances de musique du style n, de la plus juste à la moins juste ([] sans style)."""
-    return list(AMBIANCES.get(n or 0, []))
+    """Les ambiances de musique du style n, de la plus juste à la moins juste ([] sans style, et pour le
+    style maison, dont la musique suit le but)."""
+    return list(AMBIANCES.get(n, [])) if n is not None else []
 
 
 def vitrine(racine: Path, conseil: int | None = None) -> list[dict]:

@@ -1,6 +1,8 @@
 """Tests du catalogue de styles (`.claude/skills/studio/styles/`) : chaque kit a sa fiche, ses
 scènes, ses gestes signature et son aperçu ; l'index les liste tous sous le même nom ; rien n'y
-reprend la ponctuation interdite. Puis `tools/styles.py`, qui les lit pour la page des styles."""
+reprend la ponctuation interdite. Le style 0, « Sur mesure » (le style maison), a sa fiche et son
+aperçu ; ses gestes sont les scènes prêtes et les fonctions du kit. Puis `tools/styles.py`, qui les
+lit pour la page des styles."""
 import json
 import re
 import sys
@@ -11,6 +13,9 @@ from pathlib import Path
 RACINE = Path(__file__).resolve().parent.parent
 STYLES = RACINE / ".claude" / "skills" / "studio" / "styles"
 TITRE = re.compile(r"^# Style n°(\d+) · (.+?) · d'après (.+?) \((https?://\S+)\)$")
+TITRE_MAISON = re.compile(r"^# Style n°0 · (.+?) · le style maison$")
+SCENES_PRETES = RACINE / "templates" / "scenes"
+KIT = RACINE / "templates" / "kit"
 sys.path.insert(0, str(RACINE / "tools"))
 
 import musiques  # noqa: E402
@@ -18,7 +23,18 @@ import styles  # noqa: E402
 
 
 def kits() -> list[Path]:
-    return sorted(d for d in STYLES.iterdir() if d.is_dir() and re.match(r"^\d\d-", d.name))
+    """Les huit styles repris d'une vraie vidéo (01 à 08), chacun avec ses compositions."""
+    return sorted(d for d in STYLES.iterdir() if d.is_dir() and re.match(r"^\d\d-", d.name) and d.name[:2] != "00")
+
+
+def maison() -> Path:
+    return next(d for d in STYLES.iterdir() if d.is_dir() and d.name.startswith("00-"))
+
+
+def nom_du_style(d: Path) -> str:
+    premiere = (d / "style.md").read_text(encoding="utf-8").splitlines()[0]
+    m = (TITRE_MAISON if d.name.startswith("00-") else TITRE).match(premiere)
+    return m.group(1 if d.name.startswith("00-") else 2)
 
 
 def gestes(fiche: str) -> list[list[str]]:
@@ -82,7 +98,7 @@ class Catalogue(unittest.TestCase):
                         self.assertNotIn(ancien, texte, f"{d.name}/{s.name}")
 
     def test_chaque_style_a_son_apercu(self):
-        for d in kits():
+        for d in [maison(), *kits()]:
             with self.subTest(d.name):
                 for ext in ("mp4", "jpg"):
                     f = RACINE / "assets" / "styles" / f"{d.name}.{ext}"
@@ -91,13 +107,56 @@ class Catalogue(unittest.TestCase):
 
     def test_l_index_liste_chaque_kit_sous_son_nom(self):
         index = (STYLES / "README.md").read_text(encoding="utf-8")
-        for d in kits():
+        for d in [maison(), *kits()]:
             with self.subTest(d.name):
-                nom = TITRE.match((d / "style.md").read_text(encoding="utf-8").splitlines()[0]).group(2)
+                nom = nom_du_style(d)
                 ligne = next((l for l in index.splitlines() if l.startswith(f"| {int(d.name[:2])} |")), "")
                 self.assertIn(nom, ligne, f"{d.name} : absent de l'index ou sous un autre nom")
                 self.assertIn(d.name, index, f"{d.name} : dossier absent de l'index")
         self.assertNotIn("—", index)
+
+
+class Maison(unittest.TestCase):
+    """Le style 0 (« Sur mesure ») : le conseil par défaut. Pas de compositions à lui : ses gestes sont
+    les scènes prêtes (`templates/scenes/`) et les fonctions et classes du kit, que la fiche nomme."""
+
+    def fiche(self) -> str:
+        return (maison() / "style.md").read_text(encoding="utf-8")
+
+    def test_sa_fiche(self):
+        self.assertEqual(maison().name, "00-sur-mesure")
+        self.assertIsNotNone(TITRE_MAISON.match(self.fiche().splitlines()[0]))
+        for section in ("## 1. Le rythme", "## 2. Les gestes signature et leur place", "## 3. Les fonds et les couleurs",
+                        "## 8. Le son", "## Sur une autre offre", "## Quand il décrit un autre style",
+                        "## Les compositions du kit"):
+            self.assertIn(section, self.fiche(), section)
+        self.assertNotIn("—", self.fiche())
+        self.assertFalse((maison() / "compositions").exists(), "ses gestes sont les scènes prêtes, pas une copie")
+
+    def test_ses_gestes_existent(self):
+        """Chaque nom de la colonne « Dans le kit » est une scène prête, une fonction `K.` du kit ou une
+        classe `k-` du kit ; ses dix scènes prêtes sont toutes à sa table des compositions."""
+        kit_js = (KIT / "kit.js").read_text(encoding="utf-8")
+        kit_css = (KIT / "kit.css").read_text(encoding="utf-8")
+        lignes = gestes(self.fiche())
+        self.assertGreaterEqual(len(lignes), 5)
+        for cellules in lignes:
+            self.assertEqual(len(cellules), 4, cellules[0])
+            for nom in re.findall(r"`([^`]+)`", cellules[3]):
+                with self.subTest(nom):
+                    if nom.startswith("K."):
+                        self.assertRegex(kit_js, rf"\bK\.{re.escape(nom[2:])}\s*=|\b{re.escape(nom[2:])}\s*[:(]", nom)
+                    elif nom.startswith("k-"):
+                        self.assertIn(f".{nom}", kit_css, nom)
+                    else:
+                        self.assertTrue((SCENES_PRETES / f"{nom}.html").is_file(), f"{nom} n'est pas une scène prête")
+        compositions = self.fiche().split("## Les compositions du kit", 1)[1]
+        for s in sorted(SCENES_PRETES.glob("*.html")):
+            self.assertIn(f"`{s.stem}`", compositions, f"{s.stem} absente de sa table")
+
+    def test_sa_musique_suit_le_but(self):
+        self.assertEqual(styles.ambiances(0), [])
+        self.assertIn("n'impose aucune ambiance", self.fiche().split("## 8. Le son", 1)[1])
 
 
 class Menage(unittest.TestCase):
@@ -111,7 +170,7 @@ class Menage(unittest.TestCase):
 
     def docs(self):
         yield "README.md", (STYLES / "README.md").read_text(encoding="utf-8")
-        for d in kits():
+        for d in [maison(), *kits()]:
             yield f"{d.name}/style.md", (d / "style.md").read_text(encoding="utf-8")
 
     def test_ni_date_ni_historique(self):
@@ -128,7 +187,7 @@ class Menage(unittest.TestCase):
                     self.assertFalse(ancien in texte, f"{nom} : {ancien}")
 
     def test_l_historique_est_range_dans_les_notes(self):
-        for d in kits():
+        for d in [maison(), *kits()]:
             with self.subTest(d.name):
                 self.assertTrue((RACINE / "notes" / "styles" / f"{d.name}.md").is_file(), f"{d.name} : note d'historique")
 
@@ -203,8 +262,9 @@ class Palette(unittest.TestCase):
 class Outil(unittest.TestCase):
     def test_catalogue_lu_dans_l_index(self):
         cat = styles.catalogue(RACINE)
-        self.assertEqual([s["n"] for s in cat], list(range(1, 9)))
-        for s, d in zip(cat, kits()):
+        self.assertEqual([s["n"] for s in cat], list(range(0, 9)))     # le style maison en premier
+        self.assertEqual(cat[0]["nom"], "Sur mesure")
+        for s, d in zip(cat, [maison(), *kits()]):
             self.assertEqual(s["dossier"], d.name)
             self.assertTrue(s["video"].is_file(), s["dossier"])
         vitrine = styles.vitrine(RACINE, conseil=7)
@@ -216,7 +276,7 @@ class Outil(unittest.TestCase):
             r = Path(t)
             self.assertIsNone(styles.garde(r))                            # pas encore de profil
             for prefs, attendu in ((["choisis toujours la musique"], None), (["style 4"], 4),
-                                   (["template 3"], 3), (["Style n°2"], 2)):
+                                   (["template 3"], 3), (["Style n°2"], 2), (["style 0"], 0)):
                 (r / "studio.config.json").write_text(json.dumps({"preferences": prefs}), encoding="utf-8")
                 self.assertEqual(styles.garde(r), attendu, prefs)
             self.assertEqual(styles.catalogue(r), [])                     # sans index : aucun style

@@ -32,7 +32,7 @@ Windows : `python` (ou `py -3`) au lieu de `python3`.
   `supports`, `zones`, `nouvelle`, `ajouter`, `capture`, `offre`, `lecture`, `reference`, `livrer`.
 - **Depuis le projet d'une vidéo** (le dossier qui contient `index.html`), `python3
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir`, `musiques prendre`,
-  `heygen …`, `musique`, `sons`, `rythme`, `palette`, `cadre`, `relecture`, `planche`,
+  `heygen …`, `musique`, `sons`, `rythme`, `calage`, `palette`, `cadre`, `relecture`, `planche`,
   `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`, `export`), avec
   `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
@@ -95,10 +95,15 @@ ce script est le texte de la voix ([voix.md](references/voix.md)).
 
 ### 4. Le style, la musique, puis le plan
 
-`musiques choisir --style <N> --ouvrir` lui montre les 8 styles en vidéo et trois musiques ; il
-répond « 7, 2 », décrit un autre style, colle le lien d'une vidéo qu'il aime, ou écrit « choisis ».
-Un style déjà connu ne se redemande pas (`--sans-styles`). Un morceau donné par le client ou choisi
-sur son compte Epidemic Sound remplace ce choix musical ([son.md](references/son.md)).
+`musiques choisir --ouvrir` lui montre en vidéo le style 0, **« Sur mesure », notre style maison**,
+puis les 8 styles, et trois musiques. Ton conseil est le style 0 (la page le marque sans `--style`) :
+toujours pour sa première vidéo, et ensuite sauf quand sa vidéo appelle nettement un des 8
+([styles/README.md](styles/README.md), « Appliquer un style », point 1 ; `--style <N>` le marque). Il
+répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime (`reference`),
+ou répond « aucun », « un autre », ou décrit ce qu'il veut : c'est le style 0 avec ses mots (sa fiche,
+« Quand il décrit un autre style »), jamais un style improvisé. Un style déjà connu ne se redemande
+pas (`--sans-styles`). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
+remplace ce choix musical ([son.md](references/son.md)).
 
 **La bande-son précède le plan d'animation** : la voix d'abord s'il en veut une (`voix.md`),
 puis le morceau, analysé et calé, ses repères notés dans `PLAN.md` (son.md, « Construire l'image
@@ -121,11 +126,14 @@ sous-composition de `compositions/`, montée dans `index.html`. Pour chaque scè
 `npm run check`, regarde 3 à 6 images (`npx hyperframes snapshot --at …`), corrige, puis la suivante.
 Vérifie chaque raccord (dernière image d'une scène, première de la suivante). Commence par le support
 principal ; les autres formats sont des **mises en page** de la même vidéo, jamais des recadrages.
-Avec un style, lis sa fiche : c'est une grammaire, pas un film à refaire.
+Lis la fiche de son style (le style 0 compris) : c'est une grammaire, pas un film à refaire.
+Chaque scène commence sur un temps de la musique (sa durée arrondie au temps suivant) ; avec une
+voix, avec la phrase qui la porte.
 
 ### 6. La revue (personne d'autre ne la fera)
 
-Les portes de `revue.md`, pour **chaque** vidéo : les contrôles sur le MP4 rendu, la planche
+Les portes de `revue.md`, pour **chaque** vidéo : les contrôles sur le MP4 rendu (dont `calage` :
+le montage suit la musique et la voix), la planche
 regardée par toi, le relecteur neuf (une IA qui n'a pas fait la vidéo dit ce qui est vendu, à qui,
 quoi faire), la revue critique notée, le son, l'export. Chaque défaut corrigé s'écrit dans
 « Interdits de cette vidéo » (`PLAN.md`).

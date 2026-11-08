@@ -101,7 +101,7 @@ LinkedIn, X, YouTube).
 ## Les outils
 
 - `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : `verifier`, `marque`, `police`,
-  `style`, `pack-sfx`, `musiques`, `heygen`, `nouvelle`, `offre`, `logos`, `musique`, `sons`, `planche`, `rythme`, `cadre`, `palette`, `relecture`, `son`,
+  `style`, `pack-sfx`, `musiques`, `heygen`, `nouvelle`, `offre`, `logos`, `musique`, `sons`, `planche`, `rythme`, `calage`, `cadre`, `palette`, `relecture`, `son`,
   `mastering`, `export`, `livrer`…
   (`--help` les liste). Toujours lancé depuis le dossier indiqué par le skill.
 - `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir "<projet>"` : ouvre un projet de vidéo dans l'app

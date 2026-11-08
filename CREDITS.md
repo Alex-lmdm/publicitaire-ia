@@ -31,7 +31,7 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 | 8 sons Kenney « Interface Sounds » | `assets/sfx/starter/` | CC0 | https://kenney.nl/assets/interface-sounds |
 | Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
 | Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
-| Aperçus des 8 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |
+| Aperçus des 9 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |
 
 Aucun son du **Pack SFX** (produit vendu à part) n'est livré ici. Le client l'installe sur son
 ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monteur IA
@@ -67,7 +67,10 @@ elles (la plus stricte a été retenue) et adaptées au format vertical d'Instag
 Les 8 styles (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
 mouvements) de vidéos de lancement publiques : Firecrawl, Cyera (studio Motionimo), Polymarket,
 ElevenLabs, ClaudeDevs, Kimi, Zaro et Cursor, dont chaque fiche donne le lien. Aucun de leurs textes,
-logos, images, produits ni musiques n'est repris ; les scènes sont refaites par nous.
+logos, images, produits ni musiques n'est repris ; les scènes sont refaites par nous. Le style 0
+(« Sur mesure », le style maison) ne reprend aucune vidéo en particulier : c'est le langage des
+vidéos de lancement de studio (relevé notamment sur celles de Higgsfield), porté par notre kit et
+nos scènes prêtes.
 
 - **brag**, © 2026 Shunit Haviv Hakimi, licence MIT : le parcours à portes de contrôle, l'ancrage
   des affirmations dans le projet, les données sensibles remplacées par des exemples, le temps de

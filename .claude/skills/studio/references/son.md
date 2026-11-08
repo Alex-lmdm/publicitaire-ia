@@ -129,6 +129,10 @@ les repères **du fichier qui sera posé** : tempo après calage, temps forts, e
 pauses ou ruptures, changements d'énergie, dernier accent et fin. Les outils mesurent le tempo
 et l'entrée ; relève les autres repères sur l'onde ou avec `ffmpeg silencedetect`, sans inventer
 une écoute. Vérifie les instants dans le fichier final, pas seulement dans la fiche du catalogue.
+Après le rendu, `calage exports/<vidéo>.mp4` le contrôle sur la vidéo finie ([revue.md](revue.md),
+porte 4) : chaque scène part sur un temps (sa durée arrondie au temps suivant), un geste fort se
+voit sur l'entrée franche, et avec une voix, chaque scène part avec sa phrase, aucune ne change au
+milieu d'un mot, la batterie n'entre pas sous un mot.
 
 Sans voix, le mouvement suit les phrases musicales : révélation sur une entrée forte, rafale
 sur une accélération, attente ou arrêt volontaire dans une pause, écran final sur la résolution.
@@ -153,14 +157,15 @@ Le client peut coller, avec son nouveau fichier :
 ### Choisir le morceau
 
 Une proposition par vidéo, depuis son projet (le but et le support sont lus dans le projet), sur
-la même page que les 8 styles (le style se choisit avec la musique, SKILL.md étape 4) :
+la même page que les styles (le style se choisit avec la musique, SKILL.md étape 4) :
 
 ```bash
-python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --style <N conseillé> --ouvrir
+python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --ouvrir
 ```
 
-`--style` marque ton conseil parmi les 8 styles, et les trois musiques suivent son ambiance (section
-8 de sa fiche) ; un style déjà connu (demandé d'emblée, ou gardé dans ses préférences) :
+Sans `--style`, la page marque ton conseil sur le style 0 (« Sur mesure », le style maison, dont la
+musique suit le but et le support) ; `--style <N>` le marque sur un des 8, et les trois musiques
+suivent alors son ambiance (section 8 de sa fiche) ; un style déjà connu (demandé d'emblée, ou gardé dans ses préférences) :
 `--sans-styles` (avec `--style <N>` pour garder son ambiance), la page ne montre que les musiques.
 Sans musiques de lancement installées, ou si aucune ne couvre la vidéo, elle ne montre que les styles.
 
@@ -183,10 +188,11 @@ Le pivot (`--a`, l'instant où la solution apparaît) n'est pas encore fixé ? L
 suppose vers 20 % de la vidéo, et l'entrée de batterie de chaque morceau, affichée, t'aide à le
 placer. Une boucle de section de page est muette : pas de musique, la page ne montre que les styles.
 
-La page s'ouvre dans son navigateur : les 8 styles en vidéo, puis les 3 musiques (chaque extrait
-démarre quelques secondes avant l'entrée de la batterie). Dis-lui : « Je t'ai ouvert une page avec
-les 8 styles et 3 musiques pour cette vidéo ; je te conseille le style 7 et la musique 1. Réponds
-par exemple « 7, 1 » (ou « choisis » : je prends mes conseils). » Sans styles sur la page : « …
+La page s'ouvre dans son navigateur : le style 0 et les 8 styles en vidéo, puis les 3 musiques
+(chaque extrait démarre quelques secondes avant l'entrée de la batterie). Dis-lui : « Je t'ai ouvert
+une page avec les styles et 3 musiques pour cette vidéo ; je te conseille le style 0, « Sur mesure »,
+notre style maison, construit pour ta vidéo, et la musique 1. Réponds par exemple « 0, 1 » (ou
+« choisis » : je prends mes conseils). Aucun ne te plaît ? Décris ce que tu veux. » Sans styles sur la page : « …
 3 musiques ; je te conseille la 1. Réponds par le numéro. » S'il a dit une fois « choisis toujours
 pour moi » (préférence de `studio.config.json`), prends la première musique sans demander et dis
 laquelle.

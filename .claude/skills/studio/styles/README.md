@@ -1,14 +1,21 @@
 # Les styles du catalogue
 
-Huit styles de motion design, chacun repris d'une vraie vidéo de lancement de logiciel qui a fait
+**Le style 0, « Sur mesure », est le style maison** : celui que portent le kit et les scènes prêtes,
+qui ne copie aucune vidéo et prend une forme à lui pour chaque offre. C'est le conseil par défaut,
+et toujours celui de sa première vidéo. Le client le prend aussi quand il répond « aucun de ces
+styles », « fais-moi un style à part » ou décrit ce qu'il veut (sa fiche, « Quand il décrit un autre
+style »).
+
+Puis huit styles de motion design, chacun repris d'une vraie vidéo de lancement de logiciel qui a fait
 ses preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé en 16:9
 et en 9:16, sur une marque claire comme sur une marque sombre : chaque scène a sa mise en page
 verticale (un fichier `-vertical.html`, ou une scène qui se remet en page seule). Le client les voit
 en vidéo sur la page des styles et des musiques, à chaque vidéo (étape 4 du skill), et dans sa
 formation (module « Styles »). Il les demande par leur numéro, leur nom ou la marque d'origine :
 « dans le style 3 », « le style Verre sombre », « comme celle de Polymarket » ; « template » veut
-dire la même chose. « Interrupteurs crème » et « Fenêtre peinte » sont d'anciens noms des styles 5
-et 8 : un client qui les emploie veut le même style.
+dire la même chose ; « le style maison » ou « sur mesure » veulent le style 0. « Interrupteurs
+crème » et « Fenêtre peinte » sont d'anciens noms des styles 5 et 8 : un client qui les emploie veut
+le même style.
 
 **Un style est une inspiration, pas un plan ni un décor.** Il donne une façon de présenter les
 choses : sa typographie, ses mises en page, ses mouvements, ses transitions, ses motifs (un cadre
@@ -31,6 +38,7 @@ son offre (section « Sur une autre offre » de chaque fiche).
 
 | N° | Style | Ce qu'on voit | D'après | Souvent utile pour | Dossier |
 |---|---|---|---|---|---|
+| 0 | Sur mesure | sa vraie matière en grand et en perspective que la caméra parcourt, des mots énormes qui claquent, se barrent, se surlignent, le point de sa couleur qui relie tout, l'objet de son offre qui porte son nom | le style maison, d'après les studios de motion design | tout, et d'abord sa première vidéo | `00-sur-mesure` |
 | 1 | Cartes pixels | grille claire, cartes d'interface du flou au net, blocs de pixels qui couvrent et découvrent, grand chiffre | Firecrawl | passer du problème au résultat | `01-cartes-pixels` |
 | 2 | Titres géants | titres géants qui débordent du cadre à leur entrée, sur la couleur de la marque, spécimen tapé sur grille, carte qui s'ouvre sur sa vraie capture et mosaïque de sa matière, disque qui porte son logo et pose le nom, grille d'une case par élément de l'offre | Cyera (studio Motionimo) | une vidéo de lancement | `02-titres-geants` |
 | 3 | Verre sombre | interface en verre sombre inclinée en 3D, curseur qui règle l'offre, ses vraies captures en verre autour des phrases, sur la nuit de la marque et son accent en aplats | Polymarket | l'offre et son prix | `03-verre-sombre` |
@@ -47,12 +55,16 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
 
 1. **Le bon style.** Il le choisit sur la page des styles et des musiques, ou il l'a donné
    d'emblée : prends sa grammaire, quel que soit le sujet de l'original. **Ne déconseille jamais un
-   style parce que son offre ne ressemble pas à l'original** : c'est une façon de présenter. Ton
-   conseil, en une phrase, part de ce que la vidéo va montrer (son interface, un avant / après, des
-   chiffres, une annonce, un teaser) et de sa marque (claire ou sombre) ; la colonne « Souvent utile
-   pour » n'est qu'un indice. Il hésite (« lequel tu me conseilles ? ») : demande-lui ce qu'il aime
-   voir (fond clair ou sombre, interface en 3D, typo géante, phrase tapée, fenêtres), puis propose
-   2 ou 3 styles, numéro et nom, chacun avec sa raison en une ligne.
+   style parce que son offre ne ressemble pas à l'original** : c'est une façon de présenter. **Ton
+   conseil** (marqué sur la page, et pris s'il répond « choisis ») : le style 0 pour sa première
+   vidéo (aucune livraison dans les autres dossiers de `videos/`), et par défaut ensuite ; un des
+   huit quand sa vidéo appelle nettement sa grammaire (des chiffres à comparer : 8 ; un teaser : 6 ;
+   son offre et son prix sur une marque sombre : 3 ; la colonne « Souvent utile pour » donne
+   l'indice) ou qu'il a aimé ce look. Dis-le en une phrase, avec ce que la vidéo va montrer. Il
+   hésite (« lequel tu me conseilles ? ») : demande-lui ce qu'il aime voir (fond clair ou sombre,
+   interface en 3D, typo géante, phrase tapée, fenêtres), puis propose 2 ou 3 styles, numéro et
+   nom, chacun avec sa raison en une ligne. Il répond « aucun », « un autre », ou décrit ce qu'il
+   veut : c'est le style 0 avec ses mots (sa fiche, « Quand il décrit un autre style »).
 2. **La structure vient de sa vidéo**, jamais de l'original : celle de son but
    ([structures.md](../references/structures.md)), l'idée qu'il a choisie, son script validé. Le
    style ne change ni la structure, ni les idées, ni le script : il ne raccourcit aucune phrase et
@@ -68,7 +80,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    repris (la phrase et ses objets, le désordre rangé, l'orbite autour de l'offre) ; deux scènes
    construites pour son cas, dans le style (le fichier déposé dans l'outil, la réponse qui arrive).
 4. **Le garde-fou** : chaque vidéo garde au moins trois gestes signature de son style (deux sous
-   15 s), sinon on ne le reconnaît plus. Un geste signature est un mouvement, une mise en page ou
+   15 s), sinon on ne le reconnaît plus ; en style 0, le mot qui joue et le fil conducteur en font
+   toujours partie (sa fiche, section 2). Un geste signature est un mouvement, une mise en page ou
    un motif ; jamais une image (un paysage, une sphère, une gravure ne sont pas des gestes).
 5. **Les scènes du kit** sont des démonstrations de ces gestes, pas des scènes à remplir : on en
    reprend le mouvement (le code d'une entrée, d'un cadre de sélection, d'un recul de caméra),
@@ -78,7 +91,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    chiffres, prix et noms d'exemple sont tous dans l'objet `EXEMPLE`, en tête de son script : chaque
    valeur se remplace par une donnée d'`OFFRE.json` ou sa ligne se retire, avec ce qu'elle montrait.
    Une icône, un logo ou une capture qui manque retire son élément : jamais une icône de
-   remplacement (une étoile), jamais un autre logo (son nom, à la place d'un logo absent).
+   remplacement (une étoile), jamais un autre logo (son nom, à la place d'un logo absent). En
+   style 0, les scènes sont les scènes prêtes (`templates/scenes/`), avec leur objet `CONTENU`.
 6. **La loi de toutes les scènes**, quel que soit le style (le détail : [image.md](../references/image.md)
    et [mouvement.md](../references/mouvement.md)) :
    - **Les mots** : au plus 8 mots à lire par image (hors mots d'une interface montrée), au plus un
