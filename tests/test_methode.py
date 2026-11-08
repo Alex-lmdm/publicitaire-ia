@@ -106,6 +106,28 @@ class Ambition(unittest.TestCase):
         self.assertIn("exemples dont on s'inspire", lire(RACINE / "templates" / "scenes" / "README.md"))
 
 
+class SecondePasse(unittest.TestCase):
+    """Décision d'Alex du 08/11/2026 : ne pas viser parfait du premier coup, mais apprendre au client à
+    demander une seconde passe. La phrase est figée dans sa formation (dépôt lmdm-blog, chapitre
+    « Ta première vidéo qui vend ») : le skill la reconnaît mot pour mot."""
+    PHRASE = ("Tu es un directeur artistique en motion design avec vingt ans de films de lancement pour des "
+              "marques. Repasse sur toute ma vidéo, plan par plan, et rends-la beaucoup plus impressionnante")
+
+    def test_le_skill_reconnait_la_phrase_de_la_formation(self):
+        skill = lire(SKILL / "SKILL.md")
+        self.assertIn(self.PHRASE, skill)
+        self.assertIn("**La seconde passe**", skill)
+        self.assertIn("Repasse sur toute ma vidéo", lire(RACINE / "templates" / "AGENT.md.tpl"))
+
+    def test_la_livraison_la_propose_et_la_revue_s_arrete(self):
+        self.assertIn("seconde passe", lire(REF / "livraison.md"))
+        self.assertIn("La revue s'arrête", lire(REF / "revue.md"))
+        self.assertIn("Une passe suffit", lire(REF / "ambition.md"))
+
+    def test_les_mots_d_une_interface_ne_sont_pas_des_faits(self):
+        self.assertIn("jamais des barres grises à leur place", lire(REF / "interdits.md"))
+
+
 class Aides(unittest.TestCase):
     def test_le_flou_de_bouge_est_regle_sur_root(self):
         gabarit = (RACINE / "templates" / "projet" / "index.html.tpl").read_text(encoding="utf-8")

@@ -76,7 +76,8 @@ monte, tout centré, tout en même temps ; le même `power2.out` de 0,5 s partou
 flottent, pulsent ou respirent à la place d'un mouvement ; une poussée lente en fin de scène ; un
 tremblement de caméra ; des halos, néons, orbes, reflets d'objectif, particules ou nuées
 décoratives, dégradés violets ; trois cartes en ligne, un titre sur une capture assombrie, des
-étiquettes dans les coins, des compteurs « 01 / 02 » ; des icônes génériques à la place des vrais
+étiquettes dans les coins, des compteurs « 01 / 02 » ; la même mise en page à chaque plan (le titre en
+haut, l'objet au centre, plan après plan) ; des icônes génériques à la place des vrais
 logos ; le logo rangé dans un coin toute la vidéo ; le même enchaînement d'une vidéo à l'autre.
 
 Le test final : si la vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom, elle
@@ -121,7 +122,8 @@ premier jet.
    Un premier jet qui ne t'inspire que deux changements n'a pas été regardé assez durement.
 3. **Applique-la**, dans les interdits et dans le script validé (ce qu'on voit et ce qu'on lit ne
    changent pas ; la façon de le montrer, si), puis `npm run check` et un nouveau rendu.
-4. **Regarde la nouvelle planche** : si elle ne passe pas encore le seuil « on la regarde deux
-   fois », une seconde passe. Puis la revue ([revue.md](revue.md)).
+4. **Une passe suffit** avant la revue ([revue.md](revue.md)) : ne cherche pas la perfection du
+   premier coup. Le client peut en demander une autre à la livraison (« La seconde passe », dans
+   les retouches du skill) : c'est la même passe, sur la vidéo livrée.
 
 Le client ne voit jamais le premier jet : il reçoit la version travaillée.

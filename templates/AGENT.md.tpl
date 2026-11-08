@@ -74,6 +74,11 @@ LinkedIn, X, YouTube).
   - « Ouvre ma dernière vidéo dans l'app HyperFrames » : le projet de `{{MAISON}}videos/` retouché le
     plus récemment (son `index.html`), puis `node {{MAISON}}scripts/app-hyperframes.mjs ouvrir
     "<projet>"`.
+  - « Repasse sur toute ma vidéo… » (la seconde passe de sa formation) ou « rends-la plus
+    impressionnante » : {{#LIEU_RACINE}}skill `studio`, « Les retouches », « La seconde passe », sur sa vidéo
+    la plus récente (au moindre doute, une question à choix).{{/LIEU_RACINE}}{{#LIEU_ACCUEIL}}elle ne se fait
+    pas dans l'app : « Ouvre ton dossier {{PRODUIT}} dans Claude Code ou Codex et colle-y la même
+    phrase. »{{/LIEU_ACCUEIL}}
   - « Mets à jour la livraison de ma vidéo » (après une retouche dans l'app) : {{#LIEU_RACINE}}skill `studio`,
     « Les retouches », sur ce même projet retouché le plus récemment. Au moindre doute sur la vidéo,
     une question à choix.{{/LIEU_RACINE}}{{#LIEU_ACCUEIL}}elle ne se fait pas dans l'app : « Ouvre ton

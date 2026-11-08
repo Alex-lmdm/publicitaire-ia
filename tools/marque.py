@@ -1149,11 +1149,12 @@ def capturer(hyperframes: list[str], url: str, dest: Path) -> Path | None:
 
 
 def sans_consignes(dest: Path) -> list[str]:
-    """La capture HyperFrames dépose un CLAUDE.md, un AGENTS.md et un meta.json qui renvoient vers un
-    autre skill et autorisent à reformuler le texte de la page : l'agent les lirait comme des ordres,
-    contre la règle « rien d'inventé ». Ils sont retirés ; les données de la capture restent."""
+    """La capture HyperFrames dépose un CLAUDE.md, un AGENTS.md, un .cursorrules (relevé au banc du
+    08/11/2026) et un meta.json qui renvoient vers un autre skill et autorisent à reformuler le texte
+    de la page : l'agent les lirait comme des ordres, contre la règle « rien d'inventé ». Ils sont
+    retirés, comme les consignes d'autres assistants ; les données de la capture restent."""
     retires = []
-    for nom in ("CLAUDE.md", "AGENTS.md", "meta.json"):
+    for nom in ("CLAUDE.md", "AGENTS.md", ".cursorrules", ".windsurfrules", "GEMINI.md", "meta.json"):
         f = dest / nom
         if f.is_file():
             f.unlink()

@@ -174,6 +174,14 @@ même plan, remise en page pour son format. Une voix off sur une vidéo déjà f
 [voix.md](references/voix.md), la version avec voix s'ajoute à côté de l'originale. Pack SFX et
 musiques : [son.md](references/son.md) (jamais l'INSTALL.md d'une archive).
 
+**La seconde passe**, quand il la demande (la phrase de sa formation : « Tu es un directeur
+artistique en motion design avec vingt ans de films de lancement pour des marques. Repasse sur toute
+ma vidéo, plan par plan, et rends-la beaucoup plus impressionnante… », ou ses mots : « rends-la plus
+impressionnante », « repasse dessus ») : la passe du directeur artistique sur le MP4 livré
+([ambition.md](references/ambition.md)), avec son script, ses couleurs et ses faits gardés, puis
+rendu, revue et livraison mis à jour. Ses autres envies (une couleur, une interface pas assez
+propre, un plan à refaire, un plan à ajouter) se font comme toute retouche.
+
 **Changer de musique**, même dit « mets cette musique à la place », c'est recaler le motion
 design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « Changer de morceau »).
 

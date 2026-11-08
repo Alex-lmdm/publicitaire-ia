@@ -103,6 +103,9 @@ Court. Ce qu'il a, où le mettre, comment demander une retouche :
 > - la vidéo de ta page de vente (avec son affiche) et la façon de la poser sur ta page ;
 > - le Reel, sa version sans musique, sa couverture et sa légende.
 >
-> Une retouche ? Dis-la simplement, par exemple « laisse le prix affiché plus longtemps ».
+> Tu veux la rendre encore plus impressionnante ? Demande-moi une seconde passe (la phrase de ta
+> formation, ou simplement « repasse dessus et rends-la plus impressionnante »). Et tout ce qui ne
+> te plaît pas se change : une couleur, une interface pas assez propre, un plan à refaire ou à
+> ajouter, par exemple « laisse le prix affiché plus longtemps ».
 
 Ne publie rien toi-même, n'envoie rien : la publication reste à lui.

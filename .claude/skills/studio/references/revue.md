@@ -100,7 +100,9 @@ neuf) rend une ligne par défaut : « t = 4,5 s · où · problème · changemen
 
 Les P0 et les P1 se corrigent, puis on refait le rendu et les portes 1 à 3 (relecture à froid
 comprise, avec un relecteur neuf : celui d'avant connaît désormais la vidéo). Les P2 se corrigent
-s'il reste du temps.
+s'il reste du temps. **La revue s'arrête** quand un relecteur neuf dit ce que dit la fiche (ce qui
+est vendu, à qui, quoi faire) et ne relève plus de P0 : chaque relecteur trouvera toujours un P1
+neuf, et deux tours de correction suffisent. Le reste, le client le demandera en retouche.
 
 **3. Les interdits de cette vidéo.** Chaque P0 et chaque P1 corrigé s'écrit en une ligne dans la
 section « Interdits de cette vidéo » de `PLAN.md` (« l'accroche reste 3,5 s, sans recadrage », « le

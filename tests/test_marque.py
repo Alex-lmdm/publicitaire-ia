@@ -409,6 +409,19 @@ class MonteurIA(unittest.TestCase):
                 mq.depuis_monteur(racine_vide(Path(d)), Path(d))
 
 
+class CaptureSansConsignes(unittest.TestCase):
+    def test_les_consignes_d_autres_assistants_sont_retirees(self):
+        """La capture d'HyperFrames dépose aussi un `.cursorrules` (« use the hyperframes skill… »),
+        relevé au banc du 08/11/2026 : une consigne d'un tiers, jamais un ordre pour l'agent."""
+        with tempfile.TemporaryDirectory() as d:
+            dest = Path(d)
+            for nom in ("CLAUDE.md", "AGENTS.md", ".cursorrules", "meta.json", "visible-text.txt"):
+                (dest / nom).write_text("x", encoding="utf-8")
+            retires = mq.sans_consignes(dest)
+            self.assertIn(".cursorrules", retires)
+            self.assertEqual(sorted(f.name for f in dest.iterdir()), ["visible-text.txt"])
+
+
 class Retouches(unittest.TestCase):
     def options(self, **kw):
         base = {c: None for c in ("fond", "texte", "accent", "secondaire", "surface", "titres", "corps", "nom",

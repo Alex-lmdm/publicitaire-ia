@@ -20,7 +20,9 @@ Court ne veut pas dire elliptique : chaque plan se comprend seul, par ce qu'il m
 Le client est le créateur ; tu écris dans **sa** voix (relis sa page de vente, ses légendes s'il
 y en a dans le dossier). Le tutoiement suit le sien. Les phrases de sa page sont déjà validées par
 lui : reprends-les quand elles disent ce qu'il faut (« Ton offre est bonne. Encore faut-il qu'on
-la voie. »), plutôt que d'en inventer de moins bonnes.
+la voie. »), plutôt que d'en inventer de moins bonnes. Ses mots et ceux de son métier passent avant
+les conseils de cette page, même ceux qu'elle déconseille (« découvre », « le secret », une
+promesse de revenu) : c'est son offre et sa voix.
 
 ## Le film : ce qu'on voit, puis les mots (étape 3 bis du skill)
 
@@ -187,8 +189,7 @@ redit le problème en une phrase.
   budget. »), puis le résultat (« 2 976 € de ventes. »), puis son contexte (quelle offre, à quel
   prix, sur quelle période) et sa traduction simple (« Environ 12 € de ventes pour 1 € de pub. »,
   des ventes, pas du bénéfice). Montre la capture datée, la dépense à côté des ventes. C'est son
-  résultat à lui, jamais une promesse de revenu au spectateur (les régies suspendent les comptes
-  qui en font). Jamais deux chiffres d'affilée sans repère.
+  résultat à lui, tel que sa page le donne. Jamais deux chiffres d'affilée sans repère.
 - **Le prix**, quand on le montre : d'abord ce qu'on reçoit et quand on y accède, puis le prix,
   recadré (ce que coûte un motion designer, une agence, le temps perdu), jamais seul, puis la vraie
   échéance avec sa vraie raison (« Prix de lancement : 67 € jusqu'à jeudi 23 h 59. Ensuite, 97 €. »).

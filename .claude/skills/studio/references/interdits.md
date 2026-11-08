@@ -9,9 +9,10 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
 - **`OFFRE.json` est la seule source des faits** affichés : ni prix, ni date, ni chiffre, ni
   témoignage, ni nombre de places, ni remise, ni bonus qui n'y soit avec sa source
   ([offre.md](offre.md)). Un prix barré seulement avec `prix.barre` ; un chiffre arrondi vers le bas
-  et avec son contexte ; une urgence seulement si sa date est dans la fiche. Ce qu'un objet montré
-  affiche de lisible (un prix, une date, un nom, une vente) vient de la fiche ; sinon c'est une
-  texture illisible.
+  et avec son contexte ; une urgence seulement si sa date est dans la fiche. Un fait qu'un objet montré
+  affiche (un prix, un chiffre, une date, un nom de client, une vente, un résultat) vient de la fiche ;
+  les mots ordinaires d'une interface (l'objet d'un e-mail, une demande tapée, un nom de fichier, un
+  bouton) s'écrivent librement pour qu'elle ait l'air vraie, jamais des barres grises à leur place.
 - **Aucune image inventée** : ni paysage, ni illustration, ni photo factice, ni objet décoratif, ni
   l'interface d'un logiciel qu'il n'a pas, ni un écran que sa page ne montre pas, ni une forme seule
   (un disque, un carré, une nuée) à la place d'un objet qui manque. Ce qui se montre est sa vraie
