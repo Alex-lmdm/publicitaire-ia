@@ -64,7 +64,7 @@ final. L'appel à l'action est le bouton de la page, juste sous la vidéo : la f
 
 | Part | Bloc | Rôle |
 |---|---|---|
-| 0–10 % | **Accroche** | Pour qui et ce qu'il gagne, compris en deux secondes (le résultat, ou le problème nommé) |
+| 0–10 % | **Accroche** | Pour qui et ce qu'il gagne, compris en deux secondes (le résultat, le problème nommé, ou une image qui intrigue : [ecriture.md](ecriture.md), « L'image qui intrigue ») |
 | 10–25 % | **Le problème** | Une image du problème et ses quelques mots (la façon d'avant, son coût) |
 | 25–35 % | **Ce que c'est** | Le nom de l'offre et ce qu'elle fait, montré en un plan |
 | 35–65 % | **La démonstration** | Ce que l'offre fait, à l'écran, en deux ou trois gestes, chacun avec ses quelques mots |
@@ -88,8 +88,9 @@ ancrage** (risque de refus de la pub et règle européenne des 30 jours) ; propo
 sans prix pour le test. Chaque scène dure 2 à 4 s, la démonstration jusqu'à 8 s si l'angle est
 la démo ; le premier plan tient sans le son et arrête le pouce : **le texte de l'accroche est
 déjà là à la première image** (la pub démarre muette, sans fondu au noir), la question complète
-arrive avant 0,5 s. Prépare 2 ou 3 accroches différentes sur le même corps : c'est ainsi qu'on
-teste une pub.
+arrive avant 0,5 s. Prépare 2 ou 3 accroches différentes sur le même corps, dont une image qui
+intrigue quand le problème a un objet qui se montre ([ecriture.md](ecriture.md)) : c'est ainsi
+qu'on teste une pub.
 
 **Mise en page verticale (1080 × 1920).** La zone sûre est x 65 → 1015, y 269 → 1248 : le haut
 (14 %) porte le nom du compte et « Sponsorisé », le bas (35 %) la légende et le bouton, les

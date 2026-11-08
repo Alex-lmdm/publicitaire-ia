@@ -120,7 +120,36 @@ Formules qui marchent, à remplir avec la fiche :
 - « Pour [résultat], tu as trois options. [Les trois, avec leur coût.] Il y en a une quatrième. »
 
 Préfère l'instructif à la curiosité vide : « Commence en 15 minutes » vend mieux que « Découvre le
-secret ». Une question entre dans la tête ; une affirmation se juge vraie ou fausse.
+secret ». Une question entre dans la tête ; une affirmation se juge vraie ou fausse. La curiosité,
+elle, est bienvenue quand elle vient de ce qu'on voit (« L'image qui intrigue », plus bas) : ce
+sont les mots qui teasent sans rien dire qui sont interdits.
+
+### L'image qui intrigue
+
+Une famille d'accroches de plus, à côté du problème nommé, de la question et de la preuve
+(demande du créateur, 08/11/2026 : « attiser sa curiosité, peu importe la manière, ça peut être
+avec des trucs un peu loufoques »). La première image surprend et arrête le pouce : un objet de son
+monde qui fait quelque chose d'inattendu, d'exagéré, de décalé. Le nom du produit peut attendre
+10 ou 15 secondes ; la personne visée, elle, se reconnaît tout de suite.
+
+- **Dans le monde du public visé** : son outil, son écran, un objet de son métier ou de sa
+  journée, qu'il reconnaît d'un coup d'œil. Un visuel étrange sans rapport avec lui attire des
+  curieux qui n'achèteront jamais.
+- **L'absurde exagère le vrai** : l'image est son problème ou son envie, poussés jusqu'au
+  comique, jamais une décoration. Sa timeline CapCut qui fond comme une glace au soleil (le
+  montage épuisant) ; les tickets de caisse qui s'empilent jusqu'à engloutir son téléphone (la
+  compta) ; le message « Je vais parler en réunion » tapé puis effacé cinq fois (la prise de
+  parole) ; ses onglets qui se multiplient jusqu'à couvrir l'écran (l'organisation). Des exemples
+  à adapter, jamais à copier.
+- **Les mots arrivent vite** : dès la première image ou la suivante, au plus vers 2 s (dans une
+  pub, dès la première image : [structures.md](structures.md), 3), quelques mots disent ce que
+  l'image exagère (« 3 heures pour un Reel ? »). Le spectateur sait alors de
+  quoi on parle et que ça le concerne, même sans connaître le produit.
+- **Construite en motion design**, avec les objets connus du kit ou reconstruits d'après leur
+  allure ([image.md](image.md), « Les objets connus ») : jamais une photo, une illustration ou une
+  image générée.
+- **Une fois par vidéo**, en ouverture. Pour une pub, c'est une des trois accroches à tester ;
+  dans les trois idées de l'étape 3, propose-la quand le problème a un objet qui se montre.
 
 Devant une audience froide (le cas par défaut) :
 - ouvre sur ce qu'elle vit, pas sur une annonce ni sur le nom du produit, et sans l'interpeller
