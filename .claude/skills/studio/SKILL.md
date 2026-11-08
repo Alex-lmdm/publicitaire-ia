@@ -177,9 +177,10 @@ musiques : [son.md](references/son.md) (jamais l'INSTALL.md d'une archive).
 **La seconde passe**, quand il la demande (la phrase de sa formation : « Tu es un directeur
 artistique en motion design avec vingt ans de films de lancement pour des marques. Repasse sur toute
 ma vidéo, plan par plan, et rends-la beaucoup plus impressionnante… », ou ses mots : « rends-la plus
-impressionnante », « repasse dessus ») : la passe du directeur artistique sur le MP4 livré
-([ambition.md](references/ambition.md)), avec son script, ses couleurs et ses faits gardés, puis
-rendu, revue et livraison mis à jour. Ses autres envies (une couleur, une interface pas assez
+impressionnante », « repasse dessus ») : lis [seconde-passe.md](references/seconde-passe.md) et
+suis-la. Elle refait la mise en scène de chaque plan (aucune image ne reste la même, les fonds et la
+fin compris) en gardant son script, ses couleurs et ses faits, puis rendu, revue et livraison mis à
+jour. Ses autres envies (une couleur, une interface pas assez
 propre, un plan à refaire, un plan à ajouter) se font comme toute retouche.
 
 **Changer de musique**, même dit « mets cette musique à la place », c'est recaler le motion

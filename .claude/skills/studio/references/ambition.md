@@ -106,7 +106,7 @@ premier jet.
    demi-secondes, sur plusieurs planches), dans l'ordre ; puis chaque passage de près (`npx
    hyperframes snapshot --range <début>,<fin> --frames 8`).
 2. **Écris ce que tu changerais**, dans `PLAN.md`, section « Passe du directeur », plan par plan,
-   sur six points :
+   sur ces points :
    - **les passages** : lesquels sont des coupes ou des fondus qui pourraient être un objet qui
      devient le suivant ?
    - **la profondeur et la 3D** : quelles interfaces sont posées à plat ? Qu'est-ce qui pourrait
@@ -117,13 +117,15 @@ premier jet.
      répondre, se réorganiser ?
    - **la caméra** : bouge-t-elle pour une raison ? Les mots sortent-ils dès qu'ils sont lus pour la
      laisser partir ?
+   - **les fonds** : changent-ils avec le film, avec une cause ? Un temps fort a-t-il le sien ?
+   - **la fin** : ramasse-t-elle le film, en grand, assez longtemps ?
    - **la finition** : la traîne du flou, les courbes, les ombres, les alignements, la première et
      la dernière image, le geste sur le temps fort.
    Un premier jet qui ne t'inspire que deux changements n'a pas été regardé assez durement.
 3. **Applique-la**, dans les interdits et dans le script validé (ce qu'on voit et ce qu'on lit ne
    changent pas ; la façon de le montrer, si), puis `npm run check` et un nouveau rendu.
 4. **Une passe suffit** avant la revue ([revue.md](revue.md)) : ne cherche pas la perfection du
-   premier coup. Le client peut en demander une autre à la livraison (« La seconde passe », dans
-   les retouches du skill) : c'est la même passe, sur la vidéo livrée.
+   premier coup. Le client peut demander à la livraison une seconde passe, plus radicale : elle
+   refait la mise en scène de chaque plan ([seconde-passe.md](seconde-passe.md)).
 
 Le client ne voit jamais le premier jet : il reçoit la version travaillée.

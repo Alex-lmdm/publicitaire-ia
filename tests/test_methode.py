@@ -124,6 +124,21 @@ class SecondePasse(unittest.TestCase):
         self.assertIn("La revue s'arrête", lire(REF / "revue.md"))
         self.assertIn("Une passe suffit", lire(REF / "ambition.md"))
 
+    def test_la_seconde_passe_refait_la_mise_en_scene(self):
+        """Essai du 08/11/2026 sur le Reel Calendly : une seconde passe prudente gardait la moitié des
+        images ; Alex : « renforce-la ». Elle change chaque plan, les fonds et la fin compris."""
+        page = lire(REF / "seconde-passe.md")
+        for objectif in ("Aucun plan n'a la même image qu'avant", "Des passages où un objet devient le suivant",
+                         "De la vraie profondeur", "Les fonds", "La fin", "work/avant-seconde-passe.mp4",
+                         "Garder le script, c'est garder ce qu'il dit, pas sa mise en page"):
+            with self.subTest(objectif):
+                self.assertIn(objectif, page)
+        self.assertIn("references/seconde-passe.md", lire(SKILL / "SKILL.md"))
+        passe = lire(REF / "ambition.md").split("## La passe du directeur artistique", 1)[1]
+        self.assertIn("les fonds", passe)
+        self.assertIn("la fin", passe)
+        self.assertIn("les collisions pendant les animations", lire(REF / "revue.md"))
+
     def test_les_mots_d_une_interface_ne_sont_pas_des_faits(self):
         self.assertIn("jamais des barres grises à leur place", lire(REF / "interdits.md"))
 

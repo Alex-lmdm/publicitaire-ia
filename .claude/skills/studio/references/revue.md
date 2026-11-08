@@ -56,6 +56,10 @@ de la précédente. Ouvre-les et regarde-les vraiment :
 - la première image déjà forte (vidéo de page : c'est elle qu'on voit si la lecture automatique est
   bloquée), la dernière propre (l'appel à l'action entier) ; une boucle de section qui raccorde sa
   dernière image à la première ;
+- **les collisions pendant les animations**, que ni `check` ni le relecteur ne voient : pour chaque
+  entrée ou sortie de mots et chaque passage, `npx hyperframes snapshot --range <début>,<fin>
+  --frames 8` ; aucun texte ne touche un autre texte, ne passe sous un objet ni ne sort du cadre,
+  même pendant deux images ;
 - aucune image clé dont le seul sujet est une forme ou un aplat plus d'une seconde, hors fin et
   passage ; le sujet qui remplit le cadre ; en vertical, une mise en page recomposée ;
 - le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
