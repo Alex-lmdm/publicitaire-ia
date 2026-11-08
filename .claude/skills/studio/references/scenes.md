@@ -182,24 +182,30 @@ cause.
 Le kit sait rendre de la vraie 3D (three.js, `kit.md`, « La 3D ») : des objets en volume, sous une
 lumière de studio, avec leurs reflets et leur ombre. C'est un outil, pas une obligation. **Pose-toi
 la question à chaque plan fort : ici, le volume montre-t-il quelque chose que le plat ne montre
-pas ?** Si oui, un plan en 3D peut donner ce petit cran de plus ; sinon, aucun : beaucoup de très
-bonnes vidéos n'en ont pas.
+pas ?** Si oui, un plan en 3D peut donner ce petit cran de plus, et tu as le droit d'être inventif
+dans ces règles ; sinon, aucun : beaucoup de très bonnes vidéos n'en ont pas.
 
-- **Quand** : un moment fort (le pivot, le nom, le produit, la révélation, la fin), où l'objet gagne
-  à être tenu, tourné, éclairé. Par exemple, sans que ce soit une liste : son téléphone ou son
-  ordinateur en volume avec sa vraie capture, son nom ou son prix en relief, l'objet de son offre
-  (sa boîte, son carnet, son dossier) qui tourne et s'ouvre, son vrai produit physique sous la
-  lumière, un schéma dont les nœuds flottent dans l'espace, ses vraies captures en cartes épaisses
-  qui volent en vraie perspective. Chaque offre a les siens : pars de son sujet.
+- **Quand** : un moment fort (le pivot, le nom, le produit, la révélation, la fin), où un objet
+  gagne à être tenu, tourné, ouvert, éclairé. Par exemple, sans que ce soit une liste : son écran,
+  son téléphone ou son ordinateur en volume, qui s'ouvre sur sa vraie capture ; l'objet de son
+  offre (sa boîte, son carnet, son dossier bleu) qui tourne et s'ouvre ; le vrai logo de ses outils
+  sur des tuiles épaisses qui se rangent ; ses vraies captures en cartes épaisses qui volent en
+  vraie perspective ; un schéma dont les nœuds flottent dans l'espace. Chaque offre a les siens :
+  pars de son sujet.
 - **Combien** : un à trois plans dans une vidéo de page, un dans un Reel, quelques secondes chacun.
   Jamais toute la vidéo, jamais pour décorer ; dans le doute, pas de 3D.
 - **Simple** : un ou deux objets, des formes nettes (un rectangle aux coins ronds extrudé, un
-  cylindre, un panneau qui porte une capture), une seule lumière principale, un seul mouvement de
-  caméra par plan. Ce qui se lit (ses mots) reste en HTML par-dessus, immobile pendant sa lecture.
-- **Les mêmes règles** : sa vraie matière (une capture, son logo, son produit), aucune image
-  inventée (pas de pièce, de paysage, de planète, de particules décoratives), les couleurs de sa
-  marque et des objets connus, pas d'ombre sombre sur l'aplat, la grammaire des mouvements
-  ([mouvement.md](mouvement.md)). Le plan passe la revue comme les autres.
+  cylindre, un panneau qui porte une image), une lumière principale. Un mouvement de caméra par
+  plan (une arrivée, un pivot, une plongée), puis au plus la dérive lente permise pendant une
+  lecture ([mouvement.md](mouvement.md), « La caméra »).
+- **Ce qu'on modélise** : un objet courant ou connu (un écran, un ordinateur, un téléphone, une
+  boîte, un carnet, une carte, une tuile), jamais le résultat promis dessiné (le pain réussi, le
+  corps transformé, la maison vendue) : le résultat se montre par sa vraie photo, posée en texture.
+  Pas de décor non plus (pièce, paysage, planète, particules).
+- **Les mêmes règles** : ses mots à lire en HTML par-dessus, immobiles pendant leur lecture ; sa
+  vraie matière ; les couleurs de sa marque et des objets connus, en aplat sur les objets (une
+  matière éclairée reste neutre : `kit.md`) ; pas d'ombre sombre sur l'aplat ; le sujet qui remplit
+  le cadre. Le plan passe la revue comme les autres.
 
 ## Combiner
 

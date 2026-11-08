@@ -50,6 +50,16 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 </template>
 ```
 
+Son hôte dans `index.html`, sur la piste 1, à la suite de la scène d'avant :
+
+```html
+<div id="s3-hote" data-composition-id="s3" data-composition-src="compositions/s3.html" data-start="12" data-duration="9.5" data-track-index="1" data-width="1080" data-height="1920"></div>
+```
+
+Le repère de départ du gabarit (`#attente`, et ses deux lignes dans le script d'`index.html`) se
+retire à la première scène montée ; `data-duration` de `#root` et de `#fond` prend la durée totale
+de la vidéo (90 s au départ : une fin plus courte tiendrait la dernière image).
+
 ## Les classes
 
 | Classe | Rôle |
@@ -145,64 +155,88 @@ une liste.
 
 Un plan en vraie 3D (three.js, copié dans `assets/vendor/` par `npm run sync`), à l'usage décrit
 dans [scenes.md](scenes.md) (« La 3D, quand elle sert »). C'est une sous-composition comme une
-autre : un canvas, et un script **module** qui appelle `plan3d`. Les mots se posent en HTML
-par-dessus (le calque `k-mots`, comme partout).
+autre : un canvas, un script **module** qui appelle `plan3d`, et ses mots en HTML par-dessus, dans
+le calque `k-mots`, animés par la timeline de la scène comme partout. Ce squelette se cadre seul en
+9:16 comme en 16:9 (`distance`) :
 
 ```html
 <template>
-  <div data-composition-id="s5" data-width="1920" data-height="1080" data-duration="4" style="position:absolute; inset:0;">
+  <style>
+    #s5-titre { position: absolute; left: 8%; top: 6%; font: 800 120px/0.95 var(--brand-font-display); letter-spacing: -0.04em; color: var(--brand-clair); }
+  </style>
+  <!-- 9:16 (Reel, story). En 16:9 : data-width="1920" data-height="1080". -->
+  <div data-composition-id="s5" data-width="1080" data-height="1920" data-duration="4" style="position:absolute; inset:0;">
     <div id="s5" class="k-scene">
       <div class="k-fond k-fond-sombre"></div>
       <canvas id="s5-vue" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
-      <div class="k-mots" id="s5-mots"><!-- ses mots, en HTML --></div>
+      <div class="k-mots"><div id="s5-titre">Ta page.</div></div>
     </div>
   </div>
   <script type="module">
     import { plan3d } from "./kit/plan3d.js";
-    plan3d(document.getElementById("s5-vue"), async ({ THREE, scene, camera, jeton, texture, arrondi, sol, plaquer }) => {
-      sol(-1.05);                                        // l'ombre au sol (pas sur l'aplat)
-      const ecran = await texture("assets/images/page.png");
+    plan3d(document.getElementById("s5-vue"), async ({ THREE, scene, camera, distance, courbe, jeton, aplat, texture, arrondi, plaquer, sol }) => {
+      sol(-1.2);                                          // l'ombre au sol, neutre (jamais sur l'aplat)
+      const l = 2.6, h = 1.62;                            // un écran épais : sa vraie page sur la face
       const objet = new THREE.Mesh(
-        new THREE.ExtrudeGeometry(arrondi(2.6, 1.62, 0.1), { depth: 0.07, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025 }),
-        new THREE.MeshPhysicalMaterial({ color: jeton("--brand-surface"), roughness: 0.35, clearcoat: 1 }));
+        new THREE.ExtrudeGeometry(arrondi(l, h, 0.1), { depth: 0.07, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025 }),
+        new THREE.MeshPhysicalMaterial({ color: jeton("--brand-gris-1"), roughness: 0.35, clearcoat: 1 }));   // éclairée : neutre
       objet.castShadow = true;
-      const face = new THREE.Mesh(plaquer(new THREE.ShapeGeometry(arrondi(2.5, 1.52, 0.08), 24), 2.5, 1.52),
-        new THREE.MeshBasicMaterial({ map: ecran, toneMapped: false }));
+      const face = new THREE.Mesh(plaquer(new THREE.ShapeGeometry(arrondi(l - 0.1, h - 0.1, 0.08), 24), l - 0.1, h - 0.1),
+        aplat(0xffffff, { map: await texture("assets/images/page.png") }));   // une image, une couleur : en aplat
       face.position.z = 0.1;
       objet.add(face);
       scene.add(objet);
-      return (t) => {                                    // t : secondes depuis le début du plan
-        const e = Math.min(1, t / 4), d = e * e * (3 - 2 * e);
-        objet.rotation.y = -0.6 + 0.8 * d;
-        camera.position.set(-0.6 + 0.4 * d, 0.3, 5.6 - 0.5 * d);   // le sujet remplit le cadre (image.md)
+      const d0 = distance(l, h, 0.6), arrivee = courbe("expo.out"), derive = courbe("sine.inOut");
+      return (t) => {                                     // t : secondes depuis le début du plan
+        const a = arrivee(Math.min(1, t / 0.8)), b = derive(Math.min(1, t / 4));
+        objet.rotation.y = -0.9 + 0.75 * a;               // il arrive en pivotant, puis se tient
+        objet.position.y = -0.4 * (1 - a);
+        camera.position.set(0.15, 0.2, d0 * (1.02 - 0.03 * b));   // puis une dérive lente, 3 %
         camera.lookAt(0, 0, 0);
       };
     });
   </script>
+  <script>
+    (function () {                                        // ses mots : la timeline de la scène, comme partout
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      K.cacher("#s5-titre");                              // caché dès la construction, il claque à 0,6 s
+      tl.set("#s5-titre", { opacity: 1 }, 0.6)
+        .from("#s5-titre", { scale: 1.45, duration: 0.45, ease: "expo.out", transformOrigin: "0% 50%" }, 0.6);
+      window.__timelines["s5"] = tl;
+    })();
+  </script>
 </template>
 ```
 
-Le script module tourne dans la sous-composition comme un script ordinaire. Le canvas peut aussi se
-poser à la racine d'`index.html`, comme une vraie vidéo (avec `data-start` et `data-duration` sur
-lui).
-
 | Outil | Ce qu'il donne |
 |---|---|
-| `plan3d(canvas, construire, {focale, reflets, ombre})` | le rendu, la lumière de studio, la synchronisation sur le temps de la vidéo ; `construire` crée les objets (elle peut attendre des textures) et rend `poser(t)` ; `ombre: false` sans ombre |
-| `THREE`, `scene`, `camera`, `renderer`, `lumiere` | three.js et la scène prête : une caméra (focale 26° par défaut), une lumière principale qui porte l'ombre, des reflets de studio, un fond transparent (le fond du kit se voit derrière) |
-| `jeton("--brand-accent")` | une couleur de sa marque, pour une matière |
-| `texture("assets/images/…")` | une image du projet (sa capture, son logo en PNG) prête à poser |
-| `arrondi(l, h, r)` | un rectangle aux coins ronds, centré : à extruder (`ExtrudeGeometry`) ou à poser à plat (`ShapeGeometry`) |
-| `plaquer(geometrie, l, h)` | une capture qui remplit une forme `arrondi` posée à plat |
+| `plan3d(canvas, construire, {angle, ombre})` | le rendu, la lumière de studio et ses reflets, la synchronisation sur le temps de la vidéo ; `construire` crée les objets (elle peut attendre des textures) et rend `poser(t)` ; `angle` : l'angle de vue vertical (26° par défaut, plus petit = plus serré) ; `ombre: false` sans ombre |
+| `THREE`, `scene`, `camera`, `renderer`, `lumiere`, `largeur`, `hauteur` | three.js et la scène prête : la caméra, la lumière principale qui porte l'ombre, un fond transparent (le fond du kit se voit derrière), la taille de la composition |
+| `distance(l, h, part)` | la distance de la caméra pour qu'un objet de l × h, face à elle, occupe `part` du cadre (0,6 par défaut) : le même plan se cadre en 9:16 comme en 16:9 |
+| `courbe("expo.out")` | une courbe de GSAP, à appliquer à une progression de 0 à 1 : les mêmes arrivées et dérives qu'ailleurs ([mouvement.md](mouvement.md)) |
+| `jeton("--brand-gris-1")` | une couleur de sa marque (`THREE.Color`) |
+| `aplat(couleur, {map})` | une matière sans lumière : la couleur reste exactement elle (l'accent, un objet connu, une capture) |
+| `texture(src, {taille, couleur})` | une image du projet (`"assets/images/page.png"`) ou un SVG du kit (`K.ic("logo-stripe")`, `K.ic("objet-pdf")`) prête à poser ; `couleur` pour un SVG d'un seul trait |
+| `arrondi(l, h, r)`, `plaquer(geometrie, l, h)` | un rectangle aux coins ronds, centré, à extruder (`ExtrudeGeometry`) ou à poser à plat (`ShapeGeometry`) ; une image qui remplit une forme posée à plat |
 | `sol(y, opacite)` | un sol invisible qui ne garde que l'ombre, neutre |
+| `hasard()` | un hasard toujours le même, pour placer des objets « au hasard » |
 
-- **`poser(t)` ne lit que t** : jamais d'horloge, de minuterie, de `requestAnimationFrame` ni de
-  boucle ; le hasard de `construire` est fixé. Sinon deux rendus diffèrent et l'aperçu ment.
-- **Les mêmes courbes qu'ailleurs** (une arrivée qui se pose, une caméra qui accélère et freine) :
-  écris-les à la main dans `poser` (`d = e * e * (3 - 2 * e)` pour un `sine.inOut`).
-- **Le contrôle** : `npm run check`, puis des images (`npx hyperframes snapshot --at …`) comme
-  pour toute scène. Le rendu passe par la carte graphique ; sans elle, il se fait en logiciel, plus
-  lentement : garde peu d'objets, des textures de 2048 px au plus.
+- **Les couleurs** : une matière éclairée (`MeshStandardMaterial`, `MeshPhysicalMaterial`) reste
+  neutre (les gris de sa marque, du blanc, du noir, l'alu, le verre) ; l'accent et les couleurs des
+  objets connus se posent en `aplat`. Éclairée, une couleur s'assombrit sur ses côtés en teintes
+  hors de sa palette (un jaune vire à l'olive), et `palette` le refuse.
+- **En 9:16**, un objet couché (un écran en largeur) reste petit dans un cadre haut : préfère un objet
+  debout (un téléphone, une carte, une boîte) ou rapproche-le (`distance(l, h, 0.85)`).
+- **`poser(t)` ne lit que t** : jamais d'horloge, de minuterie, de `requestAnimationFrame`, de boucle
+  ni de `Math.random` (`hasard`). La preuve : `npx hyperframes snapshot --at 2,0,2` donne deux images
+  identiques à 2 s.
+- **Ce que `check` ne voit pas** : rien de ce qui est dessiné dans le canvas (taille, contraste, temps
+  de lecture). Les mots à lire restent donc en HTML ; regarde les images du plan. Un objet qui sort du
+  cadre exprès (`canvas_content_at_edge`) : `data-layout-allow-overflow` sur le canvas, après avoir
+  vérifié l'image.
+- **Le rendu** passe par la carte graphique ; sans elle, en logiciel, trois fois plus lentement, avec
+  les mêmes images : garde peu d'objets et des textures de 2048 px au plus.
 - Un projet dont `kit/plan3d.js` ou `assets/vendor/three.module.min.js` manque : recopie `kit/`
   depuis `templates/kit/` et `assets/vendor/` depuis la racine du dossier (après `npm run sync`).
 

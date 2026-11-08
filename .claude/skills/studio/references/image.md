@@ -170,7 +170,7 @@ une teinte à corriger.
 
   | Rôle | Mots | Taille |
   |---|---|---|
-  | le **mot héros** | 1 à 3 | il remplit 60 à 90 % de la largeur (130 à 400 px en 9:16) |
+  | le **mot héros** | 1 à 3 | il remplit 60 à 90 % de la largeur de sa colonne (130 à 400 px en 9:16) |
   | la **ligne d'appui** | 3 à 6 | 56 à 72 px |
   | les **étiquettes** posées sur ce qu'on montre | 1 à 4 | 30 à 40 px, jamais sous 28 px |
 

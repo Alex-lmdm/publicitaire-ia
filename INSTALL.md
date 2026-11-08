@@ -88,7 +88,7 @@ que tu vas installer **et les fenêtres qui vont s'ouvrir**, puis attends qu'il 
   chemin n'est pas vu), ouvert dans le dossier Publicitaire IA, puis écrire « Continue
   l'installation de Publicitaire IA avec son INSTALL.md » : reprends alors ici, au bilan.
 
-**2. `npm ci`** à la racine du dossier (Windows : `npm.cmd ci`) : il installe HyperFrames et GSAP aux
+**2. `npm ci`** à la racine du dossier (Windows : `npm.cmd ci`) : il installe HyperFrames, GSAP et three.js aux
 versions prévues, puis prépare le dossier (instructions de l'assistant, style de départ, vignette
 d'accueil, copie des skills pour Codex). Ce qu'il affiche ne se recopie pas : dis juste que c'est
 fait. Si la sortie contient « sync incomplet », lance `npm run sync` : il doit finir par « ok ».
@@ -184,7 +184,7 @@ dis-lui de coller la phrase « Installe mes musiques de lancement » du module M
 
 - **« produit.json introuvable »** : l'assistant n'est pas ouvert dans le dossier Publicitaire IA.
   Ouvre-le (celui qui contient `INSTALL.md`), puis redemande.
-- **❌ HyperFrames ou GSAP** : `npm ci` n'est pas allé au bout (connexion coupée, Node plus ancien
+- **❌ HyperFrames, GSAP ou three.js** : `npm ci` n'est pas allé au bout (connexion coupée, Node plus ancien
   que 22.12). Vérifie `node --version`, puis relance `npm ci`.
 - **❌ ffmpeg ou Node** juste après les avoir installés : ferme et rouvre l'assistant.
 - **« Need sudo access »** pendant l'installation de Homebrew : c'est son script, lancé sans

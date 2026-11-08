@@ -9,7 +9,9 @@ se rendre (adapté de la documentation d'HyperFrames 0.9, licence Apache-2.0, ©
 
 - `index.html` est la composition racine : elle porte `data-width`, `data-height`,
   `data-duration` (la durée de la vidéo : ce qui dépasse est coupé, une fin plus courte tient la
-  dernière image) et monte une scène par sous-composition de `compositions/`, bout à bout.
+  dernière image ; 90 s dans le gabarit, à ramener à la somme des scènes, avec `#fond`) et monte une
+  scène par sous-composition de `compositions/`, bout à bout (l'hôte : `kit.md`, « Le squelette
+  d'une scène »).
 - Une scène est un fichier de `compositions/` dont tout le contenu (styles, balises, script) est
   **dans** `<template>` : ce qui est hors du template est jeté. Son hôte dans `index.html`, sa racine
   (`data-composition-id`) et la clé de sa timeline portent le même identifiant.

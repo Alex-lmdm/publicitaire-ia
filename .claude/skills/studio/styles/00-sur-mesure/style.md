@@ -167,7 +167,7 @@ vidéo qu'il aime), avec ta recommandation, puis la même chose.
 | plus énergique, ça doit bouger | plus de rafales et de raccords d'objet, des plans plus courts entre les phrases, la coupe deux fois |
 | fond clair, lumineux | le clair domine, la nuit seulement pour un temps fort |
 | sombre, nuit | la nuit domine, l'aplat pour les temps forts |
-| de la 3D, de la profondeur | la caméra voyage davantage, plus de plans en perspective et de champs de logos |
+| de la 3D, de la profondeur | la caméra voyage davantage, plus de plans en perspective et de champs de logos ; un ou deux plans en vraie 3D là où le volume montre quelque chose ([scenes.md](../../references/scenes.md), « La 3D, quand elle sert »), jamais toute la vidéo |
 | une typo énorme | le mot héros à 90 % de la largeur, une ligne d'appui de moins |
 
 Ses mots changent les gestes, jamais les règles : la lecture, la palette, la vraie matière et le

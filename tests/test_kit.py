@@ -235,14 +235,29 @@ class TroisD(unittest.TestCase):
         self.assertIn("buildReady", js)
         self.assertIn("preserveDrawingBuffer: true", js)
         code = re.sub(r"/\*.*?\*/|//[^\n]*", "", js, flags=re.S)   # hors commentaires
-        for horloge in ("requestAnimationFrame(", "Date.now(", "performance.now(", "setTimeout(", "setInterval("):
+        for horloge in ("requestAnimationFrame(", "Date.now(", "performance.now(", "setTimeout(", "setInterval(",
+                        "Math.random"):
             self.assertNotIn(horloge, code, horloge)
+        self.assertIn("K.rng(", code)                               # le hasard du kit, pas le sien
+        self.assertIn("Math.min(fin,", code)                        # hors du plan : il ne redessine plus
+
+    def test_l_exemple_de_kit_md_suit_les_regles(self):
+        """L'IA copie l'exemple : une matière éclairée y reste neutre (l'accent éclairé vire à l'olive),
+        il se cadre par `distance` (9:16 comme 16:9) et cache ses mots dès la construction."""
+        md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
+        exemple = re.search(r"```html\n(.*?)```", md.split("## La 3D : `kit/plan3d.js`", 1)[1], re.S).group(1)
+        self.assertIn("distance(", exemple)
+        self.assertIn("K.cacher(", exemple)
+        self.assertNotIn("tl.set(\"#s5-titre\", { autoAlpha: 0 }, 0)", exemple)
+        for eclairee in re.findall(r"Mesh(?:Standard|Physical)Material\(\{[^}]*\}", exemple):
+            self.assertNotIn("--brand-accent", eclairee)
 
     def test_sync_le_copie_et_le_mode_d_emploi_le_nomme(self):
         sync = (RACINE / "scripts" / "sync.mjs").read_text(encoding="utf-8")
         self.assertIn('"build/three.module.min.js"', sync)
         md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
-        for nom in ("plan3d(", "poser(t)", "jeton(", "texture(", "arrondi(", "plaquer(", "sol("):
+        for nom in ("plan3d(", "poser(t)", "jeton(", "texture(", "arrondi(", "plaquer(", "sol(", "distance(",
+                    "courbe(", "aplat(", "hasard()", "snapshot --at 2,0,2"):
             self.assertIn(nom, md, nom)
         scenes = (RACINE / ".claude" / "skills" / "studio" / "references" / "scenes.md").read_text(encoding="utf-8")
         self.assertIn("## La 3D, quand elle sert", scenes)
