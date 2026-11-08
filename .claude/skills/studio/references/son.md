@@ -246,6 +246,13 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   temps tombe sur la grille de 0,5 s ; un tempo trop loin de 120 est gardé, et le message donne
   l'écart entre deux temps : cale les événements forts dessus. Le pivot se marque alors à l'image
   (un impact, un changement de fond), pas par la musique.
+- **Le tempo qui fait foi est celui du morceau entier** (piège rencontré le 08/11/2026, un morceau
+  drill d'Epidemic Sound à 139,8 battements, basse 808 syncopée) : `musique` lit 139,8 sur le
+  morceau entier, mais 103,7 sur le fichier calé de 35 s, et `calage` refuse alors toutes les
+  scènes alors qu'elles tombent sur les temps. Note dans `PLAN.md` le tempo de `musique` sur le
+  morceau d'origine et vérifie-le sur l'extrait (les coups de basse tombent sur ta grille). Si
+  `calage` annonce un autre tempo, ce n'est pas le montage : dis-le dans la revue, et ne recale
+  jamais les scènes sur ce faux tempo.
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : musique facultative ; si oui, la même que le Reel, plus discrète.
 
