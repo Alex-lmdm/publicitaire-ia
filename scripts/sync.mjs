@@ -2,8 +2,7 @@
 /**
  * sync.mjs : régénère ce qui se déduit du dépôt, sur la machine du client.
  *
- *   1. GSAP et three.js (la 3D) avec les modules d'exemples dont le kit se sert, installés par npm,
- *      copiés dans assets/vendor/ (jamais redistribués dans le dépôt) ;
+ *   1. GSAP, installé par npm, copié dans assets/vendor/ (jamais redistribué dans le dépôt) ;
  *   2. le style de la marque (brand/) et l'accueil de l'app HyperFrames, par l'outil Python
  *      (`studio_motion.py style`, seul propriétaire de la marque) ;
  *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl ;
@@ -51,86 +50,25 @@ export function ecrireSiDifferent(file, contenu) {
 }
 
 // ---------------------------------------------------------------------------
-// 1. GSAP et three.js
+// 1. GSAP
 // ---------------------------------------------------------------------------
-// [nom, paquet npm, ses fichiers à copier (chemin dans le paquet -> nom dans assets/vendor), ce qui manque sans lui]
-export const BIBLIOTHEQUES = [
-  ["GSAP", "gsap", [["dist/gsap.min.js", "gsap.min.js"], ["dist/CustomEase.min.js", "CustomEase.min.js"]],
-    "les vidéos ne s'animeraient pas"],
-  ["three.js", "three", [["build/three.module.min.js", "three.module.min.js"], ["LICENSE", "three.LICENSE.txt"]],
-    "les plans en 3D ne s'afficheraient pas"],
-];
+const GSAP = ["gsap.min.js", "CustomEase.min.js"];
 
-// Les modules d'exemples de three.js dont se sert la 3D du kit (kit/plan3d.js, kit/briques3d.js) : la
-// pièce qui donne ses reflets, les arêtes arrondies, l'objectif (profondeur de champ), l'ombre de contact,
-// la sortie. Leurs propres dépendances (./Pass.js, ../shaders/…) suivent seules. Tous importent 'three',
-// que l'import map d'index.html (templates/projet/index.html.tpl) fait pointer vers three.module.min.js.
-export const MODULES_THREE = [
-  "environments/RoomEnvironment.js", "geometries/RoundedBoxGeometry.js", "postprocessing/EffectComposer.js",
-  "postprocessing/RenderPass.js", "postprocessing/OutputPass.js", "postprocessing/ShaderPass.js",
-  "postprocessing/BokehPass.js", "postprocessing/GTAOPass.js", "math/SimplexNoise.js",
-];
-export const DOSSIER_MODULES_THREE = "three-addons";
-
-/** Les modules à copier depuis examples/jsm : les entrées et tout ce qu'elles importent par un chemin
- *  relatif, dans l'ordre alphabétique. Un module absent fait échouer (son chemin dans le message). */
-export function dependancesThree(jsm, entrees = MODULES_THREE) {
-  const vus = new Set(), file = [...entrees];
-  while (file.length) {
-    const r = path.posix.normalize(file.pop());
-    if (vus.has(r)) continue;
-    const texte = fs.readFileSync(path.join(jsm, ...r.split("/")), "utf8");
-    vus.add(r);
-    for (const m of texte.matchAll(/\b(?:from|import)\s*\(?\s*['"](\.{1,2}\/[^'"]+)['"]/g)) {
-      file.push(path.posix.join(path.posix.dirname(r), m[1]));
-    }
+export function copierGsap(racine = ROOT) {
+  const source = path.join(racine, "node_modules", "gsap", "dist");
+  if (!fs.existsSync(source)) {
+    warn("GSAP absent de node_modules : lance `npm ci` (les vidéos ne s'animeraient pas).");
+    return false;
   }
-  return [...vus].sort();
-}
-
-function copierModulesThree(source, dest) {
-  const jsm = path.join(source, "examples", "jsm"), vers = path.join(dest, DOSSIER_MODULES_THREE);
-  const modules = dependancesThree(jsm);
-  for (const r of modules) {
-    const a = path.join(jsm, ...r.split("/")), b = path.join(vers, ...r.split("/"));
-    fs.mkdirSync(path.dirname(b), { recursive: true });
-    if (!fs.existsSync(b) || !fs.readFileSync(a).equals(fs.readFileSync(b))) fs.copyFileSync(a, b);
-  }
-  // Un module qui ne sert plus (une version précédente) disparaît de la copie.
-  const garder = new Set(modules.map((r) => path.join(vers, ...r.split("/"))));
-  for (const f of fs.readdirSync(vers, { recursive: true }).map((r) => path.join(vers, String(r)))) {
-    if (fs.statSync(f).isFile() && !garder.has(f)) fs.rmSync(f);
-  }
-  return modules.length;
-}
-
-export function copierBibliotheques(racine = ROOT) {
   const dest = path.join(racine, "assets", "vendor");
-  let ok = true;
-  for (const [nom, paquet, fichiers, sinon] of BIBLIOTHEQUES) {
-    const source = path.join(racine, "node_modules", paquet);
-    if (!fs.existsSync(source)) {
-      warn(`${nom} absent de node_modules : lance \`npm ci\` (${sinon}).`);
-      ok = false;
-      continue;
-    }
-    fs.mkdirSync(dest, { recursive: true });
-    for (const [de, vers] of fichiers) {
-      const a = path.join(source, de), b = path.join(dest, vers);
-      if (!fs.existsSync(b) || !fs.readFileSync(a).equals(fs.readFileSync(b))) fs.copyFileSync(a, b);
-    }
-    let detail = "";
-    if (paquet === "three") {
-      try {
-        detail = ` et ${copierModulesThree(source, dest)} de ses modules`;
-      } catch (error) {
-        warn(`modules de three.js incomplets (${error.message}) : relance \`npm ci\` (les plans 3D poussés ne s'afficheraient pas).`);
-        ok = false;
-      }
-    }
-    log(`  copié   ${rel(dest)}/ (${nom}${detail}, depuis node_modules)`);
+  fs.mkdirSync(dest, { recursive: true });
+  for (const nom of GSAP) {
+    const de = path.join(source, nom);
+    const vers = path.join(dest, nom);
+    if (!fs.existsSync(vers) || !fs.readFileSync(de).equals(fs.readFileSync(vers))) fs.copyFileSync(de, vers);
   }
-  return ok;
+  log(`  copié   ${rel(dest)}/ (GSAP, depuis node_modules)`);
+  return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -275,6 +213,14 @@ export const RETIRES = [
   ".claude/skills/studio/styles/02-titres-geants/compositions/sphere-faisceau-vertical.html",
   ".claude/skills/studio/styles/02-titres-geants/compositions/sphere-faisceau.html",
   ".claude/skills/studio/styles/06-nuee-d-encre/compositions/gravures-en-rafale.html",
+  // 08/11/2026 : la 3D (three.js) retirée du produit, trop coûteuse pour ce qu'elle apporte ; le kit
+  // garde ses objets en perspective (le téléphone, la fenêtre, l'ordinateur).
+  "templates/kit/plan3d.js",
+  "templates/kit/briques3d.js",
+  "templates/kit/matieres3d.js",
+  "assets/vendor/three.module.min.js",
+  "assets/vendor/three.LICENSE.txt",
+  "assets/vendor/three-addons",
 ];
 
 export function retirerPerimes(racine = ROOT) {
@@ -306,7 +252,7 @@ function main() {
   log(`🔄 ${produit.nom} ${produit.version} : préparation du dossier\n`);
   const echecs = lancerEtapes([
     ["fichiers périmés", () => retirerPerimes()],
-    ["GSAP et three.js", () => copierBibliotheques()],
+    ["GSAP", () => copierGsap()],
     ["style et accueil", () => genererStyle()],
     ["consignes CLAUDE.md et AGENTS.md", () => genererInstructions()],
     ["skills pour Codex", () => copierSkills()],

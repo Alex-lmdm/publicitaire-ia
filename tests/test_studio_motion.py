@@ -222,41 +222,6 @@ class Palette(unittest.TestCase):
             brun = self.image((teinte, 60), ("#202022", 40))
             self.assertEqual(len(sm.verdict_palette([brun] * 3, self.MARQUE)["plages"]), 1, teinte)
 
-    def test_un_plan_de_plateau_est_laisse_a_la_revue(self):
-        """La 3D poussée (08/11/2026) : le bois, le mur, le soleil gardent les couleurs de la vraie vie sur
-        les plans marqués `data-plateau` ; le reste de la vidéo reste contrôlé, marge de sortie comprise."""
-        brun = self.image(("#8c644c", 70), ("#d8c7b0", 30))
-        jaune = self.image(("#ffee00", 100))
-        images = [brun] * 4 + [jaune] * 2 + [brun] * 2          # 0 → 2 s plateau, 2 → 3 s marque, 3 → 4 s brun
-        v = sm.verdict_palette(images, self.MARQUE, fps=2, plateaux=[(0.0, 2.0)])
-        self.assertEqual([(p["debut"], p["fin"]) for p in v["plages"]], [(3.0, 4.0)])
-        self.assertEqual(v["plateau"], 0.5)
-        self.assertEqual(sm.verdict_palette(images, self.MARQUE, fps=2)["plages"][0]["debut"], 0.0)
-        # la sortie du plateau (un volet) peut déborder d'un quart de seconde sur la scène suivante
-        self.assertEqual(sm.verdict_palette([brun] * 5, self.MARQUE, fps=2, plateaux=[(0.0, 1.8)])["plages"], [])
-
-    def test_les_plateaux_sont_lus_sur_leur_hote(self):
-        with tempfile.TemporaryDirectory() as d:
-            projet = Path(d)
-            (projet / "index.html").write_text(
-                '<div id="root" data-composition-id="main" data-start="0" data-duration="20">\n'
-                '<!-- exemple : <div data-start="0" data-duration="20" data-plateau></div> -->\n'
-                '<div id="s1-hote" data-composition-src="compositions/s1.html" data-start="0" data-duration="4" data-track-index="1"></div>\n'
-                '<div id="s3-hote" data-composition-src="compositions/s3.html" data-start="9.5" data-duration="4.5" '
-                'data-track-index="1" data-plateau></div>\n'
-                '<div id="s2-hote" data-plateau data-composition-src="compositions/s2.html" data-start="4" data-duration="5.5"></div>\n',
-                encoding="utf-8")
-            self.assertEqual(sm.plateaux_du_projet(projet), [(4.0, 5.5), (9.5, 4.5)])
-            self.assertEqual(sm.plateaux_du_projet(None), [])
-
-    def test_une_video_toute_en_plateau_est_refusee(self):
-        """De la 3D sur certains plans seulement : au-delà de la moitié de la vidéo, `palette` refuse."""
-        brun = self.image(("#8c644c", 100))
-        self.assertGreater(sm.verdict_palette([brun] * 8, self.MARQUE, fps=2, plateaux=[(0.0, 3.0)])["plateau"],
-                           sm.PLATEAU_PART_MAX)
-        self.assertLessEqual(sm.verdict_palette([brun] * 8, self.MARQUE, fps=2, plateaux=[(0.0, 2.0)])["plateau"],
-                             sm.PLATEAU_PART_MAX)
-
     def test_le_kit_et_la_palette_connaissent_les_memes_couleurs(self):
         """Chaque teinte d'un objet connu du kit (objets.js, lignes « couleur d'outil » de kit.css) est
         dans COULEURS_CONNUES : sinon `palette` refuserait le kit lui-même."""
@@ -1356,7 +1321,6 @@ class Creation(unittest.TestCase):
             self.assertEqual((metas["linkedin"]["format"], metas["linkedin"]["objectif"]), ("4x5", "vente"))
             texte = (dossier / "PLAN.md").read_text(encoding="utf-8")
             self.assertIn("## Style et musique", texte)   # une conversation reprise sait si l'étape 4 est faite
-            self.assertIn("« 3D : a »", texte)             # la réponse à la question de la 3D s'y note
             self.assertLess(texte.index("## Script"), texte.index("## Style et musique"))   # le script se valide avant
             self.assertIn("### LinkedIn (4x5", texte)
             self.assertLess(texte.index("### LinkedIn"), texte.index("## Livraison"))

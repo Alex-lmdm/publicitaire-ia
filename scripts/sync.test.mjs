@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import {
   resoudreBlocs, remplir, genererInstructions, copierSkills, lireProduit, tamponner, lancerEtapes, messageIncomplet,
-  retirerPerimes, RETIRES, copierBibliotheques, BIBLIOTHEQUES, MODULES_THREE, dependancesThree,
+  retirerPerimes, RETIRES,
 } from "./sync.mjs";
 
 const RACINE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -165,56 +165,4 @@ test("une mise à jour par archive ne laisse aucun fichier retiré du produit, n
   for (const r of RETIRES) assert.ok(!/^(videos|marque|assets\/(sfx|musiques))\b/.test(r), r);
   // Ni un fichier encore livré : la mise à jour l'effacerait chez le client.
   for (const r of RETIRES) assert.equal(fs.existsSync(path.join(RACINE, r)), false, `${r} est encore dans le produit`);
-});
-
-test("GSAP et three.js sont copiés de node_modules dans assets/vendor", (t) => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "studio-vendor-"));
-  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
-  for (const [, paquet, fichiers] of BIBLIOTHEQUES) {
-    for (const [de] of fichiers) {
-      const f = path.join(dir, "node_modules", paquet, de);
-      fs.mkdirSync(path.dirname(f), { recursive: true });
-      fs.writeFileSync(f, `// ${paquet} ${de}`);
-    }
-  }
-  // Les modules d'exemples de three : une entrée importe un module voisin, qui suit seul.
-  const jsm = path.join(dir, "node_modules", "three", "examples", "jsm");
-  for (const m of MODULES_THREE) {
-    fs.mkdirSync(path.dirname(path.join(jsm, m)), { recursive: true });
-    fs.writeFileSync(path.join(jsm, m), m.endsWith("BokehPass.js")
-      ? "import { X } from 'three';\nimport { Pass } from './Pass.js';\nimport { B } from '../shaders/BokehShader.js';\n" : "import { X } from 'three';\n");
-  }
-  fs.mkdirSync(path.join(jsm, "shaders"), { recursive: true });
-  for (const m of ["postprocessing/Pass.js", "shaders/BokehShader.js", "shaders/Inutile.js"]) fs.writeFileSync(path.join(jsm, m), "// " + m);
-  fs.mkdirSync(path.join(dir, "assets", "vendor", "three-addons", "loaders"), { recursive: true });
-  fs.writeFileSync(path.join(dir, "assets", "vendor", "three-addons", "loaders", "Ancien.js"), "// d'une version précédente");
-  assert.equal(copierBibliotheques(dir), true);
-  for (const nom of ["gsap.min.js", "CustomEase.min.js", "three.module.min.js", "three.LICENSE.txt",
-    "three-addons/postprocessing/BokehPass.js", "three-addons/postprocessing/Pass.js", "three-addons/shaders/BokehShader.js"]) {
-    assert.ok(fs.existsSync(path.join(dir, "assets", "vendor", nom)), nom);
-  }
-  assert.ok(!fs.existsSync(path.join(dir, "assets", "vendor", "three-addons", "shaders", "Inutile.js")));     // jamais appelé
-  assert.ok(!fs.existsSync(path.join(dir, "assets", "vendor", "three-addons", "loaders", "Ancien.js")));     // retiré
-  fs.rmSync(path.join(jsm, "postprocessing", "GTAOPass.js"));
-  assert.equal(copierBibliotheques(dir), false);          // un module manque : signalé
-  fs.rmSync(path.join(dir, "node_modules", "three"), { recursive: true });
-  assert.equal(copierBibliotheques(dir), false);          // three.js absent : signalé, GSAP toujours copié
-});
-
-test("les modules de three suivent leurs imports relatifs, dans le vrai paquet", { skip: !fs.existsSync(path.join(RACINE, "node_modules", "three")) }, () => {
-  const modules = dependancesThree(path.join(RACINE, "node_modules", "three", "examples", "jsm"));
-  for (const m of [...MODULES_THREE, "postprocessing/Pass.js", "shaders/CopyShader.js", "shaders/GTAOShader.js"]) {
-    assert.ok(modules.includes(m), m);
-  }
-  // Chacun n'importe que 'three' ou un voisin copié : l'import map suffit.
-  for (const m of modules) {
-    const texte = fs.readFileSync(path.join(RACINE, "node_modules", "three", "examples", "jsm", m), "utf8");
-    for (const [, spec] of texte.matchAll(/from\s+['"]([^'"]+)['"]/g)) assert.ok(spec === "three" || spec.startsWith("."), `${m} : ${spec}`);
-  }
-});
-
-test("la version de three.js est figée : un seul fichier module, sans three.core", () => {
-  const paquet = JSON.parse(fs.readFileSync(path.join(RACINE, "package.json"), "utf8"));
-  assert.match(paquet.devDependencies.three, /^\d+\.\d+\.\d+$/);
-  assert.equal(paquet.devDependencies.three, "0.170.0");  // à partir de 0.171, three.module importe three.core
 });

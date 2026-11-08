@@ -208,14 +208,11 @@ def telecharger(url: str, dest: Path) -> Path:
     return dest
 
 
-def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path, styles: list[dict] | None = None,
-                trois_d: list[dict] | None = None, question_3d: str = "") -> Path:
+def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path, styles: list[dict] | None = None) -> Path:
     """Une page à ouvrir dans le navigateur : un lecteur par piste, numérotée, pour que le client
     écoute et réponde par un numéro. pistes = [{"numero", "nom", "detail", "url"}]. Avec `styles`
     ([{"numero", "nom", "detail", "video", "image", "conseil"}], `styles.vitrine`), la page montre
-    d'abord les styles en vidéo : il choisit le style et la musique au même endroit. Avec `trois_d`
-    ([{"lettre", "nom", "detail", "conseil"}], `styles.vitrine_3d`), elle pose ensuite la question de la
-    3D (`question_3d`), à laquelle il répond par une lettre."""
+    d'abord les styles en vidéo : il choisit le style et la musique au même endroit."""
     lignes = []
     for p in pistes:
         lignes.append(
@@ -235,14 +232,7 @@ def page_ecoute(titre: str, consigne: str, pistes: list[dict], dest: Path, style
         blocs += ('<h2>Le style</h2><p class="note">Aperçus aux couleurs de LMDM : ta vidéo garde le fond du style '
                   f'et prend tes couleurs et tes polices.</p><ol class="styles">{"".join(cartes)}</ol>')
     if lignes:
-        blocs += (f'<h2>La musique</h2>' if cartes or trois_d else "") + f'<ol>{"".join(lignes)}</ol>'
-    if trois_d:
-        choix = "".join(
-            f'<li><span class="n">{html.escape(str(c["lettre"]))}</span><div><b>{html.escape(str(c["nom"]))}</b>'
-            f'{"<em>Mon conseil</em>" if c.get("conseil") else ""}<small>{html.escape(str(c.get("detail", "")))}</small>'
-            '</div></li>' for c in trois_d)
-        blocs += (f'<h2>La 3D</h2><p class="note">{html.escape(question_3d)}</p>'
-                  f'<ol class="trois-d">{choix}</ol>')
+        blocs += (f'<h2>La musique</h2>' if cartes else "") + f'<ol>{"".join(lignes)}</ol>'
     contenu = f"""<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(titre)}</title>

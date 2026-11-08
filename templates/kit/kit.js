@@ -255,6 +255,53 @@
     b.textContent = texte;
     return b;
   };
+  // Un ordinateur portable en perspective, comme le téléphone (k-tel) : un couvercle qui pivote sur sa
+  // charnière, son écran qui porte sa vraie capture, une base en alu avec son clavier touche par touche
+  // et son pavé tactile. À poser dans la caméra (k-camera) d'un k-scene3d, que l'on incline pour voir la
+  // base. o = { largeur (px, 1100), capture (chemin d'image), ouvert (0 fermé à 1 ouvert, 1), teinte
+  // ("argent" ou "gris") }. Rend { racine, couvercle, ecran, image, base } : on anime `couvercle`
+  // (rotationX : -86 fermé, 12 ouvert), `racine` (x, y, rotationY…) et `image` (y : la page défile).
+  K.ordinateur = function (parent, o) {
+    o = o || {};
+    var L = o.largeur || 1100, H = Math.round(L * 0.66), P = Math.round(L * 0.68);
+    var r = K.el(parent, "div", "k-ordi" + (o.teinte === "gris" ? " k-ordi-gris" : ""), null,
+      "width:" + L + "px; height:" + H + "px;");
+    var base = K.el(r, "div", "k-ordi-base", null, "height:" + P + "px;");
+    base.setAttribute("data-layout-allow-overflow", "");   // couchée en 3D sous le couvercle : voulu, pas un débordement
+    K.el(base, "div", "k-ordi-ombre");
+    K.el(base, "div", "k-ordi-charniere");
+    var clavier = K.el(base, "div", "k-ordi-clavier");
+    // Les rangs d'un clavier de portable, en largeur de touche (1 = une lettre) ; les flèches en demi-touches.
+    var rangs = [[0.55, [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], [1, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5]],
+      [1, [1.5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]], [1, [1.8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.7]],
+      [1, [2.3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2.2]], [1, [1, 1, 1, 1.25, 5, 1.25, 1, "fleches"]]];
+    var pas = 100 / 14.5, haut = 100 / 5.55, y = 0, jeu = Math.max(1, Math.round(L * 0.0028));
+    var touche = function (x, yy, l, h) {
+      K.el(clavier, "i", "k-ordi-touche", null, "left:" + x + "%; top:" + yy + "%; width:" + (l * pas) + "%; height:" + h + "%; border-width:" + jeu + "px;");
+    };
+    rangs.forEach(function (rang) {
+      var h = rang[0] * haut, x = 0;
+      rang[1].forEach(function (l) {
+        if (l === "fleches") {
+          touche(x, y + h / 2, 1, h / 2); touche(x + pas, y, 1, h / 2); touche(x + pas, y + h / 2, 1, h / 2); touche(x + 2 * pas, y + h / 2, 1, h / 2);
+          x += 3 * pas;
+        } else { touche(x, y, l, h); x += l * pas; }
+      });
+      y += h;
+    });
+    K.el(base, "div", "k-ordi-pave");
+    K.el(base, "div", "k-ordi-tranche");
+    var couvercle = K.el(r, "div", "k-ordi-couvercle");
+    K.el(couvercle, "div", "k-ordi-dos");
+    var cadre = K.el(couvercle, "div", "k-ordi-cadre");
+    var ecran = K.el(cadre, "div", "k-ordi-ecran"), image = null;
+    if (o.capture) {                                      // une capture longue défile sous le cadre de l'écran : voulu
+      image = K.el(ecran, "img"); image.src = o.capture; image.alt = ""; image.setAttribute("data-layout-allow-overflow", "");
+    }
+    K.el(cadre, "i", "k-ordi-camera");
+    gsap.set(couvercle, { rotationX: -86 + 98 * (o.ouvert == null ? 1 : o.ouvert) });
+    return { racine: r, couvercle: couvercle, ecran: ecran, image: image, base: base };
+  };
   // Dérive lente et continue (parallaxe : le proche bouge plus que le lointain). Finie.
   K.derive = function (tl, els, debut, duree, amplitude) {
     amplitude = amplitude || 60;

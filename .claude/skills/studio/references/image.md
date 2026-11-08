@@ -22,7 +22,7 @@ Ce qui se montre vient du client ou de ses outils. Pour chaque plan, descends ce
 prends le premier barreau qui existe :
 
 1. **Une vraie capture** : sa page, son produit, son espace de formation, un résultat, un message
-   reçu, une vraie vidéo (`sources/`, `assets/`), montrée à plat ou sur l'écran d'un objet en 3D.
+   reçu, une vraie vidéo (`sources/`, `assets/`).
 2. **Son interface reconstruite** d'après capture, animée : on tape, on clique, elle répond.
    Simplifier pour qu'elle se lise (agrandir le bouton utile, réduire une liste à cinq lignes), oui ;
    inventer une fonction ou un écran, non. Une simplification se note dans `sources/NOTES.md`.
@@ -65,6 +65,7 @@ aucune liste : pars de son sujet, de son métier, de son public et de ce que sa 
 | une plateforme (Instagram, YouTube, TikTok, Stripe, Gmail, Notion, Zoom…) | son interface, reconstruite d'après une vraie capture, dans ses couleurs et sa police : le post, le lecteur, la page de paiement, la boîte de réception |
 | son téléphone, une notification, un message | le téléphone du kit (`k-tel`) avec sa barre d'état (`K.statut` : 9:41, réseau, batterie) ; la notification d'iPhone (`K.notification`, l'icône d'app = le vrai logo) ; les bulles bleues, grises ou WhatsApp (`K.bulle`) |
 | une fenêtre d'ordinateur | la fenêtre du kit (`k-fenetre`) et ses trois boutons rouge, jaune, vert (`k-feux`) |
+| son ordinateur, sa page ouverte | l'ordinateur portable du kit (`K.ordinateur`), en perspective, qui s'ouvre sur sa vraie capture |
 
 Et ce que le kit n'a pas, à construire pour son offre, par exemple :
 
@@ -146,31 +147,9 @@ un neutre. Un texte garde un contraste d'au moins 4,5:1 avec son fond.
 
 Seuls ses **vraies captures**, les **logos de ses outils**, les **interfaces des plateformes** et
 les **objets connus** (ceux du kit et ceux construits pour la vidéo) gardent leurs propres couleurs
-(« Les objets connus », plus haut), et les **plans de plateau** de la 3D poussée (plus bas), qui
-gardent celles de la vraie vie. `studio_motion.py palette` connaît celles du kit et des logos posés
-dans le projet, laisse les plateaux marqués `data-plateau` à la revue, et relève tout le reste sur
-le MP4 : chaque instant relevé est l'un d'eux, ou une teinte à corriger.
-
-## Le plateau de la 3D poussée
-
-Quand le client a choisi des plans 3D poussés (étape 4, « 3D : b » dans `PLAN.md`), un à quatre plans
-peuvent être **un plateau** : une table, un mur, des objets du quotidien (un carnet, un crayon, une
-tasse, un téléphone posé) autour de sa vraie matière, des matières naturelles (le bois, le papier,
-l'alu, la céramique) et une lumière chaude de fenêtre ; et même un décor complet s'il sert son offre
-(une salle de classe pour une formation d'enseignants). Ce n'est pas une image inventée, à quatre
-conditions :
-
-- **le héros reste sa vraie matière** : sa capture sur l'écran de l'ordinateur ou du téléphone, son
-  produit, le nom de son offre imprimé sur son carnet ; le décor l'entoure et ne la remplace jamais ;
-- **rien n'y affirme un faux** : aucun texte lisible qui ne vienne ni de sa capture ni de
-  `OFFRE.json`, aucune fausse marque (un logo sur une coque), aucun résultat promis dessiné ;
-- **sa marque garde les mots, les accents et les fonds à plat** : ses mots en HTML par-dessus, à ses
-  couleurs, et les autres plans dans sa palette ;
-- **certains plans seulement**, jamais toute la vidéo ([scenes.md](scenes.md), « La 3D, quand elle
-  sert »).
-
-Sans ce choix du client (« 3D : a »), pas de plateau : les objets en 3D restent sur le fond de sa
-marque.
+(« Les objets connus », plus haut). `studio_motion.py palette` connaît celles du kit et des logos
+posés dans le projet, et relève tout le reste sur le MP4 : chaque instant relevé est l'un d'eux, ou
+une teinte à corriger.
 
 ## Les fonds et les objets
 
@@ -217,7 +196,7 @@ la vraie matière du client ou sa vidéo de référence le contient, et alors se
 | Des écrans de texte posés sur le même fond, plan après plan (des slides) | Sa matière qui agit, un objet qui devient le suivant |
 | Des sous-titres : une phrase par écran, en haut, au-dessus d'une petite interface | Le plan montre en grand ; un mot héros, une ligne d'appui au plus |
 | Des mots isolés ou des chiffres sans contexte | Ce que l'idée dit, montré, et ses mots qui claquent |
-| Des images inventées : paysages, couchers de soleil, planètes, sphères, illustrations, photos d'ambiance | Sa vraie matière, en descendant l'échelle (le plateau de la 3D poussée, plus bas, n'en est pas une) |
+| Des images inventées : paysages, couchers de soleil, planètes, sphères, illustrations, photos d'ambiance | Sa vraie matière, en descendant l'échelle |
 | Des formes seules (disques, carrés, aplats) comme sujet ; des particules, nuées ou poussières décoratives | Une forme qui porte une matière réelle, ou qui sert de transition |
 | Halos, néons, reflets d'objectif, orbes lumineux, sol quadrillé lumineux, ondes de choc | Des objets du sujet floutés par la profondeur ; la grille fine du kit |
 | Dégradés violets ou bleus, dégradés tirés de l'accent | L'accent plein sur des neutres |

@@ -116,20 +116,6 @@ class Musiques(unittest.TestCase):
         self.assertIn("Cartes &lt;pixels&gt;", texte)
         self.assertIn('src="file:///a/07.mp4"', texte)
 
-    def test_page_avec_la_question_de_la_3d(self):
-        trois_d = [{"lettre": "a", "nom": "Non <simple>", "detail": "rapide", "conseil": True},
-                   {"lettre": "b", "nom": "Oui", "detail": "abonnement", "conseil": False}]
-        with tempfile.TemporaryDirectory() as d:
-            texte = heygen.page_ecoute("Le style et la musique", "Consigne", [{"numero": 1, "nom": "m", "url": "file:///m.mp3"}],
-                                       Path(d) / "p.html", trois_d=trois_d, question_3d="Des plans en 3D ?").read_text()
-            sans = heygen.page_ecoute("Musiques", "Consigne", [{"numero": 1, "nom": "m", "url": "file:///m.mp3"}],
-                                      Path(d) / "q.html").read_text()
-        self.assertLess(texte.index("<h2>La musique</h2>"), texte.index("<h2>La 3D</h2>"))
-        self.assertIn("Des plans en 3D ?", texte)
-        self.assertIn("Non &lt;simple&gt;", texte)
-        self.assertEqual(texte.count("Mon conseil"), 1)
-        self.assertNotIn("La 3D", sans)
-
     def test_extension_d_un_lien_signe(self):
         self.assertEqual(heygen.extension("https://s3.test/v/abc.wav?X-Amz-Signature=1", ".mp3"), ".wav")
         self.assertEqual(heygen.extension("https://s3.test/v/abc?X=1", ".mp3"), ".mp3")

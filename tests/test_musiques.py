@@ -460,24 +460,14 @@ class Commande(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertTrue(r.stdout.startswith("1. court-percutant-01-test"), r.stdout)
             self.assertIn("ton conseil : 0 « Sur mesure »", r.stdout)                     # le style maison, par défaut
-            self.assertIn("la question de la 3D est sur la page, ton conseil : a", r.stdout)
             page = reel / "work" / "ecoute-musiques.html"
             self.assertEqual(page.read_text(encoding="utf-8").count("<video "), 9)          # le style se choisit ici
-            self.assertEqual(page.read_text(encoding="utf-8").count("Mon conseil"), 2)      # le style, et la 3D
-            self.assertIn("<h2>La 3D</h2>", page.read_text(encoding="utf-8"))
-            self.assertIn("« 0, 1, a »", page.read_text(encoding="utf-8"))
+            self.assertEqual(page.read_text(encoding="utf-8").count("Mon conseil"), 1)
             self.assertEqual(page.read_text(encoding="utf-8").count("<audio "), 3)
             r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--style", "3"], cwd=reel, env=env,
                                capture_output=True, text=True)
             self.assertIn("ton conseil : 3 « Verre sombre »", r.stdout)
-            self.assertEqual(page.read_text(encoding="utf-8").count("Mon conseil"), 2)
-            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--3d", "b", "--sans-styles"], cwd=reel,
-                               env=env, capture_output=True, text=True)
-            self.assertIn("ton conseil : b", r.stdout)
-            self.assertIn("« 1, a »", page.read_text(encoding="utf-8"))   # l'exemple de réponse : la musique, puis la 3D
-            r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--sans-3d"], cwd=reel, env=env,
-                               capture_output=True, text=True)
-            self.assertNotIn("La 3D", page.read_text(encoding="utf-8"))
+            self.assertEqual(page.read_text(encoding="utf-8").count("Mon conseil"), 1)
             r = subprocess.run(outil + ["musiques", "choisir", "--style", "9"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertNotEqual(r.returncode, 0)
             self.assertIn("pas de style 9 : de 0 à 8", r.stderr)
@@ -499,14 +489,10 @@ class Commande(unittest.TestCase):
             self.assertIn("muette", r.stdout)
             styles_seuls = (section / "work" / "ecoute-musiques.html").read_text(encoding="utf-8")
             self.assertEqual((styles_seuls.count("<video "), styles_seuls.count("<audio ")), (9, 0))
-            self.assertIn("<h2>La 3D</h2>", styles_seuls)                                   # muette : la 3D se choisit quand même
-            (copie / "studio.config.json").write_text(json.dumps({"preferences": ["style 4", "3D poussée"]}), encoding="utf-8")
+            (copie / "studio.config.json").write_text(json.dumps({"preferences": ["style 4"]}), encoding="utf-8")
             r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30"], cwd=reel, env=env, capture_output=True, text=True)
             self.assertIn("son style gardé : 4", r.stdout)
-            self.assertIn("sa 3D gardée : b", r.stdout)
             self.assertNotIn("<video ", page.read_text(encoding="utf-8"))
-            self.assertNotIn("La 3D", page.read_text(encoding="utf-8"))
-            (copie / "studio.config.json").write_text(json.dumps({"preferences": ["style 4"]}), encoding="utf-8")
             r = subprocess.run(outil + ["musiques", "choisir", "--duree", "30", "--style", "2"], cwd=reel, env=env,
                                capture_output=True, text=True)   # il en veut un autre : `--style` rouvre la page
             self.assertIn("ton conseil : 2 « Titres géants »", r.stdout)

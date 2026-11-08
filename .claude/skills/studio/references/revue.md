@@ -149,20 +149,13 @@ avec une phrase de justification, sur ces dix critères :
 6. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources ; chaque
    chiffre avec son contexte.
 7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
-   suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet). Un
-   plan en 3D qui décore sans rien montrer de plus que le plat, c'est 5 au plus ; un objet 3D
-   grossier (une boîte nue pour un ordinateur, des arêtes vives), c'est 6 au plus.
+   suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
 8. **Marque et couleurs vraies** : ses couleurs pour le film (plus noir, blanc, gris), ses polices,
    une seule couleur d'accent ; aucune image inventée ; et les objets connus dans leurs vraies
    couleurs, autant que [image.md](image.md) le demande (« Les objets connus »). Une teinte dérivée
    (un brun, un orangé tirés de son accent), c'est 4 au plus. Une vidéo toute en trois couleurs, ou
    un dossier, un fichier, un téléphone génériques à la couleur de la marque alors que l'objet connu
-   existe, c'est 6 au plus. Un plan de plateau (la 3D poussée, `data-plateau`) garde les couleurs
-   de la vraie vie (le bois, le mur, le soleil), mais ses mots, ses accents et ses fonds à plat sont
-   à sa marque et son héros est sa vraie matière ; un plateau qui affirme un faux (un texte lisible
-   inventé, une fausse marque, un résultat promis dessiné) ou dont on retient le décor plutôt que son
-   offre, c'est 4 au plus ; des plateaux sans qu'il les ait choisis (« 3D : a » dans `PLAN.md`),
-   c'est 5 au plus.
+   existe, c'est 6 au plus.
 9. **Appel à l'action** : celui du support, clair, tenu, impossible à rater.
 10. **Le niveau** ([image.md](image.md), « Le cadre ») : chaque plan a son moment signature, de la
     profondeur (perspective, flou de distance, ombres), un sujet qui remplit le cadre, une caméra
