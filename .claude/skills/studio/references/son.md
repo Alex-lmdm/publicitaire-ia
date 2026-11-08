@@ -128,7 +128,8 @@ et la musique est tout le temps très faible ». La règle :
   mastérisé fort est baissé, un morceau doux remonté) et l'écrit : « Musique : … dB, à -30 LUFS ».
   Les bruitages vont **avec** elle, presque au même niveau : chacun dépasse le fond musical de 4 à
   10 dB (vise 5 à 8), jamais plus. `emergence` le vérifie et dit, son par son, de combien monter ou
-  baisser.
+  baisser. Réglage choisi à l'oreille par le créateur le 08/11/2026, entre trois versions du même
+  Reel (bruitages à +4, +7 et +10 dB en médiane) : la version à +7.
 - **Ne baisse jamais la musique pour faire ressortir un bruitage** : monte le bruitage, ou
   baisse ceux qui sont trop forts. `"musique_db"` reste un réglage manuel ; `sons` prévient s'il
   enterre la musique de plus de 3 dB sous sa référence. Piège rencontré le 08/11/2026 : la
