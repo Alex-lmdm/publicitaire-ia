@@ -278,7 +278,14 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   scènes alors qu'elles tombent sur les temps. Note dans `PLAN.md` le tempo de `musique` sur le
   morceau d'origine et vérifie-le sur l'extrait (les coups de basse tombent sur ta grille). Si
   `calage` annonce un autre tempo, ce n'est pas le montage : dis-le dans la revue, et ne recale
-  jamais les scènes sur ce faux tempo.
+  jamais les scènes sur ce faux tempo. Même piège, plus discret (08/11/2026, « Signal Loss » de
+  Slowya.roll, basse syncopée) : `calage` lit 120,76 au lieu de 120 et voit des scènes « à 0,05 à
+  0,20 s du temps », de plus en plus près au fil de la vidéo ; recalé à 119,245 pour le contenter, il
+  lit 140,46. Avant de bouger une scène, mesure la phase : les attaques des graves (sous 150 Hz,
+  `ffmpeg … lowpass=f=150,astats`) repliées sur la grille de 0,5 s depuis l'entrée. Ici elles
+  tombaient à +0,04 s : les coupes sont restées sur la grille. Le geste fort sur l'entrée franche,
+  lui, est un vrai défaut quand `calage` le relève (un clic seul ne suffit pas : un flash, des mots
+  qui changent d'un coup).
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : musique facultative ; si oui, la même que le Reel, plus discrète.
 
