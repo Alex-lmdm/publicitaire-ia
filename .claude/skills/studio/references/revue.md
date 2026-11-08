@@ -153,7 +153,8 @@ avec une phrase de justification, sur ces dix critères :
    suivant) ; la caméra vit sans courir ; aucun effet générique (néon, particules sans sujet).
 8. **Marque et couleurs vraies** : ses couleurs pour le film (plus noir, blanc, gris), ses polices,
    une seule couleur d'accent ; aucune image inventée ; et les objets connus dans leurs vraies
-   couleurs (le dossier bleu du Mac, le vrai PDF, le vrai logo, la notification d'iPhone). Une
+   couleurs (ce que son public reconnaît : par exemple le dossier bleu du Mac, le vrai PDF, le vrai
+   logo, la notification d'iPhone, un objet de son métier). Une
    teinte dérivée (un brun, un orangé tirés de son accent), c'est 4 au plus. Une vidéo toute en
    trois couleurs, ou un dossier, un fichier, un téléphone génériques à la couleur de la marque
    alors que l'objet connu existe, c'est 6 au plus.

@@ -172,7 +172,8 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
   ([image.md](references/image.md), « La vraie matière »).
 - Sortir de sa palette : ses couleurs, du noir, du blanc, des gris neutres ; jamais une teinte tirée
   de son accent. Seuls ses vraies captures, les logos de ses outils, les interfaces des plateformes
-  et les objets connus (le dossier bleu du Mac, un PDF, une notification d'iPhone) gardent leurs
+  et les objets connus (tout ce que son public reconnaît : par exemple le dossier bleu du Mac, un
+  PDF, une notification d'iPhone, un objet de son métier) gardent leurs
   couleurs, et la vidéo en montre : c'est sa touche de couleur vraie
   ([image.md](references/image.md), « Les objets connus »).
 - Livrer une vidéo qui tombe dans un des défauts interdits ([image.md](references/image.md)), qui

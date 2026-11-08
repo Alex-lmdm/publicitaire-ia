@@ -67,11 +67,12 @@ coaching : `situation` → (le titre qui se change sur place) → `parcours` →
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : le
-dossier bleu du Mac et les fichiers du kit (`K.ic("objet-…")`), le téléphone et sa barre d'état, la
-notification et les bulles d'iPhone, les vrais logos de ses outils, l'interface d'une plateforme
-reconstruite d'après capture. Ce sont les touches de couleur vraie du film ; tout le reste prend
-les rôles ci-dessous ([image.md](../../references/image.md), « Les objets connus »).
+**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
+ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
+kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
+l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
+film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
+objets connus »).
 
 Les couleurs du film viennent de sa marque ([image.md](../../references/image.md), « La
 palette ») ; ses captures, les logos de ses outils et les objets connus gardent leurs vraies
@@ -148,11 +149,13 @@ signature :
 - Sa vraie matière, en descendant l'échelle de [image.md](../../references/image.md) (« La vraie
   matière ») : une vraie capture, son interface reconstruite et animée, un vrai chiffre mis en
   scène, le schéma de son vrai mécanisme, les vrais logos de ses outils, puis seulement ses mots.
-- **Ce qui est connu se montre tel qu'on le connaît** : un dossier est le dossier bleu du Mac
+- **Ce qui est connu se montre tel qu'on le connaît**, par exemple : un dossier est le dossier bleu du Mac
   (`objet-dossier`, ou `nom-objet` avec `objet: "dossier"`, qui le prend par défaut), un document est
   un vrai PDF ou un vrai fichier Word (`objet-pdf`, `objet-doc`…), un outil est son vrai logo, un
   message arrive en notification d'iPhone (`K.notification`) ou en bulle (`K.bulle`), le téléphone a
-  sa barre d'état (`K.statut`). Les icônes d'un seul trait, seulement pour une idée sans objet connu.
+  sa barre d'état (`K.statut`). Et tout ce que son métier a de reconnaissable, au-delà de ces
+  exemples (l'annonce, le ticket, la montre, la carte d'embarquement). Les icônes d'un seul trait,
+  seulement pour une idée sans objet connu.
 - L'objet de son offre se choisit au début de la fabrication et revient : il grandit au pivot
   (`nom-objet`), devient le nœud du schéma, se pose dans l'outil que son public a déjà (scenes.md,
   recette 9), finit dans la mosaïque.

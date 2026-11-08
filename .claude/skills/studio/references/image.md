@@ -48,8 +48,15 @@ Ce qu'on peut montrer selon ce qu'il vend :
 
 Sa marque peint le film : les fonds, les mots, les formes, les accents. **Ce qui est réel et connu
 garde son vrai visage et ses vraies couleurs**, et c'est ce qui donne de la fraîcheur : une vidéo
-toute dans les trois couleurs de la marque (jaune, noir, blanc, et rien d'autre) fait fade. Dès
-qu'un plan parle d'une chose que son public connaît, montre-la telle qu'il la connaît :
+toute dans les trois couleurs de la marque (jaune, noir, blanc, et rien d'autre) fait fade.
+
+**Le réflexe, à chaque plan** : qu'est-ce que son public reconnaîtrait ici d'un coup d'œil ? Une
+interface qu'il utilise, une icône qu'il voit tous les jours, un objet de son métier ou de sa vie.
+Si la réponse existe, montre-la telle qu'il la connaît, dans ses vraies couleurs, plutôt qu'une
+forme ou une icône à la couleur de la marque. Chaque offre a les siens, et la plupart ne sont dans
+aucune liste : pars de son sujet, de son métier, de son public et de ce que sa page montre.
+
+**Des exemples, jamais une liste fermée.** Ce que le kit a déjà, prêt à poser :
 
 | Le plan parle de… | On montre |
 |---|---|
@@ -59,16 +66,36 @@ qu'un plan parle d'une chose que son public connaît, montre-la telle qu'il la c
 | son téléphone, une notification, un message | le téléphone du kit (`k-tel`) avec sa barre d'état (`K.statut` : 9:41, réseau, batterie) ; la notification d'iPhone (`K.notification`, l'icône d'app = le vrai logo) ; les bulles bleues, grises ou WhatsApp (`K.bulle`) |
 | une fenêtre d'ordinateur | la fenêtre du kit (`k-fenetre`) et ses trois boutons rouge, jaune, vert (`k-feux`) |
 
-- **Une icône du kit (Lucide, d'un seul trait) seulement pour une idée sans objet connu** : une
-  coche, une flèche, un éclair. Jamais un dossier, un fichier, une enveloppe ou un téléphone
-  génériques teintés de l'accent quand l'objet a un vrai visage.
+Et ce que le kit n'a pas, à construire pour son offre, par exemple :
+
+| Son offre touche à… | Ce que son public reconnaîtrait |
+|---|---|
+| le sport, la santé | la montre et ses anneaux d'activité, l'appli de course et son tracé, la prise de rendez-vous en ligne |
+| l'immobilier | l'annonce avec ses photos et son prix au m², le plan d'un appartement, la carte et ses épingles |
+| la cuisine, la restauration | la fiche recette, le ticket de commande, l'appli de livraison et son suivi |
+| le commerce en ligne | le tableau de bord des ventes, le panier, l'étiquette du colis et son suivi |
+| l'argent, la gestion | la carte bancaire, l'appli de la banque, la facture, le relevé |
+| la musique, le podcast, la vidéo | le lecteur et sa barre de progression, la forme d'onde, la timeline de montage |
+| le voyage | la carte d'embarquement, la réservation, l'itinéraire sur la carte |
+
+**Le fabriquer.** Un vrai logo : `logos`. Une plateforme : reconstruite d'après une vraie capture
+(le repérage la prend). Un objet de son métier : dessiné en HTML ou en SVG d'après son allure
+courante, comme ceux du kit, dans ses couleurs habituelles, assez grand pour se reconnaître.
+`palette` connaît les couleurs du kit et des logos posés ; celles d'un objet construit pour cette
+vidéo y restent signalées : la revue vérifie que ce sont bien les siennes, pas une teinte de
+l'accent.
+
+- **Une icône d'un seul trait (Lucide) seulement pour une idée sans objet connu** : une coche, une
+  flèche, un éclair. Jamais un dossier, un fichier, une enveloppe ou un téléphone génériques teintés
+  de l'accent quand l'objet a un vrai visage.
 - **Des touches, pas un décor** : ces couleurs restent sur leur objet. Jamais un fond, un texte, un
   trait ni un dégradé tiré d'elles ; le film reste à sa marque.
-- **Toujours vrai** : un logo seulement pour un outil que l'offre utilise ou dont sa page parle ;
-  une plateforme seulement là où son offre vit vraiment (sa pub sur Instagram, son paiement par
-  Stripe) ; les objets génériques (dossier, fichier, téléphone, message) se montrent quand le plan
-  parle d'eux, sans faux contenu (une notification dit un vrai fait de la fiche, jamais une vente
-  inventée).
+- **Toujours vrai** : un logo ou l'interface d'une marque seulement pour un outil que l'offre
+  utilise ou dont sa page parle, une plateforme seulement là où son offre vit vraiment (sa pub sur
+  Instagram, son paiement par Stripe) ; un objet courant (un dossier, une carte d'embarquement, un
+  ticket) se montre quand le plan parle de lui. Aucun faux contenu : ce qu'un objet affiche de
+  lisible (un prix, une date, un nom, une vente) vient de la fiche ; sinon c'est une texture
+  illisible, jamais un chiffre inventé.
 - **Le seuil** : toute vidéo de plus de 15 s montre au moins trois objets connus dans leurs vraies
   couleurs (logos compris), un Reel au moins un. Le repérage les liste ([reperage.md](reperage.md)).
 

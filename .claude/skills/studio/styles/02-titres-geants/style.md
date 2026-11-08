@@ -31,11 +31,12 @@ Des points de départ quand le plan s'y prête, jamais une obligation. Une vidé
 
 ## 3. Les fonds et les couleurs
 
-**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : le
-dossier bleu du Mac et les fichiers du kit (`K.ic("objet-…")`), le téléphone et sa barre d'état, la
-notification et les bulles d'iPhone, les vrais logos de ses outils, l'interface d'une plateforme
-reconstruite d'après capture. Ce sont les touches de couleur vraie du film ; tout le reste prend
-les rôles ci-dessous ([image.md](../../references/image.md), « Les objets connus »).
+**Les objets connus gardent leurs vraies couleurs**, dans ce style comme dans tous les autres : tout
+ce que son public reconnaît d'un coup d'œil, par exemple le dossier bleu du Mac et les fichiers du
+kit (`K.ic("objet-…")`), le téléphone et ses notifications, les vrais logos de ses outils,
+l'interface d'une plateforme, un objet de son métier. Ce sont les touches de couleur vraie du
+film ; tout le reste prend les rôles ci-dessous ([image.md](../../references/image.md), « Les
+objets connus »).
 
 Ses couleurs, rien d'autre ([../../references/image.md](../../references/image.md), « La palette ») : la nuit, le clair et les gris de sa marque, et son accent posé plein.
 
