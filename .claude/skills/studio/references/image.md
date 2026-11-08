@@ -18,20 +18,53 @@ plus d'un mot par seconde. Le mouvement, les raccords et la caméra sont dans
 
 ## La vraie matière
 
-Ce qui se montre vient du client ou de ses outils. Pour chaque plan, descends cette échelle et
-prends le premier barreau qui existe :
+Ce qui se montre vient du client ou de ses outils, **et se fabrique en motion design** : des mots,
+des interfaces, des chiffres, des objets et des schémas animés en code. Ses photos et ses vidéos ne
+sont pas le film : elles n'y entrent que pour montrer son produit ou son résultat, mises en scène
+(« Ses photos et ses vidéos », juste après). Pour chaque plan, descends cette échelle et prends le
+premier barreau qui existe :
 
-1. **Une vraie capture** : sa page, son produit, son espace de formation, un résultat, un message
-   reçu, une vraie vidéo (`sources/`, `assets/`).
-2. **Son interface reconstruite** d'après capture, animée : on tape, on clique, elle répond.
-   Simplifier pour qu'elle se lise (agrandir le bouton utile, réduire une liste à cinq lignes), oui ;
-   inventer une fonction ou un écran, non. Une simplification se note dans `sources/NOTES.md`.
-3. **Un vrai chiffre** de `OFFRE.json` mis en scène : un compteur, une barre, un prix, avec son
+1. **Son produit ou son résultat en action.** Son interface reconstruite d'après capture, animée :
+   on tape, on clique, elle répond. Simplifier pour qu'elle se lise (agrandir le bouton utile,
+   réduire une liste à cinq lignes), oui ; inventer une fonction ou un écran, non. Une
+   simplification se note dans `sources/NOTES.md`. Ou le résultat lui-même (le Reel que son outil a
+   produit, la page créée, un avant / après, un vrai message reçu), joué dans un objet qui agit :
+   le téléphone du kit, la fenêtre, la bulle, la notification.
+2. **Un vrai chiffre** de `OFFRE.json` mis en scène : un compteur, une barre, un prix, avec son
    contexte.
-4. **Le schéma de son vrai mécanisme** : des nœuds vrais (sa page, son produit, les étapes, ce qu'on
+3. **Le schéma de son vrai mécanisme** : des nœuds vrais (sa page, son produit, les étapes, ce qu'on
    obtient) reliés par des traits qui se tracent, le fil conducteur qui les parcourt.
-5. **Les vrais logos nus** des outils que l'offre nomme.
-6. **Ses mots seuls**, en très grand, qui jouent ce qu'ils disent.
+4. **Les objets connus et les vrais logos** des outils que l'offre nomme (plus bas).
+5. **Ses mots seuls**, en très grand, qui jouent ce qu'ils disent.
+
+## Ses photos et ses vidéos : seulement pour montrer le résultat
+
+Sa page en est souvent pleine. **Le but n'est pas de les reprendre** : une vidéo faite de ses
+photos recadrées, zoomées ou posées en fond est un diaporama, pas du motion design. Retour du
+créateur sur le Reel Gordon Ramsay (08/11/2026), où chaque plan reprenait une photo de la page dans
+la même carte : « juste une succession d'images », « les motion design sont assez basiques et
+bateau ».
+
+- **Une photo ou une vidéo de sa page n'entre que si elle montre ce qu'il vend en marche ou ce
+  qu'on obtient** : son logiciel, son espace de formation, le Reel produit, l'avant / après, une
+  vraie capture de ventes ou de message. Une photo d'ambiance, un portrait, une photo de banque
+  d'images, un décor, une mise en scène de produit : jamais, même si sa page n'a que ça.
+- **Elle est mise en scène, avec astuce** : dans un objet qui agit (le Reel qui joue dans le
+  téléphone, sur l'interface de la plateforme, un double tap, le cœur ; la capture qui sort de la
+  fenêtre ; l'avant / après qu'un curseur partage), et du motion design se passe sur elle ou autour
+  (un compteur qui monte, une coche, une notification qui arrive, un mot qui claque). Exemple : le
+  Reel Dupliq.me de la page de vente de Publicitaire IA, où la vidéo obtenue joue dans un iPhone,
+  parce qu'elle est tout le résultat.
+- **Jamais** en fond plein cadre, jamais une carte photo sous un titre posé, jamais une photo qui
+  dérive lentement pendant qu'on lit. **Une photo fixe ne porte jamais deux plans de suite**, et
+  au plus un plan sur quatre.
+- **Le test du diaporama**, sur chaque plan : cache ses photos et ses vidéos. S'il ne reste qu'un
+  titre et un cadre, le plan est une diapositive : refais-le en motion design.
+- **Une offre hors du digital** (un cours en présentiel, un produit physique, un restaurant) n'a
+  souvent que des photos. La vidéo se construit quand même : sa fiche (le programme qui se coche,
+  le prix qui claque), les objets de son métier reconstruits (la fiche recette, le ticket, la carte
+  de réservation), ses mots qui jouent. Publicitaire IA est fait pour les offres en ligne : la porte
+  de vérité le dit au client ([offre.md](offre.md)).
 
 Ce qu'on peut montrer selon ce qu'il vend :
 
@@ -196,6 +229,7 @@ la vraie matière du client ou sa vidéo de référence le contient, et alors se
 | Des sous-titres : une phrase par écran, en haut, au-dessus d'une petite interface | Le plan montre en grand ; un mot héros, une ligne d'appui au plus |
 | Des mots isolés ou des chiffres sans contexte | Ce que l'idée dit, montré, et ses mots qui claquent |
 | Des images inventées : paysages, couchers de soleil, planètes, sphères, illustrations, photos d'ambiance | Sa vraie matière, en descendant l'échelle |
+| Ses photos de page à la suite, recadrées, zoomées ou en fond (un diaporama) | Du motion design construit ; ses photos seulement pour montrer le résultat, mises en scène (« Ses photos et ses vidéos ») |
 | Des formes seules (disques, carrés, aplats) comme sujet ; des particules, nuées ou poussières décoratives | Une forme qui porte une matière réelle, ou qui sert de transition |
 | Halos, néons, reflets d'objectif, orbes lumineux, sol quadrillé lumineux, ondes de choc | Des objets du sujet floutés par la profondeur ; la grille fine du kit |
 | Dégradés violets ou bleus, dégradés tirés de l'accent | L'accent plein sur des neutres |

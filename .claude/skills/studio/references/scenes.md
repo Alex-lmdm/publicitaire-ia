@@ -159,7 +159,8 @@ cause.
 
 ### Finir
 
-25. **La mosaïque qui devient le bouton** (5 à 7 s). Les vraies images de cette vidéo reviennent en
+25. **La mosaïque qui devient le bouton** (5 à 7 s). Les vraies images de cette vidéo (ses
+    interfaces et ses résultats déjà montrés, jamais des photos de décor) reviennent en
     mosaïque 3D, la caméra recule, elles se resserrent au centre en un bouton ; le curseur le clique,
     il se remplit de l'accent, le nom au-dessus, une petite ligne dessous ; tenu 2,5 s.
 26. **Le nom et l'appel** (4 s) : le produit se pose avec son nom, l'appel claque juste au-dessus de

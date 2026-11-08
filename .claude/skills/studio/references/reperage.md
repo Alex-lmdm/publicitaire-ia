@@ -2,7 +2,10 @@
 
 Une vidéo de motion design produit se construit avec des images, pas avec des phrases. Avant de
 choisir l'angle, fais l'inventaire de **ce qui peut se montrer** et réunis la matière. C'est
-cette étape qui sépare une vidéo de niveau studio d'une suite de slides.
+cette étape qui sépare une vidéo de niveau studio d'une suite de slides. « Ce qui peut se
+montrer » ne veut pas dire « les photos de sa page » : la plupart se reconstruisent et s'animent,
+et ses photos n'entrent que pour montrer le résultat ([image.md](image.md), « Ses photos et ses
+vidéos »).
 
 Elle vient juste après la porte de vérité (`offre.md`), avant la structure. Elle prend quelques
 minutes et ne pose au plus qu'une question au client.
@@ -24,10 +27,15 @@ Liste, avec sa source, tout ce que la vidéo peut montrer de vrai :
 |---|---|---|
 | **Son produit** | son logiciel, son espace de formation, son template, son app | Reconstruit en HTML d'après capture, animé (on clique, on tape, ça répond) |
 | **Les outils dont l'offre parle** | Instagram, Notion, Canva, Stripe, Zoom, Excel, ChatGPT, Claude | Leur logo (`studio_motion.py logos <projet> claude openai …`) et leur interface reconnaissable |
-| **Le résultat** | ses Reels, un avant / après, un tableau de ventes, une page créée | Les vraies images et vidéos du dossier `sources/` |
+| **Le résultat** | ses Reels, un avant / après, un tableau de ventes, une page créée | Les vraies images et vidéos du dossier `sources/`, jouées dans un objet qui agit (le téléphone, la fenêtre, l'interface de la plateforme) |
 | **Les preuves** | captures de témoignages, chiffres de la page | Les vraies captures, les chiffres de la fiche |
 | **Le problème** | la façon pénible d'avant (un tableur, dix onglets, un agenda saturé, une boîte mail qui déborde) | Reconstruit en simple, reconnaissable, sans marque inventée |
 | **Les objets connus** | tout ce que son public reconnaît d'un coup d'œil : un dossier, des fichiers, le téléphone et ses notifications, des messages, et surtout les objets de son métier (l'annonce immobilière, la montre de sport, le ticket de commande, la carte d'embarquement…) | Dans leurs vraies couleurs : ceux du kit (`K.ic("objet-dossier")`, `objet-pdf`…, `K.statut`, `K.notification`, `K.bulle`, `k-feux` : [kit.md](kit.md)), les autres construits d'après leur allure courante ou une capture ([image.md](image.md), « Les objets connus ») |
+
+**Trie ses photos et ses vidéos.** Pour chacune, note dans `PLAN.md` « résultat » (elle montre son
+produit en marche ou ce qu'on obtient : on la mettra en scène) ou « décor » (ambiance, portrait,
+mise en scène, banque d'images : elle reste hors du film). Une page qui n'a que du décor n'est pas
+une matière manquante : la vidéo se construit en motion design ([image.md](image.md)).
 
 Range cette matière dans l'ordre de l'échelle de [image.md](image.md) (« La vraie matière ») :
 les vraies captures, les interfaces à reconstruire, les vrais chiffres de la fiche à mettre en
@@ -104,6 +112,8 @@ son produit. Sans référence, la grammaire par défaut est celle d'[image.md](i
 - Surfaces : espace de formation (6 modules) [capture formation-1.jpg] · modèle de devis
   reconstruit · 8 portfolios d'élèves [sources/eleves] · 5 témoignages [capture/assets] · agenda
   des séances.
+- Photos et vidéos : portfolios d'élèves avant / après = résultat (dans la fenêtre de Behance) ;
+  portrait de la formatrice, photos d'atelier = décor (hors du film).
 - Logos flottants : Behance et Instagram (les portfolios) ; aucune icône générique.
 - Référence : aucune (ou : son nom, ses événements par seconde, ses procédés retenus).
 - Manque : rien (ou : demandé au client, avec la date).

@@ -59,6 +59,10 @@ vraiment :
   vidéo, un mot à lire par seconde au plus (`studio_motion.py lecture "<mots du plan 1>" … --duree
   <s>`) ; et la mise en page des sous-titres (une phrase en haut, une petite interface dessous)
   ne revient pas d'un plan à l'autre.
+- **Le test du diaporama** : sur chaque image clé, cache en pensée ses photos et ses vidéos. S'il ne
+  reste qu'un titre et un cadre, le plan est une diapositive. Une photo fixe ne porte jamais deux
+  plans de suite, ni plus d'un plan sur quatre ; celles qui restent montrent le résultat, dans un
+  objet qui agit ([image.md](image.md), « Ses photos et ses vidéos »).
 - **Les défauts interdits** ([image.md](image.md)) : passe la liste ligne à ligne sur la planche.
   Chaque défaut présent (de la liste ou non) s'écrit dans « Interdits de cette vidéo » et se
   corrige.
@@ -145,7 +149,9 @@ avec une phrase de justification, sur ces dix critères :
 5. **Montré, pas lu** : chaque plan montre ce qu'il dit (des interfaces qui réagissent, un schéma
    qui se trace, de vraies vidéos), et ses mots, peu nombreux et très grands, jouent ce qu'ils
    disent ; des fonds qui alternent, rien de vide. Si on dirait des slides ou des sous-titres
-   (plus d'un mot à lire par seconde), c'est 3 au plus.
+   (plus d'un mot à lire par seconde), c'est 3 au plus. Si elle enchaîne les photos de sa page
+   (recadrées, zoomées, en cartes ou en fond), ou si le relecteur neuf la décrit comme une suite de
+   photos (sa question 6), c'est 4 au plus ([image.md](image.md), « Ses photos et ses vidéos »).
 6. **Fidélité** : prix, dates, preuves et interfaces conformes à la fiche et aux sources ; chaque
    chiffre avec son contexte.
 7. **Le mouvement sert** : il montre l'offre ou relie deux idées (un objet qui devient le
@@ -181,8 +187,14 @@ notes.
 
 ```bash
 python3 ../../../tools/studio_motion.py calage exports/reel.mp4
+python3 ../../../tools/studio_motion.py emergence .
 python3 ../../../tools/studio_motion.py son exports/reel.mp4
 ```
+
+`emergence` doit répondre « ok » : sans voix, la musique s'entend bien et les bruitages vont avec
+elle, presque au même niveau (4 à 10 dB au-dessus de son fond) ; avec une voix, aucun bruitage ne
+passe au-dessus d'elle ([son.md](son.md), « L'équilibre entre la musique, les bruitages et la
+voix »). Un refus est un P1.
 
 `calage` doit répondre « ok » : le montage suit la bande-son ([son.md](son.md), « Construire
 l'image sur la bande-son »). Sans voix, chaque scène part sur un temps de la musique (une scène « à

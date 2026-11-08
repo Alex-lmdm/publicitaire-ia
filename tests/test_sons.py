@@ -79,5 +79,74 @@ class Pauses(unittest.TestCase):
             self.assertIn("Musique sous la voix", sons.resume_niveau(rapport))
 
 
+
+class NiveauEtForme(unittest.TestCase):
+    """HyperFrames 0.9 multiplie data-volume par l'enveloppe : le niveau ne s'écrit qu'une fois."""
+
+    def test_le_niveau_dans_data_volume_la_forme_dans_l_enveloppe(self):
+        haut, forme = sons.niveau_et_forme([{"t": 0, "v": 0}, {"t": 0.4, "v": 0.2}, {"t": 30, "v": 0.2}, {"t": 31, "v": 0}])
+        self.assertEqual(haut, 0.2)
+        self.assertEqual([p["v"] for p in forme], [0, 1.0, 1.0, 0])
+
+    def test_sous_la_voix_la_forme_reste_sous_1(self):
+        pts = sons.enveloppe_sous_voix([(2.0, 8.0), (10.0, 20.0)], [(8.0, 10.0)], 24.0, 0.05, 0.16)
+        haut, forme = sons.niveau_et_forme(pts)
+        self.assertEqual(haut, 0.16)
+        self.assertTrue(all(0 <= p["v"] <= 1 for p in forme))
+        au_mot = next(p["v"] for p in forme if p["t"] >= 2.0)
+        self.assertAlmostEqual(au_mot, round(0.05 / 0.16, 4), places=3)   # sous la voix : 10 dB sous le haut
+
+    def test_un_silence_reste_un_silence(self):
+        self.assertEqual(sons.niveau_et_forme([{"t": 0, "v": 0}, {"t": 1, "v": 0}]), (0.0, [{"t": 0, "v": 0}, {"t": 1, "v": 0}]))
+
+
+def _attribut(ligne: str, nom: str) -> str:
+    import re
+    return re.search(rf'{nom}="([^"]*)"', ligne).group(1)
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+class MusiqueSansVoix(unittest.TestCase):
+    def projet(self, d: str, niveau: float) -> tuple[Path, Path]:
+        projet = Path(d)
+        audio = projet / "assets" / "audio"
+        audio.mkdir(parents=True)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"anoisesrc=d=12:c=pink:a={niveau}", "-ar", "48000",
+                        "-ac", "2", str(audio / "musique.wav")], check=True)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=2000:d=0.3", "-ar", "48000",
+                        str(audio / "clic.wav")], check=True)
+        (projet / "index.html").write_text('<div data-composition-id="main" data-duration="10">\n  <!-- SONS -->\n</div>\n')
+        return projet, audio
+
+    def test_un_morceau_fort_ou_doux_sort_a_la_reference(self):
+        for niveau in (0.6, 0.05):                      # un morceau mastérisé fort, un morceau doux
+            with self.subTest(niveau=niveau), tempfile.TemporaryDirectory() as d:
+                projet, audio = self.projet(d, niveau)
+                rapport = sons.poser(projet, [], musique=audio / "musique.wav")
+                m = rapport["musique_seule"]
+                self.assertAlmostEqual(m["niveau"], sons.MUSIQUE_SANS_VOIX_LUFS, delta=0.3)
+                self.assertFalse(m["manuel"])
+                ligne = next(l for l in (projet / "index.html").read_text().splitlines() if 'id="musique"' in l)
+                self.assertAlmostEqual(float(_attribut(ligne, "data-volume")), sons.lin(m["gain"]), places=3)
+                self.assertIn("&quot;v&quot;:1.0", _attribut(ligne, "data-automation"))   # la forme, pas le niveau
+                self.assertNotIn("⚠️", sons.resume_niveau(rapport))
+
+    def test_une_musique_enterree_a_la_main_est_signalee(self):
+        with tempfile.TemporaryDirectory() as d:
+            projet, audio = self.projet(d, 0.6)
+            rapport = sons.poser(projet, [], musique=audio / "musique.wav", musique_db=-30)
+            self.assertTrue(rapport["musique_seule"]["manuel"])
+            self.assertIn("sous la référence", sons.resume_niveau(rapport))
+
+    def test_un_bruitage_avec_fondu_n_est_pas_compte_deux_fois(self):
+        with tempfile.TemporaryDirectory() as d:
+            projet, audio = self.projet(d, 0.1)
+            sons.poser(projet, [{"src": audio / "clic.wav", "start": 1.0, "vol": -12, "fondu_sortie": 0.1}],
+                       musique=audio / "musique.wav")
+            ligne = next(l for l in (projet / "index.html").read_text().splitlines() if 'id="sfx-01"' in l)
+            self.assertAlmostEqual(float(_attribut(ligne, "data-volume")), sons.lin(-12), places=3)
+            self.assertNotIn(str(sons.lin(-12)), _attribut(ligne, "data-automation"))
+
+
 if __name__ == "__main__":
     unittest.main()

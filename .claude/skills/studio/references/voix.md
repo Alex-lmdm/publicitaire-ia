@@ -198,7 +198,9 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   « Sous une voix off ») ; le mélange entier est amené au niveau des Reels. Avec une voix,
   moins de bruitages : les gestes forts (clic, coche, impact sur le nom et le prix), et une frappe
   de clavier sur chaque phrase tapée importante, une prise différente à chaque fois (retour du créateur :
-  « un tout petit peu plus de SFX, sans en abuser »).
+  « un tout petit peu plus de SFX, sans en abuser »). Plus discrets aussi : aucun ne passe
+  au-dessus de la voix qui l'entoure (`emergence` le vérifie, son.md, « L'équilibre entre la
+  musique, les bruitages et la voix »).
   Une vidéo déjà sonorisée : refais la liste complète et relance `sons` avec `--ecraser`.
 - Des sous-titres incrustés en plus si le support se regarde muet (story, pub dans le fil).
 - Puis rendu, revue et export comme toute vidéo ([revue.md](revue.md)).

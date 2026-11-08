@@ -15,8 +15,14 @@ préparé en fichier par ffmpeg dans assets/sons/, puis posé tel quel. Un son d
 assets/ du Reel (trouvé dans l'app par find_sound_effect ou find_music) y reste : pas de copie.
 
 Réglages repris de l'ancien mixage ffmpeg, mesurés à 0,3 dB près sur un vrai Reel :
-volume en dB -> data-volume ; fondus en enveloppe data-automation (une enveloppe REMPLACE
-data-volume, elle porte donc le niveau réel) ; voix, sons et musique sur le bus « mixage ».
+volume en dB -> data-volume ; fondus en enveloppe data-automation ; voix, sons et musique sur le
+bus « mixage ». Depuis HyperFrames 0.9, l'enveloppe MULTIPLIE data-volume (elle le remplaçait en
+0.8) : data-volume porte le niveau le plus haut du son, l'enveloppe sa forme, de 0 à 1
+(`niveau_et_forme`). Écrire le niveau dans les deux le comptait deux fois : la musique du
+premier Reel rendu en 0.9 (08/11/2026) sortait 24 dB sous le niveau voulu.
+
+Sans voix, la musique porte la vidéo : son niveau ne se choisit plus au jugé, il se mesure
+(`MUSIQUE_SANS_VOIX_LUFS`), et les bruitages se règlent par rapport à elle (`emergence`).
 
 Niveau final : sur ce bus, un gain amène le mixage entier (voix comprise, mesuré par ffmpeg au
 moment de la pose) à -16 LUFS, le niveau des Reels qu'on croise sur Instagram ; puis un plafond à
@@ -44,6 +50,12 @@ LIMITE_DB = -1.5        # plafond des crêtes : marge pour l'encodage AAC (crêt
 CIBLE_LUFS = -16.0      # niveau final d'un Reel
 GAIN_MAX_DB = 12.0      # bornes du gain d'HyperFrames (-60 à +12 dB) ; au-delà, un mixage presque muet
 FONDU_MUSIQUE = (0.4, 1.2)
+# Sans voix, la musique seule se pose à ce niveau avant le mastering (la vidéo de démonstration :
+# un morceau de Mixkit à -17 dB, vers -30 LUFS), quel que soit le morceau : un morceau drill
+# mastérisé fort (-12 LUFS) et une musique douce (-20 LUFS) sonnent alors pareil sous les mêmes
+# bruitages. `mastering` remonte ensuite le tout à -16 LUFS.
+MUSIQUE_SANS_VOIX_LUFS = -30.0
+MUSIQUE_TROP_BASSE = 3.0     # dB sous la référence : la musique ne porte plus la vidéo
 BLOC_RE = re.compile(r"( *)<!-- SONS:DEBUT[^>]*empreinte (\w+) -->\n(.*?)\n *<!-- SONS:FIN -->", re.S)
 PLACE = "<!-- SONS -->"   # emplacement posé par le gabarit de chaque vidéo
 
@@ -88,6 +100,28 @@ def _attr_json(obj) -> str:
 
 def _enveloppe(points) -> str:
     return _attr_json({"version": 1, "lanes": [{"target": "volume", "points": points}]})
+
+
+def niveau_et_forme(points) -> tuple[float, list[dict]]:
+    """(data-volume, points de l'enveloppe) pour des points de volume linéaires : HyperFrames 0.9
+    multiplie data-volume par l'enveloppe (« A volume lane multiplies data-volume », vérifié par un
+    rendu le 08/11/2026 : 0,5 sous une enveloppe à 0,5 sort à -12 dB). Le plus haut niveau va dans
+    data-volume (c'est lui que l'app montre et règle), l'enveloppe garde la forme, de 0 à 1."""
+    haut = max((float(p["v"]) for p in points), default=0.0)
+    if haut <= 0:
+        return 0.0, [{"t": p["t"], "v": 0} for p in points]
+    return round(haut, 4), [{"t": p["t"], "v": round(float(p["v"]) / haut, 4)} for p in points]
+
+
+def _audio_avec_enveloppe(points) -> str:
+    """Les attributs data-volume et data-automation d'un son à enveloppe."""
+    haut, forme = niveau_et_forme(points)
+    return f'data-volume="{haut}" data-automation="{_enveloppe(forme)}"'
+
+
+def sonie(src: Path, total: float) -> float | None:
+    """La sonie intégrée (LUFS) d'un fichier sur ses `total` premières secondes, à plein volume."""
+    return mesurer([{"src": src, "start": 0.0, "duree": total, "media_start": 0.0, "volume": 1.0}], total)
 
 
 def _nom(src: Path, sfx_dir: Path | None, prefixe: str = "") -> str:
@@ -380,12 +414,22 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float | Non
                 rapport["musique"] = {"gain": round(musique_db, 1), "ecart": ecart[0], "respirations": len(trous),
                                       "voix": jouee, "reference": ref}
         else:
-            v = lin(-17 if musique_db is None else musique_db)
+            # sans voix : la musique porte la vidéo, posée à la référence quel que soit le morceau
+            morceau = sonie(reel / chemin, total)
+            manuel = musique_db is not None
+            if not manuel:
+                musique_db = (max(-40.0, min(GAIN_MAX_DB, MUSIQUE_SANS_VOIX_LUFS - morceau))
+                              if morceau is not None and morceau > -70 else -17.0)
+            v = lin(musique_db)
             pts = [{"t": 0, "v": 0}, {"t": round(fe, 3), "v": v},
                    {"t": round(total - fs, 3), "v": v}, {"t": round(total, 3), "v": 0}]
+            if rapport is not None:
+                rapport["musique_seule"] = {"gain": round(musique_db, 1), "manuel": manuel,
+                                            "niveau": round(morceau + musique_db, 1) if morceau is not None else None,
+                                            "reference": MUSIQUE_SANS_VOIX_LUFS}
         out.append(f'<audio id="musique" src="{_src(chemin)}" '
-                   f'data-start="0" data-duration="{round(total, 3)}" data-media-start="0" data-volume="{v}" '
-                   f'data-track-index="19" data-audio-group="mixage" data-automation="{_enveloppe(pts)}"></audio>')
+                   f'data-start="0" data-duration="{round(total, 3)}" data-media-start="0" '
+                   f'data-track-index="19" data-audio-group="mixage" {_audio_avec_enveloppe(pts)}></audio>')
         pistes.append({"src": reel / chemin, "start": 0.0, "duree": total, "media_start": 0.0, "volume": v,
                        "fondu_entree": fe, "fondu_sortie": fs})
     fins = []   # une piste par son qui se chevauche : deux clips sur la même piste, l'un disparaît
@@ -415,7 +459,7 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float | Non
             fins[piste] = start + garde
         v = lin(float(e["vol"]))
         ligne = (f'<audio id="sfx-{n:02d}" src="{_src(chemin)}" data-start="{start:.3f}" '
-                 f'data-duration="{garde:.3f}" data-media-start="{debut:.3f}" data-volume="{v}" '
+                 f'data-duration="{garde:.3f}" data-media-start="{debut:.3f}" '
                  f'data-track-index="{20 + piste}" data-audio-group="mixage"')
         fe, fs = float(e.get("fondu_entree") or 0), float(e.get("fondu_sortie") or 0)
         if fe or fs:
@@ -425,7 +469,9 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float | Non
             if fs:
                 pts.append({"t": round(max(garde - fs, 0), 3), "v": v})
                 pts.append({"t": garde, "v": 0})
-            ligne += f' data-automation="{_enveloppe(pts)}"'
+            ligne += f" {_audio_avec_enveloppe(pts)}"
+        else:
+            ligne += f' data-volume="{v}"'
         out.append(ligne + "></audio>")
         pistes.append({"src": reel / chemin, "start": start, "duree": garde, "media_start": debut, "volume": v,
                        "fondu_entree": fe, "fondu_sortie": fs})
@@ -484,11 +530,26 @@ def poser(reel: Path, evenements, musique: Path | None = None, musique_db: float
     return rapport
 
 
+def resume_musique_seule(m: dict) -> str:
+    """La ligne de la musique sans voix : son niveau, et l'alerte si un réglage manuel l'enterre."""
+    if m.get("niveau") is None:
+        return f"\n  Musique : {m['gain']:+.1f} dB (sonie du morceau illisible)."
+    ligne = (f"\n  Musique : {m['gain']:+.1f} dB, à {m['niveau']:.1f} LUFS avant le mastering "
+             f"(référence sans voix {m['reference']:.0f} LUFS{', réglage manuel' if m['manuel'] else ''}) : "
+             "les bruitages se règlent sur elle (`emergence`).")
+    if m["niveau"] < m["reference"] - MUSIQUE_TROP_BASSE:
+        ligne += (f"\n⚠️  Musique {m['reference'] - m['niveau']:.1f} dB sous la référence : elle ne porte plus la vidéo. "
+                  "Retire « musique_db » et baisse plutôt les bruitages trop forts.")
+    return ligne
+
+
 def resume_niveau(rapport: dict) -> str:
     """Une ligne pour le récapitulatif de la pose."""
     m = rapport.get("musique")
     musique = (f"\n  Musique sous la voix : {m['gain']:+.1f} dB, {m['ecart']:.0f} LU sous la voix pendant qu'elle parle, "
                f"remontée dans {m['respirations']} respiration(s), avant le premier mot et après le dernier.") if m else ""
+    if rapport.get("musique_seule"):
+        musique += resume_musique_seule(rapport["musique_seule"])
     if rapport.get("niveau") is None:
         return "Niveau final : non mesuré (pas de voix audible, ou mesure impossible), aucun gain posé." + musique
     return (f"Niveau final : mixage mesuré à {rapport['niveau']:.1f} LUFS, gain {rapport['gain']:+.1f} dB "

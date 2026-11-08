@@ -106,18 +106,43 @@ python3 ../../../tools/studio_motion.py sons . work/sons.json
 ```
 
 ```json
-{"musique": "assets/audio/musique.wav", "musique_db": -17,
+{"musique": "assets/audio/musique.wav",
  "evenements": [{"src": "../../../assets/sfx/starter/click-ui.mp3", "start": 1.2, "vol": -6},
                 {"src": "assets/audio/whoosh.wav", "start": 3.0, "vol": -9, "trim": [0, 0.6], "fondu_sortie": 0.1}]}
 ```
 
 Elle écrit à l'emplacement `<!-- SONS -->` de `index.html` et lit la durée de la vidéo. Options
 d'un évènement : `trim`, `fondu_entree`, `fondu_sortie`, `af` (un filtre ffmpeg, lis l'en-tête de
-`tools/sons.py`). Pour changer les sons ensuite, refais la liste complète et relance `sons` ; `--ecraser` seulement si le bloc a été retouché à la main ou dans l'app. Sans voix, la musique porte la vidéo et les
-bruitages la ponctuent : l'équilibre se règle par `emergence` (plus bas), pas à l'oreille. Garde
-le mélange assez bas pour que le limiteur de la composition ne travaille pas (dans la vidéo de
-démonstration, `musique_db=-17` et les bruitages en proportion), `mastering` remonte le tout. Le module écrit la musique
-avec `id="musique"` : c'est ce que retrouve la version sans musique.
+`tools/sons.py`). Pour changer les sons ensuite, refais la liste complète et relance `sons` ; `--ecraser` seulement si le bloc a été retouché à la main ou dans l'app. Le module écrit la musique
+avec `id="musique"` : c'est ce que retrouve la version sans musique. Le niveau de la musique se
+règle tout seul (section suivante) ; les bruitages se règlent sur elle, par `emergence`, pas à
+l'oreille. `mastering` remonte ensuite le tout à -16 LUFS.
+
+## L'équilibre entre la musique, les bruitages et la voix
+
+Retour du créateur sur le Reel Gordon Ramsay (08/11/2026) : « les effets sonores sont très forts
+et la musique est tout le temps très faible ». La règle :
+
+- **Sans voix, la musique porte la vidéo** : on l'entend bien, du début à la fin. `sons` la pose
+  toute seule à sa référence (-30 LUFS avant le mastering, quel que soit le morceau : un morceau
+  mastérisé fort est baissé, un morceau doux remonté) et l'écrit : « Musique : … dB, à -30 LUFS ».
+  Les bruitages vont **avec** elle, presque au même niveau : chacun dépasse le fond musical de 4 à
+  10 dB (vise 5 à 8), jamais plus. `emergence` le vérifie et dit, son par son, de combien monter ou
+  baisser.
+- **Ne baisse jamais la musique pour faire ressortir un bruitage** : monte le bruitage, ou
+  baisse ceux qui sont trop forts. `"musique_db"` reste un réglage manuel ; `sons` prévient s'il
+  enterre la musique de plus de 3 dB sous sa référence. Piège rencontré le 08/11/2026 : la
+  musique posée à -24 dB pour que les bruitages ressortent d'un morceau drill, ajoutée au
+  défaut d'enveloppe ci-dessous, sortait 30 dB sous les bruitages.
+- **Avec une voix off, la voix passe devant tout** : la musique se tient 15 à 18 LU sous elle
+  (« Sous une voix off », plus bas), les bruitages sont moins nombreux (voix.md) et **jamais plus
+  forts qu'elle** : `emergence` refuse un bruitage dont la crête dépasse le niveau de la voix qui
+  l'entoure.
+- Une enveloppe de volume (`data-automation`) **multiplie** `data-volume` depuis HyperFrames 0.9
+  (elle le remplaçait avant) : `sons` écrit le niveau dans `data-volume` et la forme (0 à 1) dans
+  l'enveloppe. Si tu écris toi-même une enveloppe (le son d'une vraie vidéo, par exemple), fais
+  pareil ; le niveau écrit dans les deux est compté deux fois (constaté le 08/11/2026 : 0,5 sous une
+  enveloppe à 0,5 sort à -12 dB).
 
 ## La musique
 
@@ -321,9 +346,10 @@ qui travaille **en dessous** :
   sans tout recalculer.
 - Avec le Pack SFX : pars du `gain_db` du catalogue et cale le son sur son `hit` quand son `align`
   vaut `hit` (début = instant de l'événement − `hit`). Le pack est calibré pour une musique
-  discrète sous une voix : sous une musique qui porte la vidéo, remonte chaque **famille** de ce
-  qu'il lui faut (dans la vidéo de démonstration, musique à -17 dB : clics +26 dB, passages et
-  impacts +14 à +15, coches +17, puis tout le mélange -7 dB), les clics les plus doux un peu plus.
+  discrète sous une voix : sous une musique qui porte la vidéo (à sa référence de -30 LUFS),
+  remonte chaque **famille** de ce qu'il lui faut (dans la vidéo de démonstration : clics +26 dB,
+  passages et impacts +14 à +15, coches +17, puis tout le mélange -7 dB), les clics les plus doux
+  un peu plus, puis ajuste chaque son d'après `emergence`.
 - **Lisse la pointe des clics** : ceux du pack montent de 19 à 24 dB au-dessus de leur corps. Un
   limiteur sur le son seul (`"af": "alimiter=limit=…:attack=0.1:release=8:level=false"`, plafond
   12 dB au-dessus de son énergie) les garde présents sans que le limiteur final fasse « pomper »
@@ -331,9 +357,14 @@ qui travaille **en dessous** :
   fait déborder une crête au-dessus de -1 dBTP.
 - Le mélange posé ne doit jamais faire travailler le limiteur de la composition (crête du rendu
   sous -3 dBTP) : baisse tout le mélange d'un bloc, `mastering` remonte ensuite.
-- Contrôle : `python3 ../../../tools/studio_motion.py emergence .` dans le projet. Chaque bruitage doit
-  dépasser la musique qui l'entoure de 4 dB au moins (méthode du Pack SFX, sur 50 ms) ; il répond
-  « ok » quand 95 % y sont (au plus un son couvert sur vingt, et un seul tant qu'il y en a moins de quarante).
+- Contrôle : `python3 ../../../tools/studio_motion.py emergence .` dans le projet. La crête de chaque
+  bruitage (sur 50 ms, méthode du Pack SFX) doit dépasser le fond musical qui l'entoure de 4 à
+  10 dB : en dessous il est couvert, au-dessus il écrase la musique. Il répond « ok » quand 95 %
+  sont dans la fourchette de chaque côté (au plus un son sur vingt, et un seul tant qu'il y en a
+  moins de quarante), et donne pour chaque son dehors le réglage qui le ramène entre 5 et 8. Avec
+  une voix, aucun bruitage ne dépasse la voix qui l'entoure. Depuis le 08/11/2026, la crête se
+  mesure sur les bruitages seuls : sur le mélange, les coups de grosse caisse d'un morceau rythmé
+  passaient pour le bruitage.
 - Évite les sons très aigus en série : ils fatiguent à l'écoute au téléphone.
 
 ## Le niveau final
@@ -355,7 +386,7 @@ relançant.
 clic monté de 12 dB. Vise **-20 LUFS** : `mastering … --cible -20` puis `son … --cible -20`. Mieux :
 propose au client d'ajouter une musique, c'est elle qui porte une vidéo sans voix.
 
-Avec musique, la cible reste **-16 LUFS** : la vidéo de démonstration (musique à -17 dB, 87
+Avec musique, la cible reste **-16 LUFS** : la vidéo de démonstration (musique vers -30 LUFS, 87
 bruitages du pack) sort à -28,3 LUFS du rendu et passe à -16,1 après `mastering`, crêtes à
 -1,2 dBTP. Pour la version web, recompresse l'image et **recopie le son** (`-c:a copy`) : le
 réencoder fait remonter les crêtes au-dessus de -1 dBTP.

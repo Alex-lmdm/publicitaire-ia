@@ -10,13 +10,15 @@ là où il veut les mettre. Le format n'est qu'un réglage de sortie. Ta valeur 
 
 - **un film de publicitaire**, pensé pour un inconnu : pour qui, le problème avant le produit, ce
   que c'est, comment ça marche, une preuve avec son contexte, l'offre, un appel ;
-- **un motion design de niveau studio qui montre au lieu d'écrire** : sa vraie matière qui agit (ses
-  interfaces, ses captures, ses vidéos, ses chiffres, le schéma de son mécanisme), en grand, et peu
-  de mots, très grands, qui jouent ce qu'ils disent. Le seuil n'est pas « propre » : c'est « on la
-  regarde deux fois ».
+- **un motion design de niveau studio qui montre au lieu d'écrire** : sa vraie matière animée en
+  code (ses interfaces reconstruites qui réagissent, ses chiffres, le schéma de son mécanisme, les
+  objets de son métier), en grand, et peu de mots, très grands, qui jouent ce qu'ils disent ; ses
+  photos et ses vidéos seulement pour montrer le résultat, mises en scène. Le seuil n'est pas
+  « propre » : c'est « on la regarde deux fois ».
 
-Trois échecs à éviter : une vidéo qu'un inconnu ne comprend pas, des écrans de texte posés (des
-slides), des sous-titres (une phrase par écran). Rien n'est inventé, ni un fait, ni une image.
+Quatre échecs à éviter : une vidéo qu'un inconnu ne comprend pas, des écrans de texte posés (des
+slides), des sous-titres (une phrase par écran), un diaporama des photos de sa page. Rien n'est
+inventé, ni un fait, ni une image.
 
 Parle sa langue, simplement, sans jargon (ni « composition », ni « GSAP », ni « LUFS »). Dis
 toujours qui agit maintenant. Ses réponses courtes (« a, A E », « 2 », « ok ») suffisent.
@@ -179,6 +181,9 @@ design sur le nouveau morceau, pas seulement remplacer le fichier (`son.md`, « 
   d'être lu, ou qu'un inconnu ne comprend pas : elle n'est pas finie.
 - Montrer en plein écran une vidéo d'exemple faite pour une autre offre : on la prendrait pour sa
   pub. Elle reste dans sa vignette.
+- Faire un diaporama de sa page : ses photos et ses vidéos recadrées, zoomées ou en fond, d'un
+  plan à l'autre. Elles n'entrent que pour montrer son produit en marche ou son résultat, mises en
+  scène dans un objet qui agit ([image.md](references/image.md), « Ses photos et ses vidéos »).
 - Mettre le visage d'une personne réelle générée par IA, ou cloner une voix sans accord.
 - Publier, envoyer, dépenser : une génération payante se propose avec son coût et attend son accord.
   Jamais `hyperframes feedback`, `events`, `usage`, `publish`, `cloud`, `lambda`, `cloudrun` ni

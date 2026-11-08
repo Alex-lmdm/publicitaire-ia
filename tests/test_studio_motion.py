@@ -837,19 +837,36 @@ class Musique(unittest.TestCase):
 class Emergence(unittest.TestCase):
     def test_bruitage_au_dessus_du_fond(self):
         musique = [-25.0] * 400                        # 20 s de musique à -25 dB (50 ms par case)
-        mix = list(musique)
-        mix[100] = -18.0                               # un clic à 5 s : +7 dB
-        mix[200] = -23.5                               # un clic à 10 s : +1,5 dB, couvert
-        res = sm.verdict_emergence(mix, musique, [{"src": "a/clic.mp3", "debut": 5.0, "duree": 0.1},
-                                                  {"src": "a/doux.mp3", "debut": 10.0, "duree": 0.1}])
+        sons = [-120.0] * 400                          # les bruitages seuls
+        sons[100] = -18.0                              # un clic à 5 s : +7 dB
+        sons[200] = -23.5                              # un clic à 10 s : +1,5 dB, couvert
+        res = sm.verdict_emergence(sons, musique, [{"src": "a/clic.mp3", "debut": 5.0, "duree": 0.1},
+                                                   {"src": "a/doux.mp3", "debut": 10.0, "duree": 0.1}])
         self.assertEqual([(r[1], r[2]) for r in res], [("clic", 7.0), ("doux", 1.5)])
+
+    def test_les_coups_de_la_musique_ne_comptent_pas(self):
+        # un morceau très rythmé : une grosse caisse à +6 dB toutes les 0,5 s ; le bruitage, lui, est à +2
+        musique = [-19.0 if k % 10 == 0 else -25.0 for k in range(400)]
+        sons = [-120.0] * 400
+        sons[101] = -23.0
+        res = sm.verdict_emergence(sons, musique, [{"src": "doux.mp3", "debut": 5.0, "duree": 0.5}])
+        self.assertEqual(res[0][2], 2.0)               # jugé faible : la grosse caisse ne le fait pas passer
 
     def test_fond_local_d_une_intro_calme(self):
         musique = [-33.0] * 100 + [-25.0] * 300        # intro 8 dB plus calme
-        mix = list(musique)
-        mix[40] = -27.0                                 # pendant l'intro : +6 dB sur le fond local
-        res = sm.verdict_emergence(mix, musique, [{"src": "clic.mp3", "debut": 2.0, "duree": 0.1}])
+        sons = [-120.0] * 400
+        sons[40] = -27.0                                # pendant l'intro : +6 dB sur le fond local
+        res = sm.verdict_emergence(sons, musique, [{"src": "clic.mp3", "debut": 2.0, "duree": 0.1}])
         self.assertEqual(res[0][2], 6.0)
+
+    def test_un_bruitage_plus_fort_que_la_voix(self):
+        voix = [-60.0] * 40 + [-20.0] * 360            # la voix parle à partir de 2 s
+        sons = [-120.0] * 400
+        sons[100], sons[300] = -26.0, -15.0             # un clic 6 dB sous la voix, un impact 5 dB au-dessus
+        res = sm.verdict_sous_voix(sons, voix, [{"src": "clic.mp3", "debut": 5.0, "duree": 0.1},
+                                                {"src": "impact.mp3", "debut": 15.0, "duree": 0.1},
+                                                {"src": "intro.mp3", "debut": 0.2, "duree": 0.1}])
+        self.assertEqual([(r[1], r[2]) for r in res], [("clic", -6.0), ("impact", 5.0)])   # l'intro, sans voix : non jugée
 
     def test_lecture_du_bloc_sons(self):
         with tempfile.TemporaryDirectory() as d:
@@ -861,9 +878,12 @@ class Emergence(unittest.TestCase):
                 '<audio id="sfx-01" src="assets/sons/clic.mp3" data-start="1.000" data-duration="0.186" data-media-start="0.000" '
                 'data-volume="1.7783" data-audio-group="mixage"></audio>', encoding="utf-8")
             musique, sons = sm.sons_poses(index)
-            self.assertAlmostEqual(musique["vol"], 0.1413)
+            self.assertAlmostEqual(musique["vol"], 0.1413 ** 2, places=4)   # écrit deux fois : compté deux fois (rendu 0.9)
             self.assertEqual(len(sons), 1)
             self.assertEqual((sons[0]["debut"], sons[0]["vol"]), (1.0, 1.7783))
+            index.write_text(index.read_text(encoding="utf-8").replace(";v&quot;:0.1413}", ";v&quot;:1}"), encoding="utf-8")
+            musique, _ = sm.sons_poses(index)
+            self.assertAlmostEqual(musique["vol"], 0.1413)                  # le niveau dans data-volume, la forme dans l'enveloppe
 
 
 class Svg(unittest.TestCase):

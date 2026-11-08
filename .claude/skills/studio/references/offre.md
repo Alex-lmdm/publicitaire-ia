@@ -94,6 +94,14 @@ Cinq à sept lignes, dans ses mots à lui, pas un JSON :
 
 Une correction du client met à jour la fiche (source `client`), puis on revérifie.
 
+**Une offre qui ne se vend ni ne se vit en ligne** (un cours en présentiel, un produit physique,
+un restaurant, un commerce) : ajoute une phrase, une seule fois, à ce résumé : « Publicitaire IA
+est fait pour les offres en ligne (formation, coaching, logiciel, template, communauté). Pour
+<ton offre>, je fais quand même une vidéo en motion design : ton programme, ton prix et les objets
+de ton métier animés, pas un montage des photos de ta page. » Puis continue normalement. Ses
+photos restent hors du film, sauf celles qui montrent le résultat ([image.md](image.md), « Ses
+photos et ses vidéos »).
+
 ## Pendant la fabrication
 
 Dans `PLAN.md`, chaque texte affiché pointe vers sa clé (`prix.montant`, `bonus[0]`,

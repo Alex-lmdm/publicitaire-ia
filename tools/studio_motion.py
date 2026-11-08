@@ -39,7 +39,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py voix caler                       # depuis le projet : le texte juste sur les temps des mots
     python3 tools/studio_motion.py voix respiration 9.5 [--secondes 1.5]   # ouvre une pause dans la voix, la suite recule
     python3 tools/studio_motion.py sons <projet> <sons.json> [--ecraser]   # pose musique et bruitages
-    python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique
+    python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique, sans l'écraser
     python3 tools/studio_motion.py son <video.mp4> [--cible -16]
     python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
     python3 tools/studio_motion.py sans-musique <projet>
@@ -1535,10 +1535,11 @@ def cmd_sons(a) -> None:
     musique = chemin(liste["musique"]) if liste.get("musique") else None
     voix_off = ({"src": chemin(liste["voix"]), "start": float(liste.get("voix_debut") or 0),
                  "vol": float(liste.get("voix_db") or 0)} if liste.get("voix") else None)
-    # avec une voix off, le niveau de la musique se mesure (écart sous la voix selon le support) ;
-    # « musique_db » reste un réglage manuel qui prime ; « musique_ecart » : 20 pour une version accessible
+    # le niveau de la musique se mesure : avec une voix off, à un écart sous la voix selon le support ;
+    # sans voix, à la référence de sons.MUSIQUE_SANS_VOIX_LUFS (elle porte la vidéo). « musique_db »
+    # reste un réglage manuel qui prime ; « musique_ecart » : 20 pour une version accessible
     musique_db = liste.get("musique_db")
-    musique_db = float(musique_db) if musique_db is not None else (None if voix_off else -17.0)
+    musique_db = float(musique_db) if musique_db is not None else None
     support = (meta_de(projet) or {}).get("support") or "reel"
     ecart = ECARTS_VOIX.get(support, ECARTS_VOIX["reel"])
     if liste.get("musique_ecart"):                      # une version accessible : 20 LU, puis 10
@@ -2054,6 +2055,10 @@ Réponds en français, sans note ni compliment :
    interfaces qui réagissent, des objets, des mots qui bougent et jouent) ou si elle se lit comme des
    sous-titres ou des diapositives (une phrase par écran, au-dessus d'une petite image). Cite le
    passage le plus « diapositive », avec sa planche et sa place.
+6. **Du motion design, ou un diaporama de photos ?** Dis quelle part de la vidéo est faite de photos
+   ou d'extraits de vidéo (recadrés, zoomés, posés en cartes ou en fond) et quelle part est animée
+   (des textes, des interfaces, des objets, des schémas qui bougent). Cite le plus long passage où
+   des photos se succèdent, avec ses planches.
 """
 
 CONSIGNE_RELEVE = """# Relevé des défauts
@@ -2363,7 +2368,9 @@ CALAGE_ACCORD = 0.5          # l'entrée notée dans le projet n'est crue qu'à 
 
 def pistes_du_mixage(index: Path) -> list[dict]:
     """Les pistes que tools/sons.py écrit dans index.html (groupe « mixage ») : id, src, début, durée,
-    départ dans le fichier, volume linéaire (le niveau porté par l'enveloppe quand il y en a une)."""
+    départ dans le fichier, volume linéaire. Comme au rendu d'HyperFrames 0.9 : data-volume multiplié
+    par le plus haut point de l'enveloppe (vérifié le 08/11/2026 ; en 0.8, l'enveloppe le remplaçait).
+    Un bloc posé avant la correction (le niveau écrit dans les deux) se lit donc tel qu'il sonne."""
     pistes = []
     for balise in re.findall(r"<audio\b[^>]*>", index.read_text(encoding="utf-8")):
         attr = dict(re.findall(r'([\w-]+)="([^"]*)"', balise))   # `data-hf-id` reste distinct d'`id`
@@ -2373,7 +2380,7 @@ def pistes_du_mixage(index: Path) -> list[dict]:
         if "data-automation" in attr:
             try:
                 lanes = json.loads(html.unescape(attr["data-automation"]))["lanes"]
-                vol = max(pt["v"] for l in lanes if l.get("target") == "volume" for pt in l["points"])
+                vol *= max(pt["v"] for l in lanes if l.get("target") == "volume" for pt in l["points"])
             except (ValueError, KeyError):
                 pass
         pistes.append({"id": attr.get("id", ""), "src": index.parent / html.unescape(attr["src"]),
@@ -3456,7 +3463,7 @@ def cmd_musique(a) -> None:
             print(f"⚠️ le morceau calé dure {longueur:.1f} s, moins que la vidéo ({a.duree:g} s) : la fin serait muette ; "
                   "prends un morceau plus long.")
     vitesse = f"tempo ramené à {a.bpm:g} ({(c['facteur'] - 1) * 100:+.1f} %), " if c["facteur"] != 1.0 else ""
-    pose = "Pose-le comme musique avec `sons` (musique_db vers -17 sans voix, voir son.md)."
+    pose = "Pose-le comme musique avec `sons` (son niveau se règle tout seul, voir son.md)."
     if entree is None:
         print(message_sans_entree(a.sortie, c, bpm, a.bpm) + " " + pose)
         return
@@ -3480,8 +3487,14 @@ def message_sans_entree(sortie, c: dict, bpm: float, cible_bpm: float) -> str:
 # L'émergence des bruitages : chacun doit dépasser la musique de 4 dB au moins (méthode du Pack
 # SFX : énergie max sur 50 ms pendant le son, moins le fond musical), le fond étant pris autour
 # du son (une intro calme laisse passer des sons plus doux). Lu dans le bloc SONS d'index.html.
+# Et jamais plus de 10 dB : la musique et les bruitages vont ensemble, presque au même niveau
+# (Alex, 08/11/2026, sur le Reel Gordon Ramsay : « les effets sonores sont très forts et la
+# musique très faible »). L'ancien plafond de 16 dB laissait des bruitages trois fois plus forts
+# à l'oreille que la musique. Avec une voix off, un bruitage ne passe jamais au-dessus d'elle.
 # ---------------------------------------------------------------------------
-EMERGENCE_MIN, EMERGENCE_MAX, FENETRE_50MS = 4.0, 16.0, 2400   # 50 ms à 48 kHz
+EMERGENCE_MIN, EMERGENCE_MAX, FENETRE_50MS = 4.0, 10.0, 2400   # 50 ms à 48 kHz
+EMERGENCE_VISEE = (5.0, 8.0)   # la plage à viser en posant les sons
+VOIX_MARGE = 0.0               # dB : la crête d'un bruitage au plus au niveau de la voix qui l'entoure
 
 
 def sons_poses(index: Path) -> tuple[dict | None, list[dict]]:
@@ -3501,9 +3514,12 @@ def energies_50ms(echantillons) -> list[float]:
             for k in range(len(echantillons) // w)]
 
 
-def verdict_emergence(e_mix: list[float], e_musique: list[float], sons: list[dict]) -> list[tuple[float, str, float]]:
-    """(début, nom, émergence en dB) pour chaque bruitage. Fond = médiane de la musique sur ±1,5 s,
-    jamais plus de 8 dB sous sa médiane générale."""
+def verdict_emergence(e_sons: list[float], e_musique: list[float], sons: list[dict]) -> list[tuple[float, str, float]]:
+    """(début, nom, émergence en dB) pour chaque bruitage : la crête des bruitages seuls (50 ms)
+    pendant le son, moins le fond musical (médiane de la musique sur ±1,5 s, jamais plus de 8 dB sous
+    sa médiane générale). Jusqu'au 08/11/2026, la crête se prenait sur le mélange musique comprise :
+    sur un morceau très rythmé, les coups de grosse caisse passaient pour le bruitage (un son baissé
+    de 6 dB gardait la même mesure), et l'agent baissait la musique pour faire « ressortir » ses sons."""
     tri = sorted(e_musique)
     general = tri[len(tri) // 2] if tri else -120.0
     pas = 48000 / FENETRE_50MS
@@ -3513,8 +3529,25 @@ def verdict_emergence(e_mix: list[float], e_musique: list[float], sons: list[dic
         k1 = max(k0 + 1, int((s["debut"] + min(s["duree"], 2.0)) * pas) + 1)
         autour = sorted(e_musique[max(0, k0 - 30):k0 + 30]) or [general]
         fond = max(autour[len(autour) // 2], general - 8)
-        pic = max(e_mix[k0:k1]) if e_mix[k0:k1] else -120.0
+        pic = max(e_sons[k0:k1]) if e_sons[k0:k1] else -120.0
         sortie.append((s["debut"], Path(s["src"]).stem, round(pic - fond, 1)))
+    return sortie
+
+
+def verdict_sous_voix(e_sons: list[float], e_voix: list[float], sons: list[dict]) -> list[tuple[float, str, float]]:
+    """(début, nom, crête du bruitage moins le niveau de la voix, en dB) pour chaque bruitage qui
+    tombe pendant que la voix parle (±1,5 s). Niveau de la voix = médiane de ses fenêtres de 50 ms
+    audibles autour du son ; un son loin de toute parole n'est pas jugé ici."""
+    pas = 48000 / FENETRE_50MS
+    sortie = []
+    for s in sons:
+        k0 = int(s["debut"] * pas)
+        k1 = max(k0 + 1, int((s["debut"] + min(s["duree"], 2.0)) * pas) + 1)
+        autour = sorted(e for e in e_voix[max(0, k0 - 30):k0 + 30] if e > -50)
+        if len(autour) < 6:          # moins de 0,3 s de parole autour : pas de voix à protéger
+            continue
+        pic = max(e_sons[k0:k1]) if e_sons[k0:k1] else -120.0
+        sortie.append((s["debut"], Path(s["src"]).stem, round(pic - autour[len(autour) // 2], 1)))
     return sortie
 
 
@@ -3525,11 +3558,12 @@ def cmd_emergence(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not index.is_file() or not ffmpeg:
         sys.exit("ERREUR : donne le dossier d'un projet de vidéo, avec ffmpeg installé.")
+    voix = [p for p in pistes_du_mixage(index) if p["id"].startswith("voix")]
     musique, sons = sons_poses(index)
     if not sons:
         sys.exit("ERREUR : aucun bruitage posé dans index.html (bloc SONS).")
-    if musique is None:
-        print("• pas de musique : rien à masquer, l'émergence ne se mesure pas.")
+    if musique is None and not voix:
+        print("• ni musique ni voix : rien à masquer, l'émergence ne se mesure pas.")
         return
     m_ = re.search(r'data-composition-id="main"[^>]*data-duration="([\d.]+)"', index.read_text(encoding="utf-8"))
     duree = float(m_.group(1)) if m_ else max(s["debut"] + s["duree"] for s in sons)
@@ -3550,22 +3584,49 @@ def cmd_emergence(a) -> None:
         x.frombytes(r.stdout[: len(r.stdout) // 2 * 2])
         return x
 
-    mus, sfx = piste([musique]), piste(sons)
-    n = min(len(mus), len(sfx))
-    somme = [max(-32768, min(32767, mus[i] + sfx[i])) for i in range(n)]
-    res = verdict_emergence(energies_50ms(somme), energies_50ms(mus[:n]), sons)
-    faibles = [r for r in res if r[2] < EMERGENCE_MIN]
-    forts = [r for r in res if r[2] > EMERGENCE_MAX]
-    print(f"• {len(res)} bruitages : {len(res) - len(faibles) - len(forts)} s'entendent (4 à 16 dB au-dessus de la musique), "
-          f"{len(faibles)} trop faibles, {len(forts)} trop forts")
-    for d, nom, em in faibles:
-        print(f"  faible : {d:6.2f} s {nom} ({em:+.1f} dB)")
-    for d, nom, em in forts:
-        print(f"  fort, à écouter : {d:6.2f} s {nom} ({em:+.1f} dB)")
-    if len(faibles) > max(1, len(res) // 20):
-        print("✗ trop de bruitages couverts par la musique : remonte-les (par famille) ou baisse la musique.")
+    sfx = piste(sons)
+    res, faibles, forts = [], [], []
+    if musique is not None:
+        mus = piste([musique])
+        n = min(len(mus), len(sfx))
+        res = verdict_emergence(energies_50ms(sfx[:n]), energies_50ms(mus[:n]), sons)
+        faibles = [r for r in res if r[2] < EMERGENCE_MIN]
+        # avec une voix, c'est elle qui plafonne les bruitages ; sans voix, la musique
+        forts = [] if voix else [r for r in res if r[2] > EMERGENCE_MAX]
+        milieu = sorted(r[2] for r in res)[len(res) // 2]
+        print(f"• {len(res)} bruitages : {len(res) - len(faibles) - len(forts)} s'entendent "
+              f"({EMERGENCE_MIN:g} à {EMERGENCE_MAX:g} dB au-dessus de la musique, vise {EMERGENCE_VISEE[0]:g} à "
+              f"{EMERGENCE_VISEE[1]:g}), {len(faibles)} trop faibles, {len(forts)} trop forts ; médiane {milieu:+.1f} dB")
+        for d, nom, em in faibles:
+            print(f"  faible : {d:6.2f} s {nom} ({em:+.1f} dB) : monte-le de {EMERGENCE_VISEE[0] - em:.1f} dB")
+        for d, nom, em in forts:
+            print(f"  trop fort : {d:6.2f} s {nom} ({em:+.1f} dB) : baisse-le de {em - EMERGENCE_VISEE[1]:.1f} dB")
+    couvrants = []
+    if voix:
+        vx = piste(voix)
+        m = min(len(sfx), len(vx))
+        couvrants = [r for r in verdict_sous_voix(energies_50ms(sfx[:m]), energies_50ms(vx[:m]), sons) if r[2] > VOIX_MARGE]
+        if musique is None:
+            print(f"• {len(sons)} bruitages sous la voix, sans musique : {len(couvrants)} plus forts qu'elle")
+        for d, nom, em in couvrants:
+            print(f"  plus fort que la voix : {d:6.2f} s {nom} ({em:+.1f} dB) : baisse-le de {em - VOIX_MARGE + 3:.1f} dB")
+    tolere = max(1, len(res) // 20)
+    echec = False
+    if len(faibles) > tolere:
+        print("✗ trop de bruitages couverts par la musique : remonte-les, par famille (jamais en baissant la musique "
+              "sous sa référence : elle porte la vidéo).")
+        echec = True
+    if len(forts) > tolere:
+        print("✗ trop de bruitages au-dessus de la musique : baisse-les, par famille. La musique et les bruitages vont "
+              "ensemble, presque au même niveau (son.md, « Les bruitages »).")
+        echec = True
+    if couvrants:
+        print("✗ des bruitages passent au-dessus de la voix : baisse-les (voix.md, « Avec une voix, moins de bruitages »).")
+        echec = True
+    if echec:
         sys.exit(1)
-    print("ok : les bruitages ressortent de la musique.")
+    print(("ok : les bruitages ressortent de la musique sans l'écraser" if musique is not None else "ok : les bruitages")
+          + (", et restent sous la voix." if voix else "."))
 
 
 # Même niveau que les Reels du fil Instagram (tools/sons.py vise aussi -16 LUFS) ;
@@ -4276,7 +4337,7 @@ def main(argv: list[str] | None = None) -> None:
     mu.add_argument("--bpm", type=float, default=120.0, help="Tempo de la grille de la vidéo (défaut 120 ; 0 = garder le sien).")
     mu.add_argument("--duree", type=float, help="Durée de la vidéo (s), pour couper le morceau.")
     mu.set_defaults(f=cmd_musique)
-    em = s.add_parser("emergence", help="Vérifie que chaque bruitage posé dépasse la musique de 4 dB au moins.")
+    em = s.add_parser("emergence", help="Vérifie que chaque bruitage posé dépasse la musique de 4 à 10 dB (et reste sous la voix).")
     em.add_argument("projet")
     em.set_defaults(f=cmd_emergence)
     so = s.add_parser("son", help="Mesure la sonie et la crête.")
