@@ -28,7 +28,7 @@ Un style de teaser, sans démonstration : une interface s'y montre en capture, p
 
 ## 3. Les fonds et les couleurs
 
-Rien que la marque ([image.md](../../references/image.md), « La palette ») :
+Rien que la marque ([interdits.md](../../references/interdits.md), « La palette ») :
 
 | Rôle | Chez le client |
 |---|---|

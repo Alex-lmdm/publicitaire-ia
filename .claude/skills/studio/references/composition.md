@@ -3,7 +3,7 @@
 HyperFrames rend une page HTML en vidéo en avançant une timeline GSAP en pause, image par image :
 le même fichier donne toujours la même vidéo. Ce fichier dit ce qu'une scène doit respecter pour
 se rendre (adapté de la documentation d'HyperFrames 0.9, licence Apache-2.0, © HeyGen). Le kit
-(`kit.md`) et les scènes prêtes (`scenes.md`) le respectent déjà : pars d'eux.
+(`kit.md`) et les scènes d'exemple (`scenes.md`) le respectent déjà : lis-les pour voir comment.
 
 ## Le projet
 

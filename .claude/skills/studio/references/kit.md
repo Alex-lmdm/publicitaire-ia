@@ -1,10 +1,12 @@
-# Le kit : les briques de chaque scène
+# Le kit : des briques qui retirent de la friction
 
-Chaque projet reçoit `kit/` (chargé par `index.html`) : les fonds vivants, le curseur, les objets
-flottants, le chapitre, les fenêtres, le téléphone, les textes à deux graisses, et des fonctions
-GSAP déterministes. **Pars de lui** : il porte le niveau de finition, et c'est lui qu'on améliore
-d'une vidéo à l'autre. Les scènes prêtes et les recettes sont dans [scenes.md](scenes.md) ; le
-contrat que toute scène respecte, dans [composition.md](composition.md).
+Chaque projet reçoit `kit/` (chargé par `index.html`) : les fonds, le curseur, la caméra et son
+zoom, les objets flottants, le chapitre, les fenêtres, le téléphone, les objets connus, les mots qui
+jouent, et des fonctions GSAP déterministes. **Sers-t'en pour ce qu'il fait déjà bien** (un clic,
+une frappe, un compteur, un zoom calculé, un logo qui flotte) ; tout le reste s'écrit sur mesure, en
+GSAP et en CSS, pour ce plan-là. Une boîte à outils à consulter, pas un mode d'emploi à suivre. Les
+scènes d'exemple sont dans [scenes.md](scenes.md) ; le contrat que toute scène respecte, dans
+[composition.md](composition.md).
 
 Fichiers : `kit.css` (classes `k-*`), `kit.js` (objet `K`), `icones.js` (82 icônes Lucide),
 `objets.js` (les objets connus dans leurs vraies couleurs : le dossier du Mac, les fichiers),
@@ -92,6 +94,8 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 | `K.curseur(hote, id, clair)` | crée le curseur (`clair` = blanc, sur fond sombre) |
 | `K.trajet(tl, curseur, [[t, x, y, durée, courbe], …])` | déplace le curseur ; le premier point le place |
 | `K.clic(tl, curseur, t)` | le curseur s'enfonce, une onde part de la pointe |
+| `K.zoom(el, [x, y], echelle, {vers})` | la caméra qui amène le point [x, y] de la scène au centre du cadre (ou à `vers`), à cette échelle : rend `{scale, x, y}`, à passer tel quel à la caméra (`tl.to(cam, Object.assign({duration: 0.6, ease: "expo.inOut"}, z), t)`) |
+| `K.vu(el, zoom, [x, y])` | où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` : pour mener le curseur (hors de la caméra) sur ce qu'elle montre (`var p = K.vu(cam, z, [x, y])`, puis `K.trajet`). Exact pour ce qui est à plat dans la caméra ; une rotation de quelques degrés décale un peu |
 | `K.taper(tl, el, texte, debut, fin, D)` | frappe au clavier par petits groupes de lettres (le caret est en CSS) |
 | `K.compteur(tl, el, de, a, debut, duree, D, format, courbe)` | chiffre qui tourne (format libre : « 3,3 M », « 2:59:41 », « 97 € ») |
 | `K.texteSelon(tl, el, D, fn)` | texte qui dépend du temps (un mot qui change à un instant précis) |
@@ -107,7 +111,7 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 
 ### Les objets connus, dans leurs vraies couleurs
 
-Ce que tout le monde reconnaît garde son vrai visage ([image.md](image.md), « Les objets connus ») :
+Ce que tout le monde reconnaît garde son vrai visage ([metier.md](metier.md), « Les objets connus ») :
 ils sont chargés par `kit/objets.js` (s'il manque dans le projet : recopie `objets.js`, `kit.js`
 et `kit.css` du dossier `templates/kit/` et ajoute `<script src="kit/objets.js"></script>` après
 `icones.js` dans son `index.html`).
@@ -141,8 +145,7 @@ tl.to(ordi.couvercle, { rotationX: 12, duration: 1.2, ease: "expo.out" }, 0.3)  
 `couvercle` : `rotationX` de -86 (fermé) à 12 (ouvert, un peu en arrière). `image` : une capture
 longue de sa page défile par `y`. Recule-le (`z`, environ 0,9 fois sa largeur) : trop près de la
 caméra, sa base déborde du cadre. Pour plonger dans l'écran, la caméra s'approche (`scale`) jusqu'à
-ce que l'écran remplisse l'image, puis son interface reconstruite prend le relais (recette 8 de
-[scenes.md](scenes.md)).
+ce que l'écran remplisse l'image (`K.zoom`), puis son interface reconstruite prend le relais.
 
 Partout où une scène prend une icône (`icone` d'un `CONTENU`, `K.ic`), un `objet-…` se met à la
 place d'une icône d'un seul trait quand l'idée a un objet connu. Ces couleurs ne débordent jamais sur un fond, un texte ou un
@@ -150,8 +153,8 @@ trait ; `palette` les connaît.
 
 ### Le mot qui joue, le schéma, le fil conducteur, la coupe
 
-Le langage du motion design de [scenes.md](scenes.md). `cible` accepte un sélecteur, un élément ou
-une liste.
+Des façons de faire jouer un mot, de tracer un schéma, de trancher l'écran ([ambition.md](ambition.md),
+principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 
 | Fonction | Ce qu'elle fait |
 |---|---|
@@ -176,6 +179,16 @@ une liste.
 
 ## Les pièges (tous rencontrés)
 
+- **Le flou de bougé** est réglé sur `#root` d'`index.html` (`data-motion-blur="on"
+  data-motion-blur-shutter="180"`) : posé seulement sur la racine d'une scène, il ne s'applique pas
+  (aucune ligne `[motion-blur]` dans le journal du rendu). Le journal dit comment il a été calculé
+  (`[motion-blur] on … tier=…`) : `tier=capture`, ou `tier=filter` avec `reasonCode=translation-only`
+  (tout ne fait que glisser : c'est voulu), sont normaux. Un `filter fallback` pour une autre raison
+  se corrige : un `backface-visibility: hidden` dans une scène en 3D (rotations et zooms seulement
+  adoucis) ; pour retourner une carte, échange ses deux faces à 90° plutôt que de cacher la face
+  arrière. N'anime jamais `#root` lui-même (transformation, opacité) :
+  le flou s'éteint. Un projet créé avant ce réglage ne l'a pas : ajoute les deux attributs sur
+  `#root`, puis `npm run check`.
 - **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :
   `getElementById` trouve l'hôte, plein écran, et l'objet s'y pose en haut à gauche, sans les styles
   de la scène (un dossier en Times dans le coin). Les éléments d'une scène

@@ -4,8 +4,8 @@ Une vidéo de motion design produit se construit avec des images, pas avec des p
 choisir l'angle, fais l'inventaire de **ce qui peut se montrer** et réunis la matière. C'est
 cette étape qui sépare une vidéo de niveau studio d'une suite de slides. « Ce qui peut se
 montrer » ne veut pas dire « les photos de sa page » : la plupart se reconstruisent et s'animent,
-et ses photos n'entrent que pour montrer le résultat ([image.md](image.md), « Ses photos et ses
-vidéos »).
+et ses photos n'entrent que pour montrer le résultat ([interdits.md](interdits.md), « Pas de
+diaporama de sa page »).
 
 Elle vient juste après la porte de vérité (`offre.md`), avant la structure. Elle prend quelques
 minutes et ne pose au plus qu'une question au client.
@@ -30,14 +30,15 @@ Liste, avec sa source, tout ce que la vidéo peut montrer de vrai :
 | **Le résultat** | ses Reels, un avant / après, un tableau de ventes, une page créée | Les vraies images et vidéos du dossier `sources/`, jouées dans un objet qui agit (le téléphone, la fenêtre, l'interface de la plateforme) |
 | **Les preuves** | captures de témoignages, chiffres de la page | Les vraies captures, les chiffres de la fiche |
 | **Le problème** | la façon pénible d'avant (un tableur, dix onglets, un agenda saturé, une boîte mail qui déborde) | Reconstruit en simple, reconnaissable, sans marque inventée |
-| **Les objets connus** | tout ce que son public reconnaît d'un coup d'œil : un dossier, des fichiers, le téléphone et ses notifications, des messages, et surtout les objets de son métier (l'annonce immobilière, la montre de sport, le ticket de commande, la carte d'embarquement…) | Dans leurs vraies couleurs : ceux du kit (`K.ic("objet-dossier")`, `objet-pdf`…, `K.statut`, `K.notification`, `K.bulle`, `k-feux` : [kit.md](kit.md)), les autres construits d'après leur allure courante ou une capture ([image.md](image.md), « Les objets connus ») |
+| **Les objets connus** | tout ce que son public reconnaît d'un coup d'œil : un dossier, des fichiers, le téléphone et ses notifications, des messages, et surtout les objets de son métier (l'annonce immobilière, la montre de sport, le ticket de commande, la carte d'embarquement…) | Dans leurs vraies couleurs : ceux du kit (`K.ic("objet-dossier")`, `objet-pdf`…, `K.statut`, `K.notification`, `K.bulle`, `k-feux` : [kit.md](kit.md)), les autres construits d'après leur allure courante ou une capture ([metier.md](metier.md), « Les objets connus ») |
 
 **Trie ses photos et ses vidéos.** Pour chacune, note dans `PLAN.md` « résultat » (elle montre son
 produit en marche ou ce qu'on obtient : on la mettra en scène) ou « décor » (ambiance, portrait,
 mise en scène, banque d'images : elle reste hors du film). Une page qui n'a que du décor n'est pas
-une matière manquante : la vidéo se construit en motion design ([image.md](image.md)).
+une matière manquante : la vidéo se construit en motion design ([interdits.md](interdits.md), « Pas de
+diaporama de sa page »).
 
-Range cette matière dans l'ordre de l'échelle de [image.md](image.md) (« La vraie matière ») :
+Range cette matière dans l'ordre d'[ambition.md](ambition.md) (principe 8) :
 les vraies captures, les interfaces à reconstruire, les vrais chiffres de la fiche à mettre en
 scène, les logos des outils, et ce qui ne pourra être dit que par ses mots. Au moment du script,
 chaque phrase prendra le plus haut barreau qui existe pour elle ; une phrase qui ne trouverait que
@@ -45,8 +46,8 @@ sa typographie signale la matière à demander (section 3), jamais une forme à 
 
 Note aussi, plan par plan, **les objets connus** qu'il montrera dans leurs vraies couleurs (pour
 chaque plan : qu'est-ce que son public reconnaîtrait ici ? La réponse est souvent propre à son
-métier, et absente de toute liste), autant que [image.md](image.md) le demande (« Les objets
-connus »). Une vidéo dont la liste reste vide finira toute dans les trois couleurs de la marque.
+métier, et absente de toute liste), autant qu'[ambition.md](ambition.md) le demande (principe 8 : trois au
+moins au-delà de 15 s). Une vidéo dont la liste reste vide finira toute dans les trois couleurs de la marque.
 
 Puis choisis **les logos qui flotteront**, scène par scène : seulement ceux des outils dont la
 scène parle (l'outil du problème, la plateforme des résultats, les IA de l'offre), récupérés par
@@ -56,7 +57,7 @@ qu'il en compte 190) et les chiffres de chaque résultat montré.
 
 Quand le produit vit dans un outil (un modèle Notion, une extension, un dossier pour son IA, un
 groupe privé), prévois de **montrer comment il s'y branche** avant de s'en servir
-([scenes.md](scenes.md), recette 9) : sans ce geste, le spectateur ne comprend pas ce qu'il achète
+([scenes.md](scenes.md), « Comment ça marche ») : sans ce geste, le spectateur ne comprend pas ce qu'il achète
 par rapport à l'outil qu'il a déjà.
 
 Exemple (une formation d'illustration freelance) : l'espace de formation et ses six modules
@@ -99,8 +100,7 @@ revient, les transitions, la caméra, les interfaces, la fin. Recopie dans `PLAN
 retenus et les mesures à atteindre (événements par seconde, part d'image figée).
 
 On reprend **la grammaire**, jamais le contenu : ni ses textes, ni ses images, ni sa musique, ni
-son produit. Sans référence, la grammaire par défaut est celle d'[image.md](image.md) et de
-[mouvement.md](mouvement.md).
+son produit. Sans référence, le niveau par défaut est celui d'[ambition.md](ambition.md).
 
 ## Ce que tu écris dans PLAN.md
 

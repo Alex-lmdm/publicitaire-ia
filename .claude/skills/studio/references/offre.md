@@ -99,8 +99,8 @@ un restaurant, un commerce) : ajoute une phrase, une seule fois, à ce résumé 
 est fait pour les offres en ligne (formation, coaching, logiciel, template, communauté). Pour
 <ton offre>, je fais quand même une vidéo en motion design : ton programme, ton prix et les objets
 de ton métier animés, pas un montage des photos de ta page. » Puis continue normalement. Ses
-photos restent hors du film, sauf celles qui montrent le résultat ([image.md](image.md), « Ses
-photos et ses vidéos »).
+photos restent hors du film, sauf celles qui montrent le résultat ([interdits.md](interdits.md), « Pas
+de diaporama de sa page »).
 
 ## Pendant la fabrication
 

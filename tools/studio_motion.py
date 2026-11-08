@@ -30,7 +30,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py reference <dossier> <lien ou fichier> [--nom taapit]   # la vidéo dont il aime le style
     python3 tools/studio_motion.py logos <projet> claude chatgpt notion [fichier:logo.png] [icone:rocket]   # vrais logos
     python3 tools/studio_motion.py logos chercher "lemon squeezy"          # l'identifiant d'une marque
-    python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2]
+    python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2 | --pas 0.5]
     python3 tools/studio_motion.py rythme <video.mp4>                # au moins 1 événement/s, rien de figé
     python3 tools/studio_motion.py calage <video.mp4>                # scènes sur les temps, geste sur l'entrée, voix respectée
     python3 tools/studio_motion.py heygen [etat | connecter <clé> | musiques "<description>" | bruitages "<description>"
@@ -1653,6 +1653,10 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
         plan.append(f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {s['son']})\n\n"
                     "| Temps | Bloc | Scène et moment signature | Ce qu'on voit | Mots à l'écran | Clé de OFFRE.json | Raccord | Son |\n"
                     "|---|---|---|---|---|---|---|---|\n")
+    # Ce que la passe du directeur changerait au premier rendu (SKILL.md, étape 5 bis), avant la revue.
+    plan.append("## Passe du directeur\n\n(après le premier rendu, plan par plan : ce que tu changerais aux passages, "
+                "à la profondeur, à la typographie animée, aux interfaces vivantes, à la caméra et à la finition, "
+                "puis ce qui a été appliqué ; references/ambition.md, « La passe du directeur artistique »)\n")
     # Les défauts trouvés à la revue, une ligne chacun : relus avant chaque retouche, pour qu'une
     # correction n'en défasse pas une autre (d'après la liste d'interdits d'HyperFrames).
     plan.append("## Interdits de cette vidéo\n\n(chaque défaut P0 ou P1 trouvé à la revue, en une ligne, avec la "
@@ -1768,7 +1772,7 @@ def ajouter(r: Path, dossier: Path, videos: list[dict]) -> list[Path]:
         section = (f"### {nom_video(v)} ({v['format']}, {lo} à {hi} s visées, {sup['son']})\n\n"
                    "Déclinaison : même structure et même message, remis en page pour ce format, "
                    "raccourci si le support le demande (une story garde un geste par bloc).\n\n"
-                   "| Temps | Bloc | Recette | À l'écran (texte exact) | Clé de OFFRE.json | Mouvement | Raccord | Son |\n"
+                   "| Temps | Bloc | Scène et moment signature | Ce qu'on voit | Mots à l'écran | Clé de OFFRE.json | Raccord | Son |\n"
                    "|---|---|---|---|---|---|---|---|\n")
         if plan.is_file():
             plan.write_text(inserer_section(plan.read_text(encoding="utf-8"), section), encoding="utf-8")
@@ -1955,12 +1959,16 @@ def format_de(info: dict) -> str | None:
     return next((k for k, t in FORMATS.items() if t == taille), None)
 
 
-def instants_planche(duree: float, temps: list[float] | None, pas: float = 1.0) -> list[float]:
+def instants_planche(duree: float, temps: list[float] | None, pas: float | None = None) -> list[float]:
     """Les instants de la planche : ceux demandés (repères + 0,3 s), sinon un par seconde (un toutes
-    les 3 s au-delà de 40 s), plus toujours la dernière image. Bornés, sans doublon, triés."""
-    if not temps and duree > 40:
-        pas = 3.0
-    base = temps if temps else [round(i * pas + 0.3, 2) for i in range(int(duree // pas) + 1)]
+    les 3 s au-delà de 40 s), plus toujours la dernière image. Avec `pas` (la planche serrée de la
+    passe du directeur) : une image tous les `pas` secondes depuis la première, quelle que soit la
+    durée. Bornés, sans doublon, triés."""
+    if pas:
+        base = [round(i * pas, 2) for i in range(int(duree // pas) + 1)]
+    else:
+        pas = 3.0 if not temps and duree > 40 else 1.0
+        base = temps if temps else [round(i * pas + 0.3, 2) for i in range(int(duree // pas) + 1)]
     # Deux images avant la fin, arrondi vers le bas : un instant au-delà de la dernière image
     # (7,97 s pour une vidéo de 8 s à 30 images/s) ne rend rien.
     fin = max(0.0, math.floor((duree - 2 / FPS) * 100) / 100)
@@ -1981,7 +1989,9 @@ def cmd_planche(a) -> None:
     except (TypeError, ValueError):
         sys.exit(f"ERREUR : durée de {video} illisible.")
     temps = [float(t) for t in a.temps.split(",")] if a.temps else None
-    instants = instants_planche(duree, temps)
+    if a.pas is not None and a.pas <= 0:
+        sys.exit("ERREUR : --pas attend un nombre de secondes positif (0.5 : une image toutes les demi-secondes).")
+    instants = instants_planche(duree, temps, a.pas)
     sortie = Path(a.sortie) if a.sortie else video.with_name(video.stem + "-planche.jpg")
     travail = sortie.with_suffix("")
     travail.mkdir(parents=True, exist_ok=True)
@@ -2010,13 +2020,26 @@ def cmd_planche(a) -> None:
     if not vignettes:
         sys.exit("ERREUR : aucune image extraite.")
     colonnes = min(6 if largeur_vignette == 360 else 4, len(vignettes))
-    lignes = math.ceil(len(vignettes) / colonnes)
+    # Une planche serrée trop longue pour une seule image se coupe en planches de quatre rangées,
+    # numérotées dans l'ordre (une seule image géante se lirait mal, réduite pour être regardée).
+    for vieille in sortie.parent.glob(sortie.stem + "-[0-9][0-9]" + sortie.suffix):
+        vieille.unlink()
+    plusieurs = bool(a.pas) and len(vignettes) > colonnes * PLANCHE_RANGEES
+    lignes = PLANCHE_RANGEES if plusieurs else math.ceil(len(vignettes) / colonnes)
+    cible = sortie.with_name(sortie.stem + "-%02d" + sortie.suffix) if plusieurs else sortie
     r = lancer([ffmpeg, "-v", "error", "-y", "-framerate", "1", "-i", str(travail / "%03d.jpg"),
-                "-vf", f"tile={colonnes}x{lignes}:padding=8:margin=8:color=0x202022", "-frames:v", "1", str(sortie)])
+                "-vf", f"tile={colonnes}x{lignes}:padding=8:margin=8:color=0x202022"]
+               + ([] if plusieurs else ["-frames:v", "1"]) + [str(cible)])
     if r.returncode != 0:
         sys.exit(f"ERREUR : planche impossible : {r.stderr[-400:]}")
     shutil.rmtree(travail, ignore_errors=True)
-    print(f"• planche : {sortie} ({len(vignettes)} images : {', '.join(f'{t:.2f}' for t in instants)} s)")
+    if plusieurs:
+        planches = sorted(sortie.parent.glob(sortie.stem + "-[0-9][0-9]" + sortie.suffix))
+        print(f"• {len(planches)} planches, une image toutes les {fr_nombre(a.pas)} s ({len(vignettes)} images), à lire dans l'ordre :")
+        for f in planches:
+            print(f"  {f}")
+    else:
+        print(f"• planche : {sortie} ({len(vignettes)} images : {', '.join(f'{t:.2f}' for t in instants)} s)")
     print("  vert = zone texte (rien d'important dehors)" + (", rouge = sticker lien (rien dedans)" if sticker else ""))
 
 
@@ -2028,6 +2051,7 @@ def cmd_planche(a) -> None:
 # (P0 casse la lecture, P1 affaiblit le film, P2 polit). D'après la revue par sous-agent
 # d'HyperFrames et motion-video-kit (CREDITS.md).
 # ---------------------------------------------------------------------------
+PLANCHE_RANGEES = 4                                                   # rangées d'une planche serrée
 RELECTURE_PAS, RELECTURE_PAS_LONG, RELECTURE_LONGUE = 0.5, 1.0, 75.0   # s entre deux images (1 s au-delà de 75 s)
 RELECTURE_GRILLE = {True: (4, 3, 360), False: (3, 4, 480)}            # vertical ou non : colonnes, lignes, largeur
 
@@ -2257,7 +2281,7 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
 # Les scènes d'un film se suivent à des durées variées (une rafale courte, une démonstration longue) :
 # des plans tous de la même durée font un diaporama (onetake, « rhythm.md »). Et au plus un tiers des
 # raccords sont des coupes franches nues (un saut d'image sans rien qui bouge de part et d'autre) :
-# les autres passent par un objet, un flash, un volet (references/mouvement.md, « Les transitions »).
+# les autres passent par un objet, un flash, un volet (references/metier.md, « Les passages »).
 DUREES_VARIATION_MIN = 0.25   # écart type / moyenne des durées des scènes, à partir de 4 scènes
 COUPE_NUE_PIC = 25.0          # écart d'image (0-255) d'un saut franc
 COUPE_NUE_VOISINS = 0.35      # un saut est nu quand les images voisines bougent moins que ça, en part du pic
@@ -2897,7 +2921,7 @@ def cmd_cadre(a) -> None:
         print(f"✗ {pl['debut']:.1f} → {pl['fin']:.1f} s : l'image est presque vide ({pl['occupation'] * 100:.0f} % "
               "occupé) : un petit sujet au milieu d'un grand fond")
     print("→ approche la caméra, agrandis le sujet, ou donne-lui un monde (sa page derrière, ses résultats "
-          "autour) : references/image.md, « Le cadre ».")
+          "autour) : references/metier.md, « Le cadre ».")
     sys.exit(1)
 
 
@@ -4320,7 +4344,10 @@ def main(argv: list[str] | None = None) -> None:
     pl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")
     pl.add_argument("--sticker", action="store_true", help="Dessine la zone du sticker lien (story).")
     pl.add_argument("--sans-sticker", action="store_true", help="Story sans lien : ne dessine pas la zone du sticker.")
-    pl.add_argument("--temps", help="Instants en secondes, séparés par des virgules (repères + 0,3 s).")
+    quand = pl.add_mutually_exclusive_group()
+    quand.add_argument("--temps", help="Instants en secondes, séparés par des virgules (repères + 0,3 s).")
+    quand.add_argument("--pas", type=float, help="Une image tous les N secondes, sur plusieurs planches si besoin "
+                       "(0.5 : la planche serrée de la passe du directeur et de la revue).")
     pl.add_argument("--sortie")
     pl.set_defaults(f=cmd_planche)
     rl = s.add_parser("relecture", help="Prépare la relecture à froid : les planches du MP4 et la consigne d'un relecteur neuf.")

@@ -4,9 +4,9 @@
 > design qui vend une offre. La marque, les outils et les skills sont dans le dossier `{{MAISON}}`.
 
 **Charge le skill `studio` et suis-le** (Claude Code : outil Skill ou `/studio` ; sinon ouvre
-`{{MAISON}}{{SKILLS}}/studio/SKILL.md`). Ses références décident de la structure, de l'écriture, du
-format, du mouvement, du son et de la revue de cette vidéo ; le contrat d'une composition est sa
-référence `composition.md`.
+`{{MAISON}}{{SKILLS}}/studio/SKILL.md`). Ses interdits (`references/interdits.md`) ne se négocient
+pas ; son ambition (`references/ambition.md`) donne le niveau visé ; le reste est une boîte à outils
+à consulter (le contrat d'une composition : `references/composition.md`).
 
 - Objectif : **{{OBJECTIF}}**. Support : **{{SUPPORT_TITRE}}**. Format **{{FORMAT}}**
   ({{LARGEUR}}×{{HAUTEUR}}), 30 images/s, **{{IDEAL}} s** visées (bornes {{DUREE_MIN}} à {{DUREE_MAX}} s).
@@ -19,9 +19,11 @@ référence `composition.md`.
 - La marque est copiée dans `brand/` (couleurs `var(--brand-*)`, polices, `brand/logo.*` s'il en a
   un) : jamais une couleur ou une police de marque en dur. Elle vient de `{{MAISON}}marque.json`.
 - Le rendu ne voit que ce dossier : une capture, un logo, un son ou une voix va d'abord dans `assets/`.
-- Le kit `kit/` (fonds vivants, curseur, objets flottants, chapitres, fenêtres, téléphone) est
-  chargé par `index.html` : pars de lui (mode d'emploi : `references/kit.md` du skill), ne le
-  réécris pas scène par scène. Logos des outils montrés : `studio_motion.py logos . claude openai`.
+- Le kit `kit/` (curseur, caméra et son zoom, objets flottants, fenêtres, téléphone, objets connus)
+  est chargé par `index.html` : sers-t'en pour ce qu'il fait déjà (`references/kit.md` du skill),
+  écris le reste sur mesure, et ne le recopie pas scène par scène. Les scènes de
+  `{{MAISON}}templates/scenes/` sont des exemples, pas des gabarits. Logos des outils montrés :
+  `studio_motion.py logos . claude openai`.
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`) : zones, lecture, logos,
   musiques (le style et la musique : `musiques choisir --duree <durée> --ouvrir`, le style 0 conseillé par défaut, puis
   `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
@@ -30,7 +32,8 @@ référence `composition.md`.
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
   plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche validée sans idée retenue,
   étape 3 ; idée retenue sans script validé (section « Script » du plan), étape 3 bis ; script
-  validé sans « Style et musique », étape 4 ; sinon, le plan puis la fabrication.
+  validé sans « Style et musique », étape 4 ; sinon, le plan, la fabrication, puis la passe du
+  directeur artistique (section « Passe du directeur » du plan) et la revue.
 - Retouche demandée : relis d'abord « Interdits de cette vidéo » dans `{{DOSSIER}}PLAN.md` (les
   défauts déjà corrigés), modifie seulement ce qui est demandé, refais le rendu de CETTE vidéo,
   puis repasse la planche et l'export. Ne relance pas tout.
@@ -47,7 +50,9 @@ référence `composition.md`.
   la fiche de l'offre ni la marque de cette vidéo.
 - Jamais `hyperframes feedback`, `events`, `usage`, `publish`, `cloud`, `lambda`, `cloudrun` ni `auth`.
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check` (zéro erreur,
-  et aucun texte à lire trop petit ou parti trop tôt). Puis `studio_motion.py rythme`, `calage`, `cadre` et
+  et aucun texte à lire trop petit ou parti trop tôt). Le premier rendu passe d'abord par la passe du
+  directeur artistique (`references/ambition.md`) : ce que tu changerais, appliqué, puis un nouveau
+  rendu ; le client ne voit jamais le premier jet. Puis `studio_motion.py rythme`, `calage`, `cadre` et
   `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses
   vraies captures, les interfaces des plateformes et les objets connus construits pour la vidéo
   peuvent rester signalés). Puis `studio_motion.py relecture

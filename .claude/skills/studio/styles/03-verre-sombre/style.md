@@ -52,7 +52,7 @@ carte de `t3-cartes` posée et lue avec le vrai chiffre. Au-delà d'une minute, 
 
 ## 3. Les fonds et les couleurs
 
-La palette ([../../references/image.md](../../references/image.md), « La palette ») prend ces
+La palette ([interdits.md](../../references/interdits.md), « La palette ») prend ces
 rôles :
 
 | Rôle dans le style | Avec la marque du client |
@@ -68,7 +68,7 @@ rôles :
 
 Le look reste de nuit du début à la fin. Les bascules se font par la lumière qui glisse, la trame
 qui s'allume, l'éclair de l'accent quand on traverse le bouton ; une vidéo de plus d'une minute
-ajoute un plein écran de l'accent sur le prix (recette 19). Un code de couleur propre à un sujet
+ajoute un plein écran de l'accent sur le prix. Un code de couleur propre à un sujet
 (le vert et le rouge d'une hausse) n'est pas repris.
 
 **Le flou et l'accent.** Un bouton, une pastille ou un mot à l'accent flou ou à demi transparent

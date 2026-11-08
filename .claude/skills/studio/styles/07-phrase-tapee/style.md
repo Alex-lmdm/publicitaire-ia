@@ -17,7 +17,7 @@ d'une offre (ses outils, ses modules, ses bonus).
   fond.
 - **La frappe donne la cadence :** une ligne tapée en 0,7 à 0,9 s, la seconde aussitôt après, puis
   la phrase se tient le temps de sa lecture avant la coupe (2 s au moins pour l'accroche ;
-  [mouvement.md](../../references/mouvement.md), « La lecture »). Les
+  [metier.md](../../references/metier.md), « La typographie »). Les
   scènes calculent ces tenues et leur durée (`D` dans le script, à reporter en `data-duration`).
   Dans les interfaces, un geste toutes les 0,3 à 0,5 s (une carte qui tombe, un clic, un logo qui
   surgit).
@@ -53,7 +53,7 @@ claire) → `t7-eparpille` → (une preuve) → `t7-orbite`. Pour un Reel : `t7-
 
 ## 3. Les fonds et les couleurs
 
-Les couleurs viennent de sa marque ([image.md](../../references/image.md), « La palette ») ; ses
+Les couleurs viennent de sa marque ([interdits.md](../../references/interdits.md), « La palette ») ; ses
 captures et les objets connus gardent leurs vraies couleurs ([../README.md](../README.md), « La loi
 de toutes les scènes »).
 

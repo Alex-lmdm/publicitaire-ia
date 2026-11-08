@@ -24,7 +24,7 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 
 | Quoi | Où | Licence | Source |
 |---|---|---|---|
-| Le contrat d'une composition et des réglages de mouvement mesurés | `.claude/skills/studio/references/composition.md`, `mouvement.md`, `image.md` (passages adaptés et traduits) | Apache-2.0, © HeyGen ; adaptés de la documentation du skill `hyperframes` de la version 0.9.19 | https://github.com/heygen-com/hyperframes |
+| Le contrat d'une composition et des réglages de mouvement mesurés | `.claude/skills/studio/references/composition.md`, `metier.md`, `ambition.md` (passages adaptés et traduits) | Apache-2.0, © HeyGen ; adaptés de la documentation du skill `hyperframes` de la version 0.9.19 | https://github.com/heygen-com/hyperframes |
 | Police **Inter** (400, 400 italique, 600, 700, 900) | `assets/fonts/` + `OFL-Inter.txt` | SIL OFL 1.1, © The Inter Project Authors | https://github.com/rsms/inter |
 | Police **Anton** (400) | `assets/fonts/` + `OFL-Anton.txt` | SIL OFL 1.1, © The Anton Project Authors | https://github.com/googlefonts/AntonFont |
 | 14 sons Freesound | `assets/sfx/starter/` | CC0 1.0 (domaine public), vérifiée sur chaque page | numéros dans `assets/sfx/starter/sounds.md` |

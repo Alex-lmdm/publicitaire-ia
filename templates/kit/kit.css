@@ -265,6 +265,6 @@
 .k-interrupteur.k-sur-accent .k-plein, .k-interrupteur.k-sur-jaune .k-plein { background: var(--k-encre); }
 
 /* Le calque des mots : au-dessus de la caméra. Un texte qu'on lit ne bouge pas avec elle
-   (references/mouvement.md, « La lecture ») ; la caméra peut dériver derrière lui. */
+   (references/interdits.md, « La lecture ») ; la caméra peut dériver derrière lui. */
 .k-mots { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
 .k-mots .k-ligne { position: absolute; left: 0; right: 0; white-space: nowrap; }

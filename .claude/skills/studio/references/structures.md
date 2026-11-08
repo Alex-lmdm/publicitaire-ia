@@ -39,7 +39,7 @@ film ») : on écrit le script, le client le valide, puis on fabrique les scène
 C'est une VSL courte en motion design : elle tourne souvent en lecture automatique muette en haut
 de la page, donc **chaque idée se comprend sans le son** : ce qu'on voit et ses quelques mots (sans
 voix), ou les mots clés de la voix et ses sous-titres (avec voix). Chaque bloc est une ou deux
-scènes de [scenes.md](scenes.md), reliées par des raccords d'objet ; le motif des chapitres annonce
+scènes, reliées par des objets qui deviennent le suivant ([ambition.md](ambition.md)) ; le motif des chapitres annonce
 chaque fonction ou chaque étape.
 
 Durées repères pour 60 à 75 s : le problème 8 s, le pivot et le nom 5 s, la démonstration 9 s,

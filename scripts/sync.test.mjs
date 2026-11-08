@@ -153,13 +153,13 @@ test("une mise à jour par archive ne laisse aucun fichier retiré du produit, n
   const ref = path.join(dir, ".claude", "skills", "studio", "references");
   fs.mkdirSync(ref, { recursive: true });
   fs.writeFileSync(path.join(ref, "rythme.md"), "ancien");
-  fs.writeFileSync(path.join(ref, "mouvement.md"), "nouveau");
+  fs.writeFileSync(path.join(ref, "ambition.md"), "nouveau");
   fs.mkdirSync(path.join(dir, "videos", "Ma vidéo"), { recursive: true });
   fs.writeFileSync(path.join(dir, "videos", "Ma vidéo", "rythme.md"), "au client");
   retirerPerimes(dir);
   assert.equal(fs.existsSync(vieux), false);
   assert.equal(fs.existsSync(path.join(ref, "rythme.md")), false);
-  assert.equal(fs.readFileSync(path.join(ref, "mouvement.md"), "utf8"), "nouveau");
+  assert.equal(fs.readFileSync(path.join(ref, "ambition.md"), "utf8"), "nouveau");
   assert.equal(fs.readFileSync(path.join(dir, "videos", "Ma vidéo", "rythme.md"), "utf8"), "au client");
   // Aucun chemin retiré ne vise ce qui appartient au client.
   for (const r of RETIRES) assert.ok(!/^(videos|marque|assets\/(sfx|musiques))\b/.test(r), r);

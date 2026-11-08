@@ -37,9 +37,13 @@ def nom_du_style(d: Path) -> str:
     return m.group(1 if d.name.startswith("00-") else 2)
 
 
-def gestes(fiche: str) -> list[list[str]]:
+GESTES = "## 2. Les gestes signature et leur place"
+GESTES_MAISON = "## 2. Des gestes dont s'inspirer"      # le style 0 n'impose aucun geste (08/11/2026)
+
+
+def gestes(fiche: str, titre: str = GESTES) -> list[list[str]]:
     """Les lignes de la table des gestes (section 2), découpées en cellules."""
-    section = fiche.split("## 2. Les gestes signature et leur place", 1)[1].split("\n## 3.", 1)[0]
+    section = fiche.split(titre, 1)[1].split("\n## 3.", 1)[0]
     table = section.split("| Geste | Ce qu'on voit | Il sert à | Dans le kit |", 1)[1].split("\n\n", 1)[0]
     return [[c.strip() for c in l.strip().strip("|").split("|")] for l in table.strip().splitlines()[1:]]
 
@@ -117,8 +121,10 @@ class Catalogue(unittest.TestCase):
 
 
 class Maison(unittest.TestCase):
-    """Le style 0 (« Sur mesure ») : le conseil par défaut. Pas de compositions à lui : ses gestes sont
-    les scènes prêtes (`templates/scenes/`) et les fonctions et classes du kit, que la fiche nomme."""
+    """Le style 0 (« Sur mesure ») : le conseil par défaut. Pas de compositions à lui, et depuis le
+    08/11/2026 aucun geste imposé (Alex a choisi la liberté créative plutôt qu'un kit de briques) : sa
+    fiche propose des gestes dont s'inspirer, pris dans les scènes prêtes et le kit, et renvoie au
+    niveau d'ambition.md."""
 
     def fiche(self) -> str:
         return (maison() / "style.md").read_text(encoding="utf-8")
@@ -126,11 +132,13 @@ class Maison(unittest.TestCase):
     def test_sa_fiche(self):
         self.assertEqual(maison().name, "00-sur-mesure")
         self.assertIsNotNone(TITRE_MAISON.match(self.fiche().splitlines()[0]))
-        for section in ("## 1. Le rythme", "## 2. Les gestes signature et leur place", "## 3. Les fonds et les couleurs",
-                        "## 8. Le son", "## Sur une autre offre", "## Quand il décrit un autre style",
+        for section in ("## 1. Le rythme", GESTES_MAISON, "## 3. Les fonds et les couleurs",
+                        "## 4. Le son", "## Sur une autre offre", "## Quand il décrit un autre style",
                         "## Les compositions du kit"):
             self.assertIn(section, self.fiche(), section)
         self.assertNotIn("—", self.fiche())
+        self.assertIn("ambition.md", self.fiche())
+        self.assertNotIn("garde-fou", self.fiche())                    # plus de gestes obligatoires
         self.assertFalse((maison() / "compositions").exists(), "ses gestes sont les scènes prêtes, pas une copie")
 
     def test_ses_gestes_existent(self):
@@ -138,7 +146,7 @@ class Maison(unittest.TestCase):
         classe `k-` du kit ; chaque scène prête y est nommée."""
         kit_js = (KIT / "kit.js").read_text(encoding="utf-8")
         kit_css = (KIT / "kit.css").read_text(encoding="utf-8")
-        lignes = gestes(self.fiche())
+        lignes = gestes(self.fiche(), GESTES_MAISON)
         self.assertGreaterEqual(len(lignes), 5)
         for cellules in lignes:
             self.assertEqual(len(cellules), 4, cellules[0])
@@ -156,7 +164,7 @@ class Maison(unittest.TestCase):
 
     def test_sa_musique_suit_le_but(self):
         self.assertEqual(styles.ambiances(0), [])
-        self.assertIn("n'impose aucune ambiance", self.fiche().split("## 8. Le son", 1)[1])
+        self.assertIn("n'impose aucune ambiance", self.fiche().split("## 4. Le son", 1)[1])
 
 
 class Menage(unittest.TestCase):

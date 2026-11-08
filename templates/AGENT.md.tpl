@@ -81,6 +81,8 @@ LinkedIn, X, YouTube).
 
 ## Les règles qui ne bougent pas
 
+Leur détail, avec la lecture, la palette et le son : `references/interdits.md` du skill `studio`.
+
 - **Rien d'inventé** : `OFFRE.json` (dans le dossier de chaque vidéo) est la seule source des faits
   affichés. Ni prix, ni date, ni témoignage, ni rareté qui n'y soit avec sa source.
 - **Jamais de couleur ni de police de marque en dur** dans une vidéo : `var(--brand-*)` de
@@ -108,7 +110,7 @@ LinkedIn, X, YouTube).
   HyperFrames (depuis un projet : `node ../../../scripts/app-hyperframes.mjs ouvrir .`).
 - `npx hyperframes …` (version figée dans `package.json`) : capture, check, snapshot, render. Sous
   Windows, `npx.cmd` et `npm.cmd` au lieu de `npx` et `npm` (PowerShell refuse souvent leurs scripts).
-- Skill : `studio` (la méthode ; le contrat d'une composition HyperFrames est dans sa référence
-  `composition.md`).
+- Skill : `studio` (la méthode : ses interdits, son ambition, et une boîte à outils à consulter ; le
+  contrat d'une composition HyperFrames est dans sa référence `composition.md`).
 
 Version {{VERSION}}.

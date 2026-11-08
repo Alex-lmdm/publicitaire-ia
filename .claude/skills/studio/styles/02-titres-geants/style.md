@@ -31,7 +31,7 @@ Des points de départ quand le plan s'y prête, jamais une obligation. Une vidé
 
 ## 3. Les fonds et les couleurs
 
-Ses couleurs ([../../references/image.md](../../references/image.md), « La palette ») : la nuit, le clair et les gris de sa marque, et son accent posé plein ; les objets connus gardent les leurs ([../README.md](../README.md), « La loi de toutes les scènes »).
+Ses couleurs ([interdits.md](../../references/interdits.md), « La palette ») : la nuit, le clair et les gris de sa marque, et son accent posé plein ; les objets connus gardent les leurs.
 
 | Rôle dans le style | Chez le client |
 |---|---|
@@ -98,7 +98,7 @@ palettes, mosaïque, clair du dessin au trait, nuit. Au moins quatre bascules en
 
 ## 7. Le produit à l'écran
 
-- **Dans des cartes à coins ronds** (64 px pour 1 480 px), jamais seul sur un fond uni. La grande carte porte toujours une vraie capture (`cadrage` choisit la partie montrée) ; les autres descendent l'échelle de [../../references/image.md](../../references/image.md) (« La vraie matière ») : une capture, son interface reconstruite (ses vrais modules qui se cochent, le vrai libellé de son bouton cliqué), un vrai chiffre et son contexte, puis un mot de sa page.
+- **Dans des cartes à coins ronds** (64 px pour 1 480 px), jamais seul sur un fond uni. La grande carte porte toujours une vraie capture (`cadrage` choisit la partie montrée) ; les autres descendent l'échelle de la vraie matière ([ambition.md](../../references/ambition.md), principe 8) : une capture, son interface reconstruite (ses vrais modules qui se cochent, le vrai libellé de son bouton cliqué), un vrai chiffre et son contexte, puis un mot de sa page.
 - **En mosaïque**, chaque carte, même coupée par un bord, porte une capture ou un morceau de son interface. On y lit seulement le nom, un chiffre et son contexte (hors bouton et liste) ; ce qu'on y lit fait au moins 64 px dans la carte (28 px à l'écran).
 - **Le disque** porte son logo, sinon une capture découpée, sinon un vrai chiffre, dès qu'il prend sa couleur ; jamais un aplat seul. Posé, il n'est plus que le point de fuite : le sujet est le nom et sa phrase.
 - **La grille** : une case par élément réel de l'offre (ses outils par leur vrai logo), autant de cases qu'il y en a.

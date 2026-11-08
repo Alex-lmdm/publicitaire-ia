@@ -5,7 +5,7 @@
 
 **D'après :** « Reception » d'ElevenLabs · 16:9 · 33 s · voix off, conversation jouée et musique douce.
 
-Ses images (les objets du quotidien en 3D, les écrans tramés de couleurs, les téléphones de bureau, l'orbe fluide) ne se redessinent jamais, ni en 3D, ni en dessin, ni en formes simples à leur place : sa vraie matière les remplace, sinon ses mots ([image.md](../../references/image.md), « La vraie matière »).
+Ses images (les objets du quotidien en 3D, les écrans tramés de couleurs, les téléphones de bureau, l'orbe fluide) ne se redessinent jamais, ni en 3D, ni en dessin, ni en formes simples à leur place : sa vraie matière les remplace, sinon ses mots ([interdits.md](../../references/interdits.md), « Rien d'inventé »).
 
 ## 1. Le rythme
 

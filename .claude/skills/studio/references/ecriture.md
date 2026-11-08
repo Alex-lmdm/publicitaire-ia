@@ -33,8 +33,8 @@ quelques mots qu'on y lit.
    Écris ce texte d'un trait, dans sa voix, en suivant les blocs de la structure
    ([structures.md](structures.md)). Ce texte est pour toi : il ne s'affiche pas tel quel.
 2. **Pour chaque idée, demande-toi ce qu'on peut MONTRER au lieu de l'écrire.** Une idée = un plan
-   de 2,5 à 6 s, avec une action que l'œil suit et qui prouve (l'échelle de la matière de
-   [image.md](image.md)). Exemples pour trois offres différentes (à adapter, jamais à copier) :
+   de 2,5 à 6 s, avec une action que l'œil suit et qui prouve (sa vraie matière :
+   [ambition.md](ambition.md), principe 8). Exemples pour trois offres différentes (à adapter, jamais à copier) :
 
    | L'idée (ce qu'on dirait) | Ce qu'on montre à la place | Les mots qui restent |
    |---|---|---|
@@ -146,7 +146,7 @@ monde qui fait quelque chose d'inattendu, d'exagéré, de décalé. Le nom du pr
   l'image exagère (« 3 heures pour un Reel ? »). Le spectateur sait alors de
   quoi on parle et que ça le concerne, même sans connaître le produit.
 - **Construite en motion design**, avec les objets connus du kit ou reconstruits d'après leur
-  allure ([image.md](image.md), « Les objets connus ») : jamais une photo, une illustration ou une
+  allure ([metier.md](metier.md), « Les objets connus ») : jamais une photo, une illustration ou une
   image générée.
 - **Une fois par vidéo**, en ouverture. Pour une pub, c'est une des trois accroches à tester ;
   dans les trois idées de l'étape 3, propose-la quand le problème a un objet qui se montre.

@@ -96,6 +96,12 @@ res.ordi = ordis.map((o) => ({
   parties: [o.couvercle, o.ecran, o.base].map((e) => e.className),
   voulu: [o.base, o.image].map((e) => !!e && e.hasAttribute("data-layout-allow-overflow")),
 }));
+// La caméra qui s'approche d'un point (08/11/2026) : le point visé arrive au centre, et K.vu dit où le
+// curseur doit aller pour le désigner une fois la caméra posée.
+const z = K.zoom(scene, [300, 400], 1.3);
+res.zoom = { z, vu: K.vu(scene, z, [300, 400]), coin: K.vu(scene, z, [0, 0]),
+  ailleurs: K.vu(scene, K.zoom(scene, [300, 400], 2, { vers: [100, 120] }), [300, 400]),
+  neutre: K.vu(scene, null, [10, 20]) };
 process.stdout.write(JSON.stringify(res));
 """
 
@@ -156,6 +162,24 @@ class KitSelonLeFormat(unittest.TestCase):
         css = (KIT / "kit.css").read_text(encoding="utf-8")
         for regle in (".k-ordi-base", ".k-ordi-couvercle", ".k-ordi-touche", ".k-ordi-pave", ".k-ordi-ecran img"):
             self.assertIn(regle + " {", css, regle)
+
+    def test_le_zoom_amene_le_point_au_centre(self):
+        """Une aide technique, pas un geste imposé : la caméra (origine au centre) qui amène un point de
+        la scène au centre, et la place de ce point à l'écran pour y mener le curseur (V2 du Reel
+        concept du 08/11/2026, où le calcul était écrit à la main)."""
+        for largeur, hauteur in ((1080, 1920), (1920, 1080)):
+            with self.subTest(format=(largeur, hauteur)):
+                r = self.lancer(largeur, hauteur)["zoom"]
+                self.assertEqual(sorted(r["z"]), ["scale", "x", "y"])     # rien d'autre : passé tel quel à GSAP
+                self.assertEqual(r["z"]["scale"], 1.3)
+                for v, attendu in zip(r["vu"], (largeur / 2, hauteur / 2)):
+                    self.assertAlmostEqual(v, attendu)
+                cx, cy = largeur / 2, hauteur / 2
+                for v, attendu in zip(r["coin"], (cx + (0 - cx) * 1.3 + r["z"]["x"], cy + (0 - cy) * 1.3 + r["z"]["y"])):
+                    self.assertAlmostEqual(v, attendu)
+                for v, attendu in zip(r["ailleurs"], (100, 120)):
+                    self.assertAlmostEqual(v, attendu)
+                self.assertEqual(r["neutre"], [10, 20])
 
     def test_16_9_inchange(self):
         # Les valeurs d'avant le passage au 9:16, à l'identique : aucun projet 16:9 ne bouge.

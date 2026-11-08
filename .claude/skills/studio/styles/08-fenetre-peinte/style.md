@@ -36,9 +36,8 @@ Une vidéo de page de 45 à 90 s qui annonce, puis démontre :
 
 ## 3. Les fonds et les couleurs
 
-Ses captures et les objets connus gardent leurs vraies couleurs ([../README.md](../README.md),
-« La loi de toutes les scènes ») ; tout le reste vient de sa marque
-([image.md](../../references/image.md), « La palette ») :
+Ses captures et les objets connus gardent leurs vraies couleurs ; tout le reste vient de sa marque
+([interdits.md](../../references/interdits.md), « La palette ») :
 
 | Rôle | Avec la marque du client |
 |---|---|

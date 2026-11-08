@@ -2,7 +2,7 @@
    (le dossier bleu du Mac, les fichiers PDF, Word, Excel, PowerPoint, une vidéo, une image, un son,
    une archive). Dessinés par nous, d'après leur allure courante, sans reprendre un fichier d'Apple
    ni de Microsoft. Ils gardent leurs couleurs dans toutes les marques : c'est la touche de couleur
-   vraie qui évite une vidéo toute dans les trois couleurs du client (image.md, « Les objets
+   vraie qui évite une vidéo toute dans les trois couleurs du client (metier.md, « Les objets
    connus »). K.ic("objet-pdf") rend le SVG ; `palette` connaît ces couleurs (COULEURS_CONNUES de
    studio_motion.py, à garder identiques). Couleur d'outil : chaque teinte ci-dessous. L'étiquette
    d'un fichier (« PDF ») est une texture qu'on reconnaît, pas un texte à lire : data-layout-ignore. */

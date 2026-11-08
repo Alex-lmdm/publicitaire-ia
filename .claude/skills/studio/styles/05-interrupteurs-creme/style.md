@@ -24,11 +24,11 @@ L'interface du kit est neutre et ne prend que les couleurs du client : ses neutr
 | La pastille d'annonce et la signature | une petite pastille au-dessus d'un titre en deux lignes, puis le logo qui tourne et se pose, le nom en grand | annonce, offre, fin | `fenetre-annonce` (fin) |
 | Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, se tient le temps de sa lecture pendant une lente dérive de la caméra | toutes les phrases | toutes les scènes |
 
-Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur le même papier clair (recette 1 de [scenes.md](../../references/scenes.md), la corvée), avec le trait à main levée qui entoure ce qui coûte.
+Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur le même papier clair (la corvée : [scenes.md](../../references/scenes.md), « Ouvrir »), avec le trait à main levée qui entoure ce qui coûte.
 
 ## 3. Les fonds et les couleurs
 
-Les variables `--t05-*` en tête de chaque scène nomment les jetons de la marque ([image.md](../../references/image.md), « La palette ») : jamais une couleur en dur à leur place.
+Les variables `--t05-*` en tête de chaque scène nomment les jetons de la marque ([interdits.md](../../references/interdits.md), « La palette ») : jamais une couleur en dur à leur place.
 
 | Rôle | Chez le client |
 |---|---|
@@ -69,7 +69,7 @@ Un seul fond presque toute la vidéo ; la bascule est le passage du papier à la
 
 ## 5. Les mouvements signature
 
-Tous sont dans `compositions/` ([mouvement.md](../../references/mouvement.md), « La caméra »).
+Tous sont dans `compositions/` ([metier.md](../../references/metier.md), « La caméra »).
 
 1. **La cascade** (scène 1, menu de la scène 4). Le panneau entier à l'image, vu de près ; la main clique le maître (bille en 0,28 s, power3.inOut), chaque rang s'allume 0,105 s après le précédent (0,24 s, gonflement ×1,07 aller-retour) ; la caméra dérive de 4 % jusqu'au recul.
 2. **Le trait qui voyage** (scènes 1 et 2). Un trait de 7 px, bouts ronds, bord irrégulier (turbulence fixe). Il arrive par la gauche, entoure les mots clés en 0,8 s (power2.inOut) sans toucher le mot voisin, tient, file par une queue qui contourne la phrase (0,7 s, power2.in) ; il revient par le haut souligner le mot fort, rembobine, redescend le long du panneau et devient le filet de gauche. Technique : un morceau [a, b] de la longueur du chemin (pointillé SVG), fonction du temps.
@@ -99,7 +99,7 @@ Tous sont dans `compositions/` ([mouvement.md](../../references/mouvement.md), �
 ## 9. L'ouverture et la fin
 
 - **Ouverture :** la première image est déjà le gros plan du panneau (rien de vide), la main entre tout de suite, le clic tombe vers 1 s.
-- **Fin :** la carte d'annonce (pastille + titre, tenue le temps de lire le titre), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite, en grand, et tient 3 s (l'écran final). Pour une vidéo de vente, la signature peut céder la place à une fin du studio ([scenes.md](../../references/scenes.md), recettes 25 et 26), sur le même papier clair.
+- **Fin :** la carte d'annonce (pastille + titre, tenue le temps de lire le titre), puis la signature : la pastille de la marque (ou son logo) tourne et se pose, le nom s'écrit de gauche à droite, en grand, et tient 3 s (l'écran final). Pour une vidéo de vente, la signature peut céder la place à une fin du studio ([scenes.md](../../references/scenes.md), « Finir »), sur le même papier clair.
 
 ## Sur une autre offre
 

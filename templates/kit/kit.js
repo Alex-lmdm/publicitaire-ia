@@ -146,6 +146,31 @@
       .fromTo(onde, { scale: 0.25, opacity: 0.95 }, { scale: 1.5, opacity: 0, duration: 0.5, ease: "power2.out" }, t);
   };
 
+  // --- La caméra qui s'approche d'un point -------------------------------------------------
+  // La caméra (`k-camera`, origine au centre du cadre) qui amène le point [x, y] de la scène (en pixels
+  // de la composition, avant tout mouvement de caméra) au centre du cadre, à l'échelle `echelle` ;
+  // `o.vers` = [x, y] pour l'amener ailleurs qu'au centre. `el` : un élément de la scène (pour lire
+  // son cadre). Rend { scale, x, y }, à passer tel quel à la caméra :
+  //   var z = K.zoom(cam, [300, 1240], 1.3);
+  //   tl.to(cam, Object.assign({ duration: 0.6, ease: "expo.inOut" }, z), 3.1);
+  // Exact pour ce qui est posé à plat dans la caméra ; une rotation de quelques degrés ou un objet
+  // avancé en z décale un peu : vérifie à l'image.
+  K.zoom = function (el, point, echelle, o) {
+    o = o || {};
+    var c = K.cadre(el), cx = c.largeur / 2, cy = c.hauteur / 2, s = echelle == null ? 1 : echelle;
+    var cible = o.vers || [cx, cy];
+    return { scale: s, x: cible[0] - cx - (point[0] - cx) * s, y: cible[1] - cy - (point[1] - cy) * s };
+  };
+  // Où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` (ce que
+  // rend K.zoom, ou { scale, x, y } écrits à la main) : pour mener le curseur, qui vit hors de la
+  // caméra, sur ce qui est dans la caméra. Rend [x, y], en pixels du cadre (ceux de K.trajet).
+  //   var p = K.vu(cam, z, [300, 1240]);  K.trajet(tl, cur, [[3.5, p[0], p[1], 0.4]]);
+  K.vu = function (el, zoom, point) {
+    var c = K.cadre(el), cx = c.largeur / 2, cy = c.hauteur / 2, z = zoom || {};
+    var s = z.scale == null ? 1 : z.scale;
+    return [cx + (point[0] - cx) * s + (z.x || 0), cy + (point[1] - cy) * s + (z.y || 0)];
+  };
+
   // --- Les objets flottants ---------------------------------------------------------------
   // Un champ d'objets répartis en profondeur : les plus proches et les plus lointains sont
   // flous (profondeur de champ), ceux du milieu sont nets. Retourne les éléments créés.
@@ -214,7 +239,7 @@
       return e;
     };
   };
-  // --- Les objets connus, dans leurs vraies couleurs (image.md, « Les objets connus ») ----------
+  // --- Les objets connus, dans leurs vraies couleurs (metier.md, « Les objets connus ») ----------
   // La barre d'état d'un iPhone dans l'écran du téléphone (`k-tel-ecran`) : l'heure, le réseau, le
   // Wi-Fi, la batterie. `clair` : blanche, sur un écran sombre (le défaut) ; false : noire.
   K.statut = function (ecran, o) {

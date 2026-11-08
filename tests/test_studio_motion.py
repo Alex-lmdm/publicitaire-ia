@@ -988,6 +988,14 @@ class Planche(unittest.TestCase):
     def test_reperes_bornes(self):
         self.assertEqual(sm.instants_planche(2.0, [-1, 0.5, 9]), [0.0, 0.5, 1.93])
 
+    def test_planche_serree_de_la_passe_du_directeur(self):
+        """`--pas 0.5` : une image toutes les demi-secondes depuis la première, même au-delà de 40 s
+        (la passe du directeur juge les passages, que la planche espacée ne montre pas)."""
+        t = sm.instants_planche(3.0, None, 0.5)
+        self.assertEqual(t, [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 2.93])
+        self.assertEqual(len(sm.instants_planche(90.0, None, 0.5)), 181)
+        self.assertEqual(sm.instants_planche(3.0, None, None), sm.instants_planche(3.0, None))
+
 
 class Son(unittest.TestCase):
     def test_dans_la_cible(self):

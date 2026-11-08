@@ -9,8 +9,8 @@
          Zones : `python3 {{MAISON}}tools/studio_motion.py zones {{SUPPORT}} --format {{FORMAT}}`.
          Le film validé (PLAN.md) se monte plan par plan : sa vraie matière en grand, peu de mots
          tenus le temps d'être lus (`studio_motion.py lecture`), aux couleurs de la marque (les objets connus gardent les leurs).
-         Scènes prêtes : {{MAISON}}templates/scenes/. Après le rendu, `rythme`, `cadre` et
-         `palette` sur exports/{{VIDEO}}.mp4. -->
+         Des scènes d'exemple (à lire, reprendre ou transformer) : {{MAISON}}templates/scenes/.
+         Après le rendu, `rythme`, `cadre` et `palette` sur exports/{{VIDEO}}.mp4. -->
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/CustomEase.min.js"></script>
     <!-- Style de la marque, copié de brand/ (généré depuis marque.json) à la création : polices et
@@ -36,9 +36,12 @@
          (sans cela elle ne s'applique qu'avant le montage, donc ni à l'aperçu ni au rendu). */
       [data-composition-id="main"] > div:is([data-composition-src], [data-composition-file]) { position: absolute; inset: 0; z-index: 1; isolation: isolate; }
     </style>
+    <!-- Le flou de bougé : réglé ici, sur #root (posé sur la racine d'une scène, il ne s'applique pas).
+         Un mouvement rapide laisse une traîne dans son sens, calculée au rendu. #root ne s'anime
+         jamais lui-même ; une carte qui se retourne échange ses faces à 90° (sans backface-visibility). -->
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="{{DUREE}}" data-fps="30" data-width="{{LARGEUR}}" data-height="{{HAUTEUR}}">
+    <div id="root" data-composition-id="main" data-motion-blur="on" data-motion-blur-shutter="180" data-start="0" data-duration="{{DUREE}}" data-fps="30" data-width="{{LARGEUR}}" data-height="{{HAUTEUR}}">
       <!-- Fond opaque, tout en bas de la pile : sans lui, une image vide passe en noir au rendu. -->
       <div id="fond" class="clip" data-start="0" data-duration="{{DUREE}}" data-track-index="0" style="position:absolute; inset:0; background:var(--brand-bg);"></div>
 
