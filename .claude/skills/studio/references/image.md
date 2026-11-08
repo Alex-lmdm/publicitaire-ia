@@ -65,7 +65,6 @@ aucune liste : pars de son sujet, de son métier, de son public et de ce que sa 
 | une plateforme (Instagram, YouTube, TikTok, Stripe, Gmail, Notion, Zoom…) | son interface, reconstruite d'après une vraie capture, dans ses couleurs et sa police : le post, le lecteur, la page de paiement, la boîte de réception |
 | son téléphone, une notification, un message | le téléphone du kit (`k-tel`) avec sa barre d'état (`K.statut` : 9:41, réseau, batterie) ; la notification d'iPhone (`K.notification`, l'icône d'app = le vrai logo) ; les bulles bleues, grises ou WhatsApp (`K.bulle`) |
 | une fenêtre d'ordinateur | la fenêtre du kit (`k-fenetre`) et ses trois boutons rouge, jaune, vert (`k-feux`) |
-| son ordinateur, sa page ouverte | l'ordinateur portable du kit (`K.ordinateur`), en perspective, qui s'ouvre sur sa vraie capture |
 
 Et ce que le kit n'a pas, à construire pour son offre, par exemple :
 

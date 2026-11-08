@@ -121,10 +121,14 @@ et `kit.css` du dossier `templates/kit/` et ajoute `<script src="kit/objets.js">
 | `K.bulle(parent, texte, genre)` | une bulle de messagerie : `"bleue"` (envoyé d'un iPhone), `"grise"` (reçu), `"whatsapp"` |
 | `k-objet` | le porteur d'un objet en grand (`K.el(cam, "div", "k-objet", K.ic("objet-pdf"), "width:…; height:…")`), avec son ombre |
 | `k-feux` | les trois boutons rouge, jaune, vert d'une fenêtre du Mac (`k-fenetre`) |
-| `K.ordinateur(parent, {largeur, capture, ouvert, teinte})` | un ordinateur portable en perspective, comme le téléphone : son couvercle sur sa charnière, son écran qui porte sa vraie capture, son clavier touche par touche, son pavé tactile, en alu (`teinte: "gris"` : l'alu sombre) ; rend `{racine, couvercle, ecran, image, base}` |
+| `K.ordinateur(parent, {largeur, capture, ouvert, teinte})` | **seulement s'il le demande** (plus bas) : un ordinateur portable en perspective, son couvercle sur sa charnière, son écran qui porte sa vraie capture, son clavier, son pavé tactile, en alu (`teinte: "gris"` : l'alu sombre) ; rend `{racine, couvercle, ecran, image, base}` |
 
-**L'ordinateur qui s'ouvre sur sa page** : posé dans la caméra d'un `k-scene3d`, reculé et incliné
-pour qu'on voie son clavier, il s'ouvre, puis sa page défile. Le même code se cadre en 16:9 et en 9:16 :
+**L'ordinateur qui s'ouvre sur sa page, seulement à sa demande** (« un effet 3D », « mon ordinateur
+qui s'ouvre », « ma page sur un portable ») : c'est une maquette correcte, pas un moment signature.
+Sans demande de sa part, sa page se montre comme d'habitude en motion design : à plat, en grand, dans
+la fenêtre du kit, en perspective, et elle agit. Posé dans la caméra d'un `k-scene3d`, reculé et
+incliné pour qu'on voie son clavier, il s'ouvre, puis sa page défile. Le même code se cadre en 16:9
+et en 9:16 :
 
 ```js
 var cam = document.getElementById("s4-cam"), c = K.cadre(cam), v = c.hauteur > c.largeur, L = v ? 900 : 1150;

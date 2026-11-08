@@ -87,9 +87,7 @@ cause.
 ### Montrer comment ça marche
 
 8. **La couleur devient l'interface** (raccord, 1 s). Le plein écran de couleur est la fenêtre de
-   l'application vue de très près ; la caméra recule et pivote, l'interface apparaît. Ou, pour une
-   page ou un logiciel : son ordinateur fermé, en perspective, s'ouvre sur sa vraie page
-   (`K.ordinateur`, [kit.md](kit.md)), puis la caméra plonge dans l'écran.
+   l'application vue de très près ; la caméra recule et pivote, l'interface apparaît.
 9. **Le produit entre dans l'outil** (1,7 s), quand l'offre vit dans un outil que le public a déjà
    (un modèle Notion, une extension, un dossier pour son IA, un groupe privé) : le curseur prend
    l'objet de l'offre et le pose dans l'outil, qui l'accepte. Sans ce geste, le spectateur ne
