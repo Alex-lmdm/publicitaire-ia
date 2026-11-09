@@ -50,7 +50,8 @@ pas ; son ambition (`references/ambition.md`) donne le niveau visé ; le reste e
   la fiche de l'offre ni la marque de cette vidéo.
 - Jamais `hyperframes feedback`, `events`, `usage`, `publish`, `cloud`, `lambda`, `cloudrun` ni `auth`.
 - Rendu : `npm run render` (fichier dans `exports/{{VIDEO}}.mp4`), après `npm run check` (zéro erreur,
-  et aucun texte à lire trop petit ou parti trop tôt). Le premier rendu passe d'abord par la passe du
+  et aucun texte à lire trop petit ou parti trop tôt). Le texte de l'accroche porte `data-accroche`,
+  un prix affiché `data-prix` : `index.motion.json` les fait vérifier (`references/composition.md`, règle 10). Le premier rendu passe d'abord par la passe du
   directeur artistique (`references/ambition.md`) : ce que tu changerais, appliqué, puis un nouveau
   rendu ; le client ne voit jamais le premier jet. Puis `studio_motion.py rythme`, `calage`, `cadre` et
   `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses

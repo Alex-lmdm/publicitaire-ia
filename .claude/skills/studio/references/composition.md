@@ -41,6 +41,10 @@ se rendre (adapté de la documentation d'HyperFrames 0.9, licence Apache-2.0, ©
    `tl.set(…, 0)` : la première image le montrerait.
 9. Un débordement ou un chevauchement voulu se déclare (`data-layout-allow-overflow`,
    `data-layout-allow-overlap`) après avoir vérifié à l'image que tout se lit.
+10. **Les intentions** : `index.motion.json` (posé par `nouvelle`) fait vérifier par `check` que
+    l'accroche se voit dès 0,5 s et que rien ne reste figé plus de 1,5 s. Le texte de l'accroche
+    porte `data-accroche` ; un prix affiché porte `data-prix`, et le fichier reçoit alors
+    `{"kind": "staysInFrame", "selector": "[data-prix]"}` (le prix ne sort jamais du cadre).
 
 ## Les commandes utiles
 
