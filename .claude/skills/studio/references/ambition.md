@@ -118,7 +118,7 @@ premier jet.
    - **la caméra** : bouge-t-elle pour une raison ? Les mots sortent-ils dès qu'ils sont lus pour la
      laisser partir ?
    - **les fonds** : changent-ils avec le film, avec une cause ? Un temps fort a-t-il le sien ?
-   - **la fin** : ramasse-t-elle le film, en grand, assez longtemps ?
+   - **la fin** : ramasse-t-elle le film, la marque en grand sur la dernière image, qui bouge encore ?
    - **la finition** : la traîne du flou, les courbes, les ombres, les alignements, la première et
      la dernière image, le geste sur le temps fort.
    Un premier jet qui ne t'inspire que deux changements n'a pas été regardé assez durement.

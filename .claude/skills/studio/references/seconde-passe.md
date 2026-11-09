@@ -13,7 +13,8 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
 - **Reste** : le script (ce que chaque plan raconte, et ses mots), sa marque et ses couleurs, les faits
   de la fiche, la musique et ses repères (les scènes partent sur les mêmes temps), les
   [interdits](interdits.md), et « Interdits de cette vidéo » dans `PLAN.md` : des défauts à ne pas
-  refaire, pas des images à garder.
+  refaire, pas des images à garder. Ils ont été écrits avec les objets de l'ancienne mise en scène,
+  qui vont disparaître : ils se redisent d'abord en règles (la marche, étape 3).
 - **Change** : l'image de chaque plan. Garder le script, c'est garder ce qu'il dit, pas sa mise en
   page. Un plan ne garde son image que si le client l'a demandé.
 
@@ -28,22 +29,33 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
    caméra qui plonge dedans et en ressort.
 4. **Les fonds** changent avec le film, chaque fois avec une cause à l'écran (un objet qui grandit, un
    iris, un volet), et l'un d'eux au moins porte un temps fort (la nuit ou l'aplat de sa marque).
-5. **La fin**, refaite en grand : ce qu'on a vu revient et devient l'appel, et elle se tient 2,5 s
-   au moins.
+5. **La fin**, refaite en grand : ce qu'on a vu revient et devient l'appel, la marque (son logo, son
+   nom) en grand sur la dernière image, qui bouge encore ; elle se tient 2,5 s au moins. Une petite
+   carte figée sur un grand fond n'est pas une fin, même tenue le temps qu'il faut.
 6. **La typographie** : une entrée différente à chaque plan, et au moins un mot qui joue ce qu'il dit.
+7. **Le sujet ne rapetisse pas** : chaque plan montre son sujet au moins aussi grand qu'avant. Deux
+   objets ne se partagent pas l'écran en petit (l'un devant, l'autre en profondeur), et rien ne reste
+   collé à un bord avec le vide de l'autre côté. `cadre` regarde une médiane et ne le voit pas :
+   compare les planches case à case.
 
 ## La marche
 
 1. Mets de côté la vidéo livrée : copie `../livraison/<vidéo>.mp4` dans `work/avant-seconde-passe.mp4`.
 2. Sa planche serrée : `python3 ../../../tools/studio_motion.py planche work/avant-seconde-passe.mp4
    --pas 0.5`.
-3. Dans `PLAN.md`, section « Seconde passe », plan par plan : son image d'avant en une ligne, puis sa
-   nouvelle mise en scène (le cadre, la profondeur, le fond, l'objet qui l'amène et celui qui
-   l'emmène, l'entrée des mots). Relis la liste face aux six objectifs **avant** d'écrire le code.
+3. Dans `PLAN.md`, section « Seconde passe », d'abord **les interdits de cette vidéo redits en
+   règles** valables pour n'importe quelle image : « le pont devant le téléphone cachait le titre »
+   devient « rien ne passe devant un titre pendant qu'on le lit » ; « les téléphones descendaient
+   sur les boutons » devient « rien d'important sous la zone sûre du bas » ; « creux de 1,5 s après
+   l'accroche » devient « aucun creux de plus d'une seconde ». Puis, plan par plan : son image
+   d'avant en une ligne, et sa nouvelle mise en scène (le cadre, la profondeur, le fond, l'objet qui
+   l'amène et celui qui l'emmène, l'entrée des mots). Relis la liste face aux sept objectifs
+   **avant** d'écrire le code.
 4. Réécris les scènes, souvent en entier : une scène qu'on retouche garde son image. `npm run check`,
    puis le rendu.
 5. Compare les deux planches serrées (`planche exports/<vidéo>.mp4 --pas 0.5` et celle de l'étape 2)
-   aux mêmes instants : chaque objectif doit se voir ; un plan resté presque identique se refait.
+   aux mêmes instants : chaque objectif doit se voir, et chaque règle de l'étape 3 tenir ; un plan
+   resté presque identique, ou dont le sujet a rapetissé, se refait.
 6. Les collisions pendant les animations ([revue.md](revue.md), porte 2), puis la revue (contrôles,
    relecteur neuf, son, export) et la livraison mise à jour.
 

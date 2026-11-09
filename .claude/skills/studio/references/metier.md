@@ -137,7 +137,8 @@ construit restent signalées, et la revue vérifie que ce sont les siennes.
 
 Elle ramasse le film et donne le geste : ce qu'on a vu revient et se resserre en un bouton que le
 curseur clique ; ou le produit se pose avec son nom et l'appel. Le nom et l'appel se tiennent
-2,5 s au moins. En page de vente, la fin désigne le bouton sous la vidéo ; en pub, « Découvre-le »
+2,5 s au moins, et la dernière image porte la marque en grand (son logo, son nom) et bouge encore :
+jamais une petite carte figée sur un grand fond. En page de vente, la fin désigne le bouton sous la vidéo ; en pub, « Découvre-le »
 et une flèche vers le bas, sans dessiner de bouton.
 
 ## Ce que le client dit, ce qu'on change

@@ -109,8 +109,9 @@ est vendu, à qui, quoi faire) et ne relève plus de P0 : chaque relecteur trouv
 neuf, et deux tours de correction suffisent. Le reste, le client le demandera en retouche.
 
 **3. Les interdits de cette vidéo.** Chaque P0 et chaque P1 corrigé s'écrit en une ligne dans la
-section « Interdits de cette vidéo » de `PLAN.md` (« l'accroche reste 3,5 s, sans recadrage », « le
-67 € ne passe jamais dans la bande du sticker »). Relis-la avant chaque retouche : une correction
+section « Interdits de cette vidéo » de `PLAN.md`, comme une règle qui vaudrait pour n'importe
+quelle image, pas avec les objets d'aujourd'hui : une seconde passe les remplacera (« l'accroche
+reste 3,5 s, sans recadrage », « aucun prix dans la bande du sticker »). Relis-la avant chaque retouche : une correction
 ne doit pas en défaire une autre. Un plan créé avant la 0.9.0 n'a pas cette section : ajoute-la à
 la fin.
 

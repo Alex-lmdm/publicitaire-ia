@@ -139,6 +139,18 @@ class SecondePasse(unittest.TestCase):
         self.assertIn("la fin", passe)
         self.assertIn("les collisions pendant les animations", lire(REF / "revue.md"))
 
+    def test_la_seconde_passe_garde_les_lecons_de_la_v3(self):
+        """V3 du Reel Calendly (09/11/2026) : les interdits de la vidéo, écrits avec les anciens objets,
+        n'alertaient plus après la remise en scène ; la fin « en grand » est sortie petite et figée, et
+        des sujets ont rapetissé sans que `cadre` le voie."""
+        page = lire(REF / "seconde-passe.md")
+        for lecon in ("les interdits de cette vidéo redits en règles", "Le sujet ne rapetisse pas",
+                      "la marque (son logo, son nom) en grand sur la dernière image, qui bouge encore",
+                      "sept objectifs"):
+            with self.subTest(lecon):
+                self.assertIn(lecon, page)
+        self.assertIn("comme une règle qui vaudrait pour n'importe quelle image", lire(REF / "revue.md"))
+
     def test_les_mots_d_une_interface_ne_sont_pas_des_faits(self):
         self.assertIn("jamais des barres grises à leur place", lire(REF / "interdits.md"))
 
