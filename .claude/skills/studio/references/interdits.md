@@ -48,6 +48,8 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
   mêlé de noir ou de blanc, ni l'accent en transparence, en fondu ou en flou sur un fond sombre (il
   vire à l'olive ou au brun), ni un dégradé vers lui. Un dégradé va d'un neutre à un neutre. Un
   texte garde un contraste d'au moins 4,5:1 avec son fond.
+- Le fond reste dans sa marque : jamais un écran soudain d'une couleur qu'elle n'utilise pas en
+  fond (un noir sur une marque claire), surtout vide avec seulement du texte.
 
 ## La lecture
 
@@ -56,21 +58,27 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
   accélérant ni en réduisant la police.
 - Chaque groupe de mots reste au moins **0,8 s plus 0,3 s par mot**, jamais moins de 1,5 s
   (`studio_motion.py lecture`), quel que soit le tempo d'un style ou d'une référence. Avec une voix,
-  un texte ne part jamais avant la fin de sa phrase.
+  un texte ne part jamais avant la fin de sa phrase. Seule exception à ces deux règles : les
+  sous-titres d'une voix off, qui suivent la voix ([supports.md](supports.md), « Sous-titres et
+  texte »).
 - **Un mot posé ne bouge plus tant qu'on le lit** : son entrée et sa sortie jouent, sa tenue est
   immobile. Pendant qu'on lit, la caméra ne recadre pas sous lui : elle attend qu'il sorte, ou il vit
   dans son propre calque (`k-mots`) au-dessus d'elle.
 - Tout texte à lire fait au moins **28 px** rapporté à un petit côté de 1080 px, et tient dans la
   **zone sûre** du support (`studio_motion.py zones`) ; rien dans la bande du sticker d'une story.
 - **L'accroche se lit dès 0,5 s** ; dans une pub, son texte est là dès la première image.
+- **Les mots ne recouvrent jamais ce que le plan montre** (l'interface qui agit, le chiffre, le
+  résultat) : chacun a sa place à l'écran.
 
 ## Le son
 
-- **La musique porte la vidéo** : on l'entend du début à la fin, et on ne la baisse jamais pour
+- **La musique porte la vidéo** (toute vidéo, sauf la boucle muette d'une section de page) : on
+  l'entend du début à la fin, et on ne la baisse jamais pour
   faire ressortir un bruitage. Les bruitages dépassent son fond de **4 à 10 dB** (`emergence`).
   Avec une voix off, la voix passe devant tout, et aucun bruitage ne la dépasse.
 - **Jamais le même bruitage deux fois de suite** (à moins de 3 s), ni trois fois en 6 s.
-- Le fichier livré sort à **-16 LUFS**, crêtes sous -1 dBTP (`mastering`).
+- Le fichier livré sort à **-16 LUFS**, crêtes sous -1 dBTP (`mastering`) ; la version sans
+  musique, des bruitages seuls, à -20 LUFS.
 
 ## La méthode avec le client
 

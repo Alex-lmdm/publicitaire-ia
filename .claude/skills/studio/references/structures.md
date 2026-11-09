@@ -112,7 +112,7 @@ de la pub (« Découvre-le » et une flèche vers le bas), sans dessiner de bout
 
 Pour des clients existants : « On a oublié de te montrer… », plus court (un tiers de la durée).
 
-## 5. Montrer une fonctionnalité (10 à 40 s, `section`, boucle muette)
+## 5. Montrer une fonctionnalité (10 à 25 s en `section`, boucle muette ; 20 à 40 s en `reel`)
 
 | Part | Bloc | Rôle |
 |---|---|---|
@@ -128,8 +128,8 @@ image doit raccorder avec la première (la boucle ne doit pas sauter).
 
 Une suite de publications, un angle par jour. **Chaque publication présente l'offre à quelqu'un
 qui ne la connaît pas** (loi 1) : le jour, l'angle et l'urgence changent, le contexte reste. Une
-story a le temps : un segment de story dure jusqu'à 60 s, on n'écrit pas une story de lancement en
-10 s.
+story a le temps : un segment de story dure jusqu'à 60 s, on n'écrit pas une story d'ouverture en
+10 s (seul le teaser est court).
 
 ### La story d'ouverture (jour J, 35 à 50 s, 60 au plus)
 
@@ -155,7 +155,7 @@ dès qu'une intro traîne, d'où une première phrase qui dit tout de suite de q
 | 10–20 % | **Ce que ça coûte** | « Ça me coûte. » Ses options d'aujourd'hui et leur vrai coût (le faire seul, payer quelqu'un, y passer ses soirées) | `alternatives`, `probleme` |
 | 20–35 % | **L'autre option, et pourquoi elle marche** | « Ah, c'est donc ça. » « Il y a une autre option », tout de suite après les options qui échouent, puis ce qui la rend différente. Une explication glissée entre les options et la nouvelle option dilue le message | `mecanisme` |
 | 35–60 % | **Ce que c'est, et comment ça marche** | « Je vois, c'est simple. » Le nom et ce qu'il fait en une phrase, puis deux ou trois étapes montrées dans la vraie interface, chacune avec sa phrase | `promesse`, `mecanisme`, `recoit` |
-| 60–75 % | **La preuve mesurée** | « Ça a vraiment marché. » Le repère d'abord (une pub, son budget), puis le résultat, son contexte (quelle offre, quand) et sa traduction simple | `preuves` |
+| 60–75 % | **La preuve mesurée** | « Ça a vraiment marché. » Le repère d'abord (le point de départ : un budget, un temps, un niveau), puis le résultat, son contexte (quelle offre, quand) et sa traduction simple | `preuves` |
 | 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » C'est ouvert ; ce qu'on reçoit et quand on y accède ; le prix, la vraie échéance et le prix d'après | `nouveaute`, `recoit`, `bonus`, `prix`, `dates`, `echeances` |
 | 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » « Touche le lien. » et ce qui attend derrière, au-dessus de la bande du sticker | `cta` |
 
@@ -168,8 +168,8 @@ dit ensuite.
 | 0–15 % | **La preuve qu'on voit** | « Attends, c'est possible ? » La chose elle-même, à l'écran : le résultat montré avant d'être expliqué, ou la vidéo qui est sa propre démonstration quand l'offre fabrique des contenus | `preuves` (média), `nouveaute` |
 | 15–35 % | **Le seul geste** | « C'est tout ? » Ce qu'il faut faire, dans des mots qu'il connaît (s'inscrire, installer, coller un lien), et ce qui en sort. Un mot nouveau au plus | `mecanisme` |
 | 35–55 % | **Pour lui** | « Je vois ce que j'en ferais. » Ce que ça donne dans sa situation à lui | `recoit`, `public` |
-| 55–75 % | **La preuve mesurée** | « Et ça vend. » Un cas réel, la dépense à côté du résultat : une preuve, jamais l'accroche (un revenu en accroche attire les acheteurs les plus volatils) | `preuves` |
-| 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » Dire aussi ce que ça demande (l'installation, l'abonnement à son IA) : chaque « sans » réveille le « trop beau pour être vrai » | `prix`, `dates`, `recoit` |
+| 55–75 % | **La preuve mesurée** | « Et ça marche. » Un cas réel, le point de départ à côté du résultat : une preuve, jamais l'accroche (un revenu en accroche attire les acheteurs les plus volatils) | `preuves` |
+| 75–92 % | **L'offre, le prix, la date** | « Quoi, combien, jusqu'à quand. » Dire aussi ce que ça demande (l'installation, un abonnement, le temps qu'il faut) : chaque « sans » réveille le « trop beau pour être vrai » | `prix`, `dates`, `recoit` |
 | 92–100 % | **Le geste et la suite** | « Je sais quoi faire. » | `cta` |
 
 Jamais contre les prestataires qu'on remplace (agences, freelances, autres méthodes) : on leur
@@ -182,8 +182,9 @@ a une (55–75 %) → le prix, la date, le prix d'après et le geste (75–100 %
 ce que c'est : on ne saute jamais le rappel.
 
 Huit à dix plans, chacun avec 0 à 8 mots, et au plus un mot à lire par seconde sur toute la story
-(35 à 45 mots pour 40 s) : c'est l'image qui raconte ([ecriture.md](ecriture.md)). La matière qui
-dure (sa capture, son interface, sa pub qui tourne) porte le plan, en grand ; les mots s'y posent.
+(30 à 40 mots pour 40 s, [interdits.md](interdits.md)) : c'est l'image qui raconte
+([ecriture.md](ecriture.md)). La matière qui
+dure (sa capture, son interface, sa pub qui tourne) porte le plan ; les mots ont leur place à côté.
 Jamais une phrase par écran au-dessus d'une petite capture : ce sont des sous-titres.
 
 ### Les autres publications
@@ -199,7 +200,7 @@ Jamais une phrase par écran au-dessus d'une petite capture : ce sont des sous-t
   regret → la vraie échéance et le lien. Seulement si `dates.fermeture` existe.
 - **Rappel** (15 à 30 s) : ce que c'est en une phrase, l'échéance, le lien.
 
-## 7. Faire s'inscrire (15 à 45 s, `reel`, `story`, `page` de capture)
+## 7. Faire s'inscrire (15 à 45 s en `reel` ou `story`, 20 à 60 s en `page` de capture)
 
 Guide gratuit, liste d'attente, live, webinaire.
 
@@ -223,7 +224,7 @@ saura faire), puis la date.
 
 Des étapes formulées en « faire », jamais en « construire » : l'effort repose sur l'outil.
 
-## 9. Montrer une preuve (15 à 45 s, `reel`, `page`, `section`)
+## 9. Montrer une preuve (15 à 45 s en `reel`, 20 s et plus en `page`, 25 s au plus en `section`)
 
 | Part | Bloc | Rôle |
 |---|---|---|

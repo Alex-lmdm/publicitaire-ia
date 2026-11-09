@@ -7,17 +7,16 @@ pour leur plan, jamais les interdits ([interdits.md](interdits.md)).
 
 ## Le cadre
 
-- **Le sujet remplit le cadre** : au moins 40 % de la largeur ou de la hauteur. Un petit élément au
-  milieu d'un grand fond n'est pas un plan : approche la caméra, agrandis, ou donne-lui un monde
-  (des cartes autour, sa page derrière, ses résultats en éventail). `cadre` relève ces instants sur
-  le MP4.
+- **Le sujet se voit** : jamais un petit élément perdu au milieu d'un grand fond vide (approche la
+  caméra, agrandis, ou donne-lui un monde). `cadre` relève les images presque vides.
+- Un repère de goût, pas une règle : quand des mots accompagnent une interface, elle laisse de
+  l'air et les mots se posent dans l'espace libre, à côté d'elle ; sans texte affiché, elle peut
+  prendre tout l'écran, de biais, un peu en 3D. Le plein cadre est un moment, pas une habitude.
 - **Une interface se montre de près** : ses mots utiles à 28 px au moins (`check` :
   `text_below_floor`) ; ses micro-textes non lus sont de la texture (`data-layout-ignore`).
-- **Une fenêtre d'interface occupe au moins les deux tiers de l'écran et déborde d'un bord** (elle
-  sort du cadre à droite, en bas), jamais posée au milieu du vide, hors plan large bref. Cinq façons
-  de rater une interface reconstruite : trop chargée (tout le logiciel au lieu du geste du plan), un
-  squelette gris (des barres à la place des mots : interdit), une capture rétrécie collée en petit,
-  plate (face caméra, figée), sans la couleur de sa marque.
+- Cinq façons de rater une interface reconstruite : trop chargée (tout le logiciel au lieu du geste
+  du plan), un squelette gris (des barres à la place des mots : interdit), une capture rétrécie
+  collée en petit, plate (face caméra, figée), sans la couleur de sa marque.
 - Pas tout au centre : décentré, sorti d'un bord, coupé par le cadre quand c'est voulu ; des
   échelles qui contrastent (un mot géant à côté d'une étiquette, un objet proche et d'autres loin).
 - **En vertical, on recompose** : le sujet s'empile en hauteur et grandit (interface en carte
@@ -38,14 +37,15 @@ frappe au clavier seulement dans un champ de saisie. Des étiquettes de fonction
 (`k-blocs`) à côté de l'interface qui le fait.
 
 **La lecture, en détail** : une phrase d'accroche reste entière 2 s au moins ; le dernier mot d'une
-phrase 0,6 s au moins avant la coupe ; l'écran final 2,5 s ou plus ; une seule phrase à lire à la
+phrase 0,6 s au moins avant la coupe ; l'écran final 3 s ou plus (`lecture --final`) ; une seule phrase à lire à la
 fois (la suivante entre quand la précédente sort, ou la remplace sur la même ligne). `check`
 signale un texte parti trop tôt (`line_unread`).
 
 ## Les courbes et les durées
 
-- **Une courbe par geste, et peu de gestes** : un film garde deux ou trois façons de bouger, les
-  mêmes d'un bout à l'autre. Une arrivée se pose sur une longue traîne (`expo.out`, `power4.out`) ;
+- **Une courbe par geste, et peu de gestes** : un film garde deux ou trois façons de bouger ses
+  objets et sa caméra, les mêmes d'un bout à l'autre (le mot fort, lui, change d'entrée d'un plan à
+  l'autre, plus bas). Une arrivée se pose sur une longue traîne (`expo.out`, `power4.out`) ;
   une traversée ou une sortie accélère (`power3.in`) ; la caméra et un fond qui change accélèrent
   et freinent (`power2.inOut`, `power3.inOut`). Vitesse constante seulement pour une tête de
   lecture, une barre de progression, une rotation.
@@ -56,8 +56,10 @@ signale un texte parti trop tôt (`line_unread`).
   vaut 4s³ / 27(s+1)²). Jamais de rebond sur l'opacité ni la couleur.
 - **Deux horloges** : l'interface de son produit bouge à sa vraie vitesse, 100 à 300 ms (un menu, un
   onglet, une coche, un bouton qui réagit ; Linear anime en 100 et 160 ms, Vercel en 100 et 150) ;
-  le film bouge à la sienne, 0,4 à 0,9 s (les mots, les objets, la caméra, les passages). Une
-  interface qui s'ouvre en 0,6 s paraît fausse ; un titre qui entre en 0,15 s paraît un bug.
+  le film bouge à la sienne, 0,4 à 0,9 s (le mot fort, les objets, la caméra, les passages). Une
+  interface qui s'ouvre en 0,6 s paraît fausse ; un mot fort qui entre en 0,15 s paraît un bug. Une
+  ligne d'appui qui apparaît nette (0,15 à 0,2 s de fondu) n'est pas un déplacement : elle échappe
+  à cette horloge.
 - **La durée suit la distance** : 0,3 s pour un petit pas, 0,6 à 0,9 s pour une traversée de
   l'écran. Une sortie est 40 à 50 % plus courte que son entrée, d'un seul geste.
 - **Un meneur et des suiveurs** : dans un groupe, un élément part le premier, les autres réagissent
@@ -70,7 +72,7 @@ signale un texte parti trop tôt (`line_unread`).
   posée (le premier signe d'une animation générée, sinon).
 - **Le mot fort, puis des lignes nettes** : le mot fort du plan a son entrée travaillée (masque,
   lettres, machine à sous, claque…), différente d'un plan à l'autre ; les lignes d'appui et les
-  étiquettes apparaissent nettes (un fondu de 0,15 à 0,2 s, sans montée ni flou).
+  étiquettes apparaissent nettes (un fondu de 0,15 à 0,2 s, sans montée ni flou : `K.apparition`).
 - **Un seul foyer dans une interface** : le curseur et ce qu'il touche bougent, le reste se tient.
 - **Le flou de bougé** : réglé sur `#root` d'`index.html` (`data-motion-blur="on"`,
   `data-motion-blur-tier="capture"`, `data-motion-blur-shutter="180"`) ; le journal du rendu dit s'il s'est appliqué (les pièges :
@@ -83,7 +85,8 @@ signale un texte parti trop tôt (`line_unread`).
   battements par minute, un temps = 0,5 s : calcule chaque temps depuis son numéro (n × 60 / BPM).
 - **Des vitesses qui contrastent** : une rafale (40 à 80 ms d'écart, des plans de 0,13 à 0,8 s),
   puis une démonstration qui tient un même cadre 5 à 8 s pendant que l'interface agit ; des plans
-  de 1,8 à 3 s en moyenne, jamais tous de la même durée ; avant une révélation, une pause de 0,3 à
+  (les coupes à l'image, pas les plans du script, qui en comptent souvent plusieurs) de 1,8 à 3 s
+  en moyenne, jamais tous de la même durée ; avant une révélation, une pause de 0,3 à
   0,75 s ; aucun creux de plus de 2 s au milieu de la vidéo.
 - `rythme` mesure le MP4 : au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian, aucune
   image immobile plus de 1,5 s avant l'écran final ; dès 0,6 s d'image entière immobile, un avis (les
@@ -138,23 +141,19 @@ au résultat). Une couleur qui disparaît s'efface par un volet net.
 
 ## Les fonds et les logos
 
-- Le fond change quand le film change de temps (le nom de l'offre, un chapitre, le prix, un avant /
-  après), avec une cause visible (un clic, un volet, un objet qui grandit). Ceux du kit : la nuit à
-  grille fine, le clair à grille, l'aplat de l'accent, l'écran coupé.
+- Le fond est celui de sa marque. Il peut changer à un moment fort (le nom de l'offre, le prix, un
+  avant / après), avec une cause visible (un clic, un volet, un objet qui grandit). Ceux du kit : le
+  clair à grille, l'aplat de l'accent, l'écran coupé, et la nuit pour une marque qui a un fond sombre.
 - Des logos qui flottent seulement quand la scène parle de leur outil : les vrais logos nus
   (`K.logoNu`), 6 à 8, en vraie profondeur (petits au loin, moyens nets, un ou deux grands et flous
   devant), jamais collés aux mots ni dans la bande du sticker. Sans logo pertinent, pas de champ.
 
 ## Les objets connus
 
-Ce que son public reconnaît d'un coup d'œil garde son vrai visage. Le kit en a déjà :
-
-| Le plan parle de… | Dans le kit |
-|---|---|
-| un dossier, un fichier, un document | `K.ic("objet-dossier")` (le dossier bleu du Mac), `objet-pdf`, `objet-doc`, `objet-tableur`, `objet-presentation`, `objet-video`, `objet-image`, `objet-audio`, `objet-zip`, `objet-fichier` |
-| un outil, une app, un moyen de paiement | son vrai logo (`studio_motion.py logos`, 7 432 marques), nu ou en icône d'app |
-| son téléphone, une notification, un message | `k-tel`, `K.statut`, `K.notification`, `K.bulle` |
-| une fenêtre d'ordinateur | `k-fenetre` et ses `k-feux` |
+Ce que son public reconnaît d'un coup d'œil garde son vrai visage : un dossier, un fichier, le
+logo d'un outil (`studio_motion.py logos`), un téléphone, une notification, une fenêtre
+d'ordinateur. Le kit en a déjà beaucoup ([kit.md](kit.md), « Les objets connus, dans leurs vraies
+couleurs »).
 
 Les autres se construisent en HTML ou en SVG d'après leur allure courante ou une capture : une
 plateforme (le post Instagram, la page de paiement Stripe, la boîte de réception) d'après une vraie

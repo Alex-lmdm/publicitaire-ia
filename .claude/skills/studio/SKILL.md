@@ -30,7 +30,8 @@ moment d'y arriver.
 
 ## Où lancer l'outil
 
-Windows : `python` (ou `py -3`) au lieu de `python3`.
+Windows : `python` (ou `py -3`) au lieu de `python3`, `npm.cmd` et `npx.cmd` au lieu de `npm` et
+`npx` (PowerShell refuse souvent leurs scripts).
 - **Depuis la racine du dossier**, `python3 tools/studio_motion.py …` : `verifier`, `marque`,
   `police`, `style`, `pack-sfx`, `musiques` et `musiques installer`, `heygen` et `heygen connecter`,
   `supports`, `zones`, `nouvelle`, `ajouter`, `capture`, `offre`, `lecture`, `reference`, `livrer`.
@@ -93,10 +94,13 @@ comme accroches à tester.
 ### 3 bis. Le script, validé avant tout le reste
 
 Le film en **plans** : pour chacun, ce qu'on voit se passer, puis 0 à 8 mots à l'écran, et la clé de
-`OFFRE.json` qui le prouve. `lecture "<mots du plan 1>" "<mots du plan 2>" … --duree <s>` donne la
-tenue et le compte : **au plus un mot à lire par seconde**. Montre-le plan par plan, **attends son
-accord** : deuxième validation obligatoire, c'est ici qu'une vidéo se réussit. Avec une voix off,
-ce script est le texte de la voix ([voix.md](references/voix.md)).
+`OFFRE.json` qui le prouve. Le dernier plan porte l'appel à l'action **du support** (`supports`
+le donne : « Commente MOT », « lien en bio », le bouton d'une pub…), tiré de la clé `cta` de la
+fiche. `lecture "<mots du plan 1>" "<mots du plan 2>" … --duree <s> --final` donne la tenue et le
+compte (`--final` : le dernier texte est l'écran final, 3 s au moins) : **au plus un mot à lire par
+seconde**. Montre-le plan par plan, **attends son accord** : deuxième validation obligatoire, c'est
+ici qu'une vidéo se réussit. Note-la dans `PLAN.md` (« Script validé par le client le <date> »).
+Avec une voix off, ce script est le texte de la voix ([voix.md](references/voix.md)).
 
 ### 4. Le style, la musique, puis le plan
 
@@ -106,7 +110,9 @@ puis les 8 styles, et trois musiques ; la page marque ton conseil, le style 0 sa
 autre). Il répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime
 (`reference`), décrit ce qu'il veut ou répond « aucun » : la fiche du style 0, « Quand il décrit un
 autre style », jamais un style improvisé. Un style déjà connu ne se redemande
-pas (`--sans-styles`). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
+pas (`--sans-styles`). S'il a noté une vidéo dont il aime le style (`reference_style` de
+`studio.config.json`), propose-la aussi : reprendre sa grammaire, c'est `reference`
+([reperage.md](references/reperage.md), section 4). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
 remplace ce choix musical ([son.md](references/son.md)).
 
 **La bande-son précède le plan d'animation** : la voix d'abord s'il en veut une (`voix.md`),
@@ -116,8 +122,10 @@ sur la bande-son »). Pas d'animation avant que ces repères soient fixés.
 Puis, avec [ambition.md](references/ambition.md) en tête, le tableau scène par scène de `PLAN.md`,
 qui suit le script : pour chaque plan, la scène et **son moment signature** (le geste qu'on a envie
 de revoir), ce qu'on voit, les mots, la clé de la fiche, **le passage vers le plan suivant** (quel
-objet devient quoi), le son. Le tableau ne se montre pas (le script est validé) ; pour une vidéo de
-page de plus d'une minute, ou s'il veut tout valider, montre 4 images clés avant d'animer.
+objet devient quoi), le son. Le tableau ne se montre pas (le script est validé). Seule exception,
+une vidéo de page de plus d'une minute, ou un client qui veut tout valider : pose d'abord 4 plans
+clés sans leur animation, montre leur image (`npx hyperframes snapshot --at …`) et attends son
+accord avant d'animer.
 
 Voix : texte à l'écran et musique par défaut. Une voix off seulement à sa demande : le texte
 d'abord, validé, puis une voix IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone
@@ -149,26 +157,32 @@ directement la version travaillée.
 
 Les portes de `revue.md`, pour **chaque** vidéo : les contrôles sur le MP4 rendu (`check`, `rythme`,
 `cadre`, `palette`, `calage`), la planche regardée par toi, le relecteur neuf (une IA qui n'a pas
-fait la vidéo dit ce qui est vendu, à qui, quoi faire), la revue critique notée, le son
-(`emergence`, `son`, `mastering`), l'export. Chaque défaut corrigé s'écrit dans « Interdits de cette
+fait la vidéo dit ce qui est vendu, à qui, quoi faire), le son (`emergence`, `son`, puis toujours
+`mastering`), la revue critique notée, puis la couverture (`couverture`, qui écrit la vidéo de
+`livraison/`) et l'export de ce fichier. Chaque défaut corrigé s'écrit dans « Interdits de cette
 vidéo » (`PLAN.md`).
 
 ### 7. La livraison
 
 Tout dans `livraison/` : les MP4, les textes de publication, la couverture, la façon de poser une
-vidéo sur sa page, le calendrier d'un lancement. `livrer "<dossier>"` doit répondre « ok ». Puis un
-message court : ce qu'il a, où le mettre, comment demander une retouche.
+vidéo sur sa page ([livraison.md](references/livraison.md)). `livrer "<dossier>"` doit répondre
+« ok ». Puis un message court : ce qu'il a, où le mettre, comment demander une retouche, et pour un
+lancement, quand publier chaque vidéo (la section « Quand publier » de `PLAN.md`, recopiée).
 
 ## Les retouches
 
+**Refaire la livraison d'une vidéo**, après toute retouche : depuis son projet, le rendu, la planche
+et les contrôles touchés, `son` puis `mastering`, `couverture` (qui remplace la vidéo de
+`livraison/`), la version sans musique (`sans-musique`) et l'affiche d'une page (`affiche`) s'il y en
+a, puis `export` sur le fichier de `livraison/` et `livrer`.
+
 « Mets à jour la livraison de <vidéo> » (après une retouche dans l'app HyperFrames ; sans nom : le
-projet de `videos/` retouché le plus récemment, une question à choix au moindre doute) : depuis son
-projet, refais le rendu, la revue (contrôles, planche, son, export), le mastering et la couverture,
-et remplace ses fichiers dans `livraison/`.
+projet de `videos/` retouché le plus récemment, une question à choix au moindre doute) : refais sa
+livraison.
 
 Une demande = la vidéo concernée seulement. Relis d'abord « Interdits de cette vidéo » et
-[interdits.md](references/interdits.md), modifie ce qui est demandé, refais rendu, planche et
-export. Ne repropose pas d'idées. Une nouvelle info sur l'offre passe d'abord dans `OFFRE.json`. Une
+[interdits.md](references/interdits.md), modifie ce qui est demandé, puis refais sa livraison. Ne
+repropose pas d'idées. Une nouvelle info sur l'offre passe d'abord dans `OFFRE.json`. Une
 autre version (« la même pour LinkedIn ») : `ajouter "<dossier>" --videos linkedin`, même fiche et
 même plan, remise en page pour son format. Une voix off sur une vidéo déjà faite :
 [voix.md](references/voix.md), la version avec voix s'ajoute à côté de l'originale. Pack SFX et

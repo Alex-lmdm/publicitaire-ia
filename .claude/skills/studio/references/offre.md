@@ -92,7 +92,9 @@ Cinq à sept lignes, dans ses mots à lui, pas un JSON :
 > C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si quelque chose est faux ou
 > manque.
 
-Une correction du client met à jour la fiche (source `client`), puis on revérifie.
+Une correction du client met à jour la fiche (source `client`), puis on revérifie. Son accord
+s'écrit en tête de `PLAN.md` (« Fiche validée par le client le <date> ») : une session reprise
+plus tard sait ainsi où en est la vidéo.
 
 **Une offre qui ne se vend ni ne se vit en ligne** (un cours en présentiel, un produit physique,
 un restaurant, un commerce) : ajoute une phrase, une seule fois, à ce résumé : « Publicitaire IA

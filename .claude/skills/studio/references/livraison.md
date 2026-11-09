@@ -13,6 +13,7 @@ publication prêt, et, pour une campagne, le moment de chaque publication.
 | `legende-reel.txt`, `legende-tiktok.txt` | Reel, TikTok | La légende, prête à coller |
 | `textes-pub.txt`, `textes-fil.txt` | pub, fil | Texte principal, titre, description, bouton conseillé ; une version par accroche |
 | `post-linkedin.txt`, `post-x.txt` | LinkedIn, X | Le texte du post |
+| `stories.txt` | story | Pour chaque story, dans l'ordre de publication : son fichier, le texte à ajouter s'il y en a, le mot-clé ou le lien du sticker, et où le poser (la zone libre laissée en bas) |
 | `integration.md` | page, section | Comment poser la vidéo sur sa page (ci-dessous) |
 | `couverture.jpg` | Reel, TikTok | La couverture, lisible à 200 px de large |
 
@@ -32,6 +33,10 @@ python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 work/
 
 Elle écrit `../livraison/couverture.jpg` (une vraie image JPEG, recadrée au format de la vidéo et
 vérifiée) et `../livraison/reel.mp4` (la vidéo masterisée, cette image en toute première image).
+Chaque vidéo arrive ainsi dans `livraison/`, depuis son propre projet : `couverture
+exports/<vidéo>-master.mp4 <instant>` écrit `../livraison/<vidéo>.mp4` (`page.mp4`,
+`story-ouverture.mp4`, `linkedin.mp4`…) ; seuls le Reel et le TikTok gardent aussi leur
+`couverture.jpg`.
 Pour la version sans musique : `couverture exports/reel-sans-musique-master.mp4
 ../livraison/couverture.jpg`, qui écrit `../livraison/reel-sans-musique.mp4`. Les arguments se
 reconnaissent à leur nature, dans n'importe quel ordre (la vidéo rendue, l'image ou l'instant, puis
@@ -84,7 +89,8 @@ simplement :
 
 ## Le calendrier (campagne de lancement)
 
-Dans `PLAN.md`, section « ## Quand publier », avec les vraies dates de la fiche :
+Dans `PLAN.md`, section « ## Quand publier », avec les vraies dates de la fiche (le client ne lit
+pas `PLAN.md` : recopie-la dans ton message de livraison) :
 
 ```
 ## Quand publier

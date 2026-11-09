@@ -94,7 +94,7 @@ sais pas » ou « choisis », prends ta recommandation et avance.
 | a (vendre) + A + E | `vente` | `reel,page` |
 | b (nouveauté) + A + B | `nouveaute` | `reel,story` |
 | c (fonctionnalité) + F | `fonctionnalite` | `section` |
-| d (lancement) | `lancement` | `reel,story:teaser,story:ouverture,story:dernier-jour` (+ `story:relance` si demandé) |
+| d (lancement) | `lancement` | `reel,story:teaser,story:ouverture`, `story:dernier-jour` seulement si sa page donne la date de fermeture (sinon `offre` la refuse), `story:relance` s'il la demande |
 | e (inscription) + A + B | `inscription` | `reel,story` |
 | f (explication) + E | `explication` | `page` |
 | g (preuve) + A | `preuve` | `reel` |

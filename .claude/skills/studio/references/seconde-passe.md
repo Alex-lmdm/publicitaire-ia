@@ -27,31 +27,30 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
 3. **De la vraie profondeur sur la moitié des plans au moins** : des objets à plusieurs distances,
    qui arrivent du fond, pivotent, s'empilent ; une interface vue en perspective plutôt qu'à plat ; la
    caméra qui plonge dedans et en ressort.
-4. **Les fonds** changent avec le film, chaque fois avec une cause à l'écran (un objet qui grandit, un
-   iris, un volet), et l'un d'eux au moins porte un temps fort (la nuit ou l'aplat de sa marque).
+4. **Les fonds** peuvent changer avec le film, toujours dans sa marque, avec une cause à l'écran (un
+   objet qui grandit, un iris, un volet).
 5. **La fin**, refaite en grand : ce qu'on a vu revient et devient l'appel, la marque (son logo, son
    nom) en grand sur la dernière image, qui bouge encore ; elle se tient 2,5 s au moins. Une petite
    carte figée sur un grand fond n'est pas une fin, même tenue le temps qu'il faut.
 6. **La typographie** : le mot fort de chaque plan a son entrée travaillée, différente d'un plan à
    l'autre, et au moins un mot joue ce qu'il dit ; les lignes d'appui apparaissent nettes.
 7. **Le sujet ne rapetisse pas** : ce que le spectateur doit lire (les mots, un bouton, l'interface
-   qui porte l'information) reste lisible sur un téléphone à chaque instant où il compte. Un plan
-   large est permis s'il dure moins d'une seconde, ou s'il se resserre ensuite sur son sujet (un
-   recul qui révèle, une vue d'ensemble juste avant de plonger sur un détail). Restent interdits :
-   deux objets qui se partagent l'écran en petit pendant tout un plan (l'un devant, l'autre en
-   profondeur), et un sujet collé à un bord avec le vide de l'autre côté. `cadre` regarde une médiane
-   et ne le voit pas : compare les planches case à case.
+   qui porte l'information) reste lisible sur un téléphone à chaque instant où il compte. À éviter :
+   un sujet perdu en petit, ou collé à un bord avec le vide de l'autre côté (compare les planches
+   case à case, `cadre` ne voit que les images presque vides).
 
 ## La marche
 
 1. Mets de côté la vidéo livrée : copie `../livraison/<vidéo>.mp4` dans `work/avant-seconde-passe.mp4`.
 2. Sa planche serrée : `python3 ../../../tools/studio_motion.py planche work/avant-seconde-passe.mp4
    --pas 0.5`.
-3. Dans `PLAN.md`, section « Seconde passe », d'abord **les interdits de cette vidéo redits en
-   règles** valables pour n'importe quelle image : « le pont devant le téléphone cachait le titre »
+3. Dans `PLAN.md`, d'abord **les interdits de cette vidéo redits en règles**, réécrits sur place
+   dans la section « Interdits de cette vidéo » (c'est elle que relit chaque retouche), valables pour
+   n'importe quelle image : « le pont devant le téléphone cachait le titre »
    devient « rien ne passe devant un titre pendant qu'on le lit » ; « les téléphones descendaient
    sur les boutons » devient « rien d'important sous la zone sûre du bas » ; « creux de 1,5 s après
-   l'accroche » devient « aucun creux de plus d'une seconde ». Puis, plan par plan : son image
+   l'accroche » devient « aucun creux de plus d'une seconde ». Puis, dans une section « Seconde
+   passe », plan par plan : son image
    d'avant en une ligne, et sa nouvelle mise en scène (le cadre, la profondeur, le fond, l'objet qui
    l'amène et celui qui l'emmène, l'entrée des mots). Relis la liste face aux sept objectifs
    **avant** d'écrire le code.

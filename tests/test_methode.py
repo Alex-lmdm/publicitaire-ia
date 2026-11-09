@@ -151,15 +151,22 @@ class SecondePasse(unittest.TestCase):
                 self.assertIn(lecon, page)
         self.assertIn("comme une règle qui vaudrait pour n'importe quelle image", lire(REF / "revue.md"))
 
-    def test_un_plan_large_bref_reste_permis(self):
-        """Alex (09/11/2026) : la règle du sujet qui ne rapetisse pas ne doit pas interdire un recul qui
-        révèle ; les deux cas de la V3 (deux téléphones petits tout le plan, un téléphone collé au bord)
-        restent interdits."""
-        page = lire(REF / "seconde-passe.md")
-        self.assertIn("Un plan large est permis s'il dure moins d'une seconde, ou s'il se resserre ensuite", page)
-        self.assertIn("deux objets qui se partagent l'écran en petit pendant tout un plan", page)
-        self.assertIn("un sujet collé à un bord avec le vide de l'autre côté", page)
-        self.assertIn("lisible sur un téléphone à chaque instant où il compte", page)
+    def test_le_cadre_laisse_de_la_liberte(self):
+        """Alex (09/11/2026, après le Reel Notion refait) : des interfaces toujours en plein cadre, un texte
+        qui change de place à chaque plan, des mots posés sur l'interface et un écran noir venaient de
+        règles trop directives. La méthode ne garde que ce qui est à éviter, et laisse le reste au goût
+        du modèle."""
+        passe = lire(REF / "seconde-passe.md")
+        self.assertIn("un sujet perdu en petit, ou collé à un bord avec le vide de l'autre côté", passe)
+        self.assertIn("lisible sur un téléphone à chaque instant où il compte", passe)
+        metier = lire(REF / "metier.md")
+        self.assertIn("Un repère de goût, pas une règle", metier)
+        self.assertIn("Le plein cadre est un moment, pas une habitude", metier)
+        self.assertNotIn("deux tiers de l'écran", metier)
+        interdits = lire(REF / "interdits.md")
+        self.assertIn("Les mots ne recouvrent jamais ce que le plan montre", interdits)
+        self.assertIn("Le fond reste dans sa marque", interdits)
+        self.assertNotIn("le titre en haut, l'objet au centre", lire(REF / "ambition.md"))
 
     def test_les_mots_d_une_interface_ne_sont_pas_des_faits(self):
         self.assertIn("jamais des barres grises à leur place", lire(REF / "interdits.md"))
@@ -211,6 +218,6 @@ class Mouvement(unittest.TestCase):
     def test_les_regles_du_mouvement(self):
         metier = (REF / "metier.md").read_text(encoding="utf-8")
         for phrase in ("Presque aucun rebond", "Deux horloges", "La boîte se pose, puis le texte entre",
-                       "Pas de yo-yo", "K.courbeEchelle", "deux tiers de l'écran"):
+                       "Pas de yo-yo", "K.courbeEchelle"):
             self.assertIn(phrase, metier)
         self.assertIn("lignes d'appui apparaissent nettes", (REF / "seconde-passe.md").read_text(encoding="utf-8"))

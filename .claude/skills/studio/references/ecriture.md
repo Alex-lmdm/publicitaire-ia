@@ -53,7 +53,8 @@ quelques mots qu'on y lit.
    matière : ils sont vrais et brefs, ils ne racontent pas à la place de l'image.
 4. **Le budget de mots** : sans voix, **au plus un mot à lire par seconde de vidéo** en tout (hors
    interface), et la moitié des plans portent 0 à 3 mots. `studio_motion.py lecture "<mots du plan
-   1>" "<mots du plan 2>" … --duree <s>` donne la tenue de chacun et le compte. Au-delà : montre au
+   1>" "<mots du plan 2>" … --duree <s> --final` donne la tenue de chacun et le compte (`--final` :
+   le dernier texte est l'écran final, 3 s au moins). Au-delà : montre au
    lieu d'écrire, ou retire le plan le moins utile ; n'accélère jamais.
 5. **Chaque bloc a son plan.** En particulier : pour qui ; le problème et ce qu'il coûte ; ce que
    c'est (le nom de l'offre ET ce qu'elle fait : un nom seul n'explique rien, le plan doit montrer
@@ -128,9 +129,8 @@ sont les mots qui teasent sans rien dire qui sont interdits.
 
 ### L'image qui intrigue
 
-Une famille d'accroches de plus, à côté du problème nommé, de la question et de la preuve
-(demande du créateur, 08/11/2026 : « attiser sa curiosité, peu importe la manière, ça peut être
-avec des trucs un peu loufoques »). La première image surprend et arrête le pouce : un objet de son
+Une famille d'accroches de plus, à côté du problème nommé, de la question et de la preuve :
+attiser la curiosité, quitte à être un peu loufoque. La première image surprend et arrête le pouce : un objet de son
 monde qui fait quelque chose d'inattendu, d'exagéré, de décalé. Le nom du produit peut attendre
 10 ou 15 secondes ; la personne visée, elle, se reconnaît tout de suite.
 
@@ -143,8 +143,9 @@ monde qui fait quelque chose d'inattendu, d'exagéré, de décalé. Le nom du pr
   compta) ; le message « Je vais parler en réunion » tapé puis effacé cinq fois (la prise de
   parole) ; ses onglets qui se multiplient jusqu'à couvrir l'écran (l'organisation). Des exemples
   à adapter, jamais à copier.
-- **Les mots arrivent vite** : dès la première image ou la suivante, au plus vers 2 s (dans une
-  pub, dès la première image : [structures.md](structures.md), 3), quelques mots disent ce que
+- **Les mots arrivent vite** : dès 0,5 s, comme toute accroche (`data-accroche`, que `check`
+  vérifie ; dans une pub, dès la première image : [structures.md](structures.md), 3), quelques mots
+  disent ce que
   l'image exagère (« 3 heures pour un Reel ? »). Le spectateur sait alors de
   quoi on parle et que ça le concerne, même sans connaître le produit.
 - **Construite en motion design**, avec les objets connus du kit ou reconstruits d'après leur
@@ -185,10 +186,11 @@ redit le problème en une phrase.
 - **Spécifique** : un chiffre, un délai, un nom vaut mieux qu'un adjectif. Découpe une grande
   promesse en morceaux crédibles (« 20 ventes par jour » plutôt que « 1 M€ »).
 - **La preuve** dans cet ordre : possible dans le monde, possible pour d'autres (qui lui
-  ressemblent), possible pour toi. Le repère avant le chiffre (« Une pub Meta, 239 € de
-  budget. »), puis le résultat (« 2 976 € de ventes. »), puis son contexte (quelle offre, à quel
-  prix, sur quelle période) et sa traduction simple (« Environ 12 € de ventes pour 1 € de pub. »,
-  des ventes, pas du bénéfice). Montre la capture datée, la dépense à côté des ventes. C'est son
+  ressemblent), possible pour toi. Le repère avant le chiffre (le point de départ, le temps ou le
+  budget : « Une pub, 239 € de budget. », « Débutante en janvier. »), puis le résultat (« 2 976 € de
+  ventes. », « 3 clientes en mars. »), puis son contexte (quelle offre, à quel prix, sur quelle
+  période) et sa traduction simple, sans l'enjoliver (des ventes, pas du bénéfice). Montre la preuve
+  datée de sa page. C'est son
   résultat à lui, tel que sa page le donne. Jamais deux chiffres d'affilée sans repère.
 - **Le prix**, quand on le montre : d'abord ce qu'on reçoit et quand on y accède, puis le prix,
   recadré (ce que coûte un motion designer, une agence, le temps perdu), jamais seul, puis la vraie
@@ -216,8 +218,9 @@ redit le problème en une phrase.
   change sur place (« Ton lien. » devient « Tes vidéos. »), ses lettres tombent en rafale
   (`K.claque`, `K.etire`, `K.barre`, `K.surligner`, [kit.md](kit.md)). Deux tons : le plein et
   l'accent (« Ton **lien.** »), ou le gris d'appui (« ni » gris, « filmée. » blanc).
-- **Jamais la mise en page des sous-titres** : une phrase en haut, une petite interface dessous,
-  plan après plan. Le sujet du plan est ce qu'on montre, en grand ; les mots s'y posent.
+- **Jamais la mise en page des sous-titres** : une phrase entière par écran au-dessus d'une petite
+  capture, plan après plan. Le sujet du plan est ce qu'on montre ; les mots ont leur place à côté,
+  jamais dessus.
 - **Avec une voix off** : le texte souligne la voix, 1 à 5 mots (les mots clés de la phrase dite),
   plus des sous-titres si la vidéo démarre muette (page de vente, story).
 - Une liste se montre en objets (pastilles, cartes, coches), 5 au plus, chacun de 2 à 5 mots, avec

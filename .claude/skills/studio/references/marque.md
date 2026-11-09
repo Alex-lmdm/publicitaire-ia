@@ -45,8 +45,9 @@ reperage.md). Note son lien dans `studio.config.json` (`reference_style`).
 **d : où est son dossier ?** S'il ne sait pas, cherche dans son dossier personnel (trois niveaux
 au plus) un dossier qui contient `templates/AGENT.md.tpl` et `brand.config.json`, et
 propose-le. Tu ne modifies **jamais** rien dans ce dossier : tu le lis. S'il y a installé le
-Pack SFX (l'outil le signale), propose de le reprendre aussi : `pack-sfx reprendre` le copie dans
-ce dossier (`son.md`, section « Le Pack SFX »).
+Pack SFX (l'outil le signale), propose de le reprendre aussi : `pack-sfx reprendre` en copie les
+sons dans son dossier Publicitaire IA, sans rien changer à Monteur IA (`son.md`, section « Le Pack
+SFX »).
 
 ## 2. La montrer et la faire valider
 

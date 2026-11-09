@@ -12,8 +12,7 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   Les 22 sons de démarrage du dossier
   (`assets/sfx/starter/`, index « à utiliser quand… » dans `sounds.md`, licence CC0) **seulement
   sans le pack** : peu nombreux et bien placés, ils restent mieux que le silence. **Avec le pack, il
-  les remplace** : à l'écoute du créateur (09/11/2026, chacun face à ses remplaçants), 20 sur 22
-  sonnent bon marché à côté ; jusque-là, 10 à 27 % des bruitages de ses vidéos en venaient. Seuls
+  les remplace** : écoutés chacun face à ses remplaçants, 20 sur 22 sonnent bon marché à côté. Seuls
   `starter-pop` et `starter-click-double` restent, en variantes ; `pack-sfx chercher` ne propose plus
   les autres et `sons` les signale.
 - **Musique** : toute vidéo en a une, c'est elle qui la porte (sans voix, les bruitages seuls
@@ -106,7 +105,7 @@ le projet de la vidéo, avec sa licence dans `assets/audio/SOURCE.md`.
 
 La commande `sons` écrit les sons dans `index.html` comme des pistes de la timeline (ils
 apparaissent dans l'app, le bouton Export sort la vidéo complète). Écris la liste dans
-`work/sons.json` (chemins relatifs au projet), puis, depuis le dossier de la vidéo :
+`work/sons.json` (chemins relatifs au projet), puis, depuis le projet de la vidéo :
 
 ```bash
 python3 ../../../tools/studio_motion.py sons . work/sons.json
@@ -127,21 +126,19 @@ l'oreille. `mastering` remonte ensuite le tout à -16 LUFS.
 
 ## L'équilibre entre la musique, les bruitages et la voix
 
-Retour du créateur sur le Reel Gordon Ramsay (08/11/2026) : « les effets sonores sont très forts
-et la musique est tout le temps très faible ». La règle :
+Le défaut le plus fréquent : des bruitages très forts sur une musique qu'on n'entend presque plus.
+La règle :
 
 - **Sans voix, la musique porte la vidéo** : on l'entend bien, du début à la fin. `sons` la pose
   toute seule à sa référence (-30 LUFS avant le mastering, quel que soit le morceau : un morceau
   mastérisé fort est baissé, un morceau doux remonté) et l'écrit : « Musique : … dB, à -30 LUFS ».
   Les bruitages vont **avec** elle, presque au même niveau : chacun dépasse le fond musical de 4 à
   10 dB (vise 5 à 8), jamais plus. `emergence` le vérifie et dit, son par son, de combien monter ou
-  baisser. Réglage choisi à l'oreille par le créateur le 08/11/2026, entre trois versions du même
-  Reel (bruitages à +4, +7 et +10 dB en médiane) : la version à +7.
+  baisser. Le réglage par défaut, validé à l'oreille entre +4, +7 et +10 dB : +7 dB en médiane.
 - **Ne baisse jamais la musique pour faire ressortir un bruitage** : monte le bruitage, ou
   baisse ceux qui sont trop forts. `"musique_db"` reste un réglage manuel ; `sons` prévient s'il
-  enterre la musique de plus de 3 dB sous sa référence. Piège rencontré le 08/11/2026 : la
-  musique posée à -24 dB pour que les bruitages ressortent d'un morceau drill, ajoutée au
-  défaut d'enveloppe ci-dessous, sortait 30 dB sous les bruitages.
+  enterre la musique de plus de 3 dB sous sa référence (une musique baissée à -24 dB pour faire
+  ressortir les bruitages, avec le défaut d'enveloppe ci-dessous, sort 30 dB sous eux).
 - **Avec une voix off, la voix passe devant tout** : la musique se tient 15 à 18 LU sous elle
   (« Sous une voix off », plus bas), les bruitages sont moins nombreux (voix.md) et **jamais plus
   forts qu'elle** : `emergence` refuse un bruitage dont la crête dépasse le niveau de la voix qui
@@ -279,23 +276,18 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   temps tombe sur la grille de 0,5 s ; un tempo trop loin de 120 est gardé, et le message donne
   l'écart entre deux temps : cale les événements forts dessus. Le pivot se marque alors à l'image
   (un impact, un changement de fond), pas par la musique.
-- **Le tempo qui fait foi est celui du morceau entier** (piège rencontré le 08/11/2026, un morceau
-  drill d'Epidemic Sound à 139,8 battements, basse 808 syncopée) : `musique` lit 139,8 sur le
-  morceau entier, mais 103,7 sur le fichier calé de 35 s, et `calage` refuse alors toutes les
-  scènes alors qu'elles tombent sur les temps. Depuis le 09/11/2026, `musique` note le tempo du
-  morceau entier dans le fichier calé, et `calage` le reprend quand il lit un rapport simple de
-  celui-ci (3/4, 2/3, 1/2 : « tempo lu … » dans sa réponse). Un fichier calé avant cette date ne le
-  porte pas : refais-le avec `musique`. Si `calage` annonce encore un autre tempo, ce n'est pas le
-  montage : dis-le dans la revue, et ne recale jamais les scènes sur ce faux tempo. Même piège, plus discret (08/11/2026, « Signal Loss » de
-  Slowya.roll, basse syncopée) : `calage` lit 120,76 au lieu de 120 et voit des scènes « à 0,05 à
-  0,20 s du temps », de plus en plus près au fil de la vidéo ; recalé à 119,245 pour le contenter, il
-  lit 140,46. Avant de bouger une scène, mesure la phase : les attaques des graves (sous 150 Hz,
-  `ffmpeg … lowpass=f=150,astats`) repliées sur la grille de 0,5 s depuis l'entrée. Ici elles
-  tombaient à +0,04 s : les coupes sont restées sur la grille. Le geste fort sur l'entrée franche,
-  lui, est un vrai défaut quand `calage` le relève (un clic seul ne suffit pas : un flash, des mots
-  qui changent d'un coup).
+- **Le tempo qui fait foi est celui du morceau entier**, que `musique` note dans le fichier calé.
+  Sur une basse syncopée (une 808, une drill), `calage` peut lire un autre tempo sur la vidéo : un
+  rapport simple (3/4, 2/3, 1/2), qu'il corrige seul (« tempo lu … »), ou un léger écart (120,76
+  au lieu de 120) qui le fait voir des scènes « à 0,05 à 0,20 s du temps », de plus en plus près au
+  fil de la vidéo. Dans les deux cas, ce n'est pas le montage : laisse les scènes sur la grille de
+  0,5 s calée par `musique`, ne les recale jamais sur ce faux tempo, et écris-le dans `PLAN.md` (un
+  P1 expliqué, revue.md). Un fichier calé par une version plus ancienne ne porte pas son tempo :
+  refais-le avec `musique`. Le geste fort sur l'entrée franche, lui, est un vrai défaut quand
+  `calage` le relève (un clic seul ne suffit pas : un flash, des mots qui changent d'un coup).
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
-- Stories : musique facultative ; si oui, la même que le Reel, plus discrète.
+- Stories : la même musique que le Reel, comme toute vidéo (elle se regarde souvent muette : tout
+  s'y lit sans le son).
 
 ### Sous une voix off
 
@@ -324,8 +316,9 @@ qui travaille **en dessous** :
   seul morceau par vidéo. Évite les clichés : ukulélé et sifflement, crescendo orchestral, montée
   électro prévisible, morceau de bande-annonce.
 - **La fin** : la musique remonte après le dernier mot et s'éteint en 2 s, en courbe douce.
-- **Le niveau final** : -16 LUFS comme toujours ; avec une voix, les crêtes sont plafonnées à -2 dB
-  (les plateformes réencodent le fichier).
+- **Le niveau final** : -16 LUFS comme toujours ; avec une voix, les crêtes sont plafonnées à
+  -2 dBTP (les plateformes réencodent le fichier). `mastering` et `son` le font seuls quand `sons` a
+  posé la voix ; une voix posée à la main se signale avec `--voix`.
 - **Un aperçu fait à la main** (un mélange ffmpeg pour faire écouter des musiques sous la voix) passe
   la voix mono en stéréo par `pan=stereo|c0=c0|c1=c0`, jamais `aformat` : `aformat` la joue 3 dB plus
   bas que le rendu et fausse l'écart (des aperçus à 10 LU, trop forts).
@@ -340,8 +333,8 @@ qui travaille **en dessous** :
   `click-mouse-light` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `click-single-snap` ; pour un
   élément qui se pose, `click-single-snap`, `camera-lens-cap` et ses 5 prises, `paper-paper-slide`).
   Jamais un son de démarrage écarté pour varier une série : c'est par là qu'ils entraient. Ne répète
-  pas un son marquant (impact, riser, cha-ching). Retour du créateur : « on répète le
-  même bruitage plusieurs fois d'affilée, c'est un peu chiant ». Un son qui revient plus loin change
+  pas un son marquant (impact, riser, cha-ching) : le même bruitage plusieurs fois d'affilée
+  lasse vite. Un son qui revient plus loin change
   un peu de hauteur à chaque retour, tout seul (`sons` le prépare : 4 % plus aigu, 3 % plus grave…) ;
   `"hauteur": 1` dans l'évènement le garde tel quel, `"hauteur": 1.1` en choisit une. La règle des
   3 s et des 6 s ne change pas.
@@ -362,7 +355,7 @@ qui travaille **en dessous** :
 - Avec une musique forte, un bruitage **par geste visible** : clic du curseur, frappe, coche,
   compteur, passage, impact sur le nom et le prix, et aussi les petits événements du milieu
   (aperçus qui sortent, cartes qui arrivent, pastilles qui confirment). Une minute en porte 110 à
-  140, beaucoup très discrets ; en dessous de 90, le milieu sonne vide (retour du créateur). Ils se posent
+  140, beaucoup très discrets ; en dessous de 90, le milieu sonne vide. Ils se posent
   par `work/sons.json` ; écris leurs temps par scène (début de la scène + instant de sa timeline),
   par exemple avec un petit script `work/sons.py` qui produit `sons.json`, pour décaler une scène
   sans tout recalculer.
@@ -419,4 +412,5 @@ Beaucoup de créateurs ajoutent un son tendance dans Instagram. Quand le Reel a 
 `reel-sans-musique.mp4` : mêmes bruitages, pas de musique.
 `python3 ../../../tools/studio_motion.py sans-musique .` la rend dans `exports/<vidéo>-sans-musique.mp4`
 (le fichier temporaire qu'elle utilise disparaît ensuite).
-Refais-le après toute retouche du Reel, puis masterise ce fichier comme l'autre.
+Refais-le après toute retouche du Reel, puis masterise-le à **-20 LUFS** (des bruitages seuls :
+`mastering … --cible -20`, « Le niveau final »), avant `couverture`.

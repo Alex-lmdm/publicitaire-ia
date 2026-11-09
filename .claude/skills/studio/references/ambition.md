@@ -56,8 +56,9 @@ lus, pour la libérer** : pendant la lecture elle tient (au plus, le monde déri
 des mots restés dans leur calque) ; dès que les mots partent, elle voyage.
 
 **6. Le flou de bougé.** Un mouvement rapide laisse une traîne dans son sens, comme filmé : il donne
-du poids aux passages et de la vitesse aux arrivées. Il est réglé dans chaque projet
-(`data-motion-blur` sur `#root` d'`index.html`) : écris des mouvements francs, le rendu le calcule.
+du poids aux passages et de la vitesse aux arrivées. Le gabarit de chaque projet le règle déjà
+(son réglage et ses pièges : [kit.md](kit.md), « Les pièges ») : écris des mouvements francs, le
+rendu le calcule.
 
 **7. Des vitesses qui contrastent, sur la musique.** Une rafale, puis une démonstration qui tient
 son cadre pendant que l'interface agit ; une courte pause avant la révélation ; le geste le plus
@@ -65,7 +66,7 @@ fort sur le temps fort du morceau. Deux ou trois façons de bouger, chacune pour
 à sa vraie vitesse (100 à 300 ms), le film à la sienne ; presque aucun rebond, aucun sur un texte
 ([metier.md](metier.md)).
 
-**8. Sa vraie matière, en grand, avec des touches de couleur vraie.** Le sujet remplit le cadre :
+**8. Sa vraie matière, avec des touches de couleur vraie.** Ce qu'on montre se voit bien :
 son produit en action, ses vrais chiffres mis en scène, le schéma de son vrai mécanisme, puis
 seulement ses mots. À chaque plan, demande-toi ce que son public reconnaîtrait d'un coup d'œil (une
 interface qu'il utilise, un objet de son métier, la notification de son téléphone) et montre-le
@@ -74,15 +75,21 @@ de 15 s, au moins trois objets connus, logos compris.
 
 ## Ce qui fait « vidéo générée »
 
-Chacun de ces réflexes est un signe que rien n'a été décidé : tout qui entre par un fondu qui
-monte, tout centré, tout en même temps ; le même `power2.out` de 0,5 s partout ; tout qui rebondit ;
-le texte qui change en même temps que sa boîte ; des éléments qui partent en file régulière ; des boucles qui
-flottent, pulsent ou respirent à la place d'un mouvement ; une poussée lente en fin de scène ; un
-tremblement de caméra ; des halos, néons, orbes, reflets d'objectif, particules ou nuées
-décoratives, dégradés violets ; trois cartes en ligne, un titre sur une capture assombrie, des
-étiquettes dans les coins, des compteurs « 01 / 02 » ; la même mise en page à chaque plan (le titre en
-haut, l'objet au centre, plan après plan) ; des icônes génériques à la place des vrais
-logos ; le logo rangé dans un coin toute la vidéo ; le même enchaînement d'une vidéo à l'autre.
+Chacun de ces réflexes est un signe que rien n'a été décidé :
+
+- **Le mouvement** : tout qui entre par un fondu qui monte, tout en même temps ; le même
+  `power2.out` de 0,5 s partout ; tout qui rebondit ; des éléments qui partent en file régulière
+  ([metier.md](metier.md), « Les courbes et les durées »).
+- **Le texte** : le texte qui change en même temps que sa boîte ; des mots qui bougent pendant qu'on
+  les lit.
+- **Le remplissage** : des boucles qui flottent, pulsent ou respirent à la place d'un mouvement ; une
+  poussée lente en fin de scène ; un tremblement de caméra.
+- **La décoration** : des halos, néons, orbes, reflets d'objectif, particules ou nuées décoratives,
+  dégradés violets.
+- **La mise en page** : tout centré ; trois cartes en ligne ; un titre sur une capture assombrie ;
+  des étiquettes dans les coins ; des compteurs « 01 / 02 ».
+- **La marque** : des icônes génériques à la place des vrais logos ; le logo rangé dans un coin
+  toute la vidéo ; le même enchaînement d'une vidéo à l'autre.
 
 Le test final : si la vidéo pouvait annoncer n'importe quelle autre offre en changeant le nom, elle
 est trop générique. Recommence par ce que son offre a de visible.
@@ -116,8 +123,9 @@ premier jet.
      devient le suivant ?
    - **la profondeur et la 3D** : quelles interfaces sont posées à plat ? Qu'est-ce qui pourrait
      venir du fond, pivoter, s'empiler en perspective ?
-   - **la typographie animée** : combien d'entrées de mots différentes ? Lesquelles se répètent ?
-     Quel mot pourrait jouer ce qu'il dit ?
+   - **la typographie animée** : le mot fort de chaque plan a-t-il une entrée différente de celle du
+     plan d'avant ? Quel mot pourrait jouer ce qu'il dit ? Les lignes d'appui apparaissent-elles
+     nettes, sans montée ni flou ?
    - **les interfaces vivantes** : où l'interface est-elle figée alors qu'elle pourrait charger,
      répondre, se réorganiser ?
    - **la caméra** : bouge-t-elle pour une raison ? Les mots sortent-ils dès qu'ils sont lus pour la

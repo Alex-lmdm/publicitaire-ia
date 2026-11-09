@@ -22,7 +22,8 @@ propose-la en dernier.
 
 ## 1. Le texte d'abord, toujours validé
 
-- Une nouvelle vidéo : écris le texte d'après `PLAN.md`, scène par scène. Pour une vidéo de page
+- Une nouvelle vidéo : le texte de la voix, c'est le script validé (étape 3 bis du skill), plan par
+  plan. Pour une vidéo de page
   qu'il veut avec voix off dès le départ, le texte peut venir **avant** le plan : il se valide, la
   voix se génère, puis le plan se cale sur ses mots (plus naturel pour une
   courte VSL, la voix porte la structure).
@@ -197,12 +198,15 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   écart mesuré sur le morceau, baissée pendant la parole et remontée dans les respirations (son.md,
   « Sous une voix off ») ; le mélange entier est amené au niveau des Reels. Avec une voix,
   moins de bruitages : les gestes forts (clic, coche, impact sur le nom et le prix), et une frappe
-  de clavier sur chaque phrase tapée importante, une prise différente à chaque fois (retour du créateur :
-  « un tout petit peu plus de SFX, sans en abuser »). Plus discrets aussi : aucun ne passe
+  de clavier sur chaque phrase tapée importante, une prise différente à chaque fois : un peu de
+  bruitages, sans en abuser. Plus discrets aussi : aucun ne passe
   au-dessus de la voix qui l'entoure (`emergence` le vérifie, son.md, « L'équilibre entre la
   musique, les bruitages et la voix »).
-  Une vidéo déjà sonorisée : refais la liste complète et relance `sons` avec `--ecraser`.
-- Des sous-titres incrustés en plus si le support se regarde muet (story, pub dans le fil).
+  Une vidéo déjà sonorisée : refais la liste complète et relance `sons` (`--ecraser` seulement si
+  le bloc a été retouché à la main ou dans l'app, son.md, « Poser les sons »).
+- Des sous-titres incrustés en plus si le support se regarde muet (story, pub dans le fil) : ils
+  suivent la voix ([supports.md](supports.md), « Sous-titres et texte »), hors de la règle d'un mot
+  à lire par seconde.
 - Puis rendu, revue et export comme toute vidéo ([revue.md](revue.md)).
 
 ## 4. Une vidéo déjà livrée

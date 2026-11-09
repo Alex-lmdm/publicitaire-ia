@@ -7,7 +7,7 @@ chaque vidéo, et ne passe à la suivante que si la précédente est franchie.
 
 ## Porte 1 : la composition et le rendu
 
-`npm run check` dans le dossier de la vidéo. Zéro erreur ; un texte net volontairement posé sur
+`npm run check` dans le projet de la vidéo (le dossier qui contient `index.html`). Zéro erreur ; un texte net volontairement posé sur
 une couche floue se marque (`kit.md`, pièges). Ses avertissements de métier (`craft`) se corrigent
 tous sur un texte qu'on doit lire : `text_below_floor` (texte sous 28 px : agrandis, ou approche la
 caméra d'une interface), `line_unread` (parti avant d'être lu : allonge la tenue), `first_frame_empty`
@@ -52,7 +52,7 @@ de la précédente. Ouvre-les et regarde-les vraiment :
 - **les interdits, ligne à ligne** ([interdits.md](interdits.md)) : chaque texte correspond à une clé
   de `OFFRE.json` ou c'est du ton ; aucune image inventée ; le test du diaporama sur chaque image
   clé ; la palette ; au plus 8 mots à lire par image et un mot par seconde sur la vidéo
-  (`studio_motion.py lecture "<mots du plan 1>" … --duree <s>`) ; tout texte important dans le cadre
+  (`studio_motion.py lecture "<mots du plan 1>" … --duree <s> --final`) ; tout texte important dans le cadre
   vert, rien dans le rouge, lisible à la taille de la vignette ; l'accroche lisible sur la première
   vignette ; un texte posé qui ne bouge plus, et pas de recadrage sous une lecture ;
 - la première image déjà forte (vidéo de page : c'est elle qu'on voit si la lecture automatique est
@@ -66,7 +66,7 @@ de la précédente. Ouvre-les et regarde-les vraiment :
   cadre, même pendant deux images, se corrige. Puis chaque passage de près (`snapshot --range
   <début>,<fin> --frames 8`) ;
 - aucune image clé dont le seul sujet est une forme ou un aplat plus d'une seconde, hors fin et
-  passage ; le sujet qui remplit le cadre ; en vertical, une mise en page recomposée ;
+  passage ; aucun sujet perdu en petit dans un grand vide ; en vertical, une mise en page recomposée ;
 - le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
   l'ordre, on sait ce que c'est, pour qui, le problème réglé, comment ça marche, pourquoi le croire,
   combien et quoi faire. Ce test se refait à la porte 3 par un relecteur neuf.
@@ -84,7 +84,8 @@ se juge donc par **une IA qui n'a pas fait la vidéo**.
 python3 ../../../tools/studio_motion.py relecture exports/story-ouverture.mp4
 ```
 
-L'outil tire du MP4 rendu des planches (une image toutes les 0,5 s, sans zones ni repères) dans un
+L'outil tire du MP4 rendu des planches (une image toutes les 0,5 s, toutes les secondes au-delà de
+75 s, sans zones ni repères) dans un
 dossier au nom neutre, et écrit la consigne du relecteur (`CONSIGNE.md`). Lance un **sous-agent**
 (Claude Code : l'outil Agent ; Codex : un sous-agent, qu'il lance quand on le lui demande) avec
 pour seule consigne le contenu de `CONSIGNE.md` et ces seules planches : ni le script, ni
@@ -112,8 +113,12 @@ planche 1, image 10, cases B2 à D3 · problème · changement exact · P0, P1 o
 Les P0 et les P1 se corrigent, puis on refait le rendu et les portes 1 à 3 (relecture à froid
 comprise, avec un relecteur neuf : celui d'avant connaît désormais la vidéo). Les P2 se corrigent
 s'il reste du temps. **La revue s'arrête** quand un relecteur neuf dit ce que dit la fiche (ce qui
-est vendu, à qui, quoi faire) et ne relève plus de P0 : chaque relecteur trouvera toujours un P1
-neuf, et deux tours de correction suffisent. Le reste, le client le demandera en retouche.
+est vendu, à qui, quoi faire), ne relève plus de P0, et que les contrôles qui bloquent répondent
+« ok » : `check` (zéro erreur), `export` et `livrer`. Un refus de `rythme`, `cadre`, `palette`,
+`calage` ou `emergence` est un P1 : il se corrige, ou s'écrit dans `PLAN.md` avec sa raison (un
+faux tempo, une vraie capture hors palette). Chaque relecteur trouvera toujours un P1 neuf : deux
+tours de correction suffisent, la revue critique comprise. Le reste, le client le demandera en
+retouche.
 
 **3. Les interdits de cette vidéo.** Chaque P0 et chaque P1 corrigé s'écrit en une ligne dans la
 section « Interdits de cette vidéo » de `PLAN.md`, comme une règle qui vaudrait pour n'importe
@@ -122,10 +127,11 @@ reste 3,5 s, sans recadrage », « aucun prix dans la bande du sticker »). Reli
 ne doit pas en défaire une autre. Un plan créé avant la 0.9.0 n'a pas cette section : ajoute-la à
 la fin.
 
-**4. La revue critique.** Note de 1 à 10, avec une phrase de justification :
+**4. La revue critique**, une fois le son passé (porte 4 : le critère 10 en dépend). Note de 1 à
+10, avec une phrase de justification :
 
-1. **Compréhension** : la note du relecteur neuf ; s'il n'a pas su dire ce qui est vendu, à qui et
-   quoi faire, 3 au plus.
+1. **Compréhension** : ta note, d'après les trois phrases du relecteur neuf (lui ne note pas) ; s'il
+   n'a pas su dire ce qui est vendu, à qui et quoi faire, 3 au plus.
 2. **Accroche** : avant 3 s, on sait de quoi on parle, pour qui, et ce qu'on gagne à rester.
 3. **Structure** : chaque bloc remplit son rôle, dans l'ordre ; le problème avant le produit ; le
    comment montré.
@@ -143,7 +149,9 @@ la fin.
 10. **Le son** : la musique porte, les bruitages vont avec elle, aucun ne lasse (porte 4).
 
 Tout critère à 7 ou moins se corrige, puis on refait le rendu et la planche, jusqu'à 8 ou plus
-partout. Liste toujours les trois plus gros défauts, même si tout est à 8. Si le client a donné
+partout, dans les deux tours de correction : un critère encore à 7 après eux se dit au client, en
+une phrase, dans le message de livraison. Liste toujours les trois plus gros défauts, même si tout
+est à 8. Si le client a donné
 une vidéo de référence, mets côte à côte une planche de chaque (même cadence) : le niveau se juge
 contre elle. Avec un style 1 à 8, la planche montre au moins trois de ses gestes signature (deux
 sous 15 s) ([styles/README.md](../styles/README.md), point 4).
@@ -167,13 +175,18 @@ la phrase qui la porte, aucune ne change au milieu d'un mot, et la batterie n'en
 mot (une respiration : `voix respiration`) ; dans les deux cas, un geste fort se voit sur l'entrée
 franche de la batterie (le nom qui claque, un flash, une coupe). Chaque refus est un P1, sauf le
 faux tempo d'une basse syncopée ([son.md](son.md), « Le caler ») : mesure la phase avant de bouger
-une scène. `son` mesure le niveau, puis `mastering` si la mesure n'est pas « ok ». Réécoute le
+une scène. `son` mesure le niveau, puis `mastering`, toujours : le fichier livré est la version
+masterisée ([son.md](son.md), « Le niveau final »). Réécoute le
 début et la révélation : le temps fort tombe-t-il sur l'offre ? La pose des sons (`sons`) ne doit
 laisser aucun « bruitage qui lasse » ([son.md](son.md), « Les bruitages »).
 
 ## Porte 5 : l'export
 
+D'abord la couverture, qui écrit la vidéo livrée dans `../livraison/` ([livraison.md](livraison.md),
+« La couverture et l'affiche »), puis l'export vérifie ce fichier-là :
+
 ```bash
+python3 ../../../tools/studio_motion.py couverture exports/reel-master.mp4 3.5
 python3 ../../../tools/studio_motion.py export ../livraison/reel.mp4   # le support se déduit du nom du fichier
 ```
 
