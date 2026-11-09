@@ -4,6 +4,7 @@
  *
  *   node scripts/app-hyperframes.mjs etat               où en est le branchement (ne modifie rien)
  *   node scripts/app-hyperframes.mjs brancher           l'app lit désormais les instructions du projet
+ *   node scripts/app-hyperframes.mjs debrancher         retire seulement ce que « brancher » a posé
  *   node scripts/app-hyperframes.mjs ouvrir <dossier>   ouvre un projet (accueil ou vidéo) dans l'app
  *   node scripts/app-hyperframes.mjs installer          Windows : range l'app téléchargée en ZIP
  *
@@ -18,7 +19,10 @@
  * dans la clé `env` de la config Claude Code de l'utilisateur, lui fait lire le CLAUDE.md du
  * dossier ouvert (l'app passe toujours ce dossier en `--add-dir`). Effet ailleurs : un dossier
  * ajouté à une session Claude Code fait lire son CLAUDE.md, rien d'autre. Rien d'autre n'est
- * modifié dans la config, et une sauvegarde est faite avant toute écriture.
+ * modifié dans la config, et une sauvegarde est faite avant toute écriture. Un settings.json qui est
+ * un lien symbolique (une config rangée ailleurs) reste un lien : c'est sa cible qui est écrite.
+ * « debrancher » retire cette seule variable (et la clé `env` si elle reste vide), sans restaurer
+ * une ancienne sauvegarde : les réglages changés depuis restent.
  *
  * Codex n'a rien à brancher : il lit lui-même AGENTS.md et `.agents/skills/` du dossier ouvert.
  * Les consignes générées font quelques Kio, loin de sa limite de 32 Kio (sync.mjs prévient si le
@@ -79,6 +83,32 @@ export function readBranchement(file) {
 
 const stamp = (date) => date.toISOString().replace(/[:.]/g, "-");
 
+/** Le fichier à écrire vraiment : la cible d'un lien symbolique (même cassé), sinon le fichier lui-même.
+ *  Écrire à côté du lien puis renommer remplacerait le lien par un fichier ordinaire. */
+export function cibleReelle(file) {
+  let lien;
+  try {
+    lien = fs.lstatSync(file).isSymbolicLink();
+  } catch {
+    return file;
+  }
+  if (!lien) return file;
+  try {
+    return fs.realpathSync(file);
+  } catch {
+    return path.resolve(path.dirname(file), fs.readlinkSync(file));
+  }
+}
+
+/** Écriture atomique (Claude Code peut relire ce fichier à tout moment), qui préserve un lien symbolique. */
+function ecrireConfig(file, settings) {
+  const cible = cibleReelle(file);
+  fs.mkdirSync(path.dirname(cible), { recursive: true });
+  const tmp = `${cible}.tmp-${process.pid}`;
+  fs.writeFileSync(tmp, `${JSON.stringify(settings, null, 2)}\n`);
+  fs.renameSync(tmp, cible);
+}
+
 /** Pose la variable. Idempotent ; sauvegarde le fichier avant de l'écrire ; refuse un fichier
  *  qu'il ne sait pas lire plutôt que de l'écraser. */
 export function brancher(file, now = new Date()) {
@@ -97,11 +127,25 @@ export function brancher(file, now = new Date()) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
   }
   settings.env = { ...(settings.env ?? {}), [VARIABLE]: "1" };
-  // Écriture atomique : Claude Code peut relire ce fichier à tout moment.
-  const tmp = `${file}.tmp-${process.pid}`;
-  fs.writeFileSync(tmp, `${JSON.stringify(settings, null, 2)}\n`);
-  fs.renameSync(tmp, file);
+  ecrireConfig(file, settings);
   return { file, exists: true, branche: true, changed: true, backup };
+}
+
+/** Retire la variable posée par « brancher », et la clé `env` si elle reste vide. Rien d'autre ne change
+ *  et aucune ancienne sauvegarde n'est restaurée. Idempotent ; sauvegarde avant d'écrire ; refuse un
+ *  fichier qu'il ne sait pas lire. */
+export function debrancher(file, now = new Date()) {
+  const state = readBranchement(file);
+  if (state.invalid)
+    throw new Error(`${file} : ${state.invalid}. Rien n'a été modifié : corrige ce fichier, puis relance.`);
+  if (!state.branche) return { ...state, changed: false, backup: null };
+  const settings = JSON.parse(fs.readFileSync(file, "utf8"));
+  const backup = `${file}.avant-debrancher-${CODE}-${stamp(now)}`;
+  fs.copyFileSync(file, backup);
+  delete settings.env[VARIABLE];
+  if (Object.keys(settings.env).length === 0) delete settings.env;
+  ecrireConfig(file, settings);
+  return { file, exists: true, branche: false, changed: true, backup };
 }
 
 // ---------------------------------------------------------------------------
@@ -180,7 +224,7 @@ export function installerWindows({ env = process.env, home = os.homedir(), p = p
     pret = p.join(tmp, DOSSIER_WIN);
     if (!fsx.existsSync(p.join(pret, "HyperFrames.exe"))) {
       fsx.rmSync(tmp, { recursive: true, force: true });
-      throw new Error(`${source.zip} ne contient pas ${DOSSIER_WIN}\HyperFrames.exe : retélécharge-le.`);
+      throw new Error(`${source.zip} ne contient pas ${DOSSIER_WIN}\\HyperFrames.exe : retélécharge-le.`);
     }
   } else {
     fsx.cpSync(pret, p.join(tmp, DOSSIER_WIN), { recursive: true });
@@ -319,6 +363,22 @@ function main(argv) {
         console.log(`Branché : l'app HyperFrames lira les instructions de ${PRODUIT}.`);
         if (result.backup) console.log(`Sauvegarde de l'ancienne config : ${result.backup}`);
         console.log("Effet à la prochaine conversation ouverte dans l'app.");
+        console.log(`Pour revenir en arrière : ${commande("debrancher")}`);
+      }
+      return 0;
+    } catch (error) {
+      console.error(`❌ Claude Code : ${error.message}`);
+      return 1;
+    }
+  }
+  if (command === "debrancher") {
+    try {
+      const result = debrancher(settingsPath());
+      if (!result.changed) console.log(`Rien à débrancher : la config de Claude Code ne porte pas ${VARIABLE}.`);
+      else {
+        console.log(`Débranché : ${VARIABLE} est retirée de la config de Claude Code, le reste est inchangé.`);
+        console.log(`Sauvegarde d'avant : ${result.backup}`);
+        console.log("Effet à la prochaine conversation ouverte dans l'app.");
       }
       return 0;
     } catch (error) {
@@ -346,7 +406,7 @@ function main(argv) {
     console.log(result.opened ? `Ouvert dans l'app : ${result.target}` : result.how);
     return 0;
   }
-  console.error(`Usage : ${commande("etat [--json] | brancher | ouvrir <dossier> | installer")}\n` +
+  console.error(`Usage : ${commande("etat [--json] | brancher | debrancher | ouvrir <dossier> | installer")}\n` +
     "Depuis un projet de vidéo : node ../../../scripts/app-hyperframes.mjs ouvrir .");
   return 2;
 }

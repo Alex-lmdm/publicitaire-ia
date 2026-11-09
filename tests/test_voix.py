@@ -83,6 +83,28 @@ class Respiration(unittest.TestCase):
             self.assertAlmostEqual(mots[1]["start"], 3.5, delta=0.05)
             self.assertTrue((audio / "voix-avant-respiration.wav").is_file())
 
+    def test_decale_aussi_les_mots_d_une_voix_heygen(self):
+        """`calage` relit work/voix-mots.json (une voix HeyGen) : ses mots reculent avec la respiration."""
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)
+            audio = p / "assets" / "audio"
+            audio.mkdir(parents=True)
+            (p / "work").mkdir()
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=300:d=2", "-f", "lavfi",
+                            "-i", "anullsrc=r=48000:cl=mono:d=0.5", "-f", "lavfi", "-i", "sine=f=300:d=2", "-filter_complex",
+                            "[0:a]aformat=sample_rates=48000:channel_layouts=mono[a];[2:a]aformat=sample_rates=48000:channel_layouts=mono[c];"
+                            "[a][1:a][c]concat=n=3:v=0:a=1[o]", "-map", "[o]", str(audio / "voix.wav")], check=True)
+            (p / "work" / "voix-mots.json").write_text(json.dumps([
+                {"word": "<start>", "start": 0.0, "end": 0.0}, {"word": "Un", "start": 0.0, "end": 2.0},
+                {"word": "deux.", "start": 2.5, "end": 4.5}]))
+            r = voix.respiration(p, 2.2, 1.5)
+            mots = json.loads((p / "work" / "voix-mots.json").read_text())
+            self.assertEqual([m["start"] for m in mots[:2]], [0.0, 0.0])
+            self.assertAlmostEqual(mots[2]["start"], 2.5 + r["ajout"], delta=0.01)
+            self.assertAlmostEqual(mots[2]["end"], 4.5 + r["ajout"], delta=0.01)
+            self.assertEqual(mots[2]["word"], "deux.")
+            self.assertFalse((audio / "transcript.json").exists())      # rien d'inventé à côté
+
 
 if __name__ == "__main__":
     unittest.main()

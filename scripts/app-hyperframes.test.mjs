@@ -6,8 +6,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync, spawnSync } from 'node:child_process';
 import {
-  VARIABLE, APP_ID, brancher, readBranchement, settingsPath, claudeHome, findApp, isProject, ouvrir,
-  produit, dossierAppel, pasUnProjet, sourceWindows, installerWindows, DOSSIER_WIN,
+  VARIABLE, APP_ID, brancher, debrancher, readBranchement, settingsPath, claudeHome, findApp, isProject, ouvrir,
+  produit, dossierAppel, pasUnProjet, sourceWindows, installerWindows, DOSSIER_WIN, cibleReelle,
 } from './app-hyperframes.mjs';
 
 const { code: CODE } = produit();
@@ -79,6 +79,68 @@ test('la ligne de commande dit l’état, branche, puis confirme', (t) => {
   assert.match(cli(dir, 'etat'), /lit les instructions/);
   assert.match(cli(dir, 'etat'), /Codex : rien à brancher/);
   assert.equal(JSON.parse(cli(dir, 'etat', '--json')).branche, true);
+});
+
+test('debrancher retire seulement la variable posée par brancher, sans rien restaurer', (t) => {
+  const dir = configDir(t);
+  const file = path.join(dir, 'settings.json');
+  const avant = { model: 'opus', env: { AUTRE: 'x' }, permissions: { allow: ['Bash(ls)'] } };
+  fs.writeFileSync(file, JSON.stringify(avant));
+  brancher(file, new Date('2026-10-06T10:00:00Z'));
+  // Un réglage changé après le branchement : debrancher le garde (aucune sauvegarde n'est restaurée).
+  const branche = JSON.parse(fs.readFileSync(file, 'utf8'));
+  fs.writeFileSync(file, JSON.stringify({ ...branche, model: 'sonnet' }));
+  const r = debrancher(file, new Date('2026-11-09T10:00:00Z'));
+  assert.equal(r.changed, true);
+  assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), { ...avant, model: 'sonnet' });
+  assert.equal(JSON.parse(fs.readFileSync(r.backup, 'utf8')).env[VARIABLE], '1', 'sauvegarde de ce qui était là');
+  assert.equal(readBranchement(file).branche, false);
+  assert.equal(debrancher(file).changed, false, 'refaire ne change rien');
+  // Une config créée par brancher : la clé env, vide, part aussi ; le fichier reste.
+  const neuf = path.join(dir, 'neuf', 'settings.json');
+  brancher(neuf);
+  debrancher(neuf);
+  assert.deepEqual(JSON.parse(fs.readFileSync(neuf, 'utf8')), {});
+  // Une valeur que brancher n'a pas posée (« 0 ») reste, comme une config illisible.
+  const autre = path.join(dir, 'autre.json');
+  fs.writeFileSync(autre, JSON.stringify({ env: { [VARIABLE]: '0' } }));
+  assert.equal(debrancher(autre).changed, false);
+  assert.equal(fs.readFileSync(autre, 'utf8'), JSON.stringify({ env: { [VARIABLE]: '0' } }));
+  const casse = path.join(dir, 'casse.json');
+  fs.writeFileSync(casse, '{ "env": ');
+  assert.throws(() => debrancher(casse), /Rien n'a été modifié/);
+  assert.equal(fs.readFileSync(casse, 'utf8'), '{ "env": ');
+});
+
+test('la ligne de commande débranche', (t) => {
+  const dir = configDir(t);
+  assert.match(cli(dir, 'debrancher'), /^Rien à débrancher/);
+  assert.match(cli(dir, 'brancher'), /Pour revenir en arrière : .*debrancher/);
+  assert.match(cli(dir, 'debrancher'), /^Débranché/);
+  assert.match(cli(dir, 'etat'), /à brancher/);
+});
+
+test('un settings.json en lien symbolique reste un lien : sa cible est écrite', { skip: process.platform === 'win32' }, (t) => {
+  const dir = configDir(t);
+  const rangee = path.join(dir, 'dotfiles', 'claude-settings.json');
+  fs.mkdirSync(path.dirname(rangee));
+  fs.writeFileSync(rangee, JSON.stringify({ model: 'opus' }));
+  const file = path.join(dir, 'settings.json');
+  fs.symlinkSync(rangee, file);
+  assert.equal(cibleReelle(file), fs.realpathSync(rangee));
+  assert.equal(cibleReelle(path.join(dir, 'absent.json')), path.join(dir, 'absent.json'));
+  brancher(file);
+  assert.ok(fs.lstatSync(file).isSymbolicLink(), 'toujours un lien après brancher');
+  assert.deepEqual(JSON.parse(fs.readFileSync(rangee, 'utf8')), { model: 'opus', env: { [VARIABLE]: '1' } });
+  debrancher(file);
+  assert.ok(fs.lstatSync(file).isSymbolicLink(), 'toujours un lien après debrancher');
+  assert.deepEqual(JSON.parse(fs.readFileSync(rangee, 'utf8')), { model: 'opus' });
+  // Un lien cassé (sa cible pas encore créée) : la cible est créée, le lien reste.
+  const casse = path.join(dir, 'lien-casse.json');
+  fs.symlinkSync(path.join(dir, 'ailleurs', 'settings.json'), casse);
+  brancher(casse);
+  assert.ok(fs.lstatSync(casse).isSymbolicLink());
+  assert.equal(readBranchement(casse).branche, true);
 });
 
 test('seul un vrai projet HyperFrames s’ouvre dans l’app', (t) => {
@@ -254,6 +316,15 @@ test('Windows : un dossier déjà décompressé par « Extraire tout » est pris
   assert.ok(fs.existsSync(res.exe));
   assert.deepEqual(calls, ['powershell'], 'rien à décompresser');
   assert.ok(fs.existsSync(path.join(downloads, 'HyperFrames-win-x64', DOSSIER_WIN, 'HyperFrames.exe')), 'Téléchargements reste intact');
+});
+
+test('Windows : un ZIP sans l’app nomme le bon chemin (antislash compris)', (t) => {
+  const { env, downloads, dir } = fauxWindows(t);
+  fs.mkdirSync(path.join(dir, 'autre', 'rien'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'autre', 'rien', 'x.txt'), 'x');
+  execFileSync('tar', ['-a', '-cf', path.join(downloads, 'HyperFrames-win-x64.zip'), 'rien'], { cwd: path.join(dir, 'autre') });
+  assert.throws(() => installerWindows({ env, p: path, run: avecTar([]) }),
+    (e) => e.message.includes(`ne contient pas ${DOSSIER_WIN}\\HyperFrames.exe`));
 });
 
 test('Windows : rien de téléchargé, ou un raccourci impossible, se dit sans casser', (t) => {

@@ -31,7 +31,7 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py logos <projet> claude chatgpt notion [fichier:logo.png] [icone:rocket]   # vrais logos
     python3 tools/studio_motion.py logos chercher "lemon squeezy"          # l'identifiant d'une marque
     python3 tools/studio_motion.py planche <video.mp4> [--support reel] [--temps 0.5,2,4.2 | --pas 0.5]
-    python3 tools/studio_motion.py rythme <video.mp4>                # au moins 1 événement/s, rien de figé
+    python3 tools/studio_motion.py rythme <video.mp4>                # au moins 0,7 événement/s, rien de figé
     python3 tools/studio_motion.py calage <video.mp4>                # scènes sur les temps, geste sur l'entrée, voix respectée
     python3 tools/studio_motion.py heygen [etat | connecter <clé> | musiques "<description>" | bruitages "<description>"
                                           | prendre <n> [--bruitage] | voix | parler <texte> --voix <id> [--confirme]]
@@ -40,8 +40,8 @@ Usage (depuis la racine du dossier, ou depuis un projet de vidéo avec le bon ch
     python3 tools/studio_motion.py voix respiration 9.5 [--secondes 1.5]   # ouvre une pause dans la voix, la suite recule
     python3 tools/studio_motion.py sons <projet> <sons.json> [--ecraser]   # pose musique et bruitages
     python3 tools/studio_motion.py emergence <projet>                # chaque bruitage dépasse la musique, sans l'écraser
-    python3 tools/studio_motion.py son <video.mp4> [--cible -16]
-    python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16]
+    python3 tools/studio_motion.py son <video.mp4> [--cible -16] [--voix]   # --voix : crêtes sous -2 dBTP (automatique si `sons` a posé une voix)
+    python3 tools/studio_motion.py mastering <entree.mp4> <sortie.mp4> [--cible -16] [--voix]
     python3 tools/studio_motion.py sans-musique <projet>
     python3 tools/studio_motion.py couverture <video.mp4> <image.jpg | instant en s> [<sortie.mp4>] [<couverture.jpg>]   # tout ordre
     python3 tools/studio_motion.py affiche <video.mp4> <affiche.jpg> [--temps 0]
@@ -620,6 +620,34 @@ def ligne_app(app: Path | None, plateforme: str | None = None, maison: Path | No
     return f"ℹ️ app HyperFrames : installée, pas encore branchée (`{npm} run app -- brancher`, étape 4 d'INSTALL.md)"
 
 
+def versions_hyperframes(r: Path) -> tuple[str | None, str | None]:
+    """(version figée dans package.json, version installée dans node_modules/) ; None si l'une manque."""
+    def lire(f: Path, *cles: str) -> str | None:
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        for c in cles:
+            d = d.get(c) if isinstance(d, dict) else None
+        return str(d).lstrip("^~=") if isinstance(d, (str, int, float)) else None
+    figee = lire(r / "package.json", "devDependencies", "hyperframes") or lire(r / "package.json", "dependencies", "hyperframes")
+    return figee, lire(r / "node_modules" / "hyperframes" / "package.json", "version")
+
+
+def ligne_hyperframes(r: Path, cli_present: bool) -> tuple[str, bool]:
+    """La ligne de `verifier` pour HyperFrames : la version du dossier doit être celle de package.json (le
+    contrat des compositions, le flou en mode capture, en dépendent)."""
+    figee, trouvee = versions_hyperframes(r)
+    nom = f"HyperFrames {figee}" if figee else "HyperFrames"
+    if not cli_present:
+        return f"{nom} : introuvable, lance `npm ci` à la racine du dossier (INSTALL.md)", False
+    if figee and not trouvee:
+        return f"{nom} : pas dans node_modules/ (celui de l'ordinateur ne suit pas la version figée), lance `npm ci` à la racine du dossier", False
+    if figee and trouvee != figee:
+        return f"{nom} : {trouvee} installé, lance `npm ci` à la racine du dossier pour reprendre la version figée", False
+    return nom, True
+
+
 def cmd_verifier(_a) -> None:
     r = racine()
     if not (r / "brand" / "tokens.css").is_file() or not accueils(r):
@@ -627,16 +655,20 @@ def cmd_verifier(_a) -> None:
     ok = True
     python_ok = sys.version_info >= (3, 9)
     node_bon, node_version = node_installe()
+    ligne_hf, hf_ok = ligne_hyperframes(r, hyperframes_cli() is not None)
     for nom, present in (
         ("dossier complet", (r / "produit.json").is_file() and (r / "tools" / "marque.py").is_file()),
         ("Python 3.9 ou plus", python_ok),
         ("skill studio", (r / ".claude" / "skills" / "studio" / "SKILL.md").is_file()),
         ("contrat des compositions", (r / ".claude" / "skills" / "studio" / "references" / "composition.md").is_file()),
         ("instructions de l'agent (CLAUDE.md, AGENTS.md)", (r / "CLAUDE.md").is_file() and (r / "AGENTS.md").is_file()),
+        ("skill studio pour Codex (.agents/skills/studio/SKILL.md)"
+         + ("" if (r / ".agents" / "skills" / "studio" / "SKILL.md").is_file() else " : lance `npm run sync` à la racine du dossier"),
+         (r / ".agents" / "skills" / "studio" / "SKILL.md").is_file()),
         ("gabarits et kit des vidéos", (r / "templates" / "projet" / "index.html.tpl").is_file()
          and (r / "templates" / "kit" / "kit.js").is_file()),
         ("style de la marque (brand/)", (r / "brand" / "tokens.css").is_file()),
-        ("HyperFrames", hyperframes_cli() is not None),
+        (ligne_hf, hf_ok),
         ("GSAP", (r / "assets" / "vendor" / "gsap.min.js").is_file()),
         ("ffmpeg", binaire("ffmpeg") is not None),
         ("ffprobe", binaire("ffprobe") is not None),
@@ -1247,7 +1279,8 @@ def _source_audio(projet: Path, ligne: str) -> None:
 
 
 def cmd_heygen(a) -> None:
-    """La bibliothèque de musiques (gratuite) et les voix (payantes) de HeyGen, avec le compte du client."""
+    """Les voix (payantes) de HeyGen, avec le compte du client, et sa bibliothèque de musiques et de bruitages
+    à sa seule demande : avec un compte gratuit, ses conditions interdisent l'usage commercial (son.md)."""
     try:
         if a.action == "connecter":
             valeur = " ".join(a.valeurs).strip() or sys.stdin.readline().strip()
@@ -1869,8 +1902,25 @@ def ouvrir_dans_app(r: Path, projet: Path) -> str:
     return (res.stdout or res.stderr or "").strip()
 
 
+def installation_manquante(r: Path) -> list[str]:
+    """Ce que `npm ci` aurait dû poser et qui manque : sans lui, `nouvelle` créait une vidéo sans GSAP, qu'aucun
+    aperçu ni rendu ne pouvait animer (revue du 09/11/2026). node_modules/ se contrôle quand package.json le
+    déclare (le dossier du client l'a toujours)."""
+    manque = []
+    if (r / "package.json").is_file() and not (r / "node_modules").is_dir():
+        manque.append("node_modules/ (HyperFrames)")
+    if not (r / "assets" / "vendor" / "gsap.min.js").is_file():
+        manque.append("assets/vendor/gsap.min.js (GSAP)")
+    return manque
+
+
 def cmd_nouvelle(a) -> None:
     r = racine()
+    manque = installation_manquante(r)
+    if manque:
+        sys.exit(f"ERREUR : l'installation n'est pas finie, il manque {' et '.join(manque)}. Suis INSTALL.md (étape 2, "
+                 "`npm ci` à la racine du dossier ; Windows : `npm.cmd ci`), vérifie avec `verifier`, puis relance "
+                 "`nouvelle`. Aucune vidéo n'a été créée.")
     if not propre(a.sujet):
         sys.exit("ERREUR : donne un sujet, en quelques mots.")
     specs = a.videos.split(",") if a.videos else OBJECTIFS[a.objectif]["defaut"]
@@ -2023,6 +2073,11 @@ def cmd_planche(a) -> None:
         sys.exit("ERREUR : --pas attend un nombre de secondes positif (0.5 : une image toutes les demi-secondes).")
     instants = instants_planche(duree, temps, a.pas)
     sortie = Path(a.sortie) if a.sortie else video.with_name(video.stem + "-planche.jpg")
+    if sortie.suffix.lower() not in (".jpg", ".jpeg", ".png"):
+        # « --sortie work/planche-v1 » : le dossier des vignettes prenait le nom de la planche, et ffmpeg
+        # échouait à écrire une image à la place d'un dossier (banc Notion Sites du 09/11/2026).
+        sortie = sortie.with_name(sortie.name + ".jpg")
+        print(f"• --sortie sans extension d'image : la planche s'écrit dans {sortie}")
     travail = sortie.with_suffix("")
     travail.mkdir(parents=True, exist_ok=True)
     z = zone_texte(support, fmt)
@@ -2462,7 +2517,7 @@ def cmd_rythme(a) -> None:
 # son départ (essai sur la story d'ouverture) : on contrôle donc les départs des scènes, lus dans
 # index.html, et l'image seulement autour de l'entrée franche.
 # ---------------------------------------------------------------------------
-CALAGE_TAILLE = (64, 36)
+CALAGE_TAILLE = (64, 36)      # la vignette où se mesure le geste, pour du 16:9 ; les autres formats gardent son aire
 CALAGE_GRILLE, CALAGE_PRES_GRILLE = 120.0, 0.1   # un tempo à 0,1 battement de 120 : le morceau y a été ramené
 CALAGE_AUTOUR = 0.15         # fenêtre (s) autour de l'entrée franche où un geste doit se voir
 CALAGE_FORT, CALAGE_FORT_X = 10.0, 6.0   # un geste fort : écart entre deux images ≥ 10 (0-255) et ≥ 6 fois la médiane
@@ -2701,6 +2756,30 @@ def cadence(video: Path) -> float:
     return 30.0
 
 
+def taille_calage(largeur: int | None, hauteur: int | None) -> tuple[int, int]:
+    """La vignette du calage au format de la vidéo, avec l'aire de CALAGE_TAILLE (64 × 36 en 16:9, 36 × 64
+    en 9:16, 48 × 48 en 1:1) : un 9:16 écrasé en 64 × 36 mêlait trois fois plus de lignes que de colonnes
+    dans chaque point. Sans taille lisible : CALAGE_TAILLE."""
+    if not largeur or not hauteur:
+        return CALAGE_TAILLE
+    aire = CALAGE_TAILLE[0] * CALAGE_TAILLE[1]
+    w = max(1, round(math.sqrt(aire * largeur / hauteur)))
+    return w, max(1, round(aire / w))
+
+
+def _taille_video(video: Path) -> tuple[int | None, int | None]:
+    ffprobe = binaire("ffprobe")
+    if ffprobe:
+        r = subprocess.run([ffprobe, "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+                            "-of", "csv=p=0", str(video)], capture_output=True, text=True)
+        try:
+            w, h = (int(x) for x in r.stdout.strip().split(",")[:2])
+            return w, h
+        except ValueError:
+            pass
+    return None, None
+
+
 def cmd_calage(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -2722,7 +2801,7 @@ def cmd_calage(a) -> None:
                      "d'abord (voix.md), puis refais ce contrôle.")
     try:
         ips = cadence(video)
-        ecarts = ecarts_images(ffmpeg, video, fps=None, taille=CALAGE_TAILLE)
+        ecarts = ecarts_images(ffmpeg, video, fps=None, taille=taille_calage(*_taille_video(video)))
     except RuntimeError as e:
         sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
     temps, entree, geste, pas, ligne = [], None, None, 0.5, []
@@ -3793,7 +3872,7 @@ def cmd_emergence(a) -> None:
               "ensemble, presque au même niveau (son.md, « Les bruitages »).")
         echec = True
     if couvrants:
-        print("✗ des bruitages passent au-dessus de la voix : baisse-les (voix.md, « Avec une voix, moins de bruitages »).")
+        print("✗ des bruitages passent au-dessus de la voix : baisse-les (voix.md, « 3. Caler la vidéo sur la voix »).")
         echec = True
     if echec:
         sys.exit(1)
@@ -3804,6 +3883,32 @@ def cmd_emergence(a) -> None:
 # Même niveau que les Reels du fil Instagram (tools/sons.py vise aussi -16 LUFS) ;
 # plafond -1,5 dB pour garder les crêtes sous -1 dBTP une fois la vidéo encodée.
 CIBLE_LUFS, CIBLE_TP, PLAFOND_TP = -16.0, -1.5, -1.0
+# Avec une voix, les crêtes sont plafonnées à -2 dBTP (son.md, « Le niveau final ») : les plateformes
+# réencodent le fichier, et une voix saturée s'entend tout de suite.
+PLAFOND_TP_VOIX = -2.0
+VOIX_DANS_LE_HTML = re.compile(r'<audio\b[^>]*(?:\bid="voix"|data-role="voix")', re.I)
+
+
+def voix_posee(video: Path) -> bool:
+    """Vrai si le projet de cette vidéo porte une voix off : `<audio id="voix">` posé par `sons` (ou
+    `data-role="voix"` posé à la main) dans son index.html. Une vidéo de livraison/ se retrouve à son nom."""
+    projet = projet_de(video)
+    if projet is None:
+        meta = meta_par_nom(video) or {}
+        dossier = next((d for d in Path(video).resolve().parents if (d / "OFFRE.json").is_file()), None)
+        projet = next((pr for pr, m in projets(dossier) if m.get("video") == meta.get("video")), None) if dossier and meta else None
+    try:
+        return bool(projet and VOIX_DANS_LE_HTML.search((projet / "index.html").read_text(encoding="utf-8")))
+    except OSError:
+        return False
+
+
+def plafond_de(a, video: Path) -> float:
+    """Le plafond des crêtes (dBTP) de `son` et `mastering` : -2 avec une voix (`--voix`, ou celle que `sons`
+    a posée dans index.html), -1 sinon."""
+    if getattr(a, "voix", False) or voix_posee(video):
+        return PLAFOND_TP_VOIX
+    return PLAFOND_TP
 
 
 def mesure_sonore(ffmpeg: str, video: Path) -> dict | None:
@@ -3815,8 +3920,8 @@ def mesure_sonore(ffmpeg: str, video: Path) -> dict | None:
     return json.loads(bloc.group(0))
 
 
-def verdict_sonore(mesure: dict, cible: float = CIBLE_LUFS) -> list[str]:
-    """Écarts à la cible de livraison : -16 LUFS (±1) par défaut, crête vraie sous -1 dBTP."""
+def verdict_sonore(mesure: dict, cible: float = CIBLE_LUFS, plafond_tp: float = PLAFOND_TP) -> list[str]:
+    """Écarts à la cible de livraison : -16 LUFS (±1) par défaut, crête vraie sous -1 dBTP (-2 avec une voix)."""
     pb = []
     try:
         i, tp = float(mesure["input_i"]), float(mesure["input_tp"])
@@ -3826,8 +3931,9 @@ def verdict_sonore(mesure: dict, cible: float = CIBLE_LUFS) -> list[str]:
         return ["vidéo muette (aucun son mesurable)"]
     if abs(i - cible) > 1.0:
         pb.append(f"sonie {i:.1f} LUFS, cible {cible:.0f} ±1 : lance `studio_motion.py mastering`")
-    if tp > PLAFOND_TP:
-        pb.append(f"crête {tp:.1f} dBTP au-dessus de {PLAFOND_TP:.0f} : risque de saturation sur téléphone")
+    if tp > plafond_tp:
+        pb.append(f"crête {tp:.1f} dBTP au-dessus de {plafond_tp:.0f}" + (" (avec une voix)" if plafond_tp < PLAFOND_TP else "")
+                  + " : risque de saturation sur téléphone")
     return pb
 
 
@@ -3839,7 +3945,7 @@ def cmd_son(a) -> None:
     if mesure is None:
         print("ℹ️ pas de piste son : version muette (normal pour une boucle de page ou une story sans musique)")
         return
-    pb = verdict_sonore(mesure, a.cible)
+    pb = verdict_sonore(mesure, a.cible, plafond_de(a, Path(a.video)))
     print(f"sonie {float(mesure['input_i']):.1f} LUFS, crête {float(mesure['input_tp']):.1f} dBTP")
     print("\n".join(f"❌ {p}" for p in pb) if pb else "ok")
     if pb:
@@ -3859,22 +3965,23 @@ def chaine_mastering(gain_db: float, plafond: float = 0.7) -> str:
             f"alimiter=limit={plafond:.4f}:attack=0.1:release=40:level=false")
 
 
-def plafond_suivant(plafond: float, crete: float) -> float:
+def plafond_suivant(plafond: float, crete: float, plafond_tp: float = PLAFOND_TP) -> float:
     """Le plafond du limiteur pour l'essai suivant : décalé de ce qui sépare la crête vraie mesurée
     de -1,4 dBTP, dans les deux sens. Sur des clics très secs, l'AAC déborde au hasard d'un essai à
     l'autre (-1,1 puis +0,8 dBTP pour presque le même réglage, mesuré le 28/10/2026) : un plafond qui
     ne faisait que descendre après chaque débordement finissait par écraser le mixage (livré à
     -20,5 LUFS au lieu de -16). Il remonte donc dès qu'un essai montre de la marge, de la moitié
     seulement : remonter d'un coup ferait osciller les essais d'un débordement à l'autre."""
-    ecart_db = PLAFOND_TP - 0.4 - crete
+    ecart_db = plafond_tp - 0.4 - crete
     if ecart_db > 0:
         ecart_db /= 2
     return min(0.8, max(0.1, plafond * 10 ** (ecart_db / 20)))
 
 
-def rang_mastering(mesure: dict, cible: float = CIBLE_LUFS) -> tuple[float, float]:
-    """Pour garder le meilleur essai : d'abord la crête sous -1 dBTP, puis la sonie la plus proche."""
-    return (max(0.0, float(mesure["input_tp"]) - PLAFOND_TP), abs(float(mesure["input_i"]) - cible))
+def rang_mastering(mesure: dict, cible: float = CIBLE_LUFS, plafond_tp: float = PLAFOND_TP) -> tuple[float, float]:
+    """Pour garder le meilleur essai : d'abord la crête sous le plafond (-1 dBTP, -2 avec une voix), puis la
+    sonie la plus proche."""
+    return (max(0.0, float(mesure["input_tp"]) - plafond_tp), abs(float(mesure["input_i"]) - cible))
 
 
 def cmd_mastering(a) -> None:
@@ -3885,7 +3992,11 @@ def cmd_mastering(a) -> None:
     if mesure is None or math.isinf(float(mesure["input_i"])):
         sys.exit("ERREUR : pas de son à masteriser (vidéo muette).")
     gain = a.cible - float(mesure["input_i"])
-    apres, rang, plafond = None, None, 0.7
+    plafond_tp = plafond_de(a, Path(a.entree))
+    if plafond_tp < PLAFOND_TP:
+        print(f"• avec une voix : crêtes plafonnées à {plafond_tp:.0f} dBTP (son.md, « Le niveau final »)")
+    # le limiteur part d'autant plus bas que le plafond visé l'est (0,7, soit -3,1 dBFS, pour -1 dBTP)
+    apres, rang, plafond = None, None, 0.7 * 10 ** ((plafond_tp - PLAFOND_TP) / 20)
     sortie = Path(a.sortie)
     essai = sortie.with_name(f".{sortie.stem}-essai{sortie.suffix}")
     try:
@@ -3901,19 +4012,19 @@ def cmd_mastering(a) -> None:
                 if apres is None:
                     shutil.copy2(essai, sortie)
                 break
-            if rang is None or rang_mastering(mesure_essai, a.cible) < rang:
-                apres, rang = mesure_essai, rang_mastering(mesure_essai, a.cible)
+            if rang is None or rang_mastering(mesure_essai, a.cible, plafond_tp) < rang:
+                apres, rang = mesure_essai, rang_mastering(mesure_essai, a.cible, plafond_tp)
                 shutil.copy2(essai, sortie)
             ecart, crete = a.cible - float(mesure_essai["input_i"]), float(mesure_essai["input_tp"])
-            if crete <= PLAFOND_TP - 0.2 and abs(ecart) <= 0.5:
+            if crete <= plafond_tp - 0.2 and abs(ecart) <= 0.5:
                 break
-            plafond = plafond_suivant(plafond, crete)
+            plafond = plafond_suivant(plafond, crete, plafond_tp)
             gain += ecart
     finally:
         essai.unlink(missing_ok=True)
     if apres:
         print(f"• {a.sortie} : {float(apres['input_i']):.1f} LUFS, crête {float(apres['input_tp']):.1f} dBTP")
-        pb = verdict_sonore(apres, a.cible)
+        pb = verdict_sonore(apres, a.cible, plafond_tp)
         if pb:
             print("\n".join(f"❌ {p}" for p in pb))
             sys.exit(1)
@@ -3940,15 +4051,23 @@ def cmd_preparer_video(a) -> None:
 def cmd_affiche(a) -> None:
     """L'affiche d'une vidéo de page : une image de la vidéo (la première par défaut, qui doit déjà
     porter la promesse), en JPEG de moins de 100 Ko, montrée avant la lecture ou si elle est bloquée."""
-    ffmpeg = binaire("ffmpeg")
-    if not ffmpeg:
+    ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
+    if not ffmpeg or not ffprobe:
         sys.exit("ERREUR : ffmpeg introuvable.")
+    if not Path(a.video).is_file():
+        sys.exit(f"ERREUR : {a.video} introuvable.")
+    # Les couleurs comme pour `couverture` : la vidéo lue d'après ses étiquettes (BT.709), puis le RVB, puis
+    # la formule du JPEG (BT.601 plage pleine). Laissé à ffmpeg, le JPEG gardait la formule de la vidéo et
+    # se lisait avec celle du JPEG : une affiche délavée.
+    v = next((x for x in _sonder(ffprobe, Path(a.video)).get("streams") or [] if x.get("codec_type") == "video"), {})
+    jpeg = Path(a.sortie).suffix.lower() in (".jpg", ".jpeg")
+    filtre = f"{lecture_couleurs(v)},format=rgb24" + (",scale=out_color_matrix=bt601:out_range=pc,format=yuvj420p" if jpeg else "")
     for qualite in range(2, 32, 2):
-        r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{a.temps:.3f}", "-i", a.video, "-frames:v", "1",
-                    "-q:v", str(qualite), a.sortie])
+        r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{a.temps:.3f}", "-i", a.video, "-frames:v", "1", "-update", "1",
+                    "-vf", filtre, *(["-q:v", str(qualite)] if jpeg else []), a.sortie])
         if r.returncode != 0 or not Path(a.sortie).is_file():
             sys.exit(f"ERREUR : affiche impossible : {r.stderr[-400:]}")
-        if Path(a.sortie).stat().st_size <= 100 * 1024:
+        if not jpeg or Path(a.sortie).stat().st_size <= 100 * 1024:
             break
     print(f"• {a.sortie} : {Path(a.sortie).stat().st_size // 1024} Ko (image à {a.temps:.1f} s)")
 
@@ -4204,7 +4323,13 @@ def cmd_couverture(a) -> None:
     nom = re.sub(r"-master$", "", video.stem)
     nom = nom if meta.get("video") and nom.startswith(meta["video"]) else meta.get("video")
     sortie = sortie or livraison / f"{nom}.mp4"
-    sortie_image = sortie_image or livraison / ("couverture.jpg" if reel else f"{meta['video']}-couverture.jpg")
+    if sortie_image is None and not reel:
+        # Seuls le Reel et le TikTok ont une couverture à poster (livraison/couverture.jpg) ; pour les autres
+        # supports, l'image n'est que la première image de la vidéo : elle reste dans work/ du projet, hors
+        # de la livraison (l'affiche d'une page, elle, vient de `affiche`).
+        chez = projet or next((pr for pr, m in projets(livraison.parent) if m.get("video") == meta["video"]), None)
+        sortie_image = (chez / "work" if chez else livraison) / f"{meta['video']}-couverture.jpg"
+    sortie_image = sortie_image or livraison / "couverture.jpg"
     for f in (sortie, sortie_image):
         f.parent.mkdir(parents=True, exist_ok=True)
 
@@ -4405,8 +4530,25 @@ ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("
            "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
            "livrer": ("dossier",)}
 
+# Les commandes qui se lancent depuis la racine du dossier (SKILL.md, « Où lancer l'outil », avec
+# `musiques installer`, qui ne prend pas de chemin) ; toutes les autres se lancent depuis le projet de la
+# vidéo, avec des chemins vus de chez lui.
+COMMANDES_RACINE = {"verifier", "marque", "police", "style", "pack-sfx", "supports", "zones", "nouvelle",
+                    "ajouter", "capture", "offre", "lecture", "reference", "livrer"}
 
-def main(argv: list[str] | None = None) -> None:
+
+def ou_lancer(commande: str) -> str:
+    """Le rappel d'un chemin introuvable : d'où lancer cette commande, et avec quel chemin."""
+    if commande in COMMANDES_RACINE:
+        return (f"Vérifie le chemin : `{commande}` se lance depuis la racine du dossier ({RACINE}), avec le dossier de "
+                "la vidéo vu de là, par exemple « videos/<sujet> · <date> ».")
+    return (f"Vérifie le chemin : `{commande}` se lance depuis le projet de la vidéo (le dossier qui contient "
+            "index.html), avec des chemins vus de chez lui, par exemple exports/reel-master.mp4.")
+
+
+def parseur() -> argparse.ArgumentParser:
+    """Les commandes et leurs options (relues par tests/test_consignes_outils.py : chaque commande citée
+    dans les consignes doit y exister)."""
     p = argparse.ArgumentParser(description=f"{produit().get('nom', '')} : vidéos en motion design qui vendent.")
     p.add_argument("--version", action="version", version=VERSION)
     s = p.add_subparsers(dest="commande", required=True)
@@ -4448,7 +4590,7 @@ def main(argv: list[str] | None = None) -> None:
     mz.add_argument("--style", type=int, help="choisir : le style que tu conseilles, marqué sur la page (0, le style maison, par défaut ; 1 à 8).")
     mz.add_argument("--sans-styles", action="store_true", help="choisir : son style est déjà connu, la page ne montre que les musiques.")
     mz.set_defaults(f=cmd_musiques)
-    hg = s.add_parser("heygen", help="HeyGen : relier le compte, chercher et prendre une musique (gratuit), écouter et générer une voix (payant).")
+    hg = s.add_parser("heygen", help="HeyGen : relier le compte, écouter et générer une voix (payant) ; ses musiques et bruitages seulement à la demande du client (licence : usage commercial interdit sur un compte gratuit, son.md).")
     hg.add_argument("action", nargs="?", default="etat", choices=("etat", "connecter", "musiques", "bruitages", "prendre", "voix", "parler"))
     hg.add_argument("valeurs", nargs="*", help="La clé, la description du morceau (en anglais), le numéro choisi, ou le texte de la voix (ou son fichier).")
     hg.add_argument("--dans", help="Le projet de la vidéo (défaut : le dossier courant).")
@@ -4541,7 +4683,7 @@ def main(argv: list[str] | None = None) -> None:
     quand.add_argument("--temps", help="Instants en secondes, séparés par des virgules (repères + 0,3 s).")
     quand.add_argument("--pas", type=float, help="Une image tous les N secondes, sur plusieurs planches si besoin "
                        "(0.5 : la planche serrée de la passe du directeur et de la revue).")
-    pl.add_argument("--sortie")
+    pl.add_argument("--sortie", help="L'image de la planche, en .jpg (ajouté s'il manque ; défaut : <vidéo>-planche.jpg).")
     pl.set_defaults(f=cmd_planche)
     rl = s.add_parser("relecture", help="Prépare la relecture à froid : les planches du MP4 et la consigne d'un relecteur neuf.")
     rl.add_argument("video")
@@ -4563,11 +4705,15 @@ def main(argv: list[str] | None = None) -> None:
     so = s.add_parser("son", help="Mesure la sonie et la crête.")
     so.add_argument("video")
     so.add_argument("--cible", type=float, default=CIBLE_LUFS, help="Sonie visée en LUFS (défaut -16 ; -20 pour des bruitages seuls).")
+    so.add_argument("--voix", action="store_true", help="La vidéo a une voix : crêtes sous -2 dBTP (automatique quand "
+                    "`sons` a posé la voix dans index.html).")
     so.set_defaults(f=cmd_son)
-    ma = s.add_parser("mastering", help="Met le son à -16 LUFS (ou --cible), crêtes sous -1 dBTP.")
+    ma = s.add_parser("mastering", help="Met le son à -16 LUFS (ou --cible), crêtes sous -1 dBTP (-2 avec une voix).")
     ma.add_argument("entree")
     ma.add_argument("sortie")
     ma.add_argument("--cible", type=float, default=CIBLE_LUFS, help="Sonie visée en LUFS (défaut -16 ; -20 pour des bruitages seuls).")
+    ma.add_argument("--voix", action="store_true", help="La vidéo a une voix : crêtes plafonnées à -2 dBTP (automatique "
+                    "quand `sons` a posé la voix dans index.html).")
     ma.set_defaults(f=cmd_mastering)
     pv = s.add_parser("preparer-video", help="Prépare une vraie vidéo pour une composition (images clés, sans son).")
     pv.add_argument("entree")
@@ -4590,7 +4736,8 @@ def main(argv: list[str] | None = None) -> None:
                     "n'importe quel ordre : la vidéo rendue (un .mp4 qui existe), la couverture (une image qui existe, "
                     "ou l'instant de la vidéo à prendre, en secondes), puis, facultatives, la vidéo de sortie (.mp4) "
                     "et l'image de sortie (.jpg ou .png). Depuis le projet, les sorties par défaut sont "
-                    "../livraison/<vidéo>.mp4 et ../livraison/couverture.jpg (Reel, TikTok). Exemples : "
+                    "../livraison/<vidéo>.mp4 et ../livraison/couverture.jpg (Reel, TikTok) ; pour les autres "
+                    "supports, l'image reste dans work/<vidéo>-couverture.jpg (rien à poster). Exemples : "
                     "`couverture exports/reel-master.mp4 3.5` ; `couverture exports/reel-master.mp4 work/couverture.png`.")
     co.add_argument("entrees", nargs="+", metavar="argument",
                     help="vidéo rendue, image ou instant (s), et les sorties facultatives, dans n'importe quel ordre")
@@ -4603,12 +4750,15 @@ def main(argv: list[str] | None = None) -> None:
     li = s.add_parser("livrer", help="Vérifie que la livraison est complète.")
     li.add_argument("dossier")
     li.set_defaults(f=cmd_livrer)
-    args = p.parse_args(argv)
+    return p
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parseur().parse_args(argv)
     for attribut in ENTREES.get(args.commande, ()):
         valeur = getattr(args, attribut, None)
         if valeur and not (args.commande == "logos" and valeur == "chercher") and not Path(valeur).expanduser().exists():
-            sys.exit(f"ERREUR : introuvable : {valeur} (commande lancée depuis {Path.cwd()}). Vérifie le chemin : "
-                     "les commandes de fabrication se lancent depuis le projet de la vidéo.")
+            sys.exit(f"ERREUR : introuvable : {valeur} (commande lancée depuis {Path.cwd()}). " + ou_lancer(args.commande))
     args.f(args)
 
 

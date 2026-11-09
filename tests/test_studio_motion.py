@@ -1699,6 +1699,29 @@ class Couverture(unittest.TestCase):
         self.assertFalse((self.livraison / "couverture.jpg").exists())
 
 
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+class Affiche(unittest.TestCase):
+    def test_les_couleurs_de_l_affiche_sont_celles_de_la_video(self):
+        # Comme pour la couverture : l'affiche tirée d'une vidéo BT.709 gardait la formule de la vidéo et se
+        # lisait avec celle du JPEG (un rouge à 215, 54 au lieu de 229, 72).
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            video, affiche, attendu = Path(d) / "page-master.mp4", Path(d) / "page.jpg", (229, 72, 77)
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0xe5484d:s=1920x1080:r=30:d=2",
+                            "-vf", "format=gbrp,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,setparams="
+                            "color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv", "-c:v", "libx264", "-crf", "10",
+                            str(video)], check=True)
+            with contextlib.redirect_stdout(io.StringIO()):
+                sm.main(["affiche", str(video), str(affiche), "--temps", "1"])
+            self.assertEqual(sm.image_reelle(affiche), ("jpeg", 1920, 1080))
+            self.assertLessEqual(affiche.stat().st_size, 100 * 1024)
+            r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(affiche), "-frames:v", "1", "-vf",
+                                "format=rgb24,scale=1:1:flags=area", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                               capture_output=True, check=True)
+            couleur = tuple(r.stdout[:3])
+            self.assertLessEqual(max(abs(a - b) for a, b in zip(couleur, attendu)), 5, couleur)
+
+
 # Un faux yt-dlp qui se comporte comme le vrai sur ce point : il ne retélécharge jamais un fichier déjà là.
 FAUX_YTDLP = """#!{python}
 import json, os, shutil, sys
@@ -1885,3 +1908,176 @@ class RelecteurOutille(unittest.TestCase):
         self.assertEqual(sm.ligne_plans([3.1, 0.53, 19.77, 1.43]),
                          "- Plans (HyperFrames `measure cuts`) : 4, durée médiane 3,1 s, de 0,53 à 19,77 s\n")
         self.assertEqual(sm.ligne_plans(None), "")
+
+
+class RevueDu9Novembre(unittest.TestCase):
+    """Les corrections des outils après la revue du 09/11/2026."""
+
+    def sortie_de(self, *argv: str) -> str:
+        with self.assertRaises(SystemExit) as e, contextlib.redirect_stdout(io.StringIO()):
+            sm.main(list(argv))
+        return str(e.exception.code)
+
+    def test_un_chemin_introuvable_renvoie_au_bon_endroit(self):
+        projet = self.sortie_de("rythme", "exports/absent.mp4")
+        self.assertIn("`rythme` se lance depuis le projet de la vidéo", projet)
+        racine = self.sortie_de("livrer", "videos/absent")
+        self.assertIn("`livrer` se lance depuis la racine du dossier", racine)
+        self.assertNotIn("depuis le projet", racine)
+        for commande in ("capture", "offre", "reference", "ajouter"):
+            self.assertIn("racine du dossier", sm.ou_lancer(commande), commande)
+        for commande in ("sons", "emergence", "mastering", "affiche", "export", "planche", "logos"):
+            self.assertIn("projet de la vidéo", sm.ou_lancer(commande), commande)
+
+    def test_messages_corriges(self):
+        source = (RACINE / "tools" / "studio_motion.py").read_text(encoding="utf-8")
+        self.assertNotIn("Avec une voix, moins de bruitages", source)     # une section qui n'existe pas
+        self.assertIn("## 3. Caler la vidéo sur la voix",
+                      (RACINE / ".claude" / "skills" / "studio" / "references" / "voix.md").read_text(encoding="utf-8"))
+        self.assertIn("au moins 0,7 événement/s", source)
+        self.assertEqual(sm.EVENEMENTS_MIN, 0.7)
+        aide = io.StringIO()
+        with contextlib.redirect_stdout(aide), self.assertRaises(SystemExit):
+            sm.main(["--help"])
+        self.assertNotIn("(gratuit)", aide.getvalue())                    # les musiques HeyGen : pas pour vendre
+        self.assertIn("usage commercial interdit", aide.getvalue())
+
+    def test_verifier_compare_hyperframes_a_package_json(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = Path(d)
+            (r / "package.json").write_text(json.dumps({"devDependencies": {"hyperframes": "0.9.26"}}), encoding="utf-8")
+            self.assertEqual(sm.versions_hyperframes(r), ("0.9.26", None))
+            ligne, ok = sm.ligne_hyperframes(r, True)
+            self.assertFalse(ok)
+            self.assertIn("pas dans node_modules/", ligne)
+            (r / "node_modules" / "hyperframes").mkdir(parents=True)
+            (r / "node_modules" / "hyperframes" / "package.json").write_text('{"version": "0.9.20"}', encoding="utf-8")
+            ligne, ok = sm.ligne_hyperframes(r, True)
+            self.assertFalse(ok)
+            self.assertIn("HyperFrames 0.9.26 : 0.9.20 installé, lance `npm ci`", ligne)
+            (r / "node_modules" / "hyperframes" / "package.json").write_text('{"version": "0.9.26"}', encoding="utf-8")
+            self.assertEqual(sm.ligne_hyperframes(r, True), ("HyperFrames 0.9.26", True))
+            self.assertFalse(sm.ligne_hyperframes(r, False)[1])
+        # le dépôt lui-même : la version installée est celle figée
+        figee, trouvee = sm.versions_hyperframes(RACINE)
+        if trouvee:
+            self.assertEqual(figee, trouvee, "lance `npm ci` : node_modules/ n'a pas la version de package.json")
+
+    def test_verifier_controle_la_copie_du_skill_pour_codex(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = racine_de_test(Path(d))
+            sortie = io.StringIO()
+            with mock.patch.object(sm, "racine", return_value=r), contextlib.redirect_stdout(sortie), \
+                    self.assertRaises(SystemExit):
+                sm.cmd_verifier(None)
+            self.assertIn("❌ skill studio pour Codex (.agents/skills/studio/SKILL.md) : lance `npm run sync`", sortie.getvalue())
+            (r / ".agents" / "skills" / "studio").mkdir(parents=True)
+            (r / ".agents" / "skills" / "studio" / "SKILL.md").write_text("x", encoding="utf-8")
+            sortie = io.StringIO()
+            with mock.patch.object(sm, "racine", return_value=r), contextlib.redirect_stdout(sortie), \
+                    self.assertRaises(SystemExit):
+                sm.cmd_verifier(None)
+            self.assertIn("✅ skill studio pour Codex (.agents/skills/studio/SKILL.md)\n", sortie.getvalue())
+
+    def test_nouvelle_refuse_une_installation_pas_finie(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = racine_de_test(Path(d))
+            (r / "package.json").write_text("{}", encoding="utf-8")
+            self.assertEqual(sm.installation_manquante(r), ["node_modules/ (HyperFrames)", "assets/vendor/gsap.min.js (GSAP)"])
+            with mock.patch.object(sm, "racine", return_value=r), self.assertRaises(SystemExit) as e:
+                sm.main(["nouvelle", "Offre", "--objectif", "vente", "--videos", "reel"])
+            self.assertIn("il manque node_modules/ (HyperFrames) et assets/vendor/gsap.min.js (GSAP)", str(e.exception.code))
+            self.assertIn("INSTALL.md", str(e.exception.code))
+            self.assertFalse((r / "videos").exists(), "aucune vidéo créée")
+            (r / "node_modules").mkdir()
+            (r / "assets" / "vendor").mkdir(parents=True)
+            (r / "assets" / "vendor" / "gsap.min.js").write_text("/* gsap */", encoding="utf-8")
+            self.assertEqual(sm.installation_manquante(r), [])
+
+    def test_vignette_du_calage_au_format_de_la_video(self):
+        self.assertEqual(sm.taille_calage(1920, 1080), sm.CALAGE_TAILLE)
+        self.assertEqual(sm.taille_calage(320, 180), (64, 36))
+        self.assertEqual(sm.taille_calage(1080, 1920), (36, 64))
+        self.assertEqual(sm.taille_calage(1080, 1080), (48, 48))
+        self.assertEqual(sm.taille_calage(None, None), sm.CALAGE_TAILLE)
+
+    def test_la_voix_posee_par_sons_se_detecte(self):
+        with tempfile.TemporaryDirectory() as d:
+            projet = Path(d)
+            (projet / "exports").mkdir()
+            (projet / "meta.json").write_text("{}", encoding="utf-8")
+            video = projet / "exports" / "reel.mp4"
+            self.assertFalse(sm.voix_posee(video))
+            (projet / "index.html").write_text('<audio id="musique" src="m.wav"></audio>', encoding="utf-8")
+            self.assertFalse(sm.voix_posee(video))
+            (projet / "index.html").write_text('<audio id="voix" src="assets/sons/voix.wav" data-start="0.5"></audio>',
+                                               encoding="utf-8")
+            self.assertTrue(sm.voix_posee(video))
+            self.assertEqual(sm.plafond_de(mock.Mock(voix=False), video), sm.PLAFOND_TP_VOIX)
+        self.assertEqual(sm.plafond_de(mock.Mock(voix=True), Path("ailleurs.mp4")), -2.0)
+        self.assertEqual(sm.plafond_de(mock.Mock(voix=False), Path("ailleurs.mp4")), sm.PLAFOND_TP)
+        # -1,5 dBTP passe sans voix, pas avec
+        self.assertEqual(sm.verdict_sonore({"input_i": "-16", "input_tp": "-1.5"}), [])
+        self.assertIn("avec une voix", sm.verdict_sonore({"input_i": "-16", "input_tp": "-1.5"}, plafond_tp=-2.0)[0])
+        self.assertLess(sm.rang_mastering({"input_i": "-16", "input_tp": "-2.3"}, plafond_tp=-2.0),
+                        sm.rang_mastering({"input_i": "-16", "input_tp": "-1.5"}, plafond_tp=-2.0))
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+class RevueDu9NovembreAvecFfmpeg(unittest.TestCase):
+    def test_planche_sortie_sans_extension(self):
+        """`planche --sortie work/planche-v1` échouait dans ffmpeg (banc Notion Sites du 09/11/2026)."""
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            video = d / "reel.mp4"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x202022:s=1080x1920:r=30:d=2",
+                            "-pix_fmt", "yuv420p", str(video)], check=True)
+            sortie = io.StringIO()
+            with contextlib.redirect_stdout(sortie):
+                sm.main(["planche", str(video), "--sortie", str(d / "work" / "planche-v1")])
+            self.assertIn("sans extension d'image", sortie.getvalue())
+            self.assertEqual(sm.image_reelle(d / "work" / "planche-v1.jpg")[0], "jpeg")
+
+    def test_couverture_hors_reel_dans_work(self):
+        """Seuls le Reel et le TikTok ont une couverture à poster : pour les autres supports, l'image de
+        couverture ne va plus dans livraison/."""
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            maison = racine_de_test(Path(d))
+            dossier = sm.creer(maison, "Offre", "vente", [sm.lire_video("linkedin")], "2026-11-09")
+            projet = sm.projets(dossier)[0][0]
+            video = projet / "exports" / "linkedin-master.mp4"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0x202022:s=1080x1350:r=30:d=2",
+                            "-f", "lavfi", "-i", "sine=f=440:d=2", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac",
+                            "-shortest", str(video)], check=True)
+            with contextlib.redirect_stdout(io.StringIO()):
+                sm.main(["couverture", str(video), "1"])
+            livraison = dossier / "livraison"
+            self.assertTrue((livraison / "linkedin.mp4").is_file())
+            self.assertEqual(sorted(f.name for f in livraison.iterdir() if f.suffix == ".jpg"), [])
+            self.assertEqual(sm.image_reelle(projet / "work" / "linkedin-couverture.jpg"), ("jpeg", 1080, 1350))
+            (livraison / "post-linkedin.txt").write_text("x", encoding="utf-8")
+            self.assertEqual(sm.manques_livraison(dossier), [])
+
+    def test_mastering_plafonne_a_moins_2_avec_une_voix(self):
+        """son.md, « Le niveau final » : avec une voix, crêtes sous -2 dBTP. Des clics secs poussés à -13 LUFS
+        sortent vers -1,7 dBTP sans voix, au-dessus du plafond d'une vidéo avec voix."""
+        import subprocess
+        with tempfile.TemporaryDirectory() as d:
+            projet = Path(d)
+            (projet / "exports").mkdir()
+            (projet / "meta.json").write_text("{}", encoding="utf-8")
+            (projet / "index.html").write_text('<audio id="voix" src="assets/sons/voix.wav"></audio>', encoding="utf-8")
+            entree, sortie = projet / "exports" / "reel.mp4", projet / "exports" / "reel-master.mp4"
+            clics = "0.9*sin(2*PI*1800*t)*exp(-60*mod(t\\,0.25))+0.02*sin(2*PI*200*t)"
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=black:s=1080x1920:r=30:d=6",
+                            "-f", "lavfi", "-i", f"aevalsrc='{clics}':s=48000:d=6", "-map", "0:v", "-map", "1:a",
+                            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(entree)], check=True)
+            texte = io.StringIO()
+            with contextlib.redirect_stdout(texte):
+                sm.main(["mastering", str(entree), str(sortie), "--cible", "-13"])
+            self.assertIn("avec une voix : crêtes plafonnées à -2 dBTP", texte.getvalue())
+            mesure = sm.mesure_sonore(shutil.which("ffmpeg"), sortie)
+            self.assertLessEqual(float(mesure["input_tp"]), -2.0, mesure)
+            self.assertLessEqual(abs(float(mesure["input_i"]) + 13), 1.0, mesure)

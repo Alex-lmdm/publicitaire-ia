@@ -132,7 +132,8 @@ def caler_projet(projet: Path) -> dict:
 def respiration(projet: Path, instant: float, secondes: float = 1.5) -> dict:
     """Ouvre une respiration de `secondes` dans assets/audio/voix.wav, à la pause la plus proche de
     `instant` (secondes du fichier de la voix) : le silence est allongé en son milieu et les mots
-    suivants de transcript.json reculent d'autant. L'ancienne voix reste dans voix-avant-respiration.wav."""
+    suivants de transcript.json (et de work/voix-mots.json, une voix HeyGen) reculent d'autant.
+    L'ancienne voix reste dans voix-avant-respiration.wav."""
     audio = projet / "assets" / "audio"
     voix = audio / "voix.wav"
     if not voix.is_file():
@@ -158,13 +159,27 @@ def respiration(projet: Path, instant: float, secondes: float = 1.5) -> dict:
     if r.returncode != 0:
         raise Erreur(f"ffmpeg : {r.stderr.strip()[-300:]}")
     tmp.replace(voix)
-    for nom in ("transcript.json", "transcript-brut.json"):
-        f = audio / nom
+    # les temps des mots : la transcription (`voix caler`) et ceux d'une voix HeyGen (work/voix-mots.json,
+    # que relit `calage`) ; sans ce décalage, les gestes se caleraient faux après la pause
+    for f in (audio / "transcript.json", audio / "transcript-brut.json", projet / "work" / "voix-mots.json"):
         if f.is_file():
-            mots = json.loads(f.read_text(encoding="utf-8"))
-            for w in mots:
-                if float(w["start"]) >= milieu:
-                    w["start"] = round(float(w["start"]) + ajout, 2)
-                    w["end"] = round(float(w["end"]) + ajout, 2)
-            f.write_text(json.dumps(mots, ensure_ascii=False, indent=2), encoding="utf-8")
+            _decaler(f, milieu, ajout)
     return {"pause": (round(a, 2), round(b, 2)), "ajout": ajout, "duree": round(sons.duree(voix), 2)}
+
+
+def _decaler(f: Path, milieu: float, ajout: float) -> None:
+    """Recule de `ajout` les mots de `f` qui commencent après `milieu`. Accepte une liste de mots ou
+    un objet qui les range sous `words` ou `word_timestamps` (la réponse de HeyGen)."""
+    donnees = json.loads(f.read_text(encoding="utf-8"))
+    mots = donnees
+    if isinstance(donnees, dict):
+        mots = donnees.get("words") or donnees.get("word_timestamps") or []
+    for w in mots if isinstance(mots, list) else []:
+        try:
+            debut, fin = float(w["start"]), float(w["end"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if debut >= milieu:
+            w["start"] = round(debut + ajout, 3)
+            w["end"] = round(fin + ajout, 3)
+    f.write_text(json.dumps(donnees, ensure_ascii=False, indent=2), encoding="utf-8")
