@@ -137,6 +137,45 @@ class Installation(unittest.TestCase):
                 pack_sfx.reprendre_depuis_monteur(racine, Path(d))
 
 
+class ChoixDesSons(unittest.TestCase):
+    """Écoute d'Alex du 09/11/2026 : le Pack SFX remplace 20 des 22 sons de démarrage (bon marché à
+    côté) ; ses sons « secours » viennent après les autres. Un pack d'avant la 1.3, sans le champ
+    choix, écarte les sons de démarrage de la même façon."""
+
+    def racine_avec(self, d: str, sons: list[dict]) -> Path:
+        racine = Path(d)
+        (racine / "assets/sfx").mkdir(parents=True)
+        (racine / "assets/sfx/catalog.json").write_text(json.dumps({"version": "1.3.0", "sounds": sons}), encoding="utf-8")
+        for s in sons:
+            f = racine / "assets/sfx" / s["file"]
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(b"ID3")
+        return racine
+
+    def son(self, ident, source="pack", **champs):
+        dossier = "starter" if source == "starter" else "pack/ui"
+        nom = ident.removeprefix("starter-")
+        return {"id": ident, "file": f"{dossier}/{nom}.mp3", "source": source, "role": "apparition",
+                "usage": "pop d'apparition", "tags": "pop", **champs}
+
+    def test_pack_1_3_ecarte_et_secours(self):
+        sons = [self.son("ui-check-pop", choix="secours"), self.son("starter-pop-mouth", "starter", choix="ecarte"),
+                self.son("starter-pop", "starter"), self.son("ui-pop-up")]
+        with tempfile.TemporaryDirectory() as d:
+            trouves = pack_sfx.chercher(self.racine_avec(d, sons), ["pop"])
+        self.assertEqual([s["id"] for s in trouves], ["starter-pop", "ui-pop-up", "ui-check-pop"])
+        self.assertIn("secours", pack_sfx.ligne(trouves[-1]))
+        self.assertNotIn("secours", pack_sfx.ligne(trouves[0]))
+
+    def test_pack_ancien_sans_champ_choix(self):
+        sons = [self.son("starter-pop-mouth", "starter"), self.son("starter-pop", "starter"),
+                self.son("starter-click-double", "starter"), self.son("ui-pop-up")]
+        self.assertEqual(pack_sfx.choix(sons), {"starter-pop-mouth": "ecarte"})
+        with tempfile.TemporaryDirectory() as d:
+            ids = [s["id"] for s in pack_sfx.chercher(self.racine_avec(d, sons), ["pop"])]
+        self.assertEqual(ids, ["starter-pop", "starter-click-double", "ui-pop-up"])
+
+
 class Telechargements(unittest.TestCase):
     """Sans chemin : le Pack SFX pris dans Téléchargements, l'archive ou le dossier que Safari a
     décompressé tout seul (il ouvre les ZIP téléchargés et jette l'archive)."""

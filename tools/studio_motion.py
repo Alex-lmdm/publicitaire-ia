@@ -1467,6 +1467,21 @@ def sons_qui_lassent(evenements, catalogue: list[dict], sfx_dir: Path) -> list[s
     return avis
 
 
+def sons_remplaces(evenements, catalogue: list[dict], sfx_dir: Path) -> list[str]:
+    """Les sons de démarrage que le Pack SFX remplace, posés quand même (écoute d'Alex du 09/11/2026 :
+    20 sur 22 sonnent bon marché à côté du pack ; avant, 10 à 27 % des bruitages de ses vidéos en
+    venaient). Sans le pack (catalogue vide), ils restent les seuls bruitages : rien à dire."""
+    rang = pack_sfx.choix(catalogue)
+    par_fichier = {(sfx_dir / s["file"]).resolve(): s for s in catalogue if s.get("file")}
+    avis = []
+    for e in sorted(evenements, key=lambda e: float(e.get("start") or 0)):
+        s = par_fichier.get(Path(e["src"]).resolve())
+        if s and rang.get(s.get("id")) == "ecarte":
+            avis.append(f"{s['id']} (posé à {float(e.get('start') or 0):.2f} s) : remplace-le par un son du pack "
+                        "de la même ligne de assets/sfx/sons-par-situation.md")
+    return avis
+
+
 def catalogue_sfx(sfx_dir: Path) -> list[dict]:
     """Les fiches du Pack SFX installé (assets/sfx/catalog.json), ou rien s'il n'est pas là."""
     try:
@@ -1572,6 +1587,10 @@ def cmd_sons(a) -> None:
     if lassants:
         print(f"⚠️  {len(lassants)} bruitage(s) qui lassent à l'écoute (son.md, « Les bruitages ») :\n"
               + "\n".join(f"   - {a}" for a in lassants))
+    remplaces = sons_remplaces(evenements, catalogue, RACINE / "assets" / "sfx")
+    if remplaces:
+        print(f"⚠️  {len(remplaces)} son(s) de démarrage que le Pack SFX remplace (ils sonnent bon marché à côté) :\n"
+              + "\n".join(f"   - {a}" for a in remplaces))
 
 
 # ---------------------------------------------------------------------------

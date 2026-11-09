@@ -217,18 +217,39 @@ def etat(racine: Path) -> dict:
             "attendus": len(attendus), "version": c.get("version"), "manquants": manquants}
 
 
+# Pack SFX 1.3 (écoute d'Alex du 09/11/2026, chaque son face à ses remplaçants) : le champ « choix »
+# du catalogue écarte les 20 sons de démarrage qui sonnent bon marché à côté du pack (jamais proposés,
+# signalés à la pose) et met en dernier les sons du pack jugés moins bons (« secours »). Un pack plus
+# ancien n'a pas ce champ : ses sons de démarrage sont écartés de la même façon, sauf les deux qui
+# tiennent la comparaison.
+GARDES_SANS_CHOIX = {"starter-pop", "starter-click-double"}
+
+
+def choix(sons: list[dict]) -> dict[str, str]:
+    """{id: « ecarte » ou « secours »} pour les sons d'un catalogue ; les autres n'y sont pas."""
+    if any("choix" in s for s in sons):
+        return {s["id"]: s["choix"] for s in sons if s.get("choix")}
+    return {s["id"]: "ecarte" for s in sons if s.get("source") == "starter" and s.get("id") not in GARDES_SANS_CHOIX}
+
+
 def _plat(texte: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFD", str(texte).lower()) if unicodedata.category(c) != "Mn")
 
 
 def chercher(racine: Path, mots: list[str], limite: int = 15) -> list[dict]:
-    """Les sons du catalogue (pack et sons de démarrage) dont la fiche contient tous les mots."""
+    """Les sons du catalogue dont la fiche contient tous les mots, sans les sons écartés ; les sons de
+    secours après les autres (leur fiche porte alors « choix »)."""
     voulus = [_plat(w) for m in mots for w in m.split()]  # « whoosh simple » vaut deux mots
+    sons = catalogue(racine).get("sounds") or []
+    rang = choix(sons)
     trouves = []
-    for s in catalogue(racine).get("sounds") or []:
+    for s in sons:
+        if rang.get(s.get("id")) == "ecarte":
+            continue
         texte = _plat(" ".join(str(s.get(k) or "") for k in ("id", "name", "category", "role", "usage", "tags")))
         if all(m in texte for m in voulus) and (racine / "assets" / "sfx" / s["file"]).is_file():
-            trouves.append(s)
+            trouves.append({**s, "choix": rang[s["id"]]} if s.get("id") in rang else s)
+    trouves.sort(key=lambda s: s.get("choix") == "secours")   # tri stable : l'ordre du catalogue reste
     return trouves[:limite]
 
 
@@ -239,6 +260,7 @@ def ligne(s: dict) -> str:
     prises = (f", {len(segments)} prises, une seule à poser par son trim : "
               + ", ".join(f"[{t0}, {t1}]" for t0, t1 in segments[:4]) + ("…" if len(segments) > 4 else "")
               if len(segments) > 1 else "")
+    secours = " · secours : moins bon à l'écoute, à prendre en dernier" if s.get("choix") == "secours" else ""
     return (f"{s['id']} : ../../../assets/sfx/{s['file']} · {s.get('role')} · gain {s.get('gain_db')} dB · "
-            f"impact {s.get('hit')} s ({s.get('align')}) · {s.get('duration')} s{prises} · {s.get('usage', '')}")
+            f"impact {s.get('hit')} s ({s.get('align')}) · {s.get('duration')} s{prises} · {s.get('usage', '')}{secours}")
 

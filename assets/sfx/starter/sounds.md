@@ -3,8 +3,9 @@
 > **Pour l'IA :** pour **chaque événement visible qui mérite un son** (clic, apparition, passage,
 > révélation, validation), choisis le fichier dont la description colle le mieux à ce qui se
 > passe à l'écran, puis pose-le avec `studio_motion.py sons` (règles de placement et de niveau :
-> `references/son.md` du skill `studio`). Ces sons dépannent : une bibliothèque pro (Pack SFX,
-> sons de HeyGen) sonne mieux dans une vidéo de motion design.
+> `references/son.md` du skill `studio`). Ces sons dépannent **sans le Pack SFX** : quand il est
+> installé, il les remplace (à l'écoute, 20 sur 22 sonnent bon marché à côté ; seuls `pop` et
+> `click-double` restent).
 > Tous ces fichiers sont sous licence **CC0** (domaine public) : livrés avec le dossier.
 
 ## Clics

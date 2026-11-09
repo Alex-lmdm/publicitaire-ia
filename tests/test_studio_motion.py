@@ -1078,6 +1078,26 @@ class PrisesOubliees(unittest.TestCase):
             self.assertEqual(sm.catalogue_sfx(Path(d)), [])
 
 
+class SonsRemplaces(unittest.TestCase):
+    """Écoute d'Alex du 09/11/2026 : un son de démarrage que le Pack SFX remplace se signale à la pose."""
+    SFX = Path(tempfile.gettempdir()) / "studio" / "assets" / "sfx"
+    CATALOGUE = [{"id": "starter-drop", "file": "starter/drop.mp3", "source": "starter", "choix": "ecarte"},
+                 {"id": "starter-pop", "file": "starter/pop.mp3", "source": "starter"},
+                 {"id": "click-single-snap", "file": "pack/clicks/click-single-snap.mp3", "source": "pack"}]
+
+    def test_signale_seulement_les_sons_ecartes(self):
+        evenements = [{"src": self.SFX / "starter/drop.mp3", "start": 2.5},
+                      {"src": self.SFX / "starter/pop.mp3", "start": 1.0},
+                      {"src": self.SFX / "pack/clicks/click-single-snap.mp3", "start": 3.0}]
+        avis = sm.sons_remplaces(evenements, self.CATALOGUE, self.SFX)
+        self.assertEqual(len(avis), 1)
+        self.assertIn("starter-drop (posé à 2.50 s)", avis[0])
+        self.assertIn("sons-par-situation.md", avis[0])
+
+    def test_sans_pack_rien_a_dire(self):
+        self.assertEqual(sm.sons_remplaces([{"src": self.SFX / "starter/drop.mp3", "start": 1.0}], [], self.SFX), [])
+
+
 class SonsQuiLassent(unittest.TestCase):
     """Retour du client du 07/11/2026 : le même bruitage revenait sans cesse, et c'était un cliquet."""
     SFX = Path(tempfile.gettempdir()) / "studio" / "assets" / "sfx"

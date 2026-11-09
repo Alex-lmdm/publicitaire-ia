@@ -10,8 +10,12 @@ comprendre muette (stories, métro). Donc : **l'image porte le message, le son l
   de chacun dans `assets/sfx/catalog.json` : rôle, usage, gain calibré, instant d'impact, prises ;
   la table « quel son pour quoi » dans `assets/sfx/sons-par-situation.md`) ; sinon ses propres MP3.
   Les 22 sons de démarrage du dossier
-  (`assets/sfx/starter/`, index « à utiliser quand… » dans `sounds.md`, licence CC0) en dernier
-  recours : dans une vidéo de motion design, ils sonnent bon marché (retour du créateur) ; peu nombreux et bien placés, ils restent mieux que le silence.
+  (`assets/sfx/starter/`, index « à utiliser quand… » dans `sounds.md`, licence CC0) **seulement
+  sans le pack** : peu nombreux et bien placés, ils restent mieux que le silence. **Avec le pack, il
+  les remplace** : à l'écoute du créateur (09/11/2026, chacun face à ses remplaçants), 20 sur 22
+  sonnent bon marché à côté ; jusque-là, 10 à 27 % des bruitages de ses vidéos en venaient. Seuls
+  `starter-pop` et `starter-click-double` restent, en variantes ; `pack-sfx chercher` ne propose plus
+  les autres et `sons` les signale.
 - **Musique** : toute vidéo en a une, c'est elle qui la porte (sans voix, les bruitages seuls
   sonnent maigres). Dans cet ordre : le morceau qu'il a donné (un fichier glissé ici, ou `musique`
   de `marque.json`, rangé dans `marque/`) ; sinon ses **musiques de lancement** (35 morceaux offerts
@@ -72,7 +76,10 @@ les prises. Un identifiant `:N` de la table désigne la N-ième prise : son `tri
 `segments` du catalogue. **Un son à plusieurs prises se pose toujours avec le `trim` d'une seule** :
 sans lui, toutes ses prises jouent à la suite sous les scènes suivantes (16 traits de feutre sur 11 s
 entendus « en fond partout »), et `sons` refuse de le poser. Les identifiants `starter-*` sont les
-sons de démarrage du dossier, calibrés de la même façon. Le pack n'est jamais copié dans le dépôt ni dans une livraison : seuls
+sons de démarrage du dossier : avec le pack, seuls `starter-pop` et `starter-click-double` se posent
+encore. Un son « secours » (`chercher` l'écrit : `ui-check-pop`, `ui-clean-click`, `misc-punch`,
+`slice-ring-low`, `misc-error-buzz`, `ui-unlock`, `ui-ping`, jugés moins bons à la même écoute) ne
+vient qu'après tous les autres. Le pack n'est jamais copié dans le dépôt ni dans une livraison : seuls
 les sons posés vont dans le projet de la vidéo (`assets/sons/`, fait par `sons`).
 
 ## Les musiques de lancement (offertes avec la formation)
@@ -329,8 +336,10 @@ qui travaille **en dessous** :
   jamais pour remplir. Un même geste garde la même **famille** (un clic sonne comme un clic), mais
   pas le même fichier : **jamais le même son deux fois de suite** à moins de 3 s, ni trois fois en
   6 s. Une série (les coches, les formats qui arrivent, les clics d'une démo) alterne deux ou trois
-  sons voisins de la famille (`click-mouse-click`, `starter-click-mouse`, `click-mac-single`,
-  `click-mouse-deep` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `starter-pop-mouth`). Ne répète
+  sons voisins de la famille (`click-mouse-click`, `click-mac-single`, `click-mouse-deep`,
+  `click-mouse-light` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `click-single-snap` ; pour un
+  élément qui se pose, `click-single-snap`, `camera-lens-cap` et ses 5 prises, `paper-paper-slide`).
+  Jamais un son de démarrage écarté pour varier une série : c'est par là qu'ils entraient. Ne répète
   pas un son marquant (impact, riser, cha-ching). Retour du créateur : « on répète le
   même bruitage plusieurs fois d'affilée, c'est un peu chiant ». Un son qui revient plus loin change
   un peu de hauteur à chaque retour, tout seul (`sons` le prépare : 4 % plus aigu, 3 % plus grave…) ;
@@ -340,9 +349,10 @@ qui travaille **en dessous** :
   un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic
   tic tic » par le client : posé 11 fois, il a gâché la story v3) ; `click-hard` fait trois clics ;
   `click-click-sequence`, `click-click-whoosh`, `click-fast-burst` et `ui-counter-tick` sont des
-  rafales. Pour un mot qui claque : `click-single-snap`, `misc-punch`, `starter-drop`, `click-hard`
-  rogné à `[0, 0.2]`. `sons` prévient de ces pièges et de chaque répétition après la pose
-  (« bruitages qui lassent ») : corrige-les avant le rendu.
+  rafales. Pour un mot qui claque : `click-hard` rogné à `[0, 0.2]`, `click-single-snap` ;
+  `misc-punch` en secours seulement. Le pack a peu d'accents secs : un par temps fort, la variation
+  de hauteur fait le reste. `sons` prévient de ces pièges, de chaque répétition (« bruitages qui
+  lassent ») et des sons de démarrage que le pack remplace : corrige-les avant le rendu.
 - Calé sur l'image de l'évènement : l'attaque du son (son début audible) au moment exact du
   contact, ou 2 à 3 images avant pour un impact. Un décalage de 0,2 s se voit.
 - Dans une cascade (cinq éléments qui tombent), seuls le premier et le dernier sonnent.
