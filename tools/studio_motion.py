@@ -88,6 +88,8 @@ import telechargeur  # noqa: E402
 import voix as vx  # noqa: E402
 
 FPS = 30
+# Le rendu d'HyperFrames, presque sans perte : `couverture` fait le seul encodage qui compte.
+CRF_RENDU = 10
 
 
 def _lire_texte(f: Path, defaut: str = "") -> str:
@@ -1730,9 +1732,12 @@ def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
                              "role": v.get("role"), "format": v["format"], "sujet": sujet, "date": date,
                              "sticker": avec_sticker(v)}}
     (projet / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # Le rendu sort presque sans perte (CRF 10, un fichier de travail plus lourd) : le seul encodage qui
+    # compte est celui de `couverture`, à la livraison. Rendu en qualité ordinaire, la vidéo perdait deux
+    # fois de la netteté (sur un Reel, le débit passait de 3,8 à 3 Mb/s).
     paquet = {"name": f"{produit().get('code', 'publicitaire-ia')}-{cle}", "private": True, "type": "module",
               "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
-                          "render": f"hyperframes render -o exports/{cle}.mp4"}}
+                          "render": f"hyperframes render --crf {CRF_RENDU} -o exports/{cle}.mp4"}}
     (projet / "package.json").write_text(json.dumps(paquet, indent=2) + "\n", encoding="utf-8")
     return projet
 
@@ -3834,7 +3839,8 @@ def cmd_sans_musique(a) -> None:
     cible.write_text(html, encoding="utf-8")
     print(f"• rendu de la version sans musique ({n} piste(s) de musique retirée(s))…", flush=True)
     try:
-        r = lancer([*cli, "render", "-c", cible.name, "-o", str(sortie.relative_to(projet))], cwd=str(projet))
+        r = lancer([*cli, "render", "--crf", str(CRF_RENDU), "-c", cible.name, "-o", str(sortie.relative_to(projet))],
+                   cwd=str(projet))
     finally:
         cible.unlink(missing_ok=True)
     if r.returncode != 0 or not sortie.is_file():
@@ -4000,6 +4006,29 @@ def lire_couverture(entrees: list[str]) -> dict:
             "sortie_image": sorties_image[0] if sorties_image else None}
 
 
+# Les étiquettes de couleur de tout ce qu'on livre : sans elles, un lecteur devine (souvent BT.601) et
+# les couleurs sortent délavées ou virent, sans que personne le voie.
+ETIQUETTES_709 = ("-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709", "-color_range", "tv")
+
+
+def lecture_couleurs(v: dict) -> str:
+    """Le filtre qui lit les couleurs d'une piste vidéo d'après ses étiquettes (ffprobe), plutôt que
+    de laisser ffmpeg deviner la formule et la plage."""
+    matrice = {"bt709": "bt709", "smpte170m": "bt601", "bt470bg": "bt601"}.get(v.get("color_space"), "auto")
+    plage = {"tv": "tv", "pc": "pc"}.get(v.get("color_range"), "auto")
+    return f"scale=in_color_matrix={matrice}:in_range={plage}"
+
+
+def vers_709(v: dict) -> str:
+    """Le filtre qui fait d'une piste vidéo une piste BT.709 plage limitée étiquetée, comme tout ce qu'on
+    livre. Sans étiquettes (une vidéo d'ailleurs), on la tient pour BT.709 : sinon ffmpeg y ramène
+    l'image posée dessus avec une autre formule."""
+    poser = "setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv"
+    if v.get("color_space") in (None, "unknown", "bt709") and v.get("color_range") in (None, "unknown", "tv"):
+        return poser
+    return f"{lecture_couleurs(v)}:out_color_matrix=bt709:out_range=tv,format=yuv420p,{poser}"
+
+
 def cmd_couverture(a) -> None:
     """La couverture : une vraie image JPEG (ou PNG) au format de la vidéo, à poster comme couverture du
     Reel, et la vidéo qui l'a en toute première image (les aperçus de X, WhatsApp, Instagram avant la
@@ -4036,26 +4065,40 @@ def cmd_couverture(a) -> None:
     for f in (sortie, sortie_image):
         f.parent.mkdir(parents=True, exist_ok=True)
 
-    # 1. L'image, recadrée au format de la vidéo, écrite à côté puis mise à sa place (la source peut être
-    #    la sortie elle-même) ; -update 1 : un seul fichier, jamais une suite d'images.
+    # 1. L'image, recadrée au format de la vidéo, écrite à côté (la source peut être la sortie elle-même :
+    #    elle n'est remplacée qu'à la fin) ; -update 1 : un seul fichier, jamais une suite d'images. Les
+    #    couleurs passent par le RVB, avec la formule de chaque côté : laissé à ffmpeg, le JPEG tiré d'une
+    #    vidéo BT.709 gardait la formule de la vidéo et se lisait avec celle du JPEG (un rouge délavé).
     cadre = f"scale={largeur}:{hauteur}:force_original_aspect_ratio=increase,crop={largeur}:{hauteur}"
-    provisoire = sortie_image.with_name(f".{sortie_image.stem}-provisoire{sortie_image.suffix.lower()}")
-    entree = ["-ss", f"{c['instant']:.3f}", "-i", str(video)] if c["instant"] is not None else ["-i", str(c["image"])]
-    qualite = ["-q:v", "2"] if sortie_image.suffix.lower() in (".jpg", ".jpeg") else []
-    r = lancer([ffmpeg, "-v", "error", "-y", *entree, "-frames:v", "1", "-update", "1", "-vf", cadre, *qualite,
-                str(provisoire)])
-    attendu = "jpeg" if sortie_image.suffix.lower() in (".jpg", ".jpeg") else "png"
-    if r.returncode != 0 or image_reelle(provisoire) != (attendu, largeur, hauteur):
-        provisoire.unlink(missing_ok=True)
+    v = next((x for x in info.get("streams") or [] if x.get("codec_type") == "video"), {})
+    jpeg = sortie_image.suffix.lower() in (".jpg", ".jpeg")
+    provisoire_image = sortie_image.with_name(f".{sortie_image.stem}-provisoire{sortie_image.suffix.lower()}")
+    if c["instant"] is not None:
+        entree, lecture = ["-ss", f"{c['instant']:.3f}", "-i", str(video)], f"{lecture_couleurs(v)},"
+    else:
+        entree, lecture = ["-i", str(c["image"])], ""
+    vers_image = ",scale=out_color_matrix=bt601:out_range=pc,format=yuvj420p" if jpeg else ""
+    r = lancer([ffmpeg, "-v", "error", "-y", *entree, "-frames:v", "1", "-update", "1", "-vf",
+                f"{lecture}format=rgb24,{cadre}{vers_image}", *(["-q:v", "2"] if jpeg else []), str(provisoire_image)])
+    if r.returncode != 0 or image_reelle(provisoire_image) != ("jpeg" if jpeg else "png", largeur, hauteur):
+        provisoire_image.unlink(missing_ok=True)
         sys.exit(f"ERREUR : image de couverture impossible : {(r.stderr or '').strip()[-300:]}")
-    os.replace(provisoire, sortie_image)
 
-    # 2. La vidéo, avec cette image en toute première image.
+    # 2. La vidéo, avec cette image en toute première image : le seul encodage qui compte (le rendu sort
+    #    presque sans perte). Un instant : l'image même de la vidéo, sans passer par le JPEG ; une image :
+    #    convertie en BT.709 plage limitée, comme la vidéo, et les étiquettes posées pour les lecteurs.
+    if c["instant"] is not None:
+        pose = (["-ss", f"{c['instant']:.3f}", "-i", str(video)],
+                f"[1:v]trim=end_frame=1,setpts=PTS-STARTPTS,{vers_709(v)}[c]")
+    else:
+        pose = (["-i", str(c["image"])], f"[1:v]format=rgb24,{cadre},scale=out_color_matrix=bt709:out_range=tv,"
+                                         "format=yuv420p,setparams=colorspace=bt709:range=tv[c]")
     provisoire = sortie.with_name(f".{sortie.stem}-provisoire.mp4")
-    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), "-i", str(sortie_image), "-filter_complex",
-                "[0:v][1:v]overlay=0:0:enable='eq(n,0)'[v]", "-map", "[v]", "-map", "0:a?", "-c:v", "libx264",
-                "-pix_fmt", "yuv420p", "-crf", "16", "-preset", "slow", "-c:a", "copy", "-movflags", "+faststart",
-                "-f", "mp4", str(provisoire)])
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), *pose[0], "-filter_complex",
+                f"[0:v]{vers_709(v)}[m];{pose[1]};[m][c]overlay=0:0:enable='eq(n,0)'[v]", "-map", "[v]", "-map", "0:a?",
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv420p", *ETIQUETTES_709, "-crf", "16", "-preset", "slow", "-c:a", "copy",
+                "-movflags", "+faststart", "-f", "mp4", str(provisoire)])
     try:
         nouvelle = json.loads(lancer([ffprobe, "-v", "error", "-show_streams", "-show_format", "-of", "json",
                                       str(provisoire)]).stdout) if r.returncode == 0 and provisoire.is_file() else {}
@@ -4063,7 +4106,9 @@ def cmd_couverture(a) -> None:
         nouvelle = {}
     if format_de(nouvelle) != fmt or abs(float((nouvelle.get("format") or {}).get("duration") or 0) - duree) > 0.2:
         provisoire.unlink(missing_ok=True)
+        provisoire_image.unlink(missing_ok=True)
         sys.exit(f"ERREUR : vidéo avec couverture impossible : {(r.stderr or '').strip()[-300:]}")
+    os.replace(provisoire_image, sortie_image)
     os.replace(provisoire, sortie)
     origine = f"image de la vidéo à {c['instant']:g} s" if c["instant"] is not None else f"depuis {_court(c['image'])}"
     print(f"• {_court(sortie_image)} : couverture {largeur}×{hauteur} ({origine})")
@@ -4100,6 +4145,11 @@ def verdict_export(info: dict, support: str, fmt: str | None = None, poids: int 
         pb.append(f"codec {v.get('codec_name')}, attendu h264")
     if v.get("pix_fmt") != "yuv420p":
         pb.append(f"pixels {v.get('pix_fmt')}, attendu yuv420p (sinon couleurs fausses sur iPhone)")
+    etiquettes = {k: v.get(k) for k in ("color_space", "color_primaries", "color_transfer")}
+    if any(x != "bt709" for x in etiquettes.values()) or v.get("color_range") != "tv":
+        lues = ", ".join(f"{k.split('_')[1]} {x or '?'}" for k, x in {**etiquettes, "color_range": v.get("color_range")}.items())
+        pb.append(f"étiquettes de couleur {lues}, attendu BT.709 plage limitée (sinon un lecteur devine, et les "
+                  "couleurs sortent délavées) : refais la livraison avec `couverture`")
     try:
         num, den = (int(x) for x in str(v.get("r_frame_rate", "0/1")).split("/"))
         if den and abs(num / den - FPS) > 0.5:

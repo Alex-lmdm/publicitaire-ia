@@ -33,7 +33,8 @@ palette »).
 **Seul le MP4 rendu fait foi.** `check` et `snapshot` téléchargent une police qui manque, le rendu
 non : une police sans fichier passe en police système seulement dans le MP4. Le journal du rendu
 dit aussi si le flou de bougé s'est appliqué (`[motion-blur] on`, et pourquoi en mode allégé :
-[kit.md](kit.md), pièges).
+[kit.md](kit.md), pièges). Les images de `snapshot` et un extrait `--start/--end` n'ont jamais ce
+flou : ils servent à juger une place ou une collision, la traîne se juge sur la planche du MP4 entier.
 
 ## Porte 2 : la planche
 

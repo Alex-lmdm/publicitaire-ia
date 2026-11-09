@@ -1104,7 +1104,8 @@ class SonsQuiLassent(unittest.TestCase):
 class Export(unittest.TestCase):
     def info(self, largeur=1080, hauteur=1920, duree="20.0", audio=True, **video):
         v = {"codec_type": "video", "codec_name": "h264", "width": largeur, "height": hauteur,
-             "pix_fmt": "yuv420p", "r_frame_rate": "30/1"}
+             "pix_fmt": "yuv420p", "r_frame_rate": "30/1", "color_space": "bt709", "color_primaries": "bt709",
+             "color_transfer": "bt709", "color_range": "tv"}
         v.update(video)
         flux = [v] + ([{"codec_type": "audio", "codec_name": "aac"}] if audio else [])
         return {"streams": flux, "format": {"duration": duree}}
@@ -1126,6 +1127,15 @@ class Export(unittest.TestCase):
     def test_ecarts(self):
         pb, _ = sm.verdict_export(self.info(1920, 1080, pix_fmt="yuv444p"), "reel")
         self.assertEqual(len(pb), 2)
+
+    def test_etiquettes_de_couleur(self):
+        # Une étape ffmpeg qui perd les étiquettes : le lecteur devine, les couleurs sortent délavées.
+        pb, _ = sm.verdict_export(self.info(color_space=None, color_primaries=None, color_transfer=None,
+                                            color_range=None), "reel")
+        self.assertEqual(len(pb), 1)
+        self.assertIn("BT.709 plage limitée", pb[0])
+        pb, _ = sm.verdict_export(self.info(color_range="pc"), "reel")
+        self.assertIn("range pc", pb[0])
 
     def test_duree(self):
         pb, _ = sm.verdict_export(self.info(duree="75"), "story")
@@ -1325,7 +1335,7 @@ class Creation(unittest.TestCase):
             self.assertNotIn("{{", (page / "CLAUDE.md").read_text(encoding="utf-8"))
             self.assertTrue((page / "brand" / "tokens.css").is_file())
             self.assertEqual(json.loads((page / "package.json").read_text(encoding="utf-8"))["scripts"]["render"],
-                             "hyperframes render -o exports/page.mp4")
+                             "hyperframes render --crf 10 -o exports/page.mp4")
             fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
             # le nom de l'offre se lit sur sa page (étape 2), pas dans le sujet de la vidéo (essai du 03/11/2026)
             self.assertEqual((fiche["produit"], fiche["objectif"]), ("", "vente"))
@@ -1600,6 +1610,39 @@ class Couverture(unittest.TestCase):
         self.assertLess(max(self.premiere_image(self.livraison / "reel.mp4")), 60)   # le fond sombre de la vidéo
         (self.livraison / "legende-reel.txt").write_text("x", encoding="utf-8")
         self.assertEqual(sm.manques_livraison(self.dossier), [])
+
+    def couleur(self, chemin: Path, lecture: str = "") -> tuple[int, ...]:
+        """La couleur moyenne de la première image, lue comme un lecteur la lit (la vidéo d'après ses
+        étiquettes BT.709, le JPEG avec la formule du JPEG)."""
+        import subprocess
+        r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(chemin), "-frames:v", "1", "-vf",
+                            f"{lecture}format=rgb24,scale=1:1:flags=area", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                           capture_output=True, check=True)
+        return tuple(r.stdout[:3])
+
+    def test_les_couleurs_de_la_couverture_sont_celles_de_la_video(self):
+        # Le JPEG tiré d'une vidéo BT.709 gardait la formule de la vidéo et se lisait avec celle du JPEG :
+        # le rouge perdait environ 15 sur 255, sur la couverture et sur la première image livrée.
+        import subprocess
+        rouge, attendu = self.projet / "exports" / "rouge-master.mp4", (229, 72, 77)
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0xe5484d:s=1080x1920:r=30:d=2",
+                        "-vf", "format=gbrp,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,setparams="
+                        "color_primaries=bt709:color_trc=bt709:colorspace=bt709:range=tv", "-c:v", "libx264", "-crf", "10",
+                        str(rouge)], check=True)
+        bt709 = "scale=in_color_matrix=bt709:in_range=tv,"
+        proche = lambda c: max(abs(a - b) for a, b in zip(c, attendu)) <= 5
+        self.assertTrue(proche(self.couleur(rouge, bt709)))
+        self.couverture(rouge, "1")
+        self.assertTrue(proche(self.couleur(self.livraison / "couverture.jpg")), self.couleur(self.livraison / "couverture.jpg"))
+        self.assertTrue(proche(self.couleur(self.livraison / "reel.mp4", bt709)), self.couleur(self.livraison / "reel.mp4", bt709))
+        info = json.loads(subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-show_format", "-of", "json",
+                                          str(self.livraison / "reel.mp4")], capture_output=True, check=True).stdout)
+        self.assertFalse([p for p in sm.verdict_export(info, "reel")[0] if "étiquettes" in p])
+        # Une image composée (PNG en RVB) : la première image livrée garde ses couleurs.
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=0xe5484d:s=1080x1920:d=1",
+                        "-frames:v", "1", str(self.image)], check=True)
+        self.couverture(self.video, self.image)
+        self.assertTrue(proche(self.couleur(self.livraison / "reel.mp4", bt709)), self.couleur(self.livraison / "reel.mp4", bt709))
 
     def test_version_sans_musique(self):
         sans = self.projet / "exports" / "reel-sans-musique-master.mp4"

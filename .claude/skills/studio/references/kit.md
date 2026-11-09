@@ -188,7 +188,23 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   adoucis) ; pour retourner une carte, échange ses deux faces à 90° plutôt que de cacher la face
   arrière. N'anime jamais `#root` lui-même (transformation, opacité) :
   le flou s'éteint. Un projet créé avant ce réglage ne l'a pas : ajoute les deux attributs sur
-  `#root`, puis `npm run check`.
+  `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
+  `snapshot` et un extrait `render --start/--end` (« distributed-render » dans le journal) en sont
+  privés. La traîne et l'allure d'un geste rapide se jugent sur la planche du MP4 entier.
+- **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :
+  - `backdrop-filter` (le verre dépoli) et `mix-blend-mode` sur un objet qui bouge, ou sur un de ses
+    parents, disparaissent dans le mode de flou qui rend les rotations : le verre seulement sur un
+    panneau immobile, sinon `data-motion-blur="off"` sur ce sous-arbre.
+  - Un masque ou un `clip-path` sur un objet qui bouge prend des bords durs : masque un parent
+    immobile et anime l'enfant dedans (comme `.clip`).
+  - Une opacité ou un `filter` sur un élément en `preserve-3d` l'aplatit et montre ses deux faces :
+    fais disparaître son enveloppe (un parent sans 3D), jamais l'élément en perspective.
+  - `will-change: transform` n'aide pas au rendu, et sur un objet que la caméra ou un zoom agrandit,
+    Chrome le dessine à sa taille de départ : il reste flou une fois grand. Ne le pose jamais.
+  - Un grand dégradé linéaire sombre en plein cadre fait des bandes à l'encodage (des marches de
+    130 px) : un aplat, un dégradé radial, ou un aplat avec une lueur locale.
+  - Une capture d'écran filmée de son produit posée dans la vidéo : `npm run render --
+    --video-frame-format png` (l'extraction en JPEG abîme les aplats et le texte fin).
 - **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :
   `getElementById` trouve l'hôte, plein écran, et l'objet s'y pose en haut à gauche, sans les styles
   de la scène (un dossier en Times dans le coin). Les éléments d'une scène

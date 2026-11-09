@@ -103,6 +103,11 @@ Court. Ce qu'il a, où le mettre, comment demander une retouche :
 > - la vidéo de ta page de vente (avec son affiche) et la façon de la poser sur ta page ;
 > - le Reel, sa version sans musique, sa couverture et sa légende.
 >
+> Pour qu'elle reste nette : publie-la depuis l'app Instagram ou TikTok de ton téléphone, avec le
+> réglage d'importation en qualité la plus élevée activé (dans les paramètres de l'app, à la qualité
+> des médias). Jamais par un programmateur (Buffer, Later, Hootsuite…) : il recompresse la vidéo
+> avant de l'envoyer. Pour programmer, Meta Business Suite convient.
+>
 > Tu veux la rendre encore plus impressionnante ? Demande-moi une seconde passe (la phrase de ta
 > formation, ou simplement « repasse dessus et rends-la plus impressionnante »). Et tout ce qui ne
 > te plaît pas se change : une couleur, une interface pas assez propre, un plan à refaire ou à

@@ -49,11 +49,11 @@ Depuis le projet de la vidéo (le dossier qui contient `index.html`) :
 | Commande | Ce qu'elle fait |
 |---|---|
 | `npm run check` (`npx hyperframes check --json`) | contrôle tout : règles du rendu, mise en page, contraste, et le métier (`craft`) : texte trop petit (`text_below_floor`, sous 28 px pour un petit côté de 1080), texte parti avant d'être lu (`line_unread`), première image vide (`first_frame_empty`). Zéro erreur ; chaque avertissement se corrige ou se justifie |
-| `npx hyperframes snapshot --at 1.2,3.5,…` | des images fixes aux instants donnés, et leur planche (`contact-sheet.jpg`) : la commande affiche leur chemin, dans `.hyperframes/artifacts/snapshots/` ; ouvre-les et regarde-les |
-| `npx hyperframes snapshot --range 2,4 --frames 8` | huit images sur un passage (un raccord, un geste) |
+| `npx hyperframes snapshot --at 1.2,3.5,…` | des images fixes aux instants donnés, et leur planche (`contact-sheet.jpg`) : la commande affiche leur chemin, dans `.hyperframes/artifacts/snapshots/` ; ouvre-les et regarde-les. **Sans flou de bougé** |
+| `npx hyperframes snapshot --range 2,4 --frames 8` | huit images sur un passage (un raccord, un geste, une collision), sans flou de bougé |
 | `npx hyperframes keyframes --json --selector '#id'` | les étapes réelles d'un mouvement (propriété, instant, valeur, courbe) |
 | `npx hyperframes timeline --json` | ce qui joue quand, scène par scène |
-| `npm run render` | le MP4 dans `exports/` ; **seul le MP4 rendu fait foi** (`revue.md`) |
+| `npm run render` | le MP4 dans `exports/`, presque sans perte (le seul encodage qui compte se fait à la livraison, par `couverture`) ; **seul le MP4 rendu fait foi** (`revue.md`). Toujours la vidéo entière : un extrait `--start/--end` n'a pas de flou de bougé |
 | `npx hyperframes preview` | l'aperçu dans le navigateur, si le client veut regarder pendant qu'on fabrique |
 
 Une erreur de `lint` coupe les autres contrôles : `check` affiche alors « 0 sample(s) », ce qui

@@ -104,7 +104,8 @@ premier jet.
 1. **Regarde le MP4 rendu**, jamais le code : depuis le projet, `python3
    ../../../tools/studio_motion.py planche exports/<vidéo>.mp4 --pas 0.5` (une image toutes les
    demi-secondes, sur plusieurs planches), dans l'ordre ; puis chaque passage de près (`npx
-   hyperframes snapshot --range <début>,<fin> --frames 8`).
+   hyperframes snapshot --range <début>,<fin> --frames 8`, sans flou de bougé : la traîne se juge
+   sur la planche).
 2. **Écris ce que tu changerais**, dans `PLAN.md`, section « Passe du directeur », plan par plan,
    sur ces points :
    - **les passages** : lesquels sont des coupes ou des fondus qui pourraient être un objet qui
