@@ -6,7 +6,7 @@ redistribué (13 octobre 2026 ; les styles, le 3 novembre 2026).
 
 ## Installés par npm, jamais copiés dans ce dépôt
 
-- **HyperFrames** 0.8.136 (Apache-2.0), HeyGen : compositions HTML rendues en vidéo, capture de
+- **HyperFrames** 0.9.26 (Apache-2.0), HeyGen : compositions HTML rendues en vidéo, capture de
   site, contrôles, rendu. https://github.com/heygen-com/hyperframes
 - **GSAP** 3.14.2 (licence « Standard No Charge » de GreenSock) : animation. Installé depuis npm,
   copié sur l'ordinateur du client par `npm run sync` (assets/vendor/, non versionné).

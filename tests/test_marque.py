@@ -474,6 +474,16 @@ class NomDuProduit(unittest.TestCase):
                   "d'installation de son INSTALL.md")
         self.assertIn(phrase, (RACINE / "INSTALL.md").read_text(encoding="utf-8"))
 
+    def test_on_installe_la_version_publiee(self):
+        """Décision d'Alex du 09/11/2026 : le client installe et met à jour la branche `stable` (la
+        version qu'Alex a décidé de sortir) ; `main` prépare la suivante et ne part chez personne."""
+        install = (RACINE / "INSTALL.md").read_text(encoding="utf-8")
+        for attendu in ("git clone --branch stable", "archive/refs/heads/stable.zip", "publicitaire-ia-stable",
+                        "git merge --ff-only origin/stable"):
+            self.assertIn(attendu, " ".join(install.split()), attendu)
+        for ancien in ("heads/main.zip", "origin/main", "publicitaire-ia-main"):
+            self.assertNotIn(ancien, install, ancien)
+
 
 if __name__ == "__main__":
     unittest.main()

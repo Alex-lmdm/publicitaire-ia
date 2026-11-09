@@ -45,12 +45,14 @@ de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
   interrompue (pour rouvrir l'assistant, par exemple) : reprends à l'étape 1, dans ce dossier. Avec
   `node_modules/`, c'est une **mise à jour** : voir « Mettre à jour » plus bas, et ne touche à rien
   de ce qui appartient au client.
-- Sinon, avec git : `git clone https://github.com/Alex-lmdm/publicitaire-ia.git "<emplacement>"`.
-  Sans git : télécharge `https://github.com/Alex-lmdm/publicitaire-ia/archive/refs/heads/main.zip`
-  dans un dossier temporaire, décompresse-le, et range le dossier `publicitaire-ia-main` à
-  l'emplacement, renommé `Publicitaire IA`.
-- Travaille ensuite **dans ce dossier**, et dis au client qu'il y ouvrira son assistant pour ses
-  vidéos.
+- Sinon, on installe toujours **la version publiée**, la branche `stable` (jamais `main`, où se
+  prépare la version suivante). Avec git : `git clone --branch stable
+  https://github.com/Alex-lmdm/publicitaire-ia.git "<emplacement>"`. Sans git : télécharge
+  `https://github.com/Alex-lmdm/publicitaire-ia/archive/refs/heads/stable.zip` dans un dossier
+  temporaire, décompresse-le, et range le dossier `publicitaire-ia-stable` à l'emplacement, renommé
+  `Publicitaire IA`.
+- Travaille ensuite **dans ce dossier**, en suivant son propre `INSTALL.md` (celui de la version
+  installée), et dis au client qu'il y ouvrira son assistant pour ses vidéos.
 - Sa phrase finit par « Mes musiques : <lien> » ? Écris ce lien, seul, dans le fichier
   `.cache/musiques-lien.txt` de ce dossier (crée `.cache/`) : il survit à un redémarrage de
   l'assistant, et l'étape 5 le reprend toute seule.
@@ -160,8 +162,9 @@ tout seul ; une archive ou un dossier rangé ailleurs se donne en argument. Ou `
   --untracked-files=no` affiche quelque chose, des fichiers du produit ont été modifiés dans ce
   dossier : mets-les de côté avec `git stash push -m "avant mise à jour"` et dis-le-lui en une
   phrase (« Des fichiers de Publicitaire IA avaient été modifiés : je les ai mis de côté, rien
-  n'est perdu. »). Puis `git merge --ff-only origin/main`. S'il refuse, ne force rien : diagnostic
-  en trois lignes.
+  n'est perdu. »). Puis, sur la branche `stable` : `git merge --ff-only origin/stable` (une
+  installation plus ancienne est sur `main` : `git switch -c stable origin/stable`, puis plus rien
+  à fusionner). S'il refuse, ne force rien : diagnostic en trois lignes.
 - **Pas de `.git/`** : télécharge l'archive de l'étape 0 dans un dossier temporaire, décompresse-la,
   puis copie ses fichiers dans le dossier : **recopie par-dessus, n'efface rien** (les fichiers que
   la nouvelle version a retirés du produit, `npm ci` les enlève tout seul). Si le client a
