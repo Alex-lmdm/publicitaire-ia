@@ -13,7 +13,7 @@
         par élément réel de l'offre, chacune dans un cercle de construction pointillé) ; la caméra
         s'approche de l'élément phare avant toute phrase, un cadre de sélection à poignées
         l'attrape, il passe à l'accent et son nom s'écrit ; pendant que ce nom se lit, les autres
-        cases passent au flou (la profondeur), la caméra ne fait qu'une dérive lente ;
+        cases passent au flou (la profondeur), la caméra se tient (le nom ne bouge pas) ;
       plan B : le slogan géant, sur trois lignes, sur la nuit quadrillée fin ; ses lignes de base
         se tracent et son point final est un disque d'accent plein qui tombe en place ; pendant la
         lecture, ses mots changent de graisse sur les temps ;
@@ -34,7 +34,7 @@
     chaque phrase (0,3 s par mot + 0,8 s, jamais moins de 1,5 s ; la carte de fin 3 s au moins) ;
     data-duration (ici et sur l'hôte dans index.html) = la fin de la tenue du plan C : la console
     donne la valeur s'il manque du temps. La caméra s'approche de la case phare avant tout texte ;
-    pendant les lectures, elle ne fait qu'une dérive ou une poussée lente.
+    pendant les lectures, elle se tient, et les mots qu'on lit ne bougent pas.
 
     Couleurs : celles de la marque, rien d'autre : la nuit (--brand-sombre), le texte clair
     (--brand-clair), ses gris, l'accent plein (--brand-accent-lisible pour un trait ou un texte
@@ -161,7 +161,7 @@
           <div id="t02-final-reperes"></div>
           <div class="t02-final-btn" id="t02-final-btn" data-etat="vide"><i class="remplir"></i><span id="t02-final-btn-texte"></span></div>
           <div class="t02-final-note" id="t02-final-note"></div>
-          <div id="t02-final-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+          <div id="t02-final-curseur-calque" style="position:absolute; inset:0; z-index:30;"></div>
         </div>
       </div>
       <!-- Le point du slogan passe d'un plan à l'autre : il vit au-dessus des plans B et C. -->
@@ -231,7 +231,7 @@
         var r = K.el(etoile, "i", "t02-final-rai");
         r.style.transform = "rotate(" + a + "deg)";
       });
-      tl.fromTo(etoile, { x: 0, y: 0, scale: 1, rotation: 0 }, { x: 0, y: -290, scale: 0.09, rotation: 30, duration: 0.55, ease: "expo.inOut" }, 0);
+      tl.fromTo(etoile, { x: 0, y: 0, scale: 1, rotation: 0 }, { x: 0, y: -290, scale: 0.09, rotation: 30, duration: 0.55, ease: "power3.inOut" }, 0);
       tl.to(etoile, { scale: 0, duration: 0.25, ease: "power2.in" }, 0.6);
 
       // ---------- La grille : une icône au trait fin par case, dessinée depuis le centre ----------
@@ -272,7 +272,7 @@
 
       // La caméra s'approche de la case phare avant toute phrase ; puis le cadre l'attrape, les
       // autres s'effacent, son nom s'écrit ; pendant sa lecture, elles passent au flou et la caméra
-      // ne fait qu'une dérive lente.
+      // se tient (le nom se lit immobile).
       var choisie = cases[CHOISIE], cx = parseFloat(choisie.style.left), cy = parseFloat(choisie.style.top);
       var autres = cases.filter(function (c) { return c !== choisie; });
       var sel = $("sel"), etq = $("etiquette");
@@ -286,7 +286,7 @@
       // L'étiquette se pose sous le cadre, centrée (entre deux lignes de la grille).
       etq.style.left = (cx - 500) + "px"; etq.style.width = "1000px"; etq.style.textAlign = "center"; etq.style.top = (cy + 100) + "px";
       // Le nom se tape, puis la case se remplit d'accent et le nom se surligne : pendant sa lecture,
-      // la vie vient de lui (la caméra ne fait qu'une dérive lente).
+      // la vie vient de lui (la caméra se tient).
       etq.innerHTML = "<span><i></i><b></b></span>";
       var etqTexte = etq.querySelector("b"), etqBloc = etq.querySelector("i");
       K.taper(tl, etqTexte, ETIQUETTE, A_LU - 0.35, A_LU, D);
@@ -299,7 +299,6 @@
       gsap.set(etqBloc, { scaleX: 0 });
       tl.to(etqBloc, { scaleX: 1, duration: 0.3, ease: "power3.out" }, A_LU + 0.95);
       tl.set(etq, { attr: { "data-etat": "plein" } }, A_LU + 1.02);
-      tl.to(camA, { scale: 1.55, x: (540 - cx) * 1.55, y: (960 - cy) * 1.55 - 82, duration: Math.max(0.5, B - Z - 0.9), ease: "sine.inOut" }, Z + 0.9);
 
       // ---------- Plan B : le slogan géant ----------
       var planB = $("planB");
@@ -316,9 +315,8 @@
       K.entreeMots(tl, l3.querySelectorAll(".k-mot"), B + 0.30, { y: 60, flou: 16, decalage: 0.08, duree: 0.6 });
       tl.set(point, { opacity: 1 }, B + 0.8);
       tl.to(point, { scale: 1, y: 0, duration: 0.45, ease: "back.out(1)" }, B + 0.8);
-      // Pendant la lecture, le slogan pousse lentement et ses mots changent de graisse sur les temps
+      // Pendant la lecture, le slogan ne bouge pas : ses mots changent de graisse sur les temps
       // (les deux premières lignes : le point, sur la 3e, ne bouge pas).
-      tl.fromTo(lignesS, { scale: 1 }, { scale: 1.035, duration: C - B, ease: "sine.inOut", transformOrigin: "0% 50%" }, B);
       var mA = l1.querySelectorAll(".k-mot")[0], mZ = l2.querySelectorAll(".k-mot")[0];
       var bascules = [[0.45, mZ, 400], [1.1, mZ, 600], [1.1, mA, 400], [1.75, mA, 600]].filter(function (b) { return b[1]; });
       bascules.forEach(function (b) { if (B_LU + b[0] < C - 0.25) tl.set(b[1], { fontWeight: b[2] }, B_LU + b[0]); });
@@ -336,11 +334,9 @@
       K.entreeMots(tl, nom.querySelectorAll(".k-mot"), C + 0.05, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
       if (NOTE) {
         note.textContent = NOTE;
-        K.cacher(note, { y: 12 });
-        tl.to(note, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, C + 1.05);
+        K.apparition(tl, note, C + 1.05);   // une étiquette : nette, sans montée
       } else note.style.display = "none";
-      // La tenue vit : le plan pousse doucement.
-      tl.fromTo($("contenuC"), { scale: 1 }, { scale: 1.025, duration: D - C, ease: "sine.inOut", transformOrigin: "50% 50%" }, C);
+      // La tenue : l'écran final se tient immobile (le nom, le bouton et l'appel se lisent).
 
       // Ce qui se mesure (le point dans le slogan, le libellé du bouton) attend les polices.
       var cs = getComputedStyle(l1);
@@ -366,19 +362,17 @@
         tl.to(bases, { scaleX: 1, duration: 0.55, ease: "expo.out", stagger: 0.06 }, B + 0.05);
 
         // Le point, à l'écran au moment de la coupe : sa place dans la mise en page (offsetLeft et
-        // offsetTop ignorent les transformations en cours), puis la poussée du slogan (×1,035 depuis
-        // la gauche de sa ligne, au milieu de sa hauteur).
+        // offsetTop ignorent les transformations en cours) : le slogan ne bouge plus pendant sa lecture.
         var taille = point.offsetWidth;
         var px = l3.offsetLeft + point.offsetLeft + taille / 2, py = l3.offsetTop + point.offsetTop + point.offsetHeight / 2;
-        var l3x = l3.offsetLeft, l3y = l3.offsetTop + l3.offsetHeight / 2;
-        var pxC = l3x + (px - l3x) * 1.035, pyC = l3y + (py - l3y) * 1.035;
+        var pxC = px, pyC = py;
         var objet = $("objet");
         gsap.set(objet, { x: pxC, y: pyC, scale: taille / 100 });
         K.cacher(objet);
         tl.set(objet, { opacity: 1 }, C);
         tl.set(point, { opacity: 0 }, C);
         // Il file sous le nom, au centre du bouton, et y plonge ; le bouton naît de lui.
-        tl.to(objet, { x: 540, y: 1010, scale: 0.84, duration: 0.55, ease: "expo.inOut" }, C + 0.02);
+        tl.to(objet, { x: 540, y: 1010, scale: 0.84, duration: 0.55, ease: "power3.inOut" }, C + 0.02);
         tl.to(objet, { scale: 0, duration: 0.16, ease: "power2.in" }, C + 0.55);
 
         // Le bouton : un rond qui s'étire en pilule (à la mesure de son libellé), puis le texte.
@@ -410,7 +404,7 @@
         tl.to([tNom, tNomG, tNomD, tBtn], { scaleX: 0, scaleY: 0, duration: 0.3, ease: "power2.in" }, C + 1.75);
 
         // Le curseur clique le bouton : il se remplit de l'accent.
-        var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+        var curseur = K.curseur($("curseur-calque"), ID + "-curseur", true);
         K.cacher(curseur);
         tl.to(curseur, { opacity: 1, duration: 0.2 }, C + 0.95);
         K.trajet(tl, curseur, [[0, 900, 1700], [C + 0.95, 600, 1020, 0.55, "power3.out"]]);

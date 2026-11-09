@@ -11,8 +11,9 @@ une scène comme en deux.
 ## Les scènes prêtes, en exemples
 
 `templates/scenes/` (depuis un projet : `../../../templates/scenes/`) en garde dix, construites avec
-le kit, lisibles en 9:16 et en 16:9, contrôlées : `situation`, `nom-objet`, `schema`, `parcours`,
-`demo`, `preuve`, `prix`, `avant-apres`, `messages`, `fin`. Leur liste et leur rôle :
+le kit : `situation`, `nom-objet`, `schema`, `parcours`, `demo`, `preuve`, `prix`, `avant-apres`,
+`messages`, `fin`. Écrites en 9:16, chacune prend le format du projet qui la monte (`K.cadre` lit
+son hôte) et se remet en page en 16:9. Leur liste, leur rôle et ce qui en a été contrôlé :
 `templates/scenes/README.md`. Sers-t'en comme d'un carnet :
 
 - **lis-en une** pour voir comment se règle un problème (une mise en page qui marche dans les deux
@@ -20,7 +21,11 @@ le kit, lisibles en 9:16 et en 16:9, contrôlées : `situation`, `nom-objet`, `s
 - **reprends-en un geste** (le calcul, la courbe, l'enchaînement) dans ta propre scène ;
 - **ou copie-la** dans `compositions/` et transforme-la autant que ton plan le demande. Une copie
   se remplit en entier : son objet `CONTENU` reçoit la vraie matière du client, et **rien d'exemple
-  ne reste** (un chiffre d'exemple qui passe au rendu est un fait inventé).
+  ne reste** (un chiffre d'exemple qui passe au rendu est un fait inventé). Ses faits y sont des
+  emplacements (« [PRÉNOM] », « [SON PRIX] », « [CHIFFRE] », « [DÉLAI] ») : tant qu'il en reste un,
+  la scène l'écrit en erreur dans la console (`K.emplacements`) et `check` le compte. L'accroche
+  porte `data-accroche` (`situation`), le prix `data-prix` (`prix`) : un seul élément de la vidéo
+  chacun ([composition.md](composition.md), règle 10).
 
 Une scène prête posée telle quelle, puis une autre, puis une autre, donne exactement la vidéo plate
 qu'on ne livre pas ([ambition.md](ambition.md)) : le passage entre deux scènes est toujours à toi.

@@ -141,7 +141,7 @@
     //    l'accent vers le clair, qui passerait par un jaune pâle). La trame s'allume derrière.
     tl.fromTo("#t3f-appel", { scale: 1.06 }, { scale: 1, duration: 0.5, ease: "expo.out" }, 0);
     tl.set("#t3f-verbe", { color: clair }, 0.5);
-    K.entreeMots(tl, ".t3f-suite", 0.5, { decalage: 0.1, y: 14, flou: 10, duree: 0.45 });
+    K.apparition(tl, ".t3f-suite", 0.5, { decalage: 0.1 });   // la suite de la ligne : nette, sans montée ni flou
     tl.fromTo("#t3f-trame", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, FL - 0.13);
     tl.to("#t3f-trame", { scale: 1.06, duration: D - FL - 0.3, ease: "sine.inOut" }, FL + 0.3);
     // 2. La ligne devient l'adresse, dans un flou (du clair seulement) ; à l'impact, la fin de

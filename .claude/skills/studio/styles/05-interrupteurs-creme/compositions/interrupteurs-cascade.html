@@ -7,12 +7,14 @@
 
     Ce qu'elle montre : le panneau de réglages de l'offre, vu de près sur un papier clair : tout le
     panneau à l'image, chaque réglage lisible. Une main clique l'interrupteur maître, les autres
-    s'allument en cascade ; la caméra ne fait qu'une dérive lente (aucun coup de caméra au clic).
+    s'allument en cascade ; la caméra se tient (aucun coup de caméra au clic).
     Elle recule d'un coup, entre le panneau et la phrase : le panneau reste en témoin au bord, la
-    phrase s'écrit au centre. Pendant sa lecture, une dérive lente seulement, et la vie vient de ce
-    qu'elle montre : le trait à main levée entoure ses mots clés, les disques des membres surgissent,
+    phrase paraît au centre, nette. Pendant sa lecture, rien ne bouge sous elle, et la vie vient de
+    ce qu'elle montre : le trait à main levée entoure ses mots clés, les disques des membres surgissent,
     les mots clés se surlignent d'un bloc plein, puis le trait repart par le haut (il revient dans
-    la scène 2, « trait-qui-relie »). La caméra revient au plan large pendant que la phrase sort.
+    la scène 2, « trait-qui-relie »).
+    L'accroche : le panneau porte data-accroche (il se lit dès l'image 0 ; `check` le vérifie à
+    0,5 s, composition.md) ; un seul élément de la vidéo le porte : retire-le d'une seconde copie.
     Durée : 4,8 s + la lecture de la phrase (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
     7,4 s pour 6 mots, 8 s pour 8. Reporte-la dans data-duration (ici et sur l'hôte).
     Rôle : l'accroche d'une annonce (un module, un bonus, une fonction), ou « un clic suffit ».
@@ -25,7 +27,7 @@
     index.html. Les couleurs sont celles de la marque (variables --t05-* en tête du style, qui ne
     font que nommer ses jetons) ; la police des titres, celle de la marque (--t05-titres).
     Ne pas toucher : les temps de la cascade et du trait (ils raccordent avec la scène 2), et la
-    caméra : pendant que la phrase se lit, une dérive lente seulement.
+    caméra : pendant qu'un texte se lit, elle se tient.
   -->
 </head>
 <body>
@@ -108,7 +110,7 @@
     <div id="t05-cascade" class="k-scene">
       <div class="t05-cam" id="t05-cascade-cam" data-layout-allow-overflow>
         <div class="t05-onglet" id="t05-cascade-onglet" data-layout-allow-overflow><span id="t05-cascade-onglet-ic"></span><span id="t05-cascade-onglet-nom"></span></div>
-        <div class="t05-panneau" id="t05-cascade-panneau" data-layout-allow-overflow>
+        <div class="t05-panneau" id="t05-cascade-panneau" data-layout-allow-overflow data-accroche>
           <div class="t05-rang t05-tete" style="top:76px;"><span id="t05-cascade-maitre-nom"></span>
             <div class="t05-inter" id="t05-cascade-maitre"><div class="t05-plein"></div><div class="t05-bille"></div></div>
           </div>
@@ -129,7 +131,7 @@
           </svg>
         </div>
       </div>
-      <div id="t05-cascade-main-hote" style="position:absolute; inset:0; z-index:70;"></div>
+      <div id="t05-cascade-main-calque" style="position:absolute; inset:0; z-index:70;"></div>
     </div>
   </div>
 
@@ -232,8 +234,8 @@
       var s0 = vertical ? 1.45 : 1.5;
       var GP = vertical ? [maitre.x, maitre.y] : [P.x + 316, P.y + 368], VG = vertical ? [820, 430] : [1326, 540];
       gsap.set(cam, vers(s0, GP, VG));
-      // l'interrupteur maître à l'image au moment du clic (la caméra a déjà un peu dérivé)
-      var sClic = s0 * (1 + 0.04 * gsap.parseEase("sine.inOut")((0.95 - 0.05) / 2.1));
+      // l'interrupteur maître à l'image au moment du clic (la caméra se tient sur le gros plan)
+      var sClic = s0;
       var vise = { x: VG[0] + sClic * (maitre.x - GP[0]), y: VG[1] + sClic * (maitre.y - GP[1]) };
 
       // Les rangs
@@ -252,7 +254,7 @@
       K.cacher(discs, { scale: 0.4 });
 
       // --- La main et la cascade ------------------------------------------------------------
-      var hand = main($("main-hote"));
+      var hand = main($("main-calque"));
       var mx = vise.x + 18, my = vise.y + 8; // la pointe sur la moitié droite de l'interrupteur
       gsap.set(hand, { x: L + 120, y: vertical ? 760 : 620 });
       tl.to(hand, { x: mx, y: my, duration: 0.75, ease: "power3.out" }, 0.15);
@@ -263,16 +265,12 @@
       tl.to(hand, { x: L + 160, y: my + 260, duration: 0.6, ease: "power3.in" }, 2.05);
 
       // --- Le recul : le panneau part au bord, la phrase arrive ------------------------------
-      // Pendant qu'on lit les réglages, une dérive lente seulement (4 %, sine.inOut : aucun coup de
-      // caméra au clic, la main et les interrupteurs font le geste), puis un seul recul net, entre le
-      // panneau et la phrase. Pendant que la phrase se lit, une dérive lente (3,5 %) ; la caméra ne
-      // revient au plan large qu'une fois la phrase lue, pendant qu'elle sort (raccord scène 2).
-      recadre(0.05, s0 * 1.04, GP, VG, 2.1, "sine.inOut");
+      // Pendant qu'on lit les réglages, la caméra se tient (aucun coup de caméra au clic : la main et
+      // les interrupteurs font le geste), puis un seul recul net, entre le panneau et la phrase.
+      // Pendant que la phrase se lit, elle se tient encore : le plan large est celui du raccord.
       tl.to(cam, { scale: 1, x: 0, y: 0, duration: 1.0, ease: "power3.inOut" }, 2.15);
-      recadre(3.15, 1.035, [L / 2, H / 2], [L / 2 + (vertical ? 0 : 40), H / 2 + (vertical ? 30 : 0)], X - 3.2, "sine.inOut");
-      recadre(X - 0.05, 1, [L / 2, H / 2], [L / 2, H / 2], 0.75, "power3.inOut");
-      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.85, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
-      K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 3.2, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+      K.apparition(tl, lignes[0].querySelectorAll(".t05-mot"), 2.85, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
+      K.apparition(tl, lignes[1].querySelectorAll(".t05-mot"), 3.2, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
       // Pendant la lecture, ce que la phrase montre : les membres surgissent ensemble, d'un coup (une
       // salve, du haut vers le bas)
       discs.forEach(function (d, i) {

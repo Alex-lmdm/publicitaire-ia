@@ -17,6 +17,8 @@
   Durée : la scène la calcule (D dans le script) : 11,2 s avec l'objet EXEMPLE ; reporte-la dans
   data-duration (ici et sur l'hôte). La phrase tient sur une ligne en 16:9 (deux en 9:16) : 8 mots
   au plus, pastille comprise.
+  L'accroche : la ligne de la phrase porte data-accroche (`check` vérifie qu'elle se lit dès 0,5 s,
+  composition.md) ; un seul élément de la vidéo le porte : retire-le d'une seconde copie.
   16:9 (1920 × 1080) ; en 9:16, passe la racine à 1080 × 1920 (la phrase passe sur deux lignes, le
   mot géant et le nom s'ajustent à la largeur).
   À remplacer : l'objet EXEMPLE en tête du script (chaque champ y est décrit). Sans vraie image, la
@@ -75,7 +77,7 @@
 <div data-composition-id="t7a" data-width="1920" data-height="1080" data-duration="11.2" style="position:absolute; inset:0;">
   <div id="t7a" class="k-scene">
     <div class="t7a-plan t7a-nuit" id="t7a-p1">
-      <div class="t7a-ligne" id="t7a-ligne"></div>
+      <div class="t7a-ligne" id="t7a-ligne" data-accroche></div>
       <div class="t7a-suite" id="t7a-suite"></div>
     </div>
     <div class="t7a-plan t7a-aplat" id="t7a-p2">
@@ -166,7 +168,7 @@
   mots.forEach(function (m, i) {
     if (!i) return;
     var objet = m === carte || m === pastille, t = 0.05 + i * 0.3;
-    if (objet) tl.fromTo(m, { opacity: 0, scale: 0.3, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(1)" }, t);
+    if (objet) tl.fromTo(m, { scale: 0.3, y: 10 }, { scale: 1, y: 0, duration: 0.45, ease: "back.out(1)" }, t).fromTo(m, { opacity: 0 }, { opacity: 1, duration: 0.27, ease: "power2.out" }, t);
     else tl.fromTo(m, { opacity: 0, y: 26, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t);
   });
   // pendant la lecture : la vignette change d'un coup, avec un petit rebond (ses vraies images)
@@ -188,14 +190,13 @@
   tl.set("#t7a-ligne", { opacity: 0 }, X1);
 
   // 2. La suite, une fois la phrase lue : ses mots s'allument tour à tour à la couleur de la marque
-  //    (chacun bondit un peu), puis tous ensemble ; elle se tient le temps de sa lecture
+  //    (sans bouger : on les lit), puis tous ensemble ; elle se tient le temps de sa lecture
   var sm = q(".t7a-s");
   tl.set("#t7a-suite", { opacity: 1 }, X1);
   tl.fromTo(sm, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out", stagger: 0.06 }, X1);
   sm.forEach(function (m, i) {
     var t = X1 + 0.5 + i * 0.32;
     tl.set(m, { attr: { "data-on": "1" } }, t);
-    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
   sm.forEach(function (m, i) { tl.set(m, { attr: { "data-on": "1" } }, Math.max(X1 + 0.5 + sm.length * 0.32 + 0.1, XS - 0.3) + i * 0.05); });

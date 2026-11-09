@@ -99,7 +99,7 @@
       <div class="t04-fin-trait" id="t04-fin-trait"></div>
       <div class="t04-fin-nom" id="t04-fin-nom"></div>
       <div class="t04-fin-bouton" id="t04-fin-bouton"></div>
-      <div id="t04-fin-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+      <div id="t04-fin-curseur-calque" style="position:absolute; inset:0; z-index:30;"></div>
     </div>
   </div>
 
@@ -153,10 +153,10 @@
 
       // Le cadre se resserre en carte ; la carte se remplit de sa couleur ; deux autres en sortent.
       var t0 = efface + 0.25;
-      [rect, plein].forEach(function (e) { tl.to(e, { attr: { x: 770, y: 350, width: 380, height: 240, rx: 26 }, duration: 0.55, ease: "expo.inOut" }, t0); });
+      [rect, plein].forEach(function (e) { tl.to(e, { attr: { x: 770, y: 350, width: 380, height: 240, rx: 26 }, duration: 0.55, ease: "power3.inOut" }, t0); });
       tl.to(cadre, { opacity: 0, duration: 0.15 }, t0 + 0.55);
       gsap.set(fond, { clipPath: "inset(0px 0px 0px 0px round 40px)" });
-      tl.to(fond, { clipPath: "inset(140px 410px 140px 410px round 26px)", duration: 0.55, ease: "expo.inOut" }, t0);
+      tl.to(fond, { clipPath: "inset(140px 410px 140px 410px round 26px)", duration: 0.55, ease: "power3.inOut" }, t0);
       tl.set(fond, { opacity: 0 }, t0 + 0.8);
       var cartes = CARTES.map(function (c) {
         var e = K.el($("cartes"), "div", "t04-fin-carte");
@@ -207,7 +207,7 @@
       tl.fromTo(nom, { opacity: 0, y: 24, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, tn + 0.02);
       tl.set(bouton, { opacity: 1 }, tn + 0.27);
       tl.fromTo(bouton, { y: 18, scale: 0.8 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(1)", immediateRender: false }, tn + 0.27);
-      var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+      var curseur = K.curseur($("curseur-calque"), ID + "-curseur", true);
       K.cacher(curseur);
       tl.to(curseur, { opacity: 1, duration: 0.2 }, tn + 0.62);
       K.trajet(tl, curseur, [[0, 1420, 930], [tn + 0.62, 1010, 702, 0.55, "power3.out"]]);

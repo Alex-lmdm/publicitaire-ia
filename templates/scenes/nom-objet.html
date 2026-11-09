@@ -29,7 +29,7 @@
     /* Son liseré clair en haut de la face : un fond, pas une ombre (sur l'aplat, --nob-ombre vaut « none »,
        qu'une liste d'ombres refuse). */
     #nomobjet.nob-connu .nob-face { background-image: linear-gradient(#8dcffb, #8dcffb); background-size: 100% 6px; background-repeat: no-repeat; } /* couleur d'outil : le dossier du Mac */
-    #nomobjet .nob-objet { position: absolute; transform-style: preserve-3d; will-change: transform; }
+    #nomobjet .nob-objet { position: absolute; transform-style: preserve-3d; }
     #nomobjet .nob-dos, #nomobjet .nob-face, #nomobjet .nob-contenu { position: absolute; left: 0; top: 0; }
     #nomobjet .nob-dos > div { position: absolute; background: var(--nob-dos); }
     #nomobjet .nob-dos > .nob-pages { background: var(--brand-gris-4); }
@@ -42,7 +42,7 @@
     #nomobjet .nob-elastique { position: absolute; top: 0; bottom: 0; background: var(--nob-icone); }
     #nomobjet .nob-feuille {
       position: absolute; background: var(--brand-clair); color: var(--k-encre); border-radius: 22px;
-      display: flex; align-items: flex-start; white-space: nowrap; will-change: transform;
+      display: flex; align-items: flex-start; white-space: nowrap;
       font-family: var(--brand-font-body); font-weight: 700; letter-spacing: -0.01em; line-height: 1;
       box-shadow: inset 0 0 0 2px var(--brand-gris-4);
     }
@@ -77,13 +77,14 @@
         ratio: 1.33,                    // objet "image" : sa largeur divisée par sa hauteur
         nom: "Le Fournil",              // le nom de l'offre, tel qu'il s'écrit (1 à 3 mots)
         appui: "Ton pain maison, sans échec",            // ce qu'elle fait (3 à 6 mots), ou null
-        contenu: ["18 vidéos", "Fiches recettes", "Live mensuel"],   // ce qu'il contient : 2 à 4 vrais éléments (1 à 3 mots)
+        contenu: ["[CHIFFRE] vidéos", "Fiches recettes", "Live mensuel"],   // ce qu'il contient : 2 à 4 vrais éléments (1 à 3 mots, ses vrais nombres)
         depart: null,                   // [x, y] d'où il grandit (le point cliqué de la scène d'avant) ; null : il est déjà là, il se pose
         sortie: "noeud",                // "noeud" : il se resserre en nœud, la nuit pousse l'aplat ; "volet" : la nuit couvre tout ; null : il reste
         noeud: null,                    // sortie "noeud" : [x, y] où il se pose (le nœud de la scène suivante) ; null : le centre
         zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
       var mots = document.getElementById(ID + "-mots"), espace = document.getElementById(ID + "-espace");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;

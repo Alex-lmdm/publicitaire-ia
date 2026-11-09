@@ -1,9 +1,8 @@
 # Le contrat d'une composition HyperFrames
 
 HyperFrames rend une page HTML en vidéo en avançant une timeline GSAP en pause, image par image :
-le même fichier donne toujours la même vidéo. Ce fichier dit ce qu'une scène doit respecter pour
-se rendre (adapté de la documentation d'HyperFrames 0.9, licence Apache-2.0, © HeyGen). Le kit
-(`kit.md`) et les scènes d'exemple (`scenes.md`) le respectent déjà : lis-les pour voir comment.
+le même fichier donne toujours la même vidéo. Ce que toute scène respecte pour se rendre (d'après la
+documentation d'HyperFrames 0.9, Apache-2.0, © HeyGen) ; le kit et les scènes d'exemple le font.
 
 ## Le projet
 
@@ -41,10 +40,11 @@ se rendre (adapté de la documentation d'HyperFrames 0.9, licence Apache-2.0, ©
    `tl.set(…, 0)` : la première image le montrerait.
 9. Un débordement ou un chevauchement voulu se déclare (`data-layout-allow-overflow`,
    `data-layout-allow-overlap`) après avoir vérifié à l'image que tout se lit.
-10. **Les intentions** : `index.motion.json` (posé par `nouvelle`) fait vérifier par `check` que
-    l'accroche se voit dès 0,5 s et que rien ne reste figé plus de 1,5 s. Le texte de l'accroche
-    porte `data-accroche` ; un prix affiché porte `data-prix`, et le fichier reçoit alors
-    `{"kind": "staysInFrame", "selector": "[data-prix]"}` (le prix ne sort jamais du cadre).
+10. **Les intentions** (`index.motion.json`, posé par `nouvelle`) : `check` vérifie que l'accroche
+    (`data-accroche`, sur un seul élément : sur deux, `motion_selector_ambiguous`, et plus rien n'est
+    vérifié) se lit dès 0,5 s, et que l'image entière n'est jamais figée plus de 1,5 s (les mots lus
+    restent immobiles, le monde autour vit ; `rythme` avertit dès 0,6 s). Un prix porte `data-prix`
+    et ajoute `{"kind": "staysInFrame", "selector": "[data-prix]"}` ; une vidéo sans prix, non.
 
 ## Les commandes utiles
 
@@ -52,7 +52,8 @@ Depuis le projet de la vidéo (le dossier qui contient `index.html`) :
 
 | Commande | Ce qu'elle fait |
 |---|---|
-| `npm run check` (`npx hyperframes check --json`) | contrôle tout : règles du rendu, mise en page, contraste, et le métier (`craft`) : texte trop petit (`text_below_floor`, sous 28 px pour un petit côté de 1080), texte parti avant d'être lu (`line_unread`), première image vide (`first_frame_empty`). Zéro erreur ; chaque avertissement se corrige ou se justifie |
+| `npm run check` (`hyperframes check`, sans `--json` ; le rapport en JSON : `npx hyperframes check --json`) | contrôle tout : règles du rendu, mise en page, contraste, et le métier (`craft`) : texte trop petit (`text_below_floor`, sous 28 px pour un petit côté de 1080), texte parti avant d'être lu (`line_unread`), première image vide (`first_frame_empty`). Zéro erreur ; chaque avertissement se corrige ou se justifie |
+| `npx hyperframes check --at-transitions` | mesure aussi chaque début et chaque fin de mouvement. Une entrée ou une sortie de mots par un masque (le nom qui sort de derrière son bord, un volet, un `clip-path`) y compte comme une erreur (`text_box_overflow` : le texte dépasse de la boîte qui le masque), à l'instant où le masque le coupe : voulue, elle se laisse. Lis chaque erreur à son instant : pendant une entrée ou une sortie, c'est le geste ; pendant la tenue, c'est un défaut. Sans `--at-transitions`, ces instants ne sont pas mesurés |
 | `npx hyperframes snapshot --at 1.2,3.5,…` | des images fixes aux instants donnés, et leur planche (`contact-sheet.jpg`) : la commande affiche leur chemin, dans `.hyperframes/artifacts/snapshots/` ; ouvre-les et regarde-les. **Sans flou de bougé** |
 | `npx hyperframes snapshot --range 2,4 --frames 8` | huit images sur un passage (un raccord, un geste, une collision), sans flou de bougé |
 | `npx hyperframes keyframes --json --selector '#id'` | les étapes réelles d'un mouvement (propriété, instant, valeur, courbe) |
@@ -60,8 +61,7 @@ Depuis le projet de la vidéo (le dossier qui contient `index.html`) :
 | `npm run render` | le MP4 dans `exports/`, presque sans perte (le seul encodage qui compte se fait à la livraison, par `couverture`) ; **seul le MP4 rendu fait foi** (`revue.md`). Toujours la vidéo entière : un extrait `--start/--end` n'a pas de flou de bougé |
 | `npx hyperframes preview` | l'aperçu dans le navigateur, si le client veut regarder pendant qu'on fabrique |
 
-Une erreur de `lint` coupe les autres contrôles : `check` affiche alors « 0 sample(s) », ce qui
-ressemble à un fichier propre et ne veut rien dire. Corrige d'abord les erreurs.
+Une erreur de `lint` coupe les autres contrôles (`check` : « 0 sample(s) », qui ne veut rien dire).
 
 ## Ce qu'on ne lance jamais
 

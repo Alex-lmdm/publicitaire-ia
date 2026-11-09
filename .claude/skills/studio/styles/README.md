@@ -95,8 +95,8 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    celui d'un grand studio.
 7. **Les autres formats** : section « En vertical et en carré » de la fiche. Une mise en page,
    jamais un recadrage. En 9:16, prends la version `-vertical.html` d'une scène quand le kit en a
-   une (kits 2, 4 et 5) ; sinon passe la racine de la scène à 1080 × 1920, elle se remet en page
-   seule. Ces versions sont calées pour un Reel : en pub, vérifie sur la planche la zone sûre de la
+   une (kits 2, 4 et 5) ; sinon monte-la telle quelle par un hôte en 1080 × 1920 : le kit
+   (`K.cadre`) recale sa racine sur l'hôte et elle se remet en page seule. Ces versions sont calées pour un Reel : en pub, vérifie sur la planche la zone sûre de la
    pub et remonte ce qui en sort.
 8. **La passe du directeur et la revue**, comme toute vidéo ([ambition.md](../references/ambition.md),
    [revue.md](../references/revue.md)), garde-fou compris.

@@ -9,7 +9,8 @@
     et glisse vers la gauche ; le nom de l'offre sort de derrière lui. Le cube ne porte que son
     logo : sans logo, pas de cube, le nom seul. Deux versions :
      - FOND = "clair" (ouverture, 2,7 s) : fond clair de la marque, côtés du cube à sa nuit ; le nom
-       se tient le temps de sa lecture (1,5 s au moins) pendant que le cube flotte ;
+       se tient immobile le temps de sa lecture (1,5 s au moins) pendant que le cube flotte, et il
+       porte data-accroche (composition.md) ;
      - FOND = "sombre" (fin, 5,4 s avec la phrase d'exemple) : la nuit de la marque (var(--brand-sombre)), côtés du cube
        clairs, nom clair, puis la phrase d'appel s'écrit dessous et se tient 3 s (l'écran final).
     Le nom est le mot héros : la scène règle sa taille pour qu'il occupe, avec le cube, environ 60 %
@@ -40,10 +41,17 @@
   #t08-logo.t08-sombre { --t08-fond: var(--brand-sombre); --t08-texte: var(--brand-clair); --t08-appel: var(--brand-gris-4);
     --t08-face: var(--brand-clair); --t08-face-2: var(--brand-gris-4); --t08-face-3: var(--brand-gris-3); }
   #t08-logo .t08-fond { position: absolute; inset: -2px; background: var(--t08-fond); }
+  /* La lumière du papier : une ombre douce sur les bords (un reflet sur la nuit) qui glisse
+     lentement derrière les mots (le papier vit, les mots qu'on lit ne bougent pas). */
+  #t08-logo .t08-lumiere { position: absolute; inset: -12%; pointer-events: none;
+    background: radial-gradient(ellipse 48% 58% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.05) 100%); }
+  #t08-logo.t08-sombre .t08-lumiere { background: radial-gradient(ellipse 48% 58% at 50% 50%, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0) 60%); }
   #t08-logo .t08-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; }
   #t08-logo .t08-scene3d { position: relative; perspective: 1400px; flex: none; }
   #t08-logo .t08-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
-  #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 7%; backface-visibility: hidden; display: grid; place-items: center; overflow: hidden; }
+  /* Le cube est fermé et opaque : le tri en profondeur montre ses faces avant, sans backface-visibility
+     (il éteint le flou de bougé du rendu : kit.md, « Les pièges »). */
+  #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 7%; display: grid; place-items: center; overflow: hidden; }
   #t08-logo .t08-face img { width: 58%; height: 58%; object-fit: contain; }
   #t08-logo .t08-masque { overflow: hidden; padding: 10px 6px 18px 0; }
   #t08-logo .t08-nom { font-family: var(--brand-font-display); font-weight: 400; line-height: 1; letter-spacing: -0.035em;
@@ -58,6 +66,7 @@
 <div data-composition-id="t08-logo" data-width="1920" data-height="1080" data-duration="2.7" style="position:absolute; inset:0;">
   <div id="t08-logo" class="k-scene">
     <div class="t08-fond"></div>
+    <div class="t08-lumiere" id="t08-logo-lumiere" data-layout-ignore></div>
     <div class="t08-lockup" id="t08-logo-lockup">
       <div class="t08-scene3d" id="t08-logo-scene3d"><div class="t08-cube" id="t08-logo-cube"></div></div>
       <div class="t08-masque"><div class="t08-nom" id="t08-logo-nom"></div></div>
@@ -110,6 +119,9 @@
       });
     } else { scene3d.style.display = "none"; }
     var lockup = q("#t08-logo-lockup"), nom = q("#t08-logo-nom");
+    // L'accroche, en ouverture seulement (le fond clair) : le nom porte data-accroche ; la copie de fin
+    // (le fond sombre) ne le porte pas (un seul élément de la vidéo).
+    if (FOND === "clair") nom.setAttribute("data-accroche", "");
     nom.textContent = NOM; nom.style.fontSize = TN + "px"; lockup.style.gap = ECART + "px";
     // La hauteur du bloc (cube et nom), centrée ; la phrase d'appel de la fin se pose dessous.
     var HL = !LOGO ? TN + 28 : vertical ? S + ECART + TN + 28 : S, HA = FOND === "sombre" && APPEL ? 120 : 0;
@@ -131,7 +143,8 @@
       gsap.set(nom, { yPercent: 110 });
       tl.to(nom, { yPercent: 0, duration: 0.7, ease: "expo.out" }, 0.15);
     }
-    tl.fromTo(lockup, { scale: 1 }, { scale: 1.06, duration: D, ease: "sine.inOut" }, 0);
+    // Le nom ne bouge plus une fois posé (on le lit) : la lumière du papier glisse derrière lui.
+    tl.fromTo("#" + ID + "-lumiere", { xPercent: -5, scale: 1 }, { xPercent: 5, scale: 1.06, duration: D, ease: "sine.inOut" }, 0);
 
     // Fin : la phrase d'appel s'écrit sous le nom, lettre à lettre, à sa place.
     var appel = q("#t08-logo-appel");

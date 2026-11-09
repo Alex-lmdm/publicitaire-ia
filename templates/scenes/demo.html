@@ -9,7 +9,7 @@
      3 images. Pour la poser deux fois, remplace partout « demo » par un autre identifiant. -->
 <template>
   <style>
-    #demo .dem-planche { position: absolute; left: 0; top: 0; transform-style: preserve-3d; will-change: transform; }
+    #demo .dem-planche { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
     #demo .dem-fen { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 28px; background: var(--k-blanc); }
     #demo .dem-tete {
       position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: center;
@@ -42,14 +42,14 @@
       position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap;
       font-family: "Inter", var(--brand-font-body); font-weight: 600; letter-spacing: -0.01em; color: var(--brand-gris-2);
     }
-    #demo .dem-pied { position: absolute; border-radius: 22px; background: var(--k-clair); will-change: transform; }
+    #demo .dem-pied { position: absolute; border-radius: 22px; background: var(--k-clair); }
     #demo .dem-statut {
       position: absolute; top: 0; bottom: 0; display: flex; align-items: center; white-space: nowrap;
       font-family: "Inter", var(--brand-font-body); font-weight: 700; letter-spacing: -0.015em; color: var(--brand-gris-2);
     }
     #demo .dem-bouton {
       position: absolute; overflow: hidden; border-radius: 20px; background: var(--k-blanc);
-      box-shadow: inset 0 0 0 3px var(--brand-gris-4); will-change: transform;
+      box-shadow: inset 0 0 0 3px var(--brand-gris-4);
     }
     #demo .dem-bouton-fond { position: absolute; inset: 0; background: var(--brand-accent); }
     #demo .dem-bouton-texte {
@@ -58,7 +58,7 @@
     }
     #demo .dem-apercu {
       position: absolute; left: 0; top: 0; border-radius: 24px; background: var(--k-blanc); overflow: hidden;
-      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), 0 10px 24px rgba(0, 0, 0, 0.25); will-change: transform;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4), 0 10px 24px rgba(0, 0, 0, 0.25);
     }
     #demo .dem-apercu img { display: block; width: 100%; object-fit: cover; }
     #demo .dem-ap-icone svg { display: block; width: 100%; height: 100%; }
@@ -104,7 +104,7 @@
         etapes: [                             // 3 ou 4 étapes vraies ; l'aperçu de chacune sort de la fenêtre
           { texte: "Client retrouvé", apercu: ["Studio Lumen", "Lyon 2e"], image: null },   // image : "assets/images/…" posée sur l'aperçu
           { texte: "Lignes ajoutées", apercu: ["3 jours", "Montage vidéo"], image: null },
-          { texte: "Total calculé", apercu: ["1 850 €", "TVA comprise"], image: null },
+          { texte: "Total calculé", apercu: ["[TOTAL RÉEL]", "TVA comprise"], image: null },
           // icone : ce que l'étape produit, tel qu'on le reconnaît (un objet connu du kit : « objet-pdf »,
           // « objet-dossier »… ; ou le vrai logo de l'outil, « logo-… ») ; sans image
           { texte: "PDF généré", apercu: ["Facture 041", "Une page"], image: null, icone: "objet-pdf" }
@@ -115,6 +115,7 @@
         zone: null                            // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam"), mots = document.getElementById(ID + "-mots");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
       // La durée donnée : celle de sa racine, ou, une fois montée, celle de son hôte (HyperFrames
@@ -232,7 +233,7 @@
 
       // Les aperçus : ce que chaque étape produit, prêts à sortir de la fenêtre (enfants de la
       // planche : ils partagent sa perspective, mais aucun cadre ne les coupe).
-      var lAp = V ? 370 : 480, fApT = V ? 40 : 50, fApD = V ? 30 : 34, padAp = V ? 20 : 24;
+      var lAp = V ? 370 : 480, fApT = V ? 40 : 50, fApD = V ? 30 : 38, padAp = V ? 20 : 24;
       var apercus = etapes.map(function (et) {
         // L'icône d'un objet connu s'ajoute à côté des textes : l'aperçu s'élargit d'autant, ses textes
         // gardent leur place (une ligne coupée ne se verrait pas : les titres ne passent pas à la ligne).

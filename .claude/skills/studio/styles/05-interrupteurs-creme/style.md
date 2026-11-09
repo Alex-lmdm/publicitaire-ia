@@ -7,8 +7,8 @@ L'interface du kit est neutre et ne prend que les couleurs du client : ses neutr
 
 ## 1. Le rythme
 
-- Calme et régulier : un geste à la fois, sur une grille de 0,5 s (musique autour de 118 battements par minute). Les textes entrent par un flou qui se dissipe.
-- La caméra fait de grands mouvements rares et nets (recul, approche, glissement, plongée) **entre deux textes** ; pendant une lecture, une dérive de 3 à 5 % (sine.inOut), et aucun coup au clic : la main et les interrupteurs font le geste.
+- Calme et régulier : un geste à la fois, sur une grille de 0,5 s (musique autour de 118 battements par minute). Les phrases paraissent nettes, mot par mot (un fondu court, sans montée ni flou) ; seul le mot fort a une entrée travaillée (il sort d'un flou, le trait le souligne).
+- La caméra fait de grands mouvements rares et nets (recul, approche, glissement, plongée) **entre deux textes** ; pendant une lecture, elle se tient (un mot qu'on lit ne bouge pas), et aucun coup au clic : la main et les interrupteurs font le geste.
 - Chaque scène calcule ses tenues d'après ses textes (`studio_motion.py lecture`) et en déduit sa durée (D dans le script, à reporter en `data-duration`).
 - **Le rythme vient du contenu.** Les gestes fins de l'original (un trait de 7 px, des billes) échappent au contrôle `rythme` : le kit les rend francs, d'un coup, et leur donne de la matière. Les membres surgissent ensemble ; mots clés et mot fort se surlignent d'un bloc plein ; les vrais logos des outils que la phrase nomme arrivent pendant sa lecture (`LOGOS`, scène 2) ; les membres deviennent des anneaux ; les coches tombent en trois salves et écrivent l'élément coché ; la grille respire deux fois ; chaque étape cochée sort sa vraie capture ; la pastille d'annonce se remplit d'encre. Une graisse qui bascule, un trait fin, une bille ne comptent pas.
 
@@ -22,7 +22,7 @@ L'interface du kit est neutre et ne prend que les couleurs du client : ses neutr
 | La vague de coches | des anneaux qui se remplissent et se cochent en vague ; autour de la phrase, chaque coche coche un vrai élément de l'offre, son nom écrit dans le disque | preuve, ce qui est inclus, « pour tous » | `grille-de-coches` |
 | La carte qui devient fenêtre | une carte s'ouvre en plein écran sur la vraie interface, où une demande se tape et des étapes s'écrivent | démonstration | `grille-de-coches` (fin), `fenetre-annonce` |
 | La pastille d'annonce et la signature | une petite pastille au-dessus d'un titre en deux lignes, puis le logo qui tourne et se pose, le nom en grand | annonce, offre, fin | `fenetre-annonce` (fin) |
-| Les phrases qui respirent | chaque phrase entre mot par mot par un flou qui se dissipe, se tient le temps de sa lecture pendant une lente dérive de la caméra | toutes les phrases | toutes les scènes |
+| Les phrases calmes | chaque phrase paraît nette, mot par mot, et se tient immobile le temps de sa lecture ; autour d'elle, l'interface vit (les pastilles respirent, le trait l'entoure, les membres surgissent) | toutes les phrases | toutes les scènes |
 
 Ce style n'a pas de geste « problème » : pour une vidéo qui vend, le problème se construit sur le même papier clair (la corvée : [scenes.md](../../references/scenes.md), « Ouvrir »), avec le trait à main levée qui entoure ce qui coûte.
 
@@ -71,12 +71,12 @@ Un seul fond presque toute la vidéo ; la bascule est le passage du papier à la
 
 Tous sont dans `compositions/` ([metier.md](../../references/metier.md), « La caméra »).
 
-1. **La cascade** (scène 1, menu de la scène 4). Le panneau entier à l'image, vu de près ; la main clique le maître (bille en 0,28 s, power3.inOut), chaque rang s'allume 0,105 s après le précédent (0,24 s, gonflement ×1,07 aller-retour) ; la caméra dérive de 4 % jusqu'au recul.
+1. **La cascade** (scène 1, menu de la scène 4). Le panneau entier à l'image, vu de près ; la main clique le maître (bille en 0,28 s, power3.inOut), chaque rang s'allume 0,105 s après le précédent (0,24 s, gonflement ×1,07 aller-retour) ; la caméra se tient jusqu'au recul (on lit les réglages).
 2. **Le trait qui voyage** (scènes 1 et 2). Un trait de 7 px, bouts ronds, bord irrégulier (turbulence fixe). Il arrive par la gauche, entoure les mots clés en 0,8 s (power2.inOut) sans toucher le mot voisin, tient, file par une queue qui contourne la phrase (0,7 s, power2.in) ; il revient par le haut souligner le mot fort, rembobine, redescend le long du panneau et devient le filet de gauche. Technique : un morceau [a, b] de la longueur du chemin (pointillé SVG), fonction du temps.
 3. **Les filets** (scène 2) : panneau, phrase, membres à mi-hauteur ; quand la phrase devient le nom, ils s'ajustent (0,5 s) pour garder 46 px d'écart.
 4. **La vague de coches** (scène 3). La caméra s'approche d'abord (×1,7) ; chaque anneau se remplit en camembert (0,42 s, power1.inOut), la coche se trace (0,22 s), en trois salves ; autour de la phrase, la pastille monte et le nom de l'élément s'écrit dessous.
-5. **La carte qui devient fenêtre** (scènes 3 et 4). Les pastilles se réduisent à un point, les disques s'écartent de 25 % et deviennent des cartes (l'espace du membre en miniature, de la texture) ; la carte visée s'ouvre en plein écran par une découpe qui s'élargit (0,85 s, expo.inOut).
-6. **Les phrases qui respirent** : entrée mot par mot par un flou (0,7 s, expo.out, 0,07 s entre deux mots, 12 px de montée), tenue pendant la dérive, sortie en flou (0,35 s) pendant que la caméra revient au plan large.
+5. **La carte qui devient fenêtre** (scènes 3 et 4). Les pastilles se réduisent à un point, les disques s'écartent de 25 % et deviennent des cartes (l'espace du membre en miniature, de la texture) ; la carte visée s'ouvre en plein écran par une découpe qui s'élargit (0,85 s, power3.inOut).
+6. **Les phrases calmes** : chaque mot paraît net (`K.apparition` : un fondu de 0,18 s, 0,04 s entre deux mots, sans montée ni flou), la phrase se tient immobile, puis sort en flou (0,35 s). Seul le mot fort entre par un flou qui se dissipe (`K.entreeMots`, 0,7 s, 0,08 s entre deux mots, 12 px de montée).
 
 ## 6. Les transitions
 

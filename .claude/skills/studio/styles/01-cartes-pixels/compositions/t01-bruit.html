@@ -8,7 +8,10 @@
     prospect se tape dans le champ, part dans une bulle, la réponse arrive... et derrière elle un mur
     de cartes grises et floues se lève (le bruit : mille conseils qui se contredisent). Une étiquette
     blanche dit le problème en 2 à 4 mots. Caméra : un recul d'entrée, un seul recadrage quand la
-    question part (entre deux phrases), puis une dérive lente (5 %) pendant la lecture.
+    question part (entre deux phrases), puis elle se tient pendant la lecture : le mur de bruit qui
+    se lève est la vie du plan, les mots qu'on lit ne bougent pas.
+    L'accroche : la question qui se tape dans le champ porte data-accroche (`check` vérifie qu'elle
+    se lit dès 0,5 s) ; un seul élément de la vidéo le porte : retire-le d'une seconde copie.
     Format : 16:9 (1920 × 1080) par défaut ; en 9:16, mets data-width="1080" data-height="1920"
     ici et sur l'hôte : la mise en page verticale se règle seule (classe t01-vertical).
     Sortie : la scène finit pleine de bruit. Pose t01-raccord-pixels par-dessus la coupe.
@@ -107,7 +110,7 @@
         <div class="t01-rep" id="t01-bruit-rep"></div>
         <div class="t01-champ" id="t01-bruit-champ">
           <span class="t01-place" id="t01-bruit-place" data-layout-ignore></span>
-          <span class="t01-tape" id="t01-bruit-tape" data-layout-ignore></span>
+          <span class="t01-tape" id="t01-bruit-tape" data-layout-ignore data-accroche></span>
           <span class="t01-envoi" id="t01-bruit-envoi"><i></i></span>
         </div>
       </div>
@@ -230,7 +233,7 @@
     tl.to("#t01-bruit-envoi", { scale: 0.86, duration: 0.07, yoyo: true, repeat: 1 }, 1.02);
     var bulle = q("#t01-bruit-bulle"); bulle.textContent = EXEMPLE.question;
     K.cacher(bulle);
-    tl.fromTo(bulle, { opacity: 0, y: 70, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1)" }, 1.08);
+    tl.fromTo(bulle, { y: 70, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(1)" }, 1.08).fromTo(bulle, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 1.08);
     K.cacher(["#t01-bruit-qui", "#t01-bruit-points", "#t01-bruit-rep"]);
     tl.fromTo("#t01-bruit-qui", { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 1.35);
     tl.set("#t01-bruit-points", { opacity: 1 }, 1.4).set("#t01-bruit-points", { opacity: 0 }, 1.78);
@@ -242,10 +245,9 @@
     EXEMPLE.reponse.forEach(function (txt, i) { K.taper(tl, K.el(rep, "div"), txt, 1.8 + i * 0.3, 2.05 + i * 0.3, D); });
 
     // La caméra : un recul d'entrée, un seul recadrage quand la question part (entre deux phrases),
-    // puis une dérive lente pendant toute la lecture (5 %, sine.inOut), jamais de pas.
+    // puis elle se tient : la question et la réponse se lisent immobiles, le mur se lève derrière.
     tl.fromTo("#t01-bruit-cam", { scale: 0.86, y: 30 }, { scale: 1, y: 0, duration: 0.8, ease: "expo.out" }, 0);
     tl.to("#t01-bruit-cam", { scale: 1.05, y: 16, duration: 0.45, ease: "expo.out" }, 1.06);
-    tl.to("#t01-bruit-cam", { scale: 1.1, y: 6, duration: D - 1.6, ease: "sine.inOut" }, 1.6);
 
     // L'étiquette : le label se décode, le titre arrive dans sa carte blanche (lu 2 s avant le raccord).
     decoder(q("#t01-bruit-label"), EXEMPLE.etiquette, 0.1, 0.55);
@@ -254,7 +256,6 @@
     decoder(q("#t01-bruit-t1"), EXEMPLE.titre[0], 2.15, 0.4);
     decoder(q("#t01-bruit-t2"), EXEMPLE.titre[1], 2.35, 0.45);
     tl.fromTo("#t01-bruit-t2", { scaleX: 0.6, transformOrigin: "0 50%" }, { scaleX: 1, duration: 0.35, ease: "expo.out" }, 2.35);
-    tl.to("#t01-bruit-titre", { y: -6, duration: D - 2.8, ease: "sine.inOut" }, 2.8);
 
     window.__timelines[ID] = tl;
   })();

@@ -7,7 +7,7 @@
     Ce que la scène montre : un panneau blanc posé sur la grille, encadré de deux bandes de
     hachures fines ; le chiffre compte jusqu'à sa valeur au milieu d'un nuage de glyphes (# + X = %)
     qui s'éteint par le centre ; dessous, l'étiquette mono dans sa pastille et six points de
-    couleur qui s'allument du centre vers les bords ; la caméra ne fait qu'une dérive lente (4 %).
+    couleur qui s'allument du centre vers les bords ; la caméra se tient (on lit le chiffre).
     Le chiffre et son étiquette se tiennent 1,6 s une fois comptés. Sortie : tout s'efface et le
     panneau se resserre en une case blanche au centre, celle où t01-logos-fin pose le logo de la
     marque (raccord d'objet).
@@ -66,13 +66,14 @@
   (function () {
     var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json, ou la ligne se retire
       etiquette: "[ 03 · LA PREUVE ]",   // le label du chapitre
-      nombre: 1000,                      // un exemple : le VRAI chiffre de OFFRE.json, arrondi vers le bas (sans lui, pas de scène)
+      nombre: "[CHIFFRE]",               // le VRAI chiffre de OFFRE.json, un nombre arrondi vers le bas ; sans lui, pas de scène
       libelle: "élèves"                  // ce que le chiffre compte, 1 à 3 mots (« clients accompagnés », « ventes »)
     };
     // L'écriture du nombre (espace des milliers ; ajoute « + » ou « k » au besoin).
     var FORMAT = function (v) { return String(Math.floor(v)).replace(/\B(?=(\d{3})+(?!\d))/g, " "); };
 
     var ID = "t01-chiffre", D = 3.4;
+    K.emplacements(ID, EXEMPLE);   // un emplacement d'exemple resté : la console le dit, `check` aussi
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
@@ -109,7 +110,8 @@
     var cam = q("#t01-chiffre-cam"), cx = L / 2, cy = H / 2 + (vertical ? 0 : 20);
     // Le chiffre est le mot héros : il occupe environ 60 % de la largeur (80 % en 9:16), d'après le
     // nombre de ses signes ; le panneau suit sa taille.
-    var signes = FORMAT(EXEMPLE.nombre).length;
+    var affiche = typeof EXEMPLE.nombre === "number" ? FORMAT(EXEMPLE.nombre) : String(EXEMPLE.nombre);   // un emplacement s'affiche tel quel
+    var signes = affiche.length;
     var TAILLE = Math.min(vertical ? 300 : 400, Math.round((vertical ? 0.8 : 0.62) * L / (signes * 0.6)));
     var PL = vertical ? 900 : 1360, PH = TAILLE + 60, RH = 112, HB = vertical ? 220 : 150;
     var px = cx - PL / 2, py = cy - (PH + RH) / 2;
@@ -164,12 +166,11 @@
       return out.join("\n");
     });
     K.cacher(pastille, { y: 14 });
-    tl.to(pastille, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1)" }, 0.75);
+    tl.to(pastille, { y: 0, duration: 0.4, ease: "back.out(1)" }, 0.75).to(pastille, { opacity: 1, duration: 0.24, ease: "power2.out" }, 0.75);
     K.cacher(points, { scale: 0 });
-    points.forEach(function (p, i) { tl.to(p, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(1)" }, 0.95 + (i < 3 ? 2 - i : i - 3) * 0.1); });
+    points.forEach(function (p, i) { tl.to(p, { scale: 1, duration: 0.25, ease: "back.out(1)" }, 0.95 + (i < 3 ? 2 - i : i - 3) * 0.1).to(p, { opacity: 1, duration: 0.15, ease: "power2.out" }, 0.95 + (i < 3 ? 2 - i : i - 3) * 0.1); });
     decoder(q("#t01-chiffre-label"), EXEMPLE.etiquette, 0.1, 0.55);
-    // La caméra ne fait qu'une dérive lente pendant la lecture (4 %, sine.inOut).
-    tl.fromTo(cam, { scale: 1 }, { scale: 1.04, duration: 2.45, ease: "sine.inOut" }, 0.2);
+    // La caméra se tient pendant la lecture : le nuage de glyphes et les points sont la vie du plan.
 
     // Sortie : le contenu s'efface, le panneau se resserre en case blanche de 300 × 300 au centre.
     tl.to(contenu, { opacity: 0, scale: 0.92, duration: 0.3, ease: "power2.in" }, 2.65);

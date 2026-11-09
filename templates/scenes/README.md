@@ -1,6 +1,8 @@
 # Les scènes prêtes : des exemples
 
-Dix scènes déjà construites avec le kit, lisibles en 9:16 et en 16:9, contrôlées. Ce sont des
+Dix scènes déjà construites avec le kit. Écrites en 9:16, elles prennent le format du projet qui
+les monte (`K.cadre` lit leur hôte et recale leur racine) : en 16:9, elles se remettent en page
+seules. Ce qui en a été contrôlé est en bas de ce fichier. Ce sont des
 **exemples dont on s'inspire**, pas des gabarits à remplir : on y lit comment se règle un problème
 (une mise en page qui marche dans les deux formats, une tenue de lecture calculée, une rafale, une
 caméra qui glisse), on en reprend un geste, ou on en copie une pour la transformer. Une vidéo faite
@@ -29,7 +31,11 @@ de scènes prêtes posées bout à bout est plate ; le niveau visé et la façon
   en scène, sa caméra, ses passages, ses gestes). Son objet `CONTENU`, en tête du script, se remplit
   en entier : chaque texte, chiffre et image vient de `OFFRE.json` ou de `sources/` ; ce qui
   n'existe pas pour son offre se met à `null`, et le temps correspondant disparaît. **Rien
-  d'exemple ne doit rester** : un chiffre d'exemple qui passe au rendu est un fait inventé. Une
+  d'exemple ne doit rester** : un chiffre d'exemple qui passe au rendu est un fait inventé. Ses faits
+  y sont des emplacements (« [PRÉNOM] », « [SON PRIX] », « [CHIFFRE] », « [DÉLAI] ») : tant qu'il
+  en reste un, la scène l'écrit en erreur dans la console (`K.emplacements`), et `check` le compte.
+  `situation` porte `data-accroche`, `prix` porte `data-prix` : un seul élément de la vidéo chacun
+  (`composition.md`, règle 10) ; retire-les d'une seconde copie. Une
   icône (`icone`) : d'abord ce qu'on reconnaît, dans ses vraies couleurs (le vrai logo de l'outil,
   `logos`, ou un objet connu du kit : `objet-pdf`, `objet-dossier`…) ; une icône d'un seul trait
   seulement pour une idée (une coche, un euro).
@@ -67,5 +73,23 @@ pendant qu'on les lit), sa première image qui montre déjà le sujet, ses taill
   coche) : `rythme` doit répondre « ok » sur la scène seule.
 - **La palette** : seulement les jetons `var(--brand-*)` et les neutres du kit ; rien de
   transparent sur l'accent.
-- **Contrôlée** dans les deux formats avant d'entrer dans ce tableau : `check` sans erreur ni
-  avertissement de métier sur un texte à lire, `rythme` et `cadre` « ok », images regardées.
+- **Contrôlée** dans les deux formats avant d'entrer dans ce tableau, son `CONTENU` d'exemple en
+  place : `lint` sans erreur ; `check` sans autre erreur que celle du garde-fou des exemples, sans
+  avertissement de métier sur un texte à lire, et ses intentions tenues (`index.motion.json` :
+  l'accroche dès 0,5 s, rien de figé plus de 1,5 s, le prix dans le cadre) ; images regardées
+  (`snapshot`). `rythme` et `cadre` se lancent sur le MP4 de la vidéo qui la monte.
+
+## Ce qui a été contrôlé (09/11/2026, HyperFrames 0.9.26)
+
+Les dix scènes montées bout à bout dans un projet 16:9 puis dans un projet 9:16 (le gabarit du
+dossier, `CONTENU` d'exemple en place, les intentions de `nouvelle` et la règle du prix) :
+
+- `lint` : aucune erreur (un avertissement : `demo.html` dépasse 300 lignes) ;
+- `check` : une erreur par scène, celle du garde-fou des exemples (voulue : leurs emplacements
+  sont là) ; aucune erreur de mise en page ni de mouvement ; l'accroche, le mouvement continu et le
+  prix dans le cadre tenus ; quelques avertissements de contraste dans `prix` vers 5,4 s (la date
+  passe à l'accent pendant que son bloc s'ouvre ; le bas du prix d'exemple sur le bloc des
+  modalités) ;
+- images regardées dans les deux formats.
+
+Pas contrôlé ici : `rythme`, `cadre` et le flou de bougé, qui demandent un rendu entier.

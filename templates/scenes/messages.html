@@ -13,11 +13,10 @@
      « temoignages » par un autre identifiant. -->
 <template>
   <style>
-    #temoignages .tem-pose { position: absolute; transform-style: preserve-3d; will-change: transform, filter; }
+    #temoignages .tem-pose { position: absolute; transform-style: preserve-3d; }
     #temoignages .tem-bulle {
       position: relative; border-radius: 34px 34px 34px 10px; background: var(--k-blanc); color: var(--k-encre);
       box-shadow: var(--k-ombre); padding: 26px 32px 30px; font-family: "Inter", var(--brand-font-body);
-      will-change: transform;
     }
     #temoignages.tem-clair .tem-bulle { box-shadow: var(--k-ombre-claire); }
     #temoignages .tem-bulle.tem-sombre { background: var(--brand-surface); color: var(--k-blanc); }
@@ -62,17 +61,18 @@
         messages: [                     // 4 à 8 vrais témoignages de sa page, dans l'ordre d'arrivée :
                                         // { prenom, texte (6 à 14 mots, ses mots exacts), quand (l'heure ou le jour affiché, ou null) }
                                         // ou { capture: "assets/images/<sa capture>.png", ratio: hauteur / largeur de l'image }
-          { prenom: "Camille", texte: "J'ai lancé ma première offre trois semaines après le début.", quand: "09:41" },
-          { prenom: "Yanis", texte: "Les modules sont clairs, je les applique le soir même.", quand: "hier" },
-          { prenom: "Inès", texte: "Mes deux premières ventes sont tombées pendant le module 4.", quand: "lun." },
-          { prenom: "Marc", texte: "Je ne pensais pas y arriver aussi vite, franchement.", quand: "10:02" },
-          { prenom: "Sofia", texte: "Ma page convertit enfin. Merci pour les corrections en direct !", quand: "mar." },
-          { prenom: "Léo", texte: "Le meilleur choix de mon année, sans hésiter une seconde.", quand: "08:15" }
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "09:41" },
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "hier" },
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "lun." },
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "10:02" },
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "mar." },
+          { prenom: "[PRÉNOM]", texte: "[SES MOTS EXACTS, COPIÉS DE SA PAGE]", quand: "08:15" }
         ],
-        compteur: { de: 0, a: 190, format: "+{}", contexte: "élèves accompagnés" },   // le vrai chiffre et ce qu'il compte (1 à 4 mots)
+        compteur: { de: 0, a: "[CHIFFRE]", format: "+{}", contexte: "élèves accompagnés" },   // son vrai nombre (un nombre, compté jusqu'à lui) et ce qu'il compte (1 à 4 mots)
         zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
       var mots = document.getElementById(ID + "-mots");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
@@ -105,13 +105,15 @@
       // --- Le chiffre et sa légende, au centre ------------------------------------------------
       var cpt = CONTENU.compteur || { de: 0, a: 0, format: "{}", contexte: "" };
       var format = function (v) { return String(cpt.format || "{}").replace("{}", String(Math.round(v))); };
+      var compte = typeof cpt.a === "number";   // un emplacement d'exemple (un texte) s'affiche tel quel
+      var affiche = compte ? format(cpt.a) : String(cpt.a);
       var contexte = String(cpt.contexte || "");
-      var fC = taillePour(format(cpt.a), V ? 0.84 * L : 0.36 * L, V ? 200 : 170, V ? 330 : 290);
+      var fC = taillePour(affiche, V ? 0.84 * L : 0.36 * L, V ? 200 : 170, V ? 330 : 290);
       var fCtx = taillePour(contexte || "x", V ? 0.86 * L : 0.4 * L, 40, V ? 68 : 60);
       var centre = V ? (haut + bas) / 2 - 30 : H * 0.45;
       var yChiffre = centre - fC * 0.55, yCtx = centre + fC * 0.62;
       // La réserve : la place du chiffre et de sa légende, où aucun message ne se pose.
-      var demiL = Math.max(0.6 * fC * format(cpt.a).length, 0.56 * fCtx * contexte.length) / 2 + 50;
+      var demiL = Math.max(0.6 * fC * affiche.length, 0.56 * fCtx * contexte.length) / 2 + 50;
       var reserve = V
         ? { x0: 0, x1: L, y0: yChiffre - 20, y1: yCtx + fCtx * 1.2 + 30 }
         : { x0: L / 2 - demiL, x1: L / 2 + demiL, y0: yChiffre - 30, y1: yCtx + fCtx * 1.2 + 40 };
@@ -165,7 +167,7 @@
         return { x: x3 - w / 2, y: y3 - h / 2, w: w, h: h, z: z, rot: pl[3], cx: cx, cy: cy };
       };
       var initiales = function (nom) {
-        return String(nom || "?").split(/[\s-]+/).filter(Boolean).slice(0, 2).map(function (p) { return p[0]; }).join("").toUpperCase();
+        return String(nom || "?").split(/[\s-]+/).filter(Boolean).slice(0, 2).map(function (p) { return (p.match(/[0-9A-Za-zÀ-ÿ]/) || [p[0]])[0]; }).join("").toUpperCase();
       };
 
       var liste = (CONTENU.messages || []).filter(Boolean).slice(0, PLACES.length);
@@ -194,10 +196,11 @@
           if (m.quand) K.el(tete, "div", "tem-quand").textContent = m.quand;
           K.el(bulle, "div", "tem-texte").textContent = m.texte || "";
         }
-        // La profondeur : le lointain flou et plus sombre, le proche net.
+        // La profondeur : le lointain flou et plus sombre, le proche net. Le flou se pose sur la bulle,
+        // à plat : sur la pose, en preserve-3d, il l'aplatirait (kit.md, « Les pièges »).
         var flou = pl.z < -200 ? (-pl.z - 200) / 70 : 0, sombre = pl.z < -200 ? 1 - (-pl.z - 200) / 800 : 1;
-        gsap.set(pose, { x: 0, y: 0, z: pl.z, rotation: pl.rot, rotationY: (pl.cx < L / 2 ? 6 : -6), transformOrigin: "50% 50%",
-          filter: "blur(" + flou.toFixed(1) + "px) brightness(" + (clair ? 1 : sombre).toFixed(2) + ")" });
+        gsap.set(pose, { x: 0, y: 0, z: pl.z, rotation: pl.rot, rotationY: (pl.cx < L / 2 ? 6 : -6), transformOrigin: "50% 50%" });
+        gsap.set(bulle, { filter: "blur(" + flou.toFixed(1) + "px) brightness(" + (clair ? 1 : sombre).toFixed(2) + ")" });
         // L'arrivée : de très loin derrière le chiffre (la perspective les fait jaillir du centre),
         // sans fondu ; ceux de l'affiche finissent de se poser, chacun à son instant.
         if (t0 > 0) { K.cacher(pose); tl.set(pose, { opacity: 1 }, t0); }
@@ -216,7 +219,8 @@
       var n = Math.max(1, liste.length), k0 = Math.min(DEJA, liste.length), de = cpt.de || 0, a = cpt.a || 0;
       var ease = gsap.parseEase("expo.out"), cran = function (k) { return de + (a - de) * Math.min(n, k0 + k) / n; };
       if (!paliers.length) paliers.push(0.2);
-      K.texteSelon(tl, chiffre, duree, function (t) {
+      if (!compte) chiffre.textContent = affiche;
+      else K.texteSelon(tl, chiffre, duree, function (t) {
         var v = liste.length > DEJA ? cran(0) : de;
         paliers.forEach(function (tp, k) {
           if (t <= tp) return;
@@ -242,7 +246,7 @@
       });
 
       // La caméra s'approche lentement pendant toute la scène (les mots, eux, ne bougent pas).
-      var t = tPose + lecture(format(a) + " " + contexte);
+      var t = tPose + lecture(affiche + " " + contexte);
       tl.fromTo(cam, { scale: 1 }, { scale: S1, duration: Math.max(t, duree), ease: "sine.inOut" }, 0);
 
       // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.

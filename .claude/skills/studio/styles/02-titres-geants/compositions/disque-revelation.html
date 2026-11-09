@@ -25,7 +25,7 @@
 
     La lecture (interdits.md, « La lecture ») : le nom et sa phrase restent lecture(nom + phrase)
     une fois posés (0,3 s par mot + 0,8 s, jamais moins de 1,5 s) ; pendant cette tenue, la caméra
-    ne fait qu'une dérive lente et la vie vient de la phrase : le mot clé surligné d'un bloc
+    se tient (les mots ne bougent pas) et la vie vient de la phrase : le mot clé surligné d'un bloc
     d'accent, puis le surlignage à poignées qui attrape le nom et se retire avant la fin. La montée
     et la descente de la caméra tombent avant le nom, jamais sous un texte. data-duration (ici et sur
     l'hôte dans index.html) = l'instant où la phrase est posée + sa lecture : la console donne la
@@ -90,7 +90,7 @@
     /* L'étiquette (une info réelle de la fiche), à droite du disque sur la nuit : elle garde sa
        taille quand il rapetisse. */
     #t02-revele .t02-revele-etq { position: absolute; left: 432px; top: 180px; font-family: var(--brand-font-body); font-weight: 600; font-size: 34px; line-height: 1.3; color: var(--t02-texte); white-space: nowrap; transform-origin: 0 50%; }
-    #t02-revele .t02-revele-fil-hote { position: absolute; left: 958px; width: 4px; transform-origin: 50% 100%; z-index: 4; }
+    #t02-revele .t02-revele-fil-calque { position: absolute; left: 958px; width: 4px; transform-origin: 50% 100%; z-index: 4; }
     #t02-revele .t02-revele-fil { position: absolute; inset: 0; background: var(--t02-accent-texte); transform-origin: 50% 0; }
     #t02-revele .t02-revele-cone { position: absolute; left: 959px; width: 2px; background: rgba(255, 255, 255, 0.34); transform-origin: 50% 0; z-index: 3; }
     #t02-revele .t02-revele-horizon { position: absolute; left: -100px; right: -100px; height: 2px; background: rgba(255, 255, 255, 0.55); transform-origin: 50% 50%; z-index: 3; }
@@ -129,7 +129,7 @@
         <div class="t02-revele-cone" id="t02-revele-cone-d"></div>
         <div class="t02-revele-horizon" id="t02-revele-horizon" style="top:1339px;"></div>
         <div class="t02-revele-rayons" id="t02-revele-rayons" style="top:1340px;"></div>
-        <div class="t02-revele-fil-hote" id="t02-revele-fil-hote"><div class="t02-revele-fil" id="t02-revele-fil"></div></div>
+        <div class="t02-revele-fil-calque" id="t02-revele-fil-calque"><div class="t02-revele-fil" id="t02-revele-fil"></div></div>
         <div class="t02-revele-disque" id="t02-revele-disque" style="left:960px; top:1160px;"></div>
         <div class="t02-revele-nom" id="t02-revele-nom"></div>
         <div class="t02-revele-phrase" id="t02-revele-phrase"></div>
@@ -249,8 +249,8 @@
       }
 
       // ---------- Le trait de marque tombe, le cône de construction s'ouvre ----------
-      var filHote = $("fil-hote"), fil = $("fil");
-      filHote.style.top = HAUT + "px"; filHote.style.height = (HORIZON - HAUT) + "px";
+      var filCalque = $("fil-calque"), fil = $("fil");
+      filCalque.style.top = HAUT + "px"; filCalque.style.height = (HORIZON - HAUT) + "px";
       gsap.set(fil, { scaleY: 0 });
       tl.to(fil, { scaleY: 1, duration: 0.3, ease: "power3.in" }, MOMENTS.trait);
       var dx = 260, longueur = Math.hypot(dx, HORIZON - HAUT), angle = Math.atan2(dx, HORIZON - HAUT) * 180 / Math.PI;
@@ -266,7 +266,7 @@
       // Le trait se rétracte derrière lui (son haut suit le centre du disque).
       var descente = MOMENTS.pose - MOMENTS.descente;
       tl.to(disque, { y: POSE - Y, scale: S_POSE, duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
-      tl.to(filHote, { scaleY: (HORIZON - POSE) / (HORIZON - HAUT), duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
+      tl.to(filCalque, { scaleY: (HORIZON - POSE) / (HORIZON - HAUT), duration: descente, ease: "power1.inOut" }, MOMENTS.descente);
       tl.to(fil, { opacity: 0, duration: 0.15 }, MOMENTS.pose - 0.05);
       // La caméra redescend avec lui ; l'horizon se trace depuis le centre.
       tl.to(monde, { y: -620, duration: 0.8, ease: "power2.inOut" }, MOMENTS.sol);
@@ -318,8 +318,7 @@
       var FIN = LU + lecture(NOM + " " + PHRASE);
       if (D + 1e-6 < FIN) console.warn(ID + " : data-duration trop courte pour lire le nom et sa phrase, il faut " + (Math.ceil(FIN * 10) / 10).toFixed(1) + " s");
 
-      // La tenue : une dérive lente (3 %), et la vie de la phrase (mot clé, bascules de graisse).
-      tl.to(monde, { scale: 1.03, duration: Math.max(0.5, D - MOMENTS.sol - 0.8), ease: "sine.inOut" }, MOMENTS.sol + 0.8);
+      // La tenue : la caméra se tient ; la vie vient de la phrase (mot clé, bascules de graisse).
       if (cle) gsap.set(cle.querySelector("i"), { scaleX: 0 });   // son bloc s'étend en finir()
       // Le surlignage à poignées : un cadre attrape le nom, un bloc d'accent le sélectionne lettre
       // par lettre (le nom passe à l'encre posée sur l'accent) ; il se retire avant la fin.
@@ -390,7 +389,7 @@
         }
         selectionner(surligne, lettres, function (l) { var g = nom.offsetLeft + l.offsetLeft; return [g, g + l.offsetWidth]; }, gauche - marge, large + 2 * marge, LU + 0.55, RETIRE ? RETRAIT : null);
         K.entreeMots(tl, lettres, MOMENTS.pose + 0.06, { y: 40, flou: 10, decalage: 0.025, duree: 0.5 });
-        if (motsPhrase.length) K.entreeMots(tl, motsPhrase, PHRASE_DEBUT, { y: 26, flou: 8, decalage: 0.05, duree: 0.5 });
+        if (motsPhrase.length) K.apparition(tl, motsPhrase, PHRASE_DEBUT);   // la ligne d'appui : nette, d'un bloc
         // La matière du disque : le premier logo ou la première capture chargés, sinon le chiffre.
         var images = (Array.isArray(res) ? res : []).slice(1).filter(Boolean);
         var matiere = images[0] || chiffre;

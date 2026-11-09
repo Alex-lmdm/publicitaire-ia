@@ -36,21 +36,40 @@
   };
   K.entre = function (a, b, p) { return a + (b - a) * p; };
 
-  // Taille de la composition qui contient `el` : data-width / data-height de la racine
-  // [data-composition-id] la plus proche qui les porte (1080 × 1920 pour un Reel ou une story,
-  // 1920 × 1080 en 16:9). Lue dans le HTML, jamais mesurée à l'écran : le même résultat à chaque
-  // image, dans l'aperçu comme au rendu. Sans racine trouvée : la composition principale, sinon
-  // 1920 × 1080 (l'ancien défaut du kit).
+  // Taille de la composition qui contient `el` (1080 × 1920 pour un Reel ou une story, 1920 × 1080
+  // en 16:9), lue dans le HTML, jamais mesurée à l'écran : le même résultat à chaque image, dans
+  // l'aperçu comme au rendu. Comme K.duree, l'hôte de la scène dans index.html passe d'abord
+  // (data-composition-src, data-composition-file une fois montée) : une scène prête écrite en 9:16
+  // prend ainsi le format du projet qui la monte, et sa racine est recalée sur la taille de l'hôte
+  // (le seul effet de cette fonction). Sans hôte qui la porte : la composition la plus
+  // haute qui en a une (index.html ; une scène ouverte seule, sa racine), sinon 1920 × 1080 (l'ancien
+  // défaut du kit).
   K.cadre = function (el) {
     var lire = function (n) {
       var l = parseFloat(n.getAttribute("data-width")), h = parseFloat(n.getAttribute("data-height"));
       return l > 0 && h > 0 ? { largeur: l, hauteur: h } : null;
     };
-    var n = el && el.closest ? el.closest("[data-composition-id]") : null, c;
-    while (n) {
-      if ((c = lire(n))) return c;
-      n = n.parentElement ? n.parentElement.closest("[data-composition-id]") : null;
+    var proche = function (sel) { return el && el.closest ? el.closest(sel) : null; };
+    var hote = proche("[data-composition-file]") || proche("[data-composition-src]"), c, haut = null;
+    if (hote && (c = lire(hote))) {
+      // Au montage, HyperFrames pose la racine intérieure de la scène (l'enfant de l'hôte) à la taille
+      // où elle a été écrite (son data-width, en px) : une scène écrite en 9:16 resterait une colonne
+      // de 1080 px dans un projet 16:9. Elle prend la taille de l'hôte.
+      var r = el;
+      while (r && r.parentElement && r.parentElement !== hote) r = r.parentElement;
+      var ri = r && r.parentElement === hote ? lire(r) : null;
+      if (ri && (ri.largeur !== c.largeur || ri.hauteur !== c.hauteur)) {
+        r.setAttribute("data-width", String(c.largeur));
+        r.setAttribute("data-height", String(c.hauteur));
+        r.style.width = c.largeur + "px";
+        r.style.height = c.hauteur + "px";
+      }
+      return c;
     }
+    for (var n = proche("[data-composition-id]"); n; n = n.parentElement ? n.parentElement.closest("[data-composition-id]") : null) {
+      if ((c = lire(n))) haut = c;
+    }
+    if (haut) return haut;
     var racine = document.querySelector("[data-composition-id][data-width][data-height]");
     return (racine && lire(racine)) || { largeur: 1920, hauteur: 1080 };
   };
@@ -69,6 +88,21 @@
   // n'interpole pas une variable CSS.
   K.jeton = function (nom) {
     return window.getComputedStyle ? getComputedStyle(document.documentElement).getPropertyValue(nom).trim() : "";
+  };
+
+  // Le garde-fou des exemples : un emplacement (« [PRÉNOM] », « [SON PRIX] », « [CHIFFRE RÉEL] »)
+  // resté dans l'objet CONTENU (ou EXEMPLE) d'une scène passerait au rendu comme un fait inventé.
+  // La console le dit, et `check` le compte en erreur. Rend la liste des emplacements trouvés.
+  K.emplacements = function (id, contenu) {
+    var restes = [];
+    (function fouiller(v) {
+      if (typeof v === "string") (v.match(/\[[^\]]+\]/g) || []).forEach(function (m) { if (restes.indexOf(m) < 0) restes.push(m); });
+      else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { fouiller(v[k]); });
+    })(contenu);
+    if (restes.length && window.console) {
+      console.error(id + " : l'exemple est resté (" + restes.join(", ") + ") : remplace chaque emplacement par la vraie matière de OFFRE.json ou de sources/, ou mets sa ligne à null.");
+    }
+    return restes;
   };
 
   K.el = function (parent, tag, classe, html, style) {
@@ -100,8 +134,10 @@
     });
   };
   // Compteur : de → à, avec une courbe GSAP et un format libre. Des chiffres de largeur fixe : sinon
-  // le nombre tremble à chaque chiffre qui change (un 1 est plus étroit qu'un 8).
+  // le nombre tremble à chaque chiffre qui change (un 1 est plus étroit qu'un 8). Une cible qui n'est
+  // pas un nombre (l'emplacement d'un exemple, « [CHIFFRE RÉEL] ») s'affiche telle quelle, sans compter.
   K.compteur = function (tl, el, de, a, debut, duree, dureeScene, format, courbe) {
+    if (typeof a !== "number") { el.textContent = String(a == null ? "" : a); return; }
     var ease = gsap.parseEase(courbe || "expo.out");
     el.style.fontVariantNumeric = "tabular-nums";
     format = format || function (v) { return String(Math.round(v)); };
@@ -112,6 +148,8 @@
   };
 
   // --- Mots qui entrent et sortent ------------------------------------------------------
+  // Le mot fort du plan seulement : il monte et sort du flou, mot par mot. Les lignes d'appui et
+  // les étiquettes apparaissent nettes (K.apparition) : metier.md, « Le mot fort, puis des lignes nettes ».
   K.entreeMots = function (tl, cible, t, o) {
     o = o || {};
     tl.fromTo(cible,
@@ -121,6 +159,13 @@
   K.sortieMots = function (tl, cible, t, o) {
     o = o || {};
     tl.to(cible, { y: o.y != null ? o.y : -34, opacity: 0, filter: "blur(" + (o.flou != null ? o.flou : 12) + "px)", duration: o.duree || 0.28, ease: o.ease || "power2.in", stagger: o.decalage != null ? o.decalage : 0.03 }, t);
+  };
+  // L'apparition nette : une ligne d'appui, une étiquette, un contexte paraît sur place, d'un fondu
+  // court (0,18 s), sans montée, sans flou ni changement d'échelle. Cachée dès la construction si
+  // elle arrive après 0. `decalage` pour une liste qu'on lit élément par élément (0 : d'un bloc).
+  K.apparition = function (tl, cible, t, o) {
+    o = o || {};
+    tl.fromTo(cible, { opacity: 0 }, { opacity: 1, duration: o.duree || 0.18, ease: o.ease || "power1.out", stagger: o.decalage || 0 }, t);
   };
 
   // --- Le curseur -------------------------------------------------------------------------
@@ -134,10 +179,16 @@
       '" stroke="' + trait + '" stroke-width="1.9" stroke-linejoin="round"/></svg>';
     return e;
   };
-  // Trajet : [[t, x, y, durée, courbe], …] ; le premier point place le curseur.
+  // Trajet : [[t, x, y, durée, courbe], …] ; le premier point place le curseur (sans mouvement). Au
+  // premier trajet d'un curseur, il s'y pose dès la construction, même si son instant n'est pas 0 :
+  // sinon il attendrait en haut à gauche de la scène. Un trajet suivant du même curseur l'y
+  // replace d'un coup à cet instant.
   K.trajet = function (tl, el, points) {
     points.forEach(function (p, i) {
-      if (i === 0) { if (p[0] === 0) gsap.set(el, { x: p[1], y: p[2] }); else tl.set(el, { x: p[1], y: p[2] }, p[0]); }
+      if (i === 0) {
+        if (!el.__kPlace) { gsap.set(el, { x: p[1], y: p[2] }); el.__kPlace = true; }
+        if (p[0] > 0) tl.set(el, { x: p[1], y: p[2] }, p[0]);
+      }
       else tl.to(el, { x: p[1], y: p[2], duration: p[3] || 0.55, ease: p[4] || "power3.inOut" }, p[0]);
     });
   };
@@ -175,7 +226,7 @@
   // Où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` (ce que
   // rend K.zoom, ou { scale, x, y } écrits à la main) : pour mener le curseur, qui vit hors de la
   // caméra, sur ce qui est dans la caméra. Rend [x, y], en pixels du cadre (ceux de K.trajet).
-  //   var p = K.vu(cam, z, [300, 1240]);  K.trajet(tl, cur, [[3.5, p[0], p[1], 0.4]]);
+  //   var p = K.vu(cam, z, [300, 1240]);  K.trajet(tl, cur, [[0, 900, 1700], [3.5, p[0], p[1], 0.4]]);
   K.vu = function (el, zoom, point) {
     var c = K.cadre(el), cx = c.largeur / 2, cy = c.hauteur / 2, z = zoom || {};
     var s = z.scale == null ? 1 : z.scale;
@@ -355,15 +406,19 @@
     var hasard = K.rng(o.graine || 11);
     els.forEach(function (e, i) {
       var prof = parseFloat(e.dataset.prof), rang = i === 0 ? 0 : Math.max(0.15, i + (hasard() - 0.5) * 0.8);
-      tl.fromTo(e, { scale: 0, opacity: 0 }, { scale: 1, opacity: parseFloat(e.style.opacity), duration: o.duree || 0.6, ease: o.ease || "back.out(1)" },
-        t + (o.ordre === "prof" ? prof : rang / els.length) * (o.etalement || 0.6));
+      var ti = t + (o.ordre === "prof" ? prof : rang / els.length) * (o.etalement || 0.6), d = o.duree || 0.6;
+      var cible = parseFloat(e.style.opacity);   // lue avant que le fondu ne la mette à 0
+      // L'échelle se pose presque sans rebond ; l'opacité, à part, sans rebond (une opacité qui
+      // dépasse sa cible se voit dès qu'elle est sous 1 : les objets lointains clignoteraient).
+      tl.fromTo(e, { scale: 0 }, { scale: 1, duration: d, ease: o.ease || "back.out(1)" }, ti);
+      tl.fromTo(e, { opacity: 0 }, { opacity: cible, duration: d * 0.6, ease: "power2.out" }, ti);
     });
   };
 
   // --- Flash de couleur depuis un point (clic) -------------------------------------------
   K.flash = function (tl, el, x, y, t, duree) {
     gsap.set(el, { x: x, y: y, scale: 0 });
-    tl.to(el, { scale: 24, duration: duree || 0.6, ease: "expo.inOut" }, t);
+    tl.to(el, { scale: 24, duration: duree || 0.6, ease: "power3.inOut" }, t);
   };
 
   // --- Chapitre : mot fantôme, étiquette, interrupteur cliqué -----------------------------
@@ -380,8 +435,9 @@
     if (fantome) fantome.setAttribute("data-layout-ignore", "");
     gsap.set(plein, { scaleX: 0 });
     tl.fromTo(fantome, { x: 260 * echelle, opacity: 0 }, { x: -60 * echelle, opacity: 1, duration: 2.4, ease: "power2.out" }, t);
-    K.entreeMots(tl, mots, t + 0.1, { decalage: 0.06 });
-    tl.fromTo(inter, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1)" }, t + 0.3);
+    K.apparition(tl, mots, t + 0.1, { decalage: 0.06 });   // une étiquette : nette, sans montée ni flou
+    tl.fromTo(inter, { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(1)" }, t + 0.3);
+    tl.fromTo(inter, { opacity: 0 }, { opacity: 1, duration: 0.24, ease: "power2.out" }, t + 0.3);
     // L'interrupteur est centré en largeur, 96 px sous le milieu (kit.css) : la pointe du curseur
     // tombe sur sa moitié droite, là où la bille arrive.
     var cx = o.cible ? o.cible[0] : L / 2 + 18, cy = o.cible ? o.cible[1] : H / 2 + 122;

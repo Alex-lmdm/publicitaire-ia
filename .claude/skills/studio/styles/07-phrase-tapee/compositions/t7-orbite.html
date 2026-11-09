@@ -248,7 +248,7 @@
   // 1. La carte dans la phrase : sa capture se dévoile de haut en bas (une page qui se charge), son
   //    nom monte ; les mots puis le nom se lisent, ils s'allument un à un sans bouger de place
   tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
-  tl.fromTo(laCarte, { opacity: 0, scale: 0.6, rotation: -4 }, { opacity: 1, scale: 0.75, rotation: 0, duration: 0.55, ease: "back.out(1)" }, 0.3);
+  tl.fromTo(laCarte, { scale: 0.6, rotation: -4 }, { scale: 0.75, rotation: 0, duration: 0.55, ease: "back.out(1)" }, 0.3).fromTo(laCarte, { opacity: 0 }, { opacity: 1, duration: 0.33, ease: "power2.out" }, 0.3);
   tl.fromTo(droite, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.6);
   var apercu = laCarte.querySelector(".t7o-apercu, .t7o-marque");
   if (apercu) tl.fromTo(apercu, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power2.out", immediateRender: false }, 0.5);
@@ -257,19 +257,18 @@
   motsPhrase.forEach(function (m, i) {
     var t = E1 + 0.1 + i * Math.min(0.35, (XP - E1 - 0.6) / Math.max(1, motsPhrase.length));
     tl.set(m, { attr: { "data-on": "1" } }, t);
-    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
 
   // 2. Les mots s'écartent, la carte grandit et sa ligne monte ; les orbites se dessinent et tournent
   tl.to(gauche, { opacity: 0, x: vertical ? 0 : -160, y: vertical ? -120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
   tl.to(droite, { opacity: 0, x: vertical ? 0 : 160, y: vertical ? 120 : 0, filter: "blur(10px)", duration: 0.4, ease: "power2.in", stagger: 0.04 }, XP);
-  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "expo.inOut" }, XP + 0.05);
+  tl.to(laCarte, { scale: 0.86, duration: 0.8, ease: "power3.inOut" }, XP + 0.05);
   if (ligneCarte) tl.fromTo(ligneCarte, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out", immediateRender: false }, OB + 0.3);
   centre.anneaux.forEach(function (a, i) {
     tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, OB + i * 0.14);
     a.items.forEach(function (it, j) {
-      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1)" }, OB + 0.2 + i * 0.18 + j * 0.035);
+      tl.fromTo(it, { scale: 0 }, { scale: 1, duration: 0.45, ease: "back.out(1)" }, OB + 0.2 + i * 0.18 + j * 0.035).fromTo(it, { opacity: 0 }, { opacity: 1, duration: 0.27, ease: "power2.out" }, OB + 0.2 + i * 0.18 + j * 0.035);
     });
   });
   // la rotation : chaque anneau à sa vitesse (celui du dehors, qui porte ses captures, lentement), les

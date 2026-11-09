@@ -116,13 +116,13 @@ de toutes les scènes »).
 1. **La phrase tapée** (`t7-phrase`, le mot géant de `t7-accroche`, les conclusions de
    `t7-eparpille` et `t7-orbite`) : frappe par petits groupes de lettres (`K.taper`), une ligne en
    0,75 s, la seconde 0,3 s après ; le curseur passe à la ligne suivante et clignote ; la phrase se
-   tient le temps de sa lecture sans bouger, ses mots s'allument tour à tour à l'accent en
-   bondissant de 14 px, puis coupe.
+   tient le temps de sa lecture sans bouger, ses mots s'allument tour à tour à l'accent, sur place
+   (un mot qu'on lit ne saute pas), puis coupe.
 2. **Les objets dans la ligne** (`t7-accroche`) : le premier morceau est là dès la première image,
    les autres montent un à un (0,3 s d'écart, 0,45 s, expo.out, flou 8 px → 0) ; la vignette et la
    pastille surgissent dans la phrase (back.out(1)) ; la vignette change d'image d'un coup toutes
    les 0,45 s avec un petit rebond, le petit curseur clique deux fois la pastille ; puis les mots
-   de la suite s'allument tour à tour, d'un coup, à l'accent (0,32 s d'écart) en sautant de 14 px.
+   de la suite s'allument tour à tour, d'un coup, à l'accent (0,32 s d'écart), sans bouger de place.
 3. **La demande envoyée** (`t7-phrase`) : la caméra recule sur la barre pendant que la demande se
    tape (×1,18 → 1 en 1 s ; ×1,04 en 9:16), puis ne fait qu'une dérive de 2 % ; sa page jointe se
    dévoile au-dessus et défile, les logos surgissent un à un, le curseur clique sur envoyer
@@ -130,7 +130,7 @@ de toutes les scènes »).
    puis ses images tombent (0,12 s d'écart, back.out(1)) ou sa capture se dévoile (0,8 s).
 4. **Le désordre rangé** (`t7-eparpille`) : la phrase se tape, se tient, s'efface lettre à lettre
    et se retape (trois fins, chacune lue) ; à chaque fin, un groupe d'objets surgit en deux salves
-   (back.out(1), 0,7 s d'écart) et dérive autour d'elle, à une place qui ne couvre ni la phrase
+   (expo.out, sans rebond : certains portent des mots ; 0,7 s d'écart) et dérive autour d'elle, à une place qui ne couvre ni la phrase
    ni un mot ; captures et logos parfois flous, jamais un mot. Puis la phrase s'efface et tout se
    range d'un coup : chaque objet file vers sa place dans trois rangs nets (captures au-dessus,
    outils puis mots au-dessous ; 0,75 s, power3.inOut), se redresse, devient net et se tasse en se

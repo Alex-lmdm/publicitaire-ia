@@ -17,8 +17,8 @@
     « grille-de-coches »).
     Rôle : la solution (« une seule fois », « pour tous », « là où ils sont déjà »).
     Chaque texte (le mot, la phrase, le nom) se tient le temps de sa lecture (0,3 s par mot + 0,8 s,
-    1,5 s au moins : `studio_motion.py lecture`) ; pendant qu'il se lit, la caméra ne fait qu'une
-    dérive lente et la vie vient du trait (il souligne, rembobine, descend, devient les filets qui
+    1,5 s au moins : `studio_motion.py lecture`) ; pendant qu'il se lit, la caméra se tient (un
+    texte qu'on lit ne bouge pas) et la vie vient du trait (il souligne, rembobine, descend, devient les filets qui
     s'ajustent), du bloc plein qui surligne le mot fort et des membres qui deviennent des anneaux.
     La caméra ne recadre qu'entre deux textes, et la glissade vers la grille n'arrive qu'une fois
     le nom lu.
@@ -224,8 +224,8 @@
 
         // 2. La phrase, et le trait qui redescend pour relier le panneau à la phrase
         var lignes = $("phrase").querySelectorAll(".t05-ligne");
-        K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), P0, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
-        K.entreeMots(tl, lignes[lignes.length - 1].querySelectorAll(".t05-mot"), P0 + 0.25, { y: 12, flou: 12, duree: 0.7, decalage: 0.07, echelle: 1 });
+        K.apparition(tl, lignes[0].querySelectorAll(".t05-mot"), P0, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
+        K.apparition(tl, lignes[lignes.length - 1].querySelectorAll(".t05-mot"), P0 + 0.25, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
         var bp = boite($("phrase")), bn = boite($("nom")), yl = H / 2 + 4;
         // Filet gauche : du panneau jusqu'au texte posé (la phrase, puis le nom).
         var debutG = P.x + 632 + 30, finP = bp.x - 50, finN = bn.x - 46, finMax = Math.max(finP, finN);
@@ -279,17 +279,14 @@
           tl.to(d.querySelector(".t05-anneau circle"), { attr: { "stroke-dashoffset": 0 }, duration: 0.45, ease: "power2.out" }, t0 + 0.12);
         });
 
-        // 6. La caméra : elle s'approche pendant que le mot fort entre ; pendant chaque lecture, une
-        // dérive lente seulement (3 à 5 %, sine.inOut) ; elle revient au plan large entre deux textes
+        // 6. La caméra : elle s'approche pendant que le mot fort entre ; pendant chaque lecture, elle
+        // se tient (les mots ne bougent pas) ; elle revient au plan large entre deux textes
         // (le mot sort, la phrase sort), puis glisse une fois le nom lu : la grille d'anneaux remplit
         // l'image (raccord scène 3).
         var C = [L / 2, H / 2];
         recadre(0.05, ZM, C, C, 0.8, "power3.inOut");                          // pendant que le mot entre
-        recadre(0.85, ZM * 1.035, C, [C[0] - 20, C[1]], XM - 0.85, "sine.inOut");
         recadre(XM, 1, C, C, 0.65, "power3.inOut");
-        recadre(P0 + 0.25, 1.035, C, [C[0] + 18, C[1]], XP - P0 - 0.25, "sine.inOut");
         recadre(XP, 1.02, C, C, 0.6, "power3.inOut");
-        recadre(XP + 0.6, 1.05, C, [C[0] - 16, C[1]], XN - XP - 0.6, "sine.inOut");
         tl.to(cam, { x: -1470, y: 0, scale: 1, duration: 1.05, ease: "power3.inOut" }, XN);
         window.__timelines[ID] = tl;
       }

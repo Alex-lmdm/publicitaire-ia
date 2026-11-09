@@ -70,7 +70,7 @@
       // met à null ou se retire de sa liste.
       var CONTENU = {
         fond: "sombre",                 // "sombre" (sa nuit) ou "clair"
-        offre: { nom: "Klasso", icone: "layers" },        // le nœud de l'offre : son nom et son icône (ou son logo « logo-… »)
+        offre: { nom: "[NOM DE L'OFFRE]", icone: "layers" },   // le nœud de l'offre : son nom (OFFRE.json) et son icône (ou son logo « logo-… »)
         // Chaque icône : d'abord ce qu'on reconnaît, dans ses vraies couleurs : le vrai logo de l'outil
         // (« logo-gmail », posé par `logos`), un objet connu du kit (« objet-pdf », « objet-dossier »,
         // « objet-tableur »…) ; une icône d'un seul trait (« mail », « euro ») seulement pour une idée.
@@ -88,6 +88,7 @@
         zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
       var mots = document.getElementById(ID + "-mots");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;

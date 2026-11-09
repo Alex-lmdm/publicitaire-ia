@@ -14,6 +14,8 @@
   remplit de l'accent ; on plonge dans ce bouton, qui couvre l'écran d'un éclair de l'accent, et
   le verbe d'appel et le nom de l'offre se forment en points, en grand, deviennent nets et se
   tiennent le temps de leur lecture.
+  L'accroche : la ligne de la promesse porte data-accroche (`check` vérifie qu'elle se lit dès
+  0,5 s, composition.md) ; un seul élément de la vidéo le porte : retire-le d'une seconde copie.
   Durée : la scène tient chaque phrase le temps de sa lecture (0,3 s par mot + 0,8 s, 2 s au
   moins pour la promesse : `studio_motion.py lecture`) et en déduit sa durée (D dans le script) :
   7,2 s + la lecture de la promesse + celle de l'appel. 11,2 s avec l'objet EXEMPLE (5 mots puis
@@ -147,7 +149,7 @@
       <div class="t3o-plan" id="t3o-plan-trame"><div class="t3o-trame" id="t3o-trame" data-layout-ignore></div></div>
       <div class="t3o-plan" id="t3o-matiere" data-layout-allow-overflow></div>
       <div class="t3o-plan" id="t3o-zoom" data-layout-allow-overflow>
-        <div class="t3o-ligne" id="t3o-ligne"><span class="t3o-a" id="t3o-a"></span><span id="t3o-espace">&nbsp;</span><span class="t3o-b" id="t3o-b"></span></div>
+        <div class="t3o-ligne" id="t3o-ligne" data-accroche><span class="t3o-a" id="t3o-a"></span><span id="t3o-espace">&nbsp;</span><span class="t3o-b" id="t3o-b"></span></div>
       </div>
       <div class="t3o-plan" id="t3o-zoom-barre" data-layout-allow-overflow>
         <div class="t3o-barre" id="t3o-barre" data-layout-allow-overflow></div>

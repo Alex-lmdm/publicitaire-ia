@@ -47,6 +47,62 @@ class Contrat(unittest.TestCase):
                     self.assertNotIn(m, texte)
 
 
+class Exemples(unittest.TestCase):
+    """Revue du 09/11/2026 : l'IA recopie les exemples avant de lire les règles. Les faits d'une scène
+    prête (prénom, témoignage, chiffre, prix, date, délai) sont des emplacements évidents, et la scène
+    dit dans la console qu'il en reste ; ses anciens faux exemples réalistes ne reviennent pas."""
+    ANCIENS = ("Camille", "Léa M.", "690 €", "30 novembre", "1 850 €", "2340", "7530", "6 semaines",
+               "18 vidéos", "300 €", "1000 élèves", "1 000 élèves")
+    EMPLACEMENT = re.compile(r'"[^"\n]*\[[A-ZÀ-Ý0-9][^\]"\n]*\][^"\n]*"')
+
+    def contenu(self, texte):
+        debut = texte.index("var CONTENU = {")
+        return texte[debut:texte.index("\n      };", debut)]
+
+    def test_aucun_ancien_faux_exemple(self):
+        for s in scenes():
+            texte = s.read_text(encoding="utf-8")
+            with self.subTest(s.name):
+                for ancien in self.ANCIENS:
+                    self.assertNotIn(ancien, texte)
+
+    def test_chaque_scene_porte_des_emplacements_et_son_garde_fou(self):
+        for s in scenes():
+            texte = s.read_text(encoding="utf-8")
+            with self.subTest(s.name):
+                self.assertRegex(self.contenu(texte), self.EMPLACEMENT, "au moins un fait en emplacement")
+                self.assertIn("K.emplacements(ID, CONTENU);", texte)
+                # appelé avant toute mise en page : il parle même si la scène plante ensuite
+                self.assertLess(texte.index("K.emplacements(ID, CONTENU);"), texte.index("K.cadre("))
+
+
+class Intentions(unittest.TestCase):
+    """Ce que `check` vérifie (`index.motion.json`) : l'accroche porte data-accroche sur un seul élément,
+    le prix data-prix ; chaque scène qui les porte le rappelle dans son en-tête."""
+
+    def test_l_accroche_de_l_ouverture(self):
+        texte = (SCENES / "situation.html").read_text(encoding="utf-8")
+        self.assertEqual(texte.count('setAttribute("data-accroche"'), 1)
+        self.assertIn("if (k === 0) bloc.setAttribute(\"data-accroche\"", texte)
+        self.assertIn("data-accroche", texte.split("<template>")[0])   # l'en-tête le dit
+
+    def test_le_prix(self):
+        texte = (SCENES / "prix.html").read_text(encoding="utf-8")
+        self.assertEqual(texte.count('setAttribute("data-prix"'), 1)
+        tete = texte.split("<template>")[0]
+        self.assertIn("data-prix", tete)
+        self.assertIn('{"kind": "staysInFrame", "selector": "[data-prix]"}', tete)
+
+    def test_aucune_autre_scene_ne_les_porte(self):
+        for s in scenes():
+            if s.name in ("situation.html", "prix.html"):
+                continue
+            with self.subTest(s.name):
+                script = s.read_text(encoding="utf-8").split("<template>", 1)[1]
+                self.assertNotIn("data-accroche", script)
+                self.assertNotIn("data-prix", script)
+
+
 class Palette(unittest.TestCase):
     def lignes(self):
         for s in scenes():

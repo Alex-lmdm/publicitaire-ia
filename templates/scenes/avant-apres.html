@@ -12,9 +12,9 @@
      « avant-apres » par un autre identifiant. -->
 <template>
   <style>
-    #avant-apres .aa-calque { position: absolute; left: 0; top: 0; width: 100%; height: 100%; will-change: transform; }
+    #avant-apres .aa-calque { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
     #avant-apres .aa-panneau {
-      position: absolute; left: 0; top: 0; width: 100%; height: 100%; will-change: transform;
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%;
       background-color: var(--k-clair);
       background-image:
         linear-gradient(var(--k-grille-claire) 1px, transparent 1px),
@@ -24,7 +24,7 @@
     }
     #avant-apres .aa-bord { position: absolute; background: var(--brand-accent); }
     #avant-apres .aa-carte {
-      position: absolute; border-radius: 30px; overflow: hidden; will-change: transform, clip-path;
+      position: absolute; border-radius: 30px; overflow: hidden;
       font-family: "Inter", var(--brand-font-body);
     }
     #avant-apres .aa-carte-sombre { background: var(--brand-surface); color: var(--k-blanc); box-shadow: var(--k-ombre), inset 0 0 0 2px rgba(255, 255, 255, 0.06); }
@@ -36,7 +36,7 @@
     #avant-apres .aa-carte-claire .aa-tete { border-bottom: 2px solid var(--brand-gris-4); }
     #avant-apres .aa-tete i { display: block; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--brand-gris-2); }
     #avant-apres .aa-ligne {
-      display: flex; align-items: center; gap: 24px; padding: 0 44px; font-weight: 600; white-space: nowrap; will-change: transform;
+      display: flex; align-items: center; gap: 24px; padding: 0 44px; font-weight: 600; white-space: nowrap;
     }
     #avant-apres .aa-carte-sombre .aa-ligne { border-bottom: 2px solid var(--brand-gris-1); }
     #avant-apres .aa-carte-claire .aa-ligne { border-bottom: 2px solid var(--brand-gris-4); }
@@ -96,11 +96,12 @@
           titre: "Ton premier client signé",   // le résultat qu'on obtient
           lignes: ["Offre clarifiée", "Page prête", "Appel réservé"],   // 2 à 4 étapes qui se cochent, ses vraies étapes
           capture: null,                       // "assets/images/<le résultat>.png" : remplace l'en-tête et les lignes
-          delai: "en 6 semaines"               // son vrai délai (OFFRE.json), 1 à 4 mots ; ou null
+          delai: "en [DÉLAI]"                  // son vrai délai (OFFRE.json), 1 à 4 mots ; ou null
         },
         zone: null                             // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID);
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
       // La durée donnée à la scène : celle de sa racine, ou, une fois montée, celle de son hôte dans
@@ -236,7 +237,7 @@
 
       // Le volet clair pousse l'ancienne façon dans sa moitié.
       var tVolet = 0.3, dVolet = 0.75;
-      vers = {}; vers[axe] = coupe; vers.duration = dVolet; vers.ease = "expo.inOut";
+      vers = {}; vers[axe] = coupe; vers.duration = dVolet; vers.ease = "power3.inOut";
       tl.to(panneau, vers, tVolet);
       vers = Object.assign({}, vers); vers[axe] = 0;
       tl.to(calqueB, vers, tVolet);
@@ -252,7 +253,7 @@
       aCharger.forEach(function (e, i) {
         var ti = tLigne + i * 0.4;
         tl.to(cA.el, Object.assign(etat(deja + i + 1), { duration: 0.34, ease: "expo.out" }), ti);
-        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1)", immediateRender: false }, ti);
+        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "expo.out", immediateRender: false }, ti);   // un texte se pose net
       });
       var tFinA = aCharger.length ? tLigne + (aCharger.length - 1) * 0.4 + 0.4 : tLigne;
 
@@ -275,14 +276,14 @@
       var tSortie = Math.max(chrono ? tChrono + dChrono + lecture(formatChrono(A.chrono.a)) : 0,
         tFinA + 0.6, tFinB + 0.4, delai ? tDelai + lecture(B.delai) : 0, lecture(etiquettes[0] || "x"));
       var dSortie = 0.7;
-      vers = { duration: dSortie, ease: "expo.inOut" };
+      vers = { duration: dSortie, ease: "power3.inOut" };
       vers[axe] = 0; tl.to(panneau, vers, tSortie);
       vers = Object.assign({}, vers); vers[axe] = -coupe; tl.to(calqueA, vers, tSortie);
       var centreB = { x: mB.x + col.l / 2, y: (mB.yRang + mB.yCarte + mB.h) / 2 };
       var echelle = V ? 1.08 : 1.15;
       gsap.set(calqueB, { transformOrigin: centreB.x + "px " + centreB.y + "px" });
-      tl.to(calqueB, { x: L / 2 - centreB.x, y: (haut + bas) / 2 - centreB.y, scale: echelle, duration: dSortie, ease: "expo.inOut" }, tSortie);
-      tl.to(cB.el, { rotationX: 0, rotationY: 0, duration: dSortie, ease: "expo.inOut" }, tSortie);
+      tl.to(calqueB, { x: L / 2 - centreB.x, y: (haut + bas) / 2 - centreB.y, scale: echelle, duration: dSortie, ease: "power3.inOut" }, tSortie);
+      tl.to(cB.el, { rotationX: 0, rotationY: 0, duration: dSortie, ease: "power3.inOut" }, tSortie);
       tl.to(bord, V ? { y: -14, duration: 0.3, ease: "power2.in" } : { x: -14, duration: 0.3, ease: "power2.in" }, tSortie + dSortie - 0.3);
 
       // La durée qu'il faut à la scène : le résultat tenu au centre 1,1 s au moins.

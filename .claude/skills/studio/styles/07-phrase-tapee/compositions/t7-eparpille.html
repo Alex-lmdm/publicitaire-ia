@@ -45,7 +45,7 @@
   #t7e .t7e-phrase { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; z-index: 20;
     font-size: 136px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.05; white-space: nowrap; }
   #t7e .t7e-caret { display: inline-block; width: 0.07em; height: 0.82em; margin-left: 0.04em; vertical-align: -0.07em; background: var(--t7-encre); }
-  #t7e .t7e-obj { position: absolute; will-change: transform, filter; }
+  #t7e .t7e-obj { position: absolute; }
   #t7e .t7e-tuile { width: 100%; height: 100%; border-radius: 24%; background: var(--t7-clair); display: grid; place-items: center; color: var(--t7-encre);
     box-shadow: 0 14px 34px rgba(0,0,0,.12), inset 0 0 0 1.5px rgba(0,0,0,.06); }
   #t7e .t7e-tuile svg { width: 56%; height: 56%; }
@@ -227,7 +227,7 @@
       // les objets d'un groupe surgissent en deux salves pendant la tenue de leur version (la moitié
       // tout de suite, l'autre 0,7 s plus tard) : la vie de la lecture
       var moitie = Math.ceil(g.length / 2), salve = j < moitie ? 0 : 1, k = salve ? j - moitie : j;
-      tl.fromTo(e, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
+      tl.fromTo(e, { scale: 0.4 }, { scale: 1, duration: 0.45, ease: "expo.out", immediateRender: false }, t + salve * 0.7 + k * 0.04).fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.27, ease: "power2.out", immediateRender: false }, t + salve * 0.7 + k * 0.04);
     });
   });
   var derives = tous.map(function (e, i) {      // dérive lente, plus ample pour les objets flous (proches)

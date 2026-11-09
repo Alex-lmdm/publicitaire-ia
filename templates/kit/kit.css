@@ -9,7 +9,6 @@
   --k-clair: #f3f3f3;
   --k-blanc: #ffffff;
   --k-encre: #151515;
-  --k-gris: #8d8d8d;
   --k-grille-sombre: rgba(255, 255, 255, 0.045);
   --k-grille-claire: rgba(0, 0, 0, 0.055);
   --k-ombre: 0 30px 80px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.25);
@@ -19,8 +18,10 @@
 /* --- Les fonds : jamais un aplat vide ------------------------------------------------- */
 .k-scene { position: absolute; inset: 0; overflow: hidden; }
 .k-fond { position: absolute; inset: -2px; }
+/* La nuit de la marque (--brand-sombre) ; l'anthracite du kit seulement pour un projet d'avant la
+   version 0.9.0, qui n'a pas ce jeton (kit.md, « Les pièges »). */
 .k-fond-sombre {
-  background-color: var(--k-noir);
+  background-color: var(--brand-sombre, var(--k-noir));
   background-image:
     radial-gradient(ellipse 70% 60% at 50% 45%, rgba(255, 255, 255, 0.035), transparent 70%),
     linear-gradient(var(--k-grille-sombre) 1px, transparent 1px),
@@ -60,10 +61,10 @@
   line-height: 1.02; white-space: nowrap;
 }
 .k-titre .k-leger { font-weight: 400; opacity: 0.55; }
-.k-mot { display: inline-block; will-change: transform, filter, opacity; }
+.k-mot { display: inline-block; }
 .k-sur-sombre { color: var(--k-blanc); }
 .k-sur-clair { color: var(--k-encre); }
-.k-sur-accent, .k-sur-jaune { color: var(--k-encre); }
+.k-sur-accent, .k-sur-jaune { color: var(--brand-contrast); }
 .k-accent { color: var(--brand-accent); }
 
 /* Le mot fantôme géant d'un chapitre, et son étiquette. Le chapitre mesure sa largeur (container
@@ -74,7 +75,7 @@
 .k-fantome {
   position: absolute; left: 0; right: 0; top: 50%; text-align: center; white-space: nowrap;
   font-family: var(--brand-font-display); font-weight: 800; font-size: 300px; font-size: 15.625cqw; letter-spacing: -0.04em;
-  transform: translateY(-58%); line-height: 1;
+  line-height: 1; margin-top: -0.58em; /* remonté de 58 % de sa hauteur, sans transformation CSS : GSAP le déplace */
 }
 .k-fantome.k-sur-sombre { color: rgba(255, 255, 255, 0.05); }
 .k-fantome.k-sur-clair { color: rgba(0, 0, 0, 0.045); }
@@ -107,18 +108,19 @@
 .k-champ { position: absolute; inset: 0; transform-style: preserve-3d; }
 .k-tuile {
   position: absolute; display: flex; align-items: center; justify-content: center;
-  border-radius: 26%; will-change: transform, filter;
+  border-radius: 26%;
 }
 .k-tuile svg { width: 52%; height: 52%; }
 .k-tuile-sombre { background: #2c2c2f; color: var(--brand-accent); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
-.k-tuile-accent, .k-tuile-jaune { background: var(--brand-accent); color: var(--k-encre); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4); }
+.k-tuile-accent, .k-tuile-jaune { background: var(--brand-accent); color: var(--brand-contrast); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4); }
 .k-tuile-blanche { background: #fff; color: var(--k-encre); box-shadow: var(--k-ombre-claire); }
 .k-tuile-marque { box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35); }
 .k-tuile-marque svg { width: 58%; height: 58%; }
 /* Un logo monochrome (currentColor) prend la couleur lisible du fond : blanc sur sombre, encre sur
-   clair et sur la couleur d'accent ; K.logoNu(svg, couleur) la force. */
-.k-logo-nu { position: absolute; display: grid; place-items: center; will-change: transform, filter; color: var(--k-blanc); }
-.k-fond-clair .k-logo-nu, .k-fond-accent .k-logo-nu, .k-fond-jaune .k-logo-nu { color: var(--k-encre); }
+   clair, le texte de la marque sur l'accent (--brand-contrast) ; K.logoNu(svg, couleur) la force. */
+.k-logo-nu { position: absolute; display: grid; place-items: center; color: var(--k-blanc); }
+.k-fond-clair .k-logo-nu { color: var(--k-encre); }
+.k-fond-accent .k-logo-nu, .k-fond-jaune .k-logo-nu { color: var(--brand-contrast); }
 /* L'ombre sur le logo lui-même : le flou de profondeur de K.champ (sur le conteneur) s'y ajoute. */
 .k-logo-nu svg, .k-logo-nu img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.35)); }
 .k-pastille {
@@ -139,7 +141,9 @@
   box-shadow: var(--k-ombre), inset 0 0 0 2px #3a3a3c;
 }
 .k-tel-ecran { position: relative; width: 100%; height: 100%; border-radius: 43px; overflow: hidden; background: #000; }
-.k-tel-ecran img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Sa capture plein écran : seulement l'image posée directement dans l'écran. Une interface
+   reconstruite dans l'écran garde ses propres images (couverture, cartes) à leur taille. */
+.k-tel-ecran > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .k-tel-ilot { position: absolute; left: 50%; top: 14px; width: 120px; height: 34px; margin-left: -60px; border-radius: 20px; background: #000; z-index: 5; }
 
 /* L'ordinateur portable (K.ordinateur) : un vrai volume en perspective CSS, comme le téléphone. Le
@@ -169,11 +173,11 @@
 }
 .k-ordi-couvercle { position: absolute; inset: 0; transform-origin: 50% 100%; transform-style: preserve-3d; }
 .k-ordi-dos {
-  position: absolute; inset: 0; border-radius: 3.2% / 4.8%; transform: rotateY(180deg) translateZ(1px); backface-visibility: hidden;
+  position: absolute; inset: 0; border-radius: 3.2% / 4.8%; transform: rotateY(180deg) translateZ(2px);
   background: linear-gradient(160deg, var(--k-alu-1), var(--k-alu-2));
 }
 .k-ordi-cadre {
-  position: absolute; inset: 0; border-radius: 3.2% / 4.8%; backface-visibility: hidden; background: #0b0b0c;
+  position: absolute; inset: 0; border-radius: 3.2% / 4.8%; background: #0b0b0c;
   box-shadow: inset 0 0 0 3px var(--k-alu-2), 0 30px 60px rgba(0, 0, 0, 0.28);
 }
 .k-ordi-ecran { position: absolute; left: 2.6%; right: 2.6%; top: 3.6%; bottom: 7%; overflow: hidden; border-radius: 0.6%; background: #050506; }
@@ -228,7 +232,7 @@
    contour net (un trait plein, jamais une lueur). */
 .k-heros { font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.045em; line-height: 0.92; white-space: nowrap; }
 .k-contour { color: transparent; -webkit-text-stroke: 0.028em var(--k-contour, #fff); }
-.k-lettre { display: inline-block; will-change: transform; }
+.k-lettre { display: inline-block; }
 .k-barre { position: absolute; left: -4%; right: -4%; top: 54%; height: 0.12em; margin-top: -0.06em; background: var(--brand-accent); transform-origin: 0 50%; border-radius: 0.04em; }
 .k-surligne { position: relative; display: inline-block; }
 .k-surligne-texte { position: relative; z-index: 1; }
@@ -256,13 +260,13 @@
 /* Le trait de la coupe (K.tranche). */
 .k-tranche-trait { position: absolute; /* déborde exprès : il traverse tout l'écran */ left: 0; top: 0; height: 14px; margin-top: -7px; border-radius: 7px; background: var(--brand-accent); z-index: 60; }
 
-/* Chapitre sur l'accent : la variante de la marque. Rien de transparent sur l'accent (du noir à
-   demi transparent sur un jaune fait de l'olive) : le fantôme est un contour fin et plein, le rail
-   de l'interrupteur un trait plein. */
-.k-fantome.k-sur-accent, .k-fantome.k-sur-jaune { color: transparent; -webkit-text-stroke: 2px var(--k-encre); }
-.k-etiquette.k-sur-accent, .k-etiquette.k-sur-jaune { color: var(--k-encre); }
-.k-interrupteur.k-sur-accent, .k-interrupteur.k-sur-jaune { background: transparent; box-shadow: inset 0 0 0 4px var(--k-encre); }
-.k-interrupteur.k-sur-accent .k-plein, .k-interrupteur.k-sur-jaune .k-plein { background: var(--k-encre); }
+/* Chapitre sur l'accent : la variante de la marque, à l'encre de la marque sur l'accent
+   (--brand-contrast). Rien de transparent sur l'accent (du noir à demi transparent sur un jaune
+   fait de l'olive) : le fantôme est un contour fin et plein, le rail de l'interrupteur un trait plein. */
+.k-fantome.k-sur-accent, .k-fantome.k-sur-jaune { color: transparent; -webkit-text-stroke: 2px var(--brand-contrast); }
+.k-etiquette.k-sur-accent, .k-etiquette.k-sur-jaune { color: var(--brand-contrast); }
+.k-interrupteur.k-sur-accent, .k-interrupteur.k-sur-jaune { background: transparent; box-shadow: inset 0 0 0 4px var(--brand-contrast); }
+.k-interrupteur.k-sur-accent .k-plein, .k-interrupteur.k-sur-jaune .k-plein { background: var(--brand-contrast); }
 
 /* Le calque des mots : au-dessus de la caméra. Un texte qu'on lit ne bouge pas avec elle
    (references/interdits.md, « La lecture ») ; la caméra peut dériver derrière lui. */

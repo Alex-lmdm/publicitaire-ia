@@ -15,9 +15,9 @@
     Rôle : la démonstration courte, l'offre (ce qui est nouveau) et la signature.
     Rien ne part avant d'être lu (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) : le menu,
     la demande tapée, les étapes (jusqu'à ce que toutes se lisent), le titre de la carte, la
-    signature 3 s (l'écran final). La caméra ne fait qu'une dérive lente pendant qu'on lit (aucun
-    coup au clic : la main et l'interface font le geste) ; un recadrage net seulement entre deux
-    temps (du menu au champ, du champ aux étapes).
+    signature 3 s (l'écran final). La caméra se tient pendant qu'on lit, et les mots ne bougent pas
+    (aucun coup au clic : la main et l'interface font le geste) ; un recadrage net seulement entre
+    deux temps (du menu au champ, du champ aux étapes).
     Durée : la scène la calcule (D dans le script) ; reporte-la dans data-duration (ici et sur
     l'hôte).
 
@@ -133,7 +133,7 @@
       </div>
       <div class="t05-signature" id="t05-annonce-signature" data-layout-allow-overflow><div class="t05-marque" id="t05-annonce-marque"></div><div class="t05-nom" id="t05-annonce-nom"></div></div>
       </div>
-      <div id="t05-annonce-main-hote" style="position:absolute; inset:0; z-index:70;"></div>
+      <div id="t05-annonce-main-calque" style="position:absolute; inset:0; z-index:70;"></div>
     </div>
   </div>
 
@@ -217,24 +217,22 @@
       // Position à l'écran d'un point de la fenêtre (le contenu est centré, réduit en 9:16).
       var k = vertical ? 0.86 : 1, ecran = function (x, y) { return [L / 2 + (x - 550) * k, H / 2 + (y - 200) * k]; };
       // Après le menu, la caméra s'approche du champ (×1,28 autour de son centre, ×1,12 en 9:16 pour
-      // qu'il reste entier, puis une dérive de 3 %) : le bouton d'envoi est visé là où il est au
-      // moment du clic.
-      var Z = vertical ? 1.12 : 1.28, ZE = Z * 1.03, o = ecran(550, 265), plus = ecran(48, 314), envoi = [o[0] + (1015 - 550) * ZE * k, o[1] + (293 - 265) * ZE * k];
-      var hand = main($("main-hote")), plusV = [plus[0] + 14 * k, plus[1] - 10 * k];
+      // qu'il reste entier), puis se tient pendant qu'on lit la demande : le bouton d'envoi est visé
+      // là où il est au moment du clic.
+      var Z = vertical ? 1.12 : 1.28, ZE = Z, o = ecran(550, 265), plus = ecran(48, 314), envoi = [o[0] + (1015 - 550) * ZE * k, o[1] + (293 - 265) * ZE * k];
+      var hand = main($("main-calque")), plusV = [plus[0] + 14 * k, plus[1] - 10 * k];
       gsap.set(hand, { x: L + 140, y: H * 0.85 });
       tl.to(hand, { x: plusV[0], y: plusV[1], duration: 0.6, ease: "power3.out" }, 0.15);
       clic(hand, 0.78);
-      // Pendant le menu, une dérive lente vers le « + » (6 %), sans coup au clic.
-      recadre(0.1, 1.06, plus, plus, FM - 0.1, "sine.inOut");
-      tl.to(menu, { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(1)" }, 0.82);
+      // Pendant le menu, la caméra se tient (on lit ses réglages), sans coup au clic.
+      tl.to(menu, { scale: 1, duration: 0.32, ease: "back.out(1)" }, 0.82).to(menu, { opacity: 1, duration: 0.19, ease: "power2.out" }, 0.82);
       inters.forEach(function (it, i) { allumer(it, 1.12 + i * 0.1); });
       tl.to(hand, { x: plusV[0] + 380 * k, y: plusV[1] + 150 * k, duration: 0.6, ease: "power2.inOut" }, 1.0);
       tl.to(menu, { scale: 0.96, opacity: 0, duration: 0.22, ease: "power2.in" }, FM);
 
       // 2. Un recadrage net vers le champ (entre le menu et la demande), la demande est tapée, tenue
-      //    le temps de sa lecture, puis envoyée ; la caméra ne fait qu'une dérive pendant ce temps
+      //    le temps de sa lecture, puis envoyée ; la caméra se tient pendant ce temps
       recadre(FM, Z, o, o, 0.6, "power3.inOut");
-      recadre(FM + 0.6, ZE, o, o, ENV - FM - 0.6, "sine.inOut");
       var tape = $("tape");
       K.cacher(tape);
       tl.set(tape, { opacity: 1 }, TT);
@@ -259,7 +257,7 @@
         var et = K.el($("etapes"), "div", "t05-etape", '<span class="t05-ico">' + K.ic(e[0]) + "</span><span class=\"t05-txt\">" + e[1] + "</span>", "top:" + (230 + i * 130) + "px;");
         var t0 = 3.75 + S + i * 0.38, txt = et.querySelector(".t05-txt");
         gsap.set(et.querySelector(".t05-ico"), { scale: 0.5, opacity: 0 });
-        tl.to(et.querySelector(".t05-ico"), { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1)" }, t0);
+        tl.to(et.querySelector(".t05-ico"), { scale: 1, duration: 0.4, ease: "back.out(1)" }, t0).to(et.querySelector(".t05-ico"), { opacity: 1, duration: 0.24, ease: "power2.out" }, t0);
         // l'étape faite se coche (l'interface réagit) : son icône devient une coche, avec un petit rebond
         var ico = et.querySelector(".t05-ico"), coche = K.el(ico, "span", "t05-coche", K.ic("check"));
         gsap.set(coche, { position: "absolute", display: "grid", placeItems: "center", inset: 0, opacity: 0 });
@@ -286,10 +284,8 @@
         txt.style.webkitMaskSize = txt.style.maskSize = "250% 100%";
         selon(function (t) { var v = (100 * (1 - prog(t, t0 + 0.1, 0.75, "power1.inOut"))).toFixed(1) + "% 0"; txt.style.webkitMaskPosition = v; txt.style.maskPosition = v; });
       });
-      // pendant qu'on lit les étapes, une dérive lente seulement (la caméra s'en approche de 5 %)
-      tl.to(travail, { y: -40, duration: XE - 4.0 - S, ease: "sine.inOut" }, 4.0 + S);
-      var centreEtapes = [L / 2 - 300, H / 2 + 60];
-      recadre(3.75 + S, 1.05, centreEtapes, centreEtapes, XE - 3.75 - S, "sine.inOut");
+      // pendant qu'on lit les étapes, rien ne bouge sous elles : la vie vient d'elles (elles s'écrivent,
+      // se cochent, leurs aperçus surgissent)
       tl.to(travail, { opacity: 0, filter: "blur(12px)", duration: 0.35, ease: "power2.in" }, XE);
 
       // 4. La carte d'annonce : pastille + titre
@@ -303,13 +299,14 @@
       var la = lumA(csA.getPropertyValue("--brand-accent")), lc = lumA(csA.getPropertyValue("--brand-clair")), blocAccent = (Math.max(la, lc) + 0.05) / (Math.min(la, lc) + 0.05) >= 2;
       if (fort) { fort.classList.add("t05-fort"); fort.innerHTML = '<span class="t05-fort-txt">' + fort.innerHTML + "</span>"; bloc = K.el(fort, "span", "t05-bloc"); bloc.style.background = blocAccent ? "var(--brand-accent)" : "var(--t05-encre)"; gsap.set(bloc, { opacity: 0 }); }
       K.cacher($("pastille")); K.cacher(tMots);
-      tl.fromTo($("pastille"), { opacity: 0, y: 10, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.55, ease: "expo.out" }, 5.55 + OA);
+      // La pastille (une étiquette) et le titre paraissent nets, sans montée ni flou : le mot fort
+      // a son geste (le bloc plein), le reste se lit.
+      K.apparition(tl, $("pastille"), 5.55 + OA);
       var lignes = titre.querySelectorAll(".t05-ligne");
-      K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 5.65 + OA, { y: 10, flou: 8, duree: 0.6, decalage: 0.05, echelle: 1 });
-      if (lignes[1]) K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 5.9 + OA, { y: 10, flou: 8, duree: 0.6, decalage: 0.05, echelle: 1 });
-      tl.fromTo(fin, { scale: 1 }, { scale: 1.03, duration: XT - 5.6 - OA, ease: "sine.inOut", immediateRender: false }, 5.6 + OA);
+      K.apparition(tl, lignes[0].querySelectorAll(".t05-mot"), 5.65 + OA, { decalage: 0.04 });
+      if (lignes[1]) K.apparition(tl, lignes[1].querySelectorAll(".t05-mot"), 5.9 + OA, { decalage: 0.04 });
       // La carte et la signature arrivent avec un léger recul de la caméra (leur apparition), puis
-      // la caméra ne fait plus qu'une dérive.
+      // elles se tiennent immobiles.
       tl.fromTo(cam, { scale: 1.08, x: 0, y: 0 }, { scale: 1, duration: 1.1, ease: "expo.out", immediateRender: false }, 5.5 + OA);
       tl.fromTo(cam, { scale: 1.1 }, { scale: 1, duration: 1.0, ease: "expo.out", immediateRender: false }, 7.42 + OS);
       var tb = 5.9 + OA + 0.07 * (nT2 - 1) + 0.7 + 0.35;        // peu après que le titre est posé
@@ -335,7 +332,6 @@
 
       tl.to(marque, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(1)" }, 7.45 + OS);
       selon(function (t) { nom.style.clipPath = "inset(-10% " + (100 - 100 * prog(t, 7.75 + OS, 0.4, "power3.out")).toFixed(1) + "% -10% 0%)"; });
-      tl.fromTo(sig, { scale: 1 }, { scale: 1.04, duration: D - 7.6 - OS, ease: "sine.inOut", immediateRender: false }, 7.6 + OS);
 
       // Mise en place verticale des deux cartes finales (mesurées après chargement des polices)
       var cs = getComputedStyle(titre);

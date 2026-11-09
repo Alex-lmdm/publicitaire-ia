@@ -11,8 +11,10 @@
     capture ; enfin des cadres de repérage se posent en cascade sur chaque partie de la carte,
     chacun avec son étiquette (TITRE, PRIX…). C'est le passage du bruit au résultat net.
     Caméra : un seul recadrage, pendant que les pixels deviennent la carte (aucun texte ne se lit
-    encore), puis une dérive lente (4,5 %, sine.inOut) jusqu'à la fin : les cadres qui se posent
-    sont la vie du plan, la caméra ne fait pas de pas vers eux.
+    encore), puis elle se tient jusqu'à la fin : les cadres qui se posent et les cases de la grille
+    sont la vie du plan, les mots de la carte ne bougent pas pendant qu'on les lit.
+    Le prix porte data-prix : la vidéo qui l'affiche ajoute à index.motion.json la règle
+    {"kind": "staysInFrame", "selector": "[data-prix]"} (composition.md).
     Format : 16:9 (1920 × 1080) par défaut ; en 9:16, data-width="1080" data-height="1920" ici et
     sur l'hôte : la carte passe en colonne (classe t01-vertical, réglée seule).
     Entrée : idéale juste après t01-raccord-pixels (la mosaïque tombe sur la grille vide).
@@ -100,7 +102,7 @@
       etiquette: "[ 02 · LA SOLUTION ]",      // le label du chapitre
       titre: "Ton offre",                     // le nom de l'offre
       genre: "Formation · En ligne",          // sa ligne de genre (format · lieu · accès), courte
-      prix: "300 €",                          // un exemple : son prix EXACT (OFFRE.json), sinon "" (la ligne et son cadre se retirent)
+      prix: "[SON PRIX]",                     // son prix EXACT, tel que sa page l'affiche (OFFRE.json), sinon "" (la ligne et son cadre se retirent)
       lignes: ["Tout pour passer à l'action,", "étape par étape."],   // la promesse, 1 ou 2 lignes courtes
       pastilles: ["Vidéos", "Modèles", "Bonus"],   // ce qu'on reçoit, 3 mots
       capture: "",                            // sa vraie capture pour l'aperçu ("assets/images/…") ; "" : pas d'aperçu
@@ -110,6 +112,7 @@
     };
 
     var ID = "t01-carte-annotee", D = 6.5;
+    K.emplacements(ID, EXEMPLE);   // un emplacement d'exemple resté : la console le dit, `check` aussi
     var tl = gsap.timeline({ paused: true });
     var racine = document.getElementById(ID);
     var q = function (s) { return racine.querySelector(s); };
@@ -181,6 +184,7 @@
     T.titre = texte("t01-titre", M.titre, TX.titre);
     T.genre = texte("t01-genre", M.genre, TX.genre);
     T.prix = aPrix ? texte("t01-prix", M.prix, TX.prix) : null;
+    if (T.prix) T.prix.setAttribute("data-prix", "");   // le prix ne sort jamais du cadre (staysInFrame)
     T.lignes = EXEMPLE.lignes.slice(0, 2).map(function (l, i) { return texte("t01-ligne", M.lignes[i], TX.ligne); });
     T.pastilles = EXEMPLE.pastilles.slice(0, 3).map(function (txt, i) {
       var p = M.pastilles, e = K.el(textes, "div", "t01-pastille");
@@ -198,7 +202,7 @@
     K.cacher(pixels, { scale: 0.3 });
     pixels.forEach(function (e, i) {
       var f = FORME[i];
-      tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)" }, 0.05 + (f[0] + f[1]) * 0.05);
+      tl.to(e, { scale: 1, duration: 0.3, ease: "back.out(1)" }, 0.05 + (f[0] + f[1]) * 0.05).to(e, { opacity: 1, duration: 0.18, ease: "power2.out" }, 0.05 + (f[0] + f[1]) * 0.05);
       // Les teintes tournent par vagues (diagonale), toutes les 0,12 s.
       for (var k = 0; k < 9; k++) {
         var n = ["1", "2", "3"][(k + f[0] + f[1] * 2) % 3];
@@ -215,14 +219,14 @@
     T.lignes.forEach(function (e, i) { cibles.push(bloc(M.lignes[i], EXEMPLE.lignes[i], TX.ligne, 0.5)); });
     T.pastilles.forEach(function (e, j) { cibles.push([M.pastilles[0] + j * M.pastilles[4], M.pastilles[1], M.pastilles[2], M.pastilles[3]]); });
     K.cacher(carte, { scale: 0.2 });
-    tl.to(carte, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.inOut" }, 1.4);
+    tl.to(carte, { opacity: 1, scale: 1, duration: 0.7, ease: "power3.inOut" }, 1.4);
     // Le pixel garde sa taille de départ ; il glisse (x, y) et s'étire (scaleX, scaleY) depuis son coin.
     // Avec l'aperçu, le premier pixel devient l'aplat de sa couleur qui le couvre ; les autres, des blocs gris.
     pixels.forEach(function (e, i) {
       var c = cibles[i], f = FORME[i], x0 = ax + f[0] * pas, y0 = ay + f[1] * pas;
       if (!c) { tl.to(e, { scale: 0, duration: 0.3, ease: "power2.in" }, 1.45 + i * 0.02); return; }
       tl.set(e, { transformOrigin: "0 0" }, 1.44);
-      tl.to(e, { x: c[0] - x0, y: c[1] - y0, scaleX: c[2] / cote, scaleY: c[3] / cote, duration: 0.65, ease: "expo.inOut" }, 1.45 + i * 0.03);
+      tl.to(e, { x: c[0] - x0, y: c[1] - y0, scaleX: c[2] / cote, scaleY: c[3] / cote, duration: 0.65, ease: "power3.inOut" }, 1.45 + i * 0.03);
       if (i > 0 || !apercu) tl.set(e, { attr: { "data-n": "g" } }, 1.95 + i * 0.03);
     });
 
@@ -289,12 +293,11 @@
       tl.set(c, { opacity: 1 }, 3.6 + i * 0.45).set(c, { opacity: 0 }, 4.3 + i * 0.45);
     });
     // Un seul recadrage net, pendant que les pixels deviennent la carte (rien ne se lit encore) : la
-    // carte vient au centre, un peu plus près ; puis une dérive lente jusqu'à la fin (4,5 %, sine.inOut).
+    // carte vient au centre, un peu plus près ; puis la caméra se tient (on lit la carte).
     var cam = "#t01-carte-annotee-cam", S1 = vertical ? 1.03 : (apercu ? 1.04 : 1.1);
     var Px = C.x + C.l / 2, Py = C.y + C.h / 2, Qx = L / 2, Qy = H / 2 + (vertical ? 60 : 40);
     var viser = function (s) { return { scale: s, x: Qx - L / 2 - (Px - L / 2) * s, y: Qy - H / 2 - (Py - H / 2) * s }; };
     tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, Object.assign(viser(S1), { duration: 0.7, ease: "power3.inOut" }), 1.5);
-    tl.to(cam, Object.assign(viser(S1 * 1.045), { duration: D - 2.25, ease: "sine.inOut" }), 2.25);
     decoder(q("#t01-carte-annotee-label"), EXEMPLE.etiquette, 0.1, 0.55);
 
     window.__timelines[ID] = tl;

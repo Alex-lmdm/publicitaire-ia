@@ -9,13 +9,16 @@
     Ce qu'elle montre, en deux plans coupés franc, chacun tenu le temps de sa lecture :
       plan A (0 à COUPE) : la couleur d'accent en plein écran ; le titre arrive si grand qu'il
         déborde du cadre de tous côtés et se resserre en 0,6 s jusqu'à tenir entier, six lignes
-        d'un mot du haut au bas du cadre ; pendant sa lecture, le bloc ne fait que pousser
-        lentement (×1,045) et les mots des deux lignes du milieu changent de graisse sur les temps
-        (gras ↔ léger) ; à la sortie, il repart dans le débordement (0,3 s) et la coupe tombe ;
+        d'un mot du haut au bas du cadre ; pendant sa lecture, le bloc ne bouge plus et les mots
+        des deux lignes du milieu changent de graisse sur les temps (gras ↔ léger) ; à la sortie,
+        il repart dans le débordement (0,3 s) et la coupe tombe ;
       plan B (COUPE à la fin) : le spécimen sur la nuit de la marque, une grille fine calée sur les
         lignes du texte, la phrase tapée en deux voix (gras, puis léger et en retrait) ; un cadre de
         sélection à poignées attrape la ligne légère, qui passe en gras puis revient (un événement
-        au moins toutes les 0,8 s) ; la caméra ne fait qu'une dérive lente.
+        au moins toutes les 0,8 s) ; la caméra se tient, le texte ne bouge pas pendant qu'on le lit.
+    L'accroche : le bloc du titre porte data-accroche (`check` vérifie qu'il se lit dès 0,5 s,
+    composition.md) quand la scène ouvre la vidéo ; un seul élément le porte : retire-le d'une
+    seconde copie (une promesse, un temps fort).
 
     Le débordement est l'entrée et la sortie, jamais le moment où l'on lit : entre les deux, chaque
     mot est entier et la plus longue ligne tient dans 90 % de la largeur (la scène baisse la taille
@@ -98,7 +101,7 @@
     <div id="t02-titre" class="k-scene">
       <!-- Plan A : les lignes du titre s'écrivent depuis EXEMPLE.titre -->
       <div class="t02-titre-planA" id="t02-titre-planA">
-        <div class="t02-titre-blocA" id="t02-titre-blocA"></div>
+        <div class="t02-titre-blocA" id="t02-titre-blocA" data-accroche></div>
       </div>
 
       <!-- Plan B : les lignes du spécimen se tapent depuis EXEMPLE.specimen -->
@@ -151,7 +154,7 @@
       var ENTREE = 0.6, SORTIE = 0.3;   // le débordement : l'entrée et la sortie du titre
       var DEBORDE = 1.5;                // l'échelle du titre quand il déborde
       var TAILLE_A = 300;               // six lignes de 300 px vont du haut au bas du cadre
-      var MARGE = 70;                   // en haut et en bas : la poussée (×1,045) ne coupe aucune lettre
+      var MARGE = 70;                   // en haut et en bas : aucune lettre ne touche le bord
       // Les bascules de graisse, depuis la fin de l'entrée : [instant, ligne, mot, graisse].
       var BASCULES = [[0.4, 2, 0, 400], [0.9, 2, 0, 600], [0.9, 3, 0, 400], [1.4, 2, 0, 400],
         [1.4, 3, 0, 600], [1.9, 2, 0, 600], [2.3, 3, 0, 400]];
@@ -179,11 +182,9 @@
         return l;
       });
       // L'entrée : si grand qu'il déborde, il se resserre jusqu'à tenir entier ; pendant la lecture,
-      // une poussée lente seulement ; la sortie repart dans le débordement.
+      // il ne bouge plus (seules les graisses basculent) ; la sortie repart dans le débordement.
       tl.fromTo(blocA, { scale: DEBORDE }, { scale: 1, duration: ENTREE, ease: "power3.out" }, 0);
-      tl.to(blocA, { scale: 1.045, duration: COUPE - SORTIE - ENTREE, ease: "sine.inOut" }, ENTREE);
       tl.to(blocA, { scale: DEBORDE, duration: SORTIE, ease: "power2.in" }, COUPE - SORTIE);
-      if (lignesA[0]) tl.fromTo(lignesA[0], { x: 0 }, { x: 30, duration: COUPE, ease: "sine.inOut" }, 0);
       BASCULES.forEach(function (b) {
         var mot = lignesA[b[1]] && lignesA[b[1]].querySelectorAll("span")[b[2]];
         if (mot && ENTREE + b[0] < COUPE - SORTIE) tl.set(mot, { fontWeight: b[3] }, ENTREE + b[0]);
@@ -203,8 +204,7 @@
       tl.set(b3, { attr: { "data-voix": "grasse" } }, COUPE + 1.4);
       tl.set(b3, { attr: { "data-voix": "legere" } }, COUPE + 2.1);
       tl.to(sel, { opacity: 0, duration: 0.18, ease: "power2.in" }, COUPE + 2.3);
-      // La caméra ne fait qu'une dérive lente pendant tout le plan (3 %).
-      tl.fromTo($("cameraB"), { scale: 1.0, x: 0 }, { scale: 1.03, x: -14, duration: D - COUPE, ease: "sine.inOut" }, COUPE);
+      // La caméra se tient : le spécimen se lit immobile, la frappe et la sélection font la vie du plan.
 
       // Les étiquettes (facultatives) : une info réelle de la fiche, au-dessus du spécimen et
       // sous la ligne légère.

@@ -22,8 +22,9 @@ bout à bout. Tous les identifiants sont préfixés par l'identifiant de la scè
 La taille de la scène est celle de `index.html` (son `data-width` et son `data-height`), sur
 la racine de la scène comme sur son hôte dans `index.html` : **1080 × 1920** pour un Reel ou une
 story (le défaut, ci-dessous), **1920 × 1080** en 16:9 (page de vente, YouTube). Le kit la lit
-là (`K.cadre`) : `K.chapitre`, la zone par défaut de `K.champ` et le mot fantôme s'y adaptent
-seuls. Les coordonnées que tu donnes toi-même (`K.trajet`, `zone`, `evite`, `K.flash`) sont en
+(`K.cadre`) sur l'hôte d'abord, comme la durée (`K.duree`) : une scène écrite en 9:16 et montée
+par un hôte en 16:9 se met en page en 16:9. `K.chapitre`, la zone par défaut de `K.champ` et le
+mot fantôme s'y adaptent seuls. Les coordonnées que tu donnes toi-même (`K.trajet`, `zone`, `evite`, `K.flash`) sont en
 pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
 
 ```html
@@ -38,7 +39,7 @@ pixels de cette composition : en 9:16, x va jusqu'à 1080 et y jusqu'à 1920.
         <!-- le sujet, en perspective : .k-plan, .k-fenetre, .k-tel… -->
       </div></div>
       <div class="k-vignette"></div>
-      <div id="s3-curseur-hote" style="position:absolute; inset:0; z-index:70;"></div>
+      <div id="s3-curseur-calque" style="position:absolute; inset:0; z-index:70;"></div>
     </div>
   </div>
   <script>
@@ -67,15 +68,16 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 | Classe | Rôle |
 |---|---|
 | `k-scene` | conteneur plein cadre de la scène |
-| `k-fond k-fond-sombre` · `k-fond-clair` · `k-fond-accent` | fonds : gris anthracite neutre (`#1b1b1d`) avec grille fine, blanc à peine gris (`#f3f3f3`) avec grille, couleur d'accent pleine ; pour une nuit à sa marque, `var(--brand-sombre)` |
+| `k-fond k-fond-sombre` · `k-fond-clair` · `k-fond-accent` | fonds : la nuit de la marque (`var(--brand-sombre)`) avec grille fine, blanc à peine gris (`#f3f3f3`) avec grille, couleur d'accent pleine |
 | `k-vignette` · `k-vignette-claire` | assombrit les bords (à placer sous le sujet si un plein écran de couleur doit rester pur) |
-| `k-mots` | le calque des mots, devant tout ce que la scène montre |
+| `k-mots` | le calque des mots, devant tout ce que la scène montre : la caméra peut dériver dessous, ses mots ne bougent pas |
+| `k-ligne` (dans `k-mots`) | une ligne de mots posée de bord à bord (`left: 0; right: 0`, sans retour à la ligne) : on lui donne `top` et `text-align` |
 | `k-scene3d` > `k-camera` | l'espace en perspective et la caméra qu'on anime (`scale`, `rotationX/Y/Z`, `x`, `y`) |
 | `k-plan` | un objet placé dans l'espace 3D |
-| `k-titre`, `k-mot`, `k-leger`, `k-accent` | titres à deux graisses ; chaque `k-mot` entre séparément |
+| `k-titre`, `k-mot`, `k-leger`, `k-accent` | titres à deux graisses ; chaque `k-mot` entre séparément ; sur l'accent, `k-sur-accent` (le texte prend `var(--brand-contrast)`) |
 | `k-chapitre` > `k-fantome` + `k-etiquette` + `k-interrupteur` (`k-plein`, `k-bille`) | le motif des chapitres ; variantes `k-sur-sombre`, `k-sur-clair`, `k-sur-accent` ; le fantôme fait 15,625 % de la largeur (300 px en 16:9, 169 px en 9:16) |
 | `k-fenetre` + `k-feux` | fenêtre d'application (coins, ombre, trois points) |
-| `k-tel` > `k-tel-ecran` (+ `k-tel-ilot`) | téléphone ; une image ou des calques dans l'écran |
+| `k-tel` > `k-tel-ecran` (+ `k-tel-ilot`) | téléphone ; sa capture est une image posée directement dans l'écran (`k-tel-ecran > img`, plein écran) ; une interface reconstruite dans l'écran garde ses images à leur taille |
 | `k-tuile` (`k-tuile-sombre`, `-accent`, `-blanche`) | tuile d'icône des champs flottants |
 | `k-carte`, `k-carte-sombre`, `k-pastille` | cartes et pastilles |
 | `k-disque` | le disque de couleur des flashs (`K.flash`) |
@@ -86,27 +88,31 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 |---|---|
 | `K.ic(nom)` | le SVG d'une icône (`"rocket"`) ou d'un logo ajouté (`"logo-claude"`) |
 | `K.cacher(cible)` | cache dès la construction, première image comprise |
+| `K.emplacements(id, CONTENU)` | le garde-fou des exemples, appelé par chaque scène prête : un emplacement resté dans son objet (« [PRÉNOM] », « [SON PRIX] », « [CHIFFRE] ») s'écrit en erreur dans la console, que `check` compte ; rend la liste |
 | `K.el(parent, tag, classe, html, style)` | crée un élément |
 | `K.rng(graine)` | aléatoire à graine (jamais `Math.random`) |
-| `K.cadre(el)` | `{largeur, hauteur}` de la composition qui contient `el` (lus sur `data-width` / `data-height`) |
+| `K.entre(a, b, p)` | la valeur entre `a` et `b` à la part `p` (0 à 1) : une place, une taille réparties |
+| `K.cadre(el)` | `{largeur, hauteur}` de la composition qui contient `el`, lus sur `data-width` / `data-height` : ceux de l'hôte dans `index.html` d'abord, sinon de la composition la plus haute qui en porte |
 | `K.duree(el)` | la durée donnée à la scène qui contient `el` (sa racine, ou son hôte une fois montée : HyperFrames retire `data-duration` de la racine intérieure au montage) |
-| `K.entreeMots(tl, cible, t, {decalage, y, flou})` / `K.sortieMots(tl, cible, t)` | entrée mot par mot (montée, flou qui se dissipe), sortie rapide |
-| `K.curseur(hote, id, clair)` | crée le curseur (`clair` = blanc, sur fond sombre) |
-| `K.trajet(tl, curseur, [[t, x, y, durée, courbe], …])` | déplace le curseur ; le premier point le place |
+| `K.entreeMots(tl, cible, t, {decalage, y, flou, echelle, duree, ease})` | **le mot fort du plan seulement** : il entre mot par mot en montant d'un flou qui se dissipe (46 px, 14 px de flou par défaut) |
+| `K.apparition(tl, cible, t, {decalage, duree, ease})` | **les lignes d'appui, les étiquettes, un contexte** : ils paraissent nets sur place, d'un fondu de 0,18 s, sans montée, sans flou ni échelle ([metier.md](metier.md), « Le mot fort, puis des lignes nettes ») ; `decalage` pour une liste lue élément par élément |
+| `K.sortieMots(tl, cible, t, {decalage, y, flou, duree, ease})` | sortie rapide (une sortie peut bouger : elle part) |
+| `K.curseur(calque, id, clair)` | crée le curseur dans son calque (`clair` = blanc, sur fond sombre) |
+| `K.trajet(tl, curseur, [[t, x, y, durée, courbe], …])` | déplace le curseur ; le premier point le place, dès la construction au premier trajet (même s'il est donné plus tard que 0) ; d'un coup à son instant pour un trajet suivant |
 | `K.clic(tl, curseur, t)` | le curseur s'enfonce, une onde part de la pointe |
 | `K.zoom(el, [x, y], echelle, {vers})` | la caméra qui amène le point [x, y] de la scène au centre du cadre (ou à `vers`), à cette échelle : rend `{scale, x, y}`, à passer tel quel à la caméra (`tl.to(cam, Object.assign({duration: 0.7, ease: K.courbeEchelle(1, z.scale, "power2.inOut")}, z), t)`) |
 | `K.courbeEchelle(de, a, courbe)` | la courbe d'un zoom ou d'une plongée de l'échelle `de` à `a`, qui anime son logarithme : l'échelle paraît grandir régulièrement au lieu de ralentir |
-| `K.vu(el, zoom, [x, y])` | où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` : pour mener le curseur (hors de la caméra) sur ce qu'elle montre (`var p = K.vu(cam, z, [x, y])`, puis `K.trajet`). Exact pour ce qui est à plat dans la caméra ; une rotation de quelques degrés décale un peu |
+| `K.vu(el, zoom, [x, y])` | où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` : pour mener le curseur (hors de la caméra) sur ce qu'elle montre (`var p = K.vu(cam, z, [x, y])`, puis `K.trajet(tl, cur, [[0, x0, y0], [t, p[0], p[1], 0.4]])`). Exact pour ce qui est à plat dans la caméra ; une rotation de quelques degrés décale un peu |
 | `K.taper(tl, el, texte, debut, fin, D)` | frappe au clavier par petits groupes de lettres (le caret est en CSS) |
-| `K.compteur(tl, el, de, a, debut, duree, D, format, courbe)` | chiffre qui tourne (format libre : « 3,3 M », « 2:59:41 », « 97 € ») |
+| `K.compteur(tl, el, de, a, debut, duree, D, format, courbe)` | chiffre qui tourne (format libre : « 3,3 M », « 2:59:41 », « 97 € ») ; une cible qui n'est pas un nombre (l'emplacement « [CHIFFRE] » d'un exemple) s'affiche telle quelle |
 | `K.texteSelon(tl, el, D, fn)` | texte qui dépend du temps (un mot qui change à un instant précis) |
 | `K.champ(parent, {graine, nombre, objets, zone, evite, tailleMin, tailleMax, flouLoin, flouPres, opaciteLoin})` | répartit des objets en profondeur, flous devant et au loin ; sans `zone`, sur tout le cadre de la composition (un objet au bord peut y être coupé : donne une `zone` en retrait pour tout garder entier) |
 | `K.logoNu(svg, couleur)` | fabrique d'objets pour `K.champ` : **le logo seul, sans fond** (`K.logoNu(K.ic("logo-instagram"))`) ; `couleur` pour un logo monochrome (`"#ffffff"` sur fond sombre). C'est la fabrique des objets flottants |
 | `K.tuileMarque(fond, encre, svg, bord)` | un logo sur une tuile à ses couleurs : seulement pour une **icône d'application** montrée comme telle (l'écran d'accueil d'un téléphone, un dock), jamais pour les objets flottants |
 | `K.tuile(classe, svg)` | fabrique d'objets génériques (à éviter pour les champs flottants) |
 | `K.derive(tl, objets, debut, duree, amplitude)` | dérive lente, plus ample au premier plan |
-| `K.arrivee(tl, objets, t, {etalement})` | les objets surgissent de la profondeur en rafale, le premier en tête, les autres à des écarts inégaux |
-| `K.flash(tl, disque, x, y, t, duree)` | un disque de couleur part de (x, y) et couvre l'écran |
+| `K.arrivee(tl, objets, t, {etalement, duree, ease, ordre, graine})` | les objets surgissent de la profondeur en rafale, le premier en tête, les autres à des écarts inégaux (`etalement` : 0,6 s ; `duree` : 0,6 s ; `ordre: "prof"` : du proche au lointain) ; l'échelle se pose presque sans rebond (`back.out(1)`), l'opacité monte à part, sans rebond, jusqu'à celle que `K.champ` a donnée |
+| `K.flash(tl, disque, x, y, t, duree)` | un disque de couleur part de (x, y) et couvre l'écran (`power3.inOut`) |
 | `K.chapitre(tl, racine, curseur, t, {depart, cible})` | chapitre complet (mot fantôme, étiquette, curseur, interrupteur) ; rend l'instant de la plongée. Le clic vise l'interrupteur d'après la taille de la composition, en 9:16 comme en 16:9 ; `cible: [x, y]` seulement si le CSS de la scène a déplacé l'interrupteur |
 | `K.jeton(nom)` | la valeur d'un jeton de la marque (`K.jeton("--brand-gris-2")`), pour un tween de couleur (GSAP n'interpole pas une variable CSS) |
 
@@ -161,14 +167,14 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 |---|---|
 | `K.lettres(el)` | découpe le texte en lettres (`span.k-lettre`), rend la liste : pour une rafale de lettres |
 | `K.claque(tl, cible, t, {de, y, rotation, decalage, duree, ease})` | le mot arrive d'un coup, plein (aucun fondu : rien ne vire à l'olive sur l'accent), à l'échelle `de` (1,45 : il se pose en rétrécissant ; 0,4 : il grandit), et se pose ; `decalage` pour une rafale |
-| `K.etire(tl, cible, t, {axe, facteur, tenue, retour})` | le mot (ou ses lettres) s'étire puis revient ; `axe: "x"` en largeur |
+| `K.etire(tl, cible, t, {axe, facteur, tenue, retour, duree, decalage, origine})` | le mot (ou ses lettres) s'étire puis revient : `axe: "x"` en largeur (`"y"` par défaut), `facteur` 1,7, `tenue` 0,6 s avant le retour, `retour: false` pour qu'il reste étiré, `duree` de l'aller (0,35 s), `decalage` entre deux lettres, `origine` (le bas du mot, ou son bord gauche en `x`) |
 | `K.barre(tl, el, t, {angle, eteindre})` | une barre pleine de l'accent raye l'élément ; `eteindre` : la couleur qu'il prend ensuite (`K.jeton("--brand-gris-2")`) |
 | `K.surligner(tl, el, t, {couleur, encre})` | un bloc plein s'ouvre derrière le mot, de gauche à droite ; `couleur` du bloc (l'accent par défaut ; l'encre sur l'aplat), `encre` du mot |
 | `K.volet(tl, cible, t, {decalage, origine})` | des blocs (étiquettes, pastilles pleines, pistes) s'ouvrent depuis leur bord, en rafale |
-| `K.lien(parent, [x1, y1], [x2, y2], {svg, courbe, classe})` | un lien courbe d'un schéma (SVG `k-liens`, aux pixels de la composition), rend le chemin ; `svg` pour en ajouter au même dessin ; `classe: "k-lien-discret"` pour un trait gris |
-| `K.trace(tl, chemin, t, duree)` | le trait se dessine de son début à sa fin |
+| `K.lien(parent, [x1, y1], [x2, y2], {svg, courbe, classe, taille})` | un lien courbe d'un schéma (SVG `k-liens`, aux pixels de la composition), rend le chemin ; `svg` pour en ajouter au même dessin ; `courbe` : son bombé (0,25 ; 0 : droit) ; `classe: "k-lien-discret"` pour un trait gris ; `taille: {largeur, hauteur}` pour un dessin plus grand que le cadre (une toile qui défile) |
+| `K.trace(tl, chemin, t, duree, {ease, longueur})` | le trait se dessine de son début à sa fin (`power2.inOut` par défaut) ; `longueur` quand le chemin ne se mesure pas encore (une coche dans une icône : 30) ; rend sa longueur |
 | `K.longer(tl, el, chemin, t, duree, D, {de, a})` | le fil conducteur (`k-fil`) suit le trait ; même durée et même courbe que `K.trace` : il en dessine la pointe. `el` ne prend aucun autre mouvement x / y |
-| `K.tranche(tl, calque, t, {de, a, duree})` | la coupe : un trait de l'accent fend l'écran en biais, le calque (plein cadre) se fend et ses moitiés tombent. **Appelée en dernier**, la timeline complète : elle fige une copie du calque à l'instant t (jamais de `<video>` dedans) |
+| `K.tranche(tl, calque, t, {de, a, duree, ecart})` | la coupe : un trait de l'accent fend l'écran en biais (de `de` à gauche à `a` à droite, en part de la hauteur : 0,64 et 0,36), le calque (plein cadre) se fend et ses moitiés tombent en `duree` (0,55 s), écartées de `ecart` (les trois quarts de la hauteur). **Appelée en dernier**, la timeline complète : elle fige une copie du calque à l'instant t (jamais de `<video>` dedans) |
 
 | Classe | Rôle |
 |---|---|
@@ -187,7 +193,9 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   Un `filter fallback` se corrige : `reasonCode=tier-auto`, c'est que `data-motion-blur-tier="capture"`
   manque (depuis HyperFrames 0.9.20, le mode automatique n'adoucit plus que les rotations et les
   zooms) ; sinon un `backface-visibility: hidden` dans une scène en 3D : pour retourner une carte,
-  échange ses deux faces à 90° plutôt que de cacher la face arrière. N'anime jamais `#root`
+  échange ses deux faces à 90° plutôt que de cacher la face arrière ; un volume fermé et opaque
+  (le cube du style 8, l'ordinateur du kit) se trie seul en profondeur, ses faces écartées de 1 ou
+  2 px ; sinon `data-motion-blur="off"` sur ce sous-arbre. Le kit n'en pose aucun. N'anime jamais `#root`
   lui-même (transformation, opacité) : le flou s'éteint. Un projet créé avant ce réglage ne l'a pas :
   ajoute les trois attributs sur `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
   `snapshot` et un extrait `render --start/--end` (« distributed-render » dans le journal) en sont
@@ -199,9 +207,18 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   - Un masque ou un `clip-path` sur un objet qui bouge prend des bords durs : masque un parent
     immobile et anime l'enfant dedans (comme `.clip`).
   - Une opacité ou un `filter` sur un élément en `preserve-3d` l'aplatit et montre ses deux faces :
-    fais disparaître son enveloppe (un parent sans 3D), jamais l'élément en perspective.
+    fais disparaître son enveloppe (un parent sans 3D), jamais l'élément en perspective. Un flou de
+    profondeur se pose sur ce qui est à plat : la matière d'une carte (`preuve`), la bulle dans sa
+    pose (`messages`), une station sans `k-plan` (`parcours`), l'espace `k-scene3d` qui porte toute
+    la caméra (`situation`).
+  - Un flou de bougé fait à la main (un `filter: blur` pendant un mouvement) s'ajoute à celui du
+    rendu : jamais. Un flou voulu (la profondeur, une matière qui passe au second plan) se pose
+    hors d'un mouvement, ou dure plus que lui.
+  - Une transformation CSS (`transform`) sur un élément que GSAP déplace : GSAP la lit et la
+    réécrit. Place-le par `inset`, une marge ou `xPercent` (le kit place ainsi le mot fantôme).
   - `will-change: transform` n'aide pas au rendu, et sur un objet que la caméra ou un zoom agrandit,
-    Chrome le dessine à sa taille de départ : il reste flou une fois grand. Ne le pose jamais.
+    Chrome le dessine à sa taille de départ : il reste flou une fois grand. Ne le pose jamais : ni
+    le kit ni les exemples n'en posent (un test l'interdit dans `templates/` et dans les styles).
   - Un grand dégradé linéaire sombre en plein cadre fait des bandes à l'encodage (des marches de
     130 px) : un aplat, un dégradé radial, ou un aplat avec une lueur locale.
   - Une capture d'écran filmée de son produit posée dans la vidéo : `npm run render --
@@ -209,7 +226,8 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 - **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :
   `getElementById` trouve l'hôte, plein écran, et l'objet s'y pose en haut à gauche, sans les styles
   de la scène (un dossier en Times dans le coin). Les éléments d'une scène
-  ne finissent jamais par `-hote`.
+  ne finissent jamais par `-hote` : le calque du curseur ou de la main s'appelle `-calque`
+  (`s3-curseur-calque`).
 - **Une couleur qui passe de l'encre à l'accent** (un dossier sombre qui prend l'accent) ne se fond
   pas : à mi-chemin, elle est olive. Elle change d'un coup (`tl.set`), quand un volet ou un
   mouvement la couvre.
@@ -241,6 +259,10 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   (toutes ses images identiques).
 - Un panneau plein écran qui doit couvrir la scène 3D lui donne un `z-index` plus haut que
   `k-scene3d`, ou donne `z-index` à `k-scene3d` pour qu'elle reste devant.
+- **L'écran du téléphone** : seule une image posée directement dans `k-tel-ecran` (son enfant
+  direct) prend tout l'écran ; un site ou une app reconstruits dans l'écran gardent leurs images
+  (une couverture, des cartes) à leur taille. Un projet créé avant le 09/11/2026 a l'ancienne
+  règle (toute image de l'écran en plein écran) : recopie `kit.css`.
 - Une vraie vidéo à la racine d'`index.html` (le Reel qui joue dans le téléphone, un résultat
   posé sur l'interface) : son cadre prend `z-index: 2` et passe devant toutes les scènes, qui
   restent à 1 chacune dans leur propre empilement (règle du gabarit). Les `z-index` d'une scène
@@ -270,6 +292,11 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   le reçoit dans le HTML. Cet attribut est réservé à ce qui n'est pas à lire : la typographie
   décorative, et une matière qui sert de texture (une interface qui passe au flou derrière un
   chiffre). Jamais sur un texte qu'on doit lire.
+- **Les intentions et `check`** (`composition.md`, règle 10) : `data-accroche` et `data-prix` vont
+  chacun sur un seul élément de toute la vidéo (une scène d'ouverture copiée deux fois en porte
+  deux : `motion_selector_ambiguous`) ; une règle sans élément donne `motion_selector_missing`.
+  `check` juge l'accroche à son opacité et à sa taille, pas à un masque : une phrase qui se tape
+  ou s'imprime derrière un masque doit se lire à 0,5 s sur l'image elle-même.
 - **Le point final de l'appel et `check`** (08/11/2026) : `K.longer` suit son trait sur toute la
   durée de la scène ; dans la scène de fin, `check` croit alors que la dernière ligne (le nom, le
   bouton) n'est lue que 0,75 s. Pour ce dernier trajet, fais suivre le trait seulement pendant le

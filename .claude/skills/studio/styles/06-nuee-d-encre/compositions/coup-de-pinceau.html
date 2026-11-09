@@ -14,6 +14,9 @@
     posée, leur nombre vient du sujet. La nuée tourne dans le sens du geste et se pose en une bande,
     le raccord de la scène 2 (« nuee-de-particules »), où elle écrit les mots suivants.
     Rôle : l'accroche d'un teaser (ouverture des inscriptions, bientôt disponible).
+    L'accroche : le calque de ses mots porte data-accroche (composition.md) ; un seul élément de la
+    vidéo le porte. Ses mots s'impriment par un masque à partir de MOTS_DEBUT : `check` ne voit pas
+    un masque, c'est l'image qui dit s'ils se lisent à 0,5 s.
 
     Format : 16:9 par défaut. En 9:16, change data-width / data-height de la racine (1080 × 1920) :
     le cercle grandit à 80 % de la largeur, les mots, le point, les légendes et la bande se
@@ -206,6 +209,8 @@
       // Une ligne par mot, la plus longue à 62 % du diamètre, le bloc à moitié de sa hauteur au plus.
       var R = CERCLE.r * Math.min(L, H) * (vertical ? 1.22 : 1), CX = CERCLE.cx * L, CY = CERCLE.cy * H;
       var hoteMots = $("mots"), spans = EXEMPLE.accroche.map(function (m) { return K.el(hoteMots, "span", "t06-mot", m, "font-size:100px;"); });
+      // L'accroche : les mots portent data-accroche sur leur calque (un seul élément de la vidéo).
+      hoteMots.setAttribute("data-accroche", "");
       var chiffres = cadreImprimerie($("cadre"));
 
       function construire() {
@@ -276,12 +281,11 @@
             ctxN.globalAlpha = 1;
           }
         }
-        // Les cinq premières secondes se lisent sur une image stable : la caméra ne fait qu'une lente
-        // avancée pendant le geste et la lecture (×1,02 → ×1,05, sine.inOut), puis, une fois les
-        // mots défaits, revient au cadre de la scène suivante.
+        // Les cinq premières secondes se lisent sur une image stable : la caméra se tient pendant le
+        // geste et la lecture (les mots ne bougent pas ; le pinceau, le point et le cadre font la vie),
+        // puis, une fois les mots défaits, revient au cadre de la scène suivante.
         var cam = $("cam");
         gsap.set(cam, { scale: 1.02 });
-        tl.to(cam, { scale: 1.05, duration: T_DEFAIT + 0.3, ease: "sine.inOut" }, 0.1);
         tl.to(cam, { scale: 1, duration: 0.6, ease: "power2.inOut" }, T_DEFAIT + 0.45);
         var horloge = { t: 0 };
         tl.to(horloge, { t: D, duration: D, ease: "none", onUpdate: function () { rendre(horloge.t); } }, 0);

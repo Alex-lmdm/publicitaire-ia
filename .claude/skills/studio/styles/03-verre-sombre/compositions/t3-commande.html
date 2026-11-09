@@ -21,6 +21,8 @@
   bonus) ; ni réduction ni prix barré inventés. Le menu, la ligne d'accès et la mention sont des
   micro-textes d'interface (texture, data-layout-ignore) ; le prix, les options, le total et le
   bouton se lisent (28 px au moins à l'écran, par la caméra).
+  Le prix porte data-prix : la vidéo qui l'affiche ajoute à index.motion.json la règle
+  {"kind": "staysInFrame", "selector": "[data-prix]"} (composition.md) ; un seul élément le porte.
   Couleurs : la nuit var(--brand-sombre), le verre une ombre (noir en transparence) avec des
   reflets blancs, le texte var(--brand-clair), les gris et les surfaces du bon var(--brand-gris-*),
   la lame var(--brand-clair) ; l'accent se pose plein (la pastille, la piste remplie,
@@ -136,7 +138,7 @@
           <div class="t3c-segment" id="t3c-segment"><div class="t3c-seg-pastille" id="t3c-seg-pastille"></div><div class="t3c-seg" id="t3c-seg-1"></div><div class="t3c-seg" id="t3c-seg-2"></div></div>
           <div class="t3c-ligne" id="t3c-l-prix">
             <div><div class="t3c-lab" id="t3c-nom"></div><div class="t3c-sous" id="t3c-acces"></div></div>
-            <div class="t3c-prix" id="t3c-prix"></div>
+            <div class="t3c-prix" id="t3c-prix" data-prix></div>
           </div>
           <div class="t3c-puces" id="t3c-puces"></div>
           <div id="t3c-l-fois">
@@ -171,16 +173,20 @@
     paiements: ["Paiement unique", "En plusieurs fois"],
     nom: "Ton offre",                            // le nom de l'offre (OFFRE.json, produit)
     acces: "Accès immédiat",                     // sous le nom, texture ("" la retire)
-    prix: 300,                                   // prix d'exemple, rond : son vrai prix TTC en euros (prix.montant)
+    prix: "[SON PRIX]",                          // son vrai prix TTC en euros, un nombre (prix.montant)
     inclus: [["play", "Vidéos"], ["file-text", "Modèles"], ["users", "Groupe"], ["gift", "Bonus"]],   // [icône du kit, ce qui est inclus]
     foisMax: 3,                                  // paiement en 1 à N fois (echeances) ; 1 retire le curseur
     foisLab: "Nombre de paiements",
-    bonus: 30, bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // prix d'exemple du bonus ; 0 retire la ligne
+    bonus: "[SON BONUS]", bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // le vrai prix du bonus en euros, un nombre ; 0 retire la ligne
     aujourdhui: "Aujourd'hui", total: "Total",
     bouton: "Je rejoins",                        // le texte de son vrai bouton
     mention: "Paiement sécurisé"                 // texture ("" la retire)
   };
+  K.emplacements("t3c", EXEMPLE);   // un emplacement d'exemple resté : la console le dit, `check` aussi
   var euros = function (v) { var r = Math.round(v * 100) / 100; return (r % 1 ? r.toFixed(2).replace(".", ",") : String(r)) + " €"; };
+  // Les montants : un emplacement d'exemple (un texte) s'affiche tel quel, et ce qui en dépend aussi.
+  var reel = typeof EXEMPLE.prix === "number" && (!EXEMPLE.bonus || typeof EXEMPLE.bonus === "number");
+  var montant = function (v) { return typeof v === "number" ? euros(v) : String(v); };
   var D = 9.0;
   var $ = function (id) { return document.getElementById(id); };
   var cadre = K.cadre($("t3c")), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
@@ -197,7 +203,7 @@
   for (var c = 0; c < EXEMPLE.foisMax; c++) K.el($("t3c-piste"), "div", "t3c-cran", null, "left:" + (EXEMPLE.foisMax > 1 ? (c / (EXEMPLE.foisMax - 1)) * 100 : 0) + "%");
   if (EXEMPLE.foisMax <= 1) $("t3c-l-fois").style.display = "none";
   $("t3c-bonus-lab").textContent = EXEMPLE.bonusLab;
-  $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + EXEMPLE.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + euros(EXEMPLE.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
+  $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + EXEMPLE.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + montant(EXEMPLE.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
   if (!EXEMPLE.bonus) { $("t3c-l-bonus").style.display = "none"; $("t3c-bonus").style.display = "none"; }
   $("t3c-l-auj").innerHTML = K.ic("calendar") + "<span>" + EXEMPLE.aujourdhui + '</span><span class="t3c-v" id="t3c-v-auj"></span>';
   $("t3c-l-total").innerHTML = K.ic("wallet") + "<span>" + EXEMPLE.total + '</span><span class="t3c-v" id="t3c-v-total"></span>';
@@ -215,7 +221,6 @@
   gsap.set("#t3c-cam", { rotationX: cam.rx, rotationY: cam.ry, rotationZ: cam.rz, scale: cam.s });
   gsap.set("#t3c-bon", { rotationY: 87, x: 320, opacity: 0, filter: "blur(10px)", transformOrigin: "50% 0%" });
   gsap.set("#t3c-rempli", { scaleX: 0 });
-  gsap.set("#t3c-bonus", { height: 0 });
   gsap.set("#t3c-puces svg", { scale: 0 });
   K.cacher(curseur);
 
@@ -226,16 +231,23 @@
     var x = function (el) { var v = 0; while (el && el !== bon) { v += el.offsetLeft; el = el.offsetParent; } return v; };
     var milieu = function (id) { var e = $(id); return y(e) + e.offsetHeight / 2; };
     var hBonus = EXEMPLE.bonus ? $("t3c-champs").offsetHeight + 4 : 0;
+    // Le bonus garde sa place dans le bon (mesurée ici) : il s'ouvre par l'échelle (scaleY), et ce
+    // qui est dessous, remonté d'autant, redescend avec lui (jamais une hauteur animée).
+    var dessous = ["#t3c .t3c-trait", "#t3c-l-auj", "#t3c-l-total", "#t3c-bouton", "#t3c-mention"];
+    if (hBonus) {
+      gsap.set("#t3c-bonus", { height: hBonus, scaleY: 0, opacity: 0, transformOrigin: "50% 0%" });   // fermé : rien à lire
+      gsap.set(dessous, { y: -hBonus });
+    }
     var wSeg = $("t3c-seg-1").offsetWidth;
     // La caméra suit un point du bon (repère du bon, avant l'ouverture du bonus). Trois cadrages, un
     // par partie : on recadre net ENTRE deux lectures (0,7 s), jamais pendant ; sous une lecture, la
     // caméra ne fait que sa dérive lente. En vertical, le bon remplit la largeur et tient presque en
     // entier : le premier cadrage le montre tout entier, centré.
     var vise = function (t, cible) { tl.to("#t3c-rail", { y: -cible, duration: 0.7, ease: "power3.inOut" }, t); };
-    var A = vertical ? bon.offsetHeight / 2 : milieu("t3c-l-prix") - 60;
+    var A = vertical ? (bon.offsetHeight - hBonus) / 2 : milieu("t3c-l-prix") - 60;
     var B = EXEMPLE.foisMax > 1 ? (milieu("t3c-l-fois") + (EXEMPLE.bonus ? milieu("t3c-l-bonus") + hBonus / 2 : milieu("t3c-l-fois"))) / 2 : milieu("t3c-l-bonus") + hBonus / 2;
     // le total et le bouton ; en vertical, le bas du bon se pose près du bas de l'image
-    var C = vertical ? (bon.offsetHeight + hBonus) * 0.62 : (milieu("t3c-l-auj") + milieu("t3c-bouton")) / 2 + hBonus;
+    var C = vertical ? bon.offsetHeight * 0.62 : (milieu("t3c-l-auj") + milieu("t3c-bouton")) / 2;   // le bonus est déjà dans la mesure
     gsap.set("#t3c-rail", { y: -A });
     // la dérive lente de toute la scène : le bon tourne de quelques degrés
     tl.to("#t3c-cam", { rotationY: -5, rotationZ: -1.5, duration: D, ease: "sine.inOut" }, 0);
@@ -258,7 +270,7 @@
     vise(2.4, B);
     tl.to("#t3c-cam", { scale: cam.s * 1.12, duration: 0.7, ease: "power3.inOut" }, 2.4);
     var piste = $("t3c-piste"), wPiste = piste.offsetWidth, px = x(piste), py = y(piste) + 6;
-    var aujourdhui = function (fois, bonus) { return euros((EXEMPLE.prix + (bonus ? EXEMPLE.bonus : 0)) / fois); };
+    var aujourdhui = function (fois, bonus) { return reel ? euros((EXEMPLE.prix + (bonus ? EXEMPLE.bonus : 0)) / fois) : "[PRIX" + (fois > 1 ? " ÷ " + fois : "") + "]"; };
     K.trajet(tl, curseur, [[2.85, px + wPiste * 0.55, py + 260], [2.95, px + 4, py + 6, 0.5, "power3.out"]]);
     tl.to(curseur, { opacity: 1, duration: 0.2 }, 2.95);
     var G = 3.58;                                // le curseur glisse (G → G + 0,95 s)
@@ -283,7 +295,9 @@
       tl.to("#t3c-inter-bille", { x: 40, duration: 0.28, ease: "power3.inOut" }, 5.28);
       tl.to("#t3c-inter-plein", { clipPath: "inset(0% 0% 0% 0% round 26px)", duration: 0.28, ease: "power3.inOut" }, 5.28);
       // le bonus s'ouvre : ses champs (l'accent de son étiquette) entrent par la hauteur, sans fondu
-      tl.to("#t3c-bonus", { height: hBonus, duration: 0.5, ease: "expo.out" }, 5.37);
+      tl.set("#t3c-bonus", { opacity: 1 }, 5.37);
+      tl.to("#t3c-bonus", { scaleY: 1, duration: 0.5, ease: "expo.out" }, 5.37);
+      tl.to(dessous, { y: 0, duration: 0.5, ease: "expo.out" }, 5.37);
       tl.fromTo("#t3c-champs .t3c-champ", { y: -18 }, { y: 0, duration: 0.45, ease: "back.out(1)", stagger: 0.09 }, 5.42);
     }
 
@@ -292,8 +306,8 @@
     vise(6.0, C);
     tl.to("#t3c-cam", { scale: cam.s * 1.2, rotationX: cam.rx - 4, duration: 0.7, ease: "power3.inOut" }, 6.0);
     K.texteSelon(tl, $("t3c-v-auj"), D, function (t) { return aujourdhui(fois(t), t >= 6.75); });
-    K.compteur(tl, $("t3c-v-total"), EXEMPLE.prix, EXEMPLE.prix + EXEMPLE.bonus, 6.75, 0.7, D, arrondi(EXEMPLE.prix + EXEMPLE.bonus), "expo.out");
-    var by = milieu("t3c-bouton") + hBonus, bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
+    K.compteur(tl, $("t3c-v-total"), reel ? EXEMPLE.prix : 0, reel ? EXEMPLE.prix + (EXEMPLE.bonus || 0) : "[TOTAL]", 6.75, 0.7, D, arrondi(EXEMPLE.prix + (EXEMPLE.bonus || 0)), "expo.out");
+    var by = milieu("t3c-bouton"), bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
     tl.to(curseur, { x: bx, y: by + 6, duration: 0.7, ease: "power3.inOut" }, 6.8);
     K.clic(tl, curseur, 7.6);
     tl.to("#t3c-bouton", { scale: 0.965, duration: 0.08, ease: "power2.out" }, 7.6);

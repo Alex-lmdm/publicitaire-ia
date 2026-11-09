@@ -23,9 +23,9 @@
     par mot + 0,8 s, jamais moins de 1,5 s : `studio_motion.py lecture`) avant que la suivante
     n'arrive ; la dernière, avec la carte du résultat. La scène calcule ses instants : sa durée est
     FIN, que la console affiche (« t04-msg dure … s ») ; reporte-la dans D et dans data-duration,
-    ici et sur son hôte dans index.html. La caméra ne recadre jamais pendant qu'une bulle se lit :
-    une poussée lente (×1,03 sur toute la scène, sine.inOut) ; le fil ne remonte qu'à l'arrivée
-    d'une nouvelle bulle, entre deux lectures.
+    ici et sur son hôte dans index.html. La caméra ne bouge jamais pendant qu'une bulle se lit
+    (une bulle qu'on lit est immobile) ; le fil ne remonte qu'à l'arrivée d'une nouvelle bulle,
+    entre deux lectures, et les logos dérivent autour.
 
     À remplacer : l'objet EXEMPLE (en tête du script).
       1. L'identifiant « t04-msg » partout (racine, scène, préfixe des ids, clé de la timeline).
@@ -299,7 +299,7 @@
         var debut = a[1] + 0.9, finA = arrivees[arrivees.length - 1][0] - 0.2, pasA = 0.9;
         var n = Math.max(1, Math.floor((finA - debut) / pasA) + 1);
         for (var k = 1; k <= n; k++) {
-          tl.to(a[0], { objectPosition: "50% " + Math.round(100 * k / n) + "%", duration: 0.45, ease: "expo.inOut" }, debut + (k - 1) * pasA);
+          tl.to(a[0], { objectPosition: "50% " + Math.round(100 * k / n) + "%", duration: 0.45, ease: "power3.inOut" }, debut + (k - 1) * pasA);
           evts.push(debut + (k - 1) * pasA);
         }
       });
@@ -313,8 +313,7 @@
         courant = cible;
       });
       var FIN = Math.ceil((FERME + 0.62) * 10 - 1e-6) / 10;
-      // La seule caméra : une poussée lente sur toute la scène.
-      tl.fromTo($("camera"), { scale: 1 }, { scale: 1.03, duration: FIN, ease: "sine.inOut", transformOrigin: "50% 60%" }, 0);
+      // La caméra se tient : les bulles se lisent immobiles, les logos dérivent autour.
 
       // ---------- Les vrais logos de ses outils, nus, dans les marges : ils arrivent un à un, dérivent ----------
       // Chacun arrive au milieu du plus long moment calme qui reste (pendant qu'une bulle se lit).

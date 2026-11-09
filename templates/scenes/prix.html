@@ -4,6 +4,9 @@
      (jamais un compteur), ses modalités s'ouvrent dessous, puis l'échéance réelle se lit, sa date
      surlignée d'un bloc. Sur l'aplat, rien n'entre en fondu ni en transparence : tout paraît plein
      (claque, volet, échelle). Se met en page seule en 9:16 et en 16:9 (K.cadre).
+     Le prix porte data-prix : la vidéo qui l'affiche ajoute à index.motion.json la règle
+     {"kind": "staysInFrame", "selector": "[data-prix]"} (le prix ne sort jamais du cadre,
+     composition.md) ; un seul élément de la vidéo le porte.
      Pour s'en servir : copie ce fichier dans compositions/, remplis CONTENU (rien d'exemple ne doit
      rester), donne à data-duration la durée demandée (`check` la signale), puis `npm run check` et
      3 images. Pour la poser deux fois, remplace partout « prix » par un autre identifiant. -->
@@ -12,16 +15,17 @@
     #prix .prx-ligne { position: absolute; white-space: nowrap; }
     #prix .prx-pastille {
       position: relative; display: inline-flex; align-items: center; gap: 0.36em; padding: 0.18em 0.42em 0.24em 0.32em;
-      color: var(--k-blanc); white-space: nowrap; will-change: transform;
+      color: var(--k-blanc); white-space: nowrap;
       font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1;
     }
     #prix .prx-fond { position: absolute; inset: 0; border-radius: 0.2em; background: var(--k-encre); }
     #prix .prx-pastille > span { position: relative; }
     #prix .prx-coche { display: block; flex: none; width: 0.82em; height: 0.82em; color: var(--brand-accent); }
     #prix .prx-coche svg { display: block; width: 100%; height: 100%; stroke-width: 3.4; }
-    #prix .prx-titre, #prix .prx-echeance { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; color: var(--k-encre); white-space: nowrap; }
-    #prix .prx-prix { position: absolute; color: var(--k-encre); white-space: nowrap; line-height: 1; }
-    #prix .prx-barre-prix { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; color: var(--k-encre); white-space: nowrap; line-height: 1; }
+    /* Le texte posé sur l'accent : l'encre de la marque (--brand-contrast), lisible sur sa couleur. */
+    #prix .prx-titre, #prix .prx-echeance { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; line-height: 1.12; color: var(--brand-contrast); white-space: nowrap; }
+    #prix .prx-prix { position: absolute; color: var(--brand-contrast); white-space: nowrap; line-height: 1; }
+    #prix .prx-barre-prix { position: absolute; font-family: var(--brand-font-display); font-weight: 800; letter-spacing: -0.03em; color: var(--brand-contrast); white-space: nowrap; line-height: 1; }
     #prix .prx-modalites { position: absolute; white-space: nowrap; }
     #prix .prx-modalites > span {
       position: relative; display: inline-block; padding: 0.14em 0.4em 0.2em; color: var(--k-blanc);
@@ -58,12 +62,13 @@
         titre: null,                          // une ligne au-dessus des pastilles (« Tu reçois »), ou null
         recoit: ["8 séances visio", "Messages illimités", "Plan sur mesure"],   // ce qu'on reçoit : 2 à 4 pastilles de 1 à 3 mots
         barre: null,                          // l'ancien prix, barré avant que le vrai claque ("890 €"), ou null
-        prix: "690 €",                        // le prix tel qu'affiché (jamais un compteur)
+        prix: "[SON PRIX]",                   // le prix tel que sa page l'affiche, unité comprise (jamais un compteur)
         modalites: "Paiement unique",         // ou "ou 3 × 230 €", ou null
-        echeance: ["Inscriptions jusqu'au", "30 novembre"],   // [la phrase, sa date qui se surligne], ou null
+        echeance: ["Inscriptions jusqu'au", "[SA DATE]"],   // [la phrase, sa vraie date qui se surligne (OFFRE.json)], ou null
         zone: null                            // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), mots = document.getElementById(ID + "-mots");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
       // La durée donnée : celle de sa racine, ou, une fois montée, celle de son hôte (HyperFrames
@@ -158,8 +163,11 @@
         tPrix += 0.62;
         y += hB;
       }
-      // Le prix claque signe par signe, puis s'étire d'un geste et se tient.
-      var elPrix = K.el(mots, "div", "k-heros prx-prix", null, place(y) + " font-size:" + px(fPrix) + ";" + (V ? " margin-left:" + px(-fPrix * 0.03) + ";" : ""));
+      // Le prix claque signe par signe, puis s'étire d'un geste et se tient. Sa boîte suit ses signes
+      // (en 16:9, centrée) : l'étirement la garde dans le cadre (`staysInFrame` sur data-prix).
+      var elPrix = K.el(mots, "div", "k-heros prx-prix", null, place(y) + " font-size:" + px(fPrix) + ";" +
+        (V ? " margin-left:" + px(-fPrix * 0.03) + ";" : " width:fit-content; margin:0 auto;"));
+      elPrix.setAttribute("data-prix", "");
       elPrix.textContent = prix;
       var signes = K.lettres(elPrix);
       K.claque(tl, signes, tPrix, { de: 1.7, y: -fPrix * 0.08, decalage: 0.05, duree: 0.4 });

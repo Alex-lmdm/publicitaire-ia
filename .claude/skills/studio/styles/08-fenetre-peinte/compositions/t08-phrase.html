@@ -8,7 +8,8 @@
     équilibrées, s'écrit lettre à lettre à sa place définitive (les lettres apparaissent, rien ne
     glisse), se tient le temps de sa lecture, puis la scène coupe net. C'est le motif qui revient
     avant chaque partie de la vidéo : une phrase, puis la démonstration. Aucun objet, aucune image :
-    la typographie seule ; pendant la frappe et la tenue, la caméra ne fait qu'une dérive lente.
+    la typographie seule ; pendant la frappe et la tenue, la phrase ne bouge pas : seule la
+    lumière du papier glisse lentement derrière elle.
     Format : 16:9 (1920 × 1080), deux lignes à 104 px (une phrase longue se réduit seule, jamais
     sous 72 px) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte (112 px, sur 2 ou
     3 lignes équilibrées, jamais sous 80 px).
@@ -31,6 +32,10 @@
 <style>
   #t08-phrase { --t08-papier: var(--brand-clair); --t08-encre: var(--brand-sombre); background: var(--t08-papier); }
   #t08-phrase .t08-fond { position: absolute; inset: -2px; background: var(--t08-papier); }
+  /* La lumière du papier : une ombre douce sur les bords (un reflet sur la nuit) qui glisse
+     lentement derrière les mots (le papier vit, les mots qu'on lit ne bougent pas). */
+  #t08-phrase .t08-lumiere { position: absolute; inset: -12%; pointer-events: none;
+    background: radial-gradient(ellipse 48% 58% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.05) 100%); }
   #t08-phrase .t08-phrase { position: absolute; left: 0; right: 0; top: 50%; text-align: center;
     font-family: var(--brand-font-display); font-weight: 400; font-size: 104px; line-height: 1.04; letter-spacing: -0.03em;
     color: var(--t08-encre); transform-origin: 50% 50%; }
@@ -43,6 +48,7 @@
 <div data-composition-id="t08-phrase" data-width="1920" data-height="1080" data-duration="4.6" style="position:absolute; inset:0;">
   <div id="t08-phrase" class="k-scene">
     <div class="t08-fond"></div>
+    <div class="t08-lumiere" id="t08-phrase-lumiere" data-layout-ignore></div>
     <div class="t08-phrase" id="t08-phrase-texte"></div>
   </div>
 </div>
@@ -96,8 +102,8 @@
       for (var k = i; k < Math.min(lettres.length, i + paquet); k++) tl.set(lettres[k], { opacity: 1 }, t);
       i += paquet;
     }
-    // La caméra ne fait qu'une dérive lente (5,5 % sur la scène, sine.inOut), sans à-coup.
-    tl.fromTo(bloc, { scale: 0.985 }, { scale: 1.04, duration: D, ease: "sine.inOut" }, 0);
+    // La phrase ne bouge pas (on la lit) : la lumière du papier glisse derrière elle, sans à-coup.
+    tl.fromTo("#" + ID + "-lumiere", { xPercent: -5, scale: 1 }, { xPercent: 5, scale: 1.06, duration: D, ease: "sine.inOut" }, 0);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajuster); else ajuster();
 
     window.__timelines[ID] = tl;

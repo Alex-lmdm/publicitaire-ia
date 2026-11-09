@@ -15,7 +15,7 @@
   <style>
     #cloture .clo-carte {
       position: absolute; left: 0; top: 0; border-radius: 22px; overflow: hidden; background: var(--k-noir-2);
-      box-shadow: var(--k-ombre); will-change: transform, width, height;
+      box-shadow: var(--k-ombre);
     }
     #cloture .clo-carte img { display: block; width: 100%; height: 100%; object-fit: cover; }
     /* Les cartes neutres du banc (à la place des images d'une vraie vidéo) : des plans esquissés. */
@@ -71,12 +71,13 @@
         mode: "bouton",                 // "bouton" (page de vente : il désigne le bouton sous la vidéo) ou "fleche" (pub : ni bouton ni clic)
         vignettes: [null, null, null, null, null, null],   // 4 à 8 images de CETTE vidéo ("assets/images/<plan>.jpg", une image par plan,
                                         // au format de la vidéo) ; null : une carte neutre (le banc seulement)
-        nom: "Planéo",                  // le nom de l'offre, 1 à 3 mots
-        bouton: "Essayer Planéo",       // le texte du bouton, 1 à 3 mots (mode "bouton")
+        nom: "[NOM DE L'OFFRE]",        // le nom de l'offre (OFFRE.json), 1 à 3 mots
+        bouton: "[SON BOUTON]",         // le texte du bouton de sa page, 1 à 3 mots (mode "bouton")
         appel: "Le lien est sous la vidéo.",   // l'appel, 3 à 6 mots (plus long, la scène demande plus de temps) ; en pub : « Découvre-le » (son point final devient le point de sa couleur)
         zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), plateau = document.getElementById(ID + "-plateau");
       var loin = document.getElementById(ID + "-loin"), mots = document.getElementById(ID + "-mots");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
@@ -167,7 +168,9 @@
         carte.setAttribute("data-layout-ignore", "");
         remplir(carte, src, i, true);
         var z = (r() - 0.5) * 220, rot = (r() - 0.5) * 4;
-        gsap.set(carte, { x: x, y: y, width: cw2, height: ch2, z: z, rotation: rot, transformOrigin: "50% 50%" });
+        // Sa taille est posée une fois ; elle se resserre ensuite par l'échelle (scaleX, scaleY),
+        // jamais par width / height animés (composition.md, règle 4).
+        gsap.set(carte, { x: x, y: y, width: cw2, height: ch2, z: z, rotation: rot, transformOrigin: "50% 50%", borderRadius: "22px / 22px" });
         // L'arrivée : de la profondeur, sans fondu ; toutes sauf les deux dernières sont là dès
         // l'affiche (elles finissent de se poser), les deux dernières jaillissent en rafale.
         var t0 = i < n - 2 ? 0 : 0.12 + 0.14 * (i - n + 2);
@@ -185,7 +188,7 @@
       placesLoin.forEach(function (p, k) {
         var zl = -700 - (k % 3) * 220, f = 1800 / (1800 - zl), lw = (V ? 0.17 : 0.11) * L / f * (0.85 + 0.3 * r());
         var px = L / 2 + (p[0] * L - L / 2) / f, py = H / 2 + (p[1] * H - H / 2) / f;
-        var e = K.el(loin, "div", "clo-carte k-plan");
+        var e = K.el(loin, "div", "clo-carte");   // à plat (sans preserve-3d) : son flou ne l'aplatit pas
         e.setAttribute("data-layout-ignore", "");
         e.setAttribute("data-layout-allow-overflow", "");
         remplir(e, vignettes[k % n], k + 1, false);
@@ -204,10 +207,14 @@
       tl.fromTo(loin, { scale: 1.3 }, { scale: 1, duration: 1.3, ease: "power2.inOut" }, tRecul - 0.1);
       tl.to(loin, { scale: 0.95, rotationZ: 1.6, duration: Math.max(1, duree - tRecul - 1.2), ease: "sine.inOut" }, tRecul + 1.2);
       var cellL = (objet.l - (cols - 1) * objet.ecart) / cols, cellH = (objet.h - (rangs - 1) * objet.ecart) / rangs;
+      // Chaque image vient remplir sa case : l'échelle la ramène à la taille de la case (autour de son
+      // centre), et ses coins gardent le rayon de l'objet une fois réduite.
+      var sx = cellL / cw2, sy = cellH / ch2;
       cartes.forEach(function (k, i) {
         var dansRang = Math.min(cols, n - k.rg * cols), centrage = (cols - dansRang) * (cellL + objet.ecart) / 2;
-        tl.to(k.el, { x: objet.x + centrage + k.c * (cellL + objet.ecart), y: objet.y + k.rg * (cellH + objet.ecart),
-          width: cellL, height: cellH, z: 0, rotation: 0, borderRadius: objet.rayon, duration: dSerre, ease: "expo.inOut" }, tSerre + i * 0.025);
+        tl.to(k.el, { x: objet.x + centrage + k.c * (cellL + objet.ecart) + (cellL - cw2) / 2, y: objet.y + k.rg * (cellH + objet.ecart) + (cellH - ch2) / 2,
+          scaleX: sx, scaleY: sy, z: 0, rotation: 0, borderRadius: (objet.rayon / sx).toFixed(2) + "px / " + (objet.rayon / sy).toFixed(2) + "px",
+          duration: dSerre, ease: "power3.inOut" }, tSerre + i * 0.025);
       });
       K.etire(tl, elNom, tObjet + 0.05, { axe: "x", facteur: 1.05, tenue: 0.2, origine: "50% 50%" });
 
@@ -260,7 +267,7 @@
       });
       var point = avecPoint ? K.el(elAppel, "span", "clo-point") : null;
       if (fleche) K.claque(tl, motsAppel, tAppel, { de: 1.35, duree: 0.4, decalage: 0.08 });
-      else K.entreeMots(tl, motsAppel, tAppel, { decalage: 0.07, y: 0, flou: 8, duree: 0.4 });
+      else K.apparition(tl, motsAppel, tAppel, { decalage: 0.07 });   // l'appel sous le bouton : net, sans flou
       var tPoint = tAppel + 0.08 * motsAppel.length + 0.3;
       if (point) {
         gsap.set(point, { scale: 0 });

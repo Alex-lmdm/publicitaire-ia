@@ -47,22 +47,27 @@ class El {
 }
 const el = (parent, classe, attrs) => { const e = new El("div"); e.className = classe || "";
   Object.assign(e.attrs, attrs || {}); if (parent) parent.appendChild(e); return e; };
-const corps = new El("body"), appels = [];
+const corps = new El("body"), appels = [], erreurs = [];
 const tl = {};
 ["to", "fromTo", "set"].forEach((m) => { tl[m] = (cible, a, b, c) => { appels.push({ m, cible, a, b, c }); return tl; }; });
 const gsap = { set: (cible, vars) => appels.push({ m: "gsap.set", cible, a: vars }), parseEase: () => (p) => p };
 const document = { createElement: (tag) => new El(tag), querySelector: (sel) => corps.querySelector(sel) };
-const window = {};
-const ctx = vm.createContext({ window, document, gsap });
+const window = { console: { error: (m) => erreurs.push(String(m)) } };
+const ctx = vm.createContext({ window, document, gsap, console: window.console });
 vm.runInContext(fs.readFileSync(cas.kit, "utf8"), ctx);
 const K = window.K;
 
-// Une composition principale et une scène (sous-composition) de la taille demandée.
+// Une composition principale et une scène (sous-composition) de la taille demandée. Avec `hote`, la
+// scène est montée comme HyperFrames la monte : l'hôte d'index.html (data-composition-file, à la
+// taille du projet) porte la racine intérieure de la scène, restée à la taille où elle a été écrite.
 const attrsTaille = cas.sansTaille ? {} : { "data-width": String(cas.largeur), "data-height": String(cas.hauteur) };
-const main = el(corps, "", Object.assign({ "data-composition-id": "main" }, cas.tailleMain ? attrsTaille : {}));
-const scene = el(main, "", Object.assign({ "data-composition-id": "s1" }, cas.tailleMain ? {} : attrsTaille));
+const main = el(corps, "", Object.assign({ "data-composition-id": "main" }, cas.tailleMain || cas.hote ? attrsTaille : {}));
+const parentScene = cas.hote ? el(main, "", Object.assign({ "data-composition-id": "s1", "data-composition-file": "compositions/s1.html" }, attrsTaille)) : main;
+const scene = el(parentScene, "", Object.assign({ "data-composition-id": "s1" },
+  cas.hote ? { "data-width": String(cas.hote[0]), "data-height": String(cas.hote[1]) } : cas.tailleMain ? {} : attrsTaille));
 const res = {};
 res.cadre = K.cadre ? K.cadre(scene) : null;
+res.racine = { taille: [scene.getAttribute("data-width"), scene.getAttribute("data-height")], style: [scene.style.width, scene.style.height] };
 
 const champ = el(scene, "k-champ");
 const fab = (t) => { const e = new El("div"); e.style.width = t + "px"; e.dataset.taille = t; return e; };
@@ -106,6 +111,30 @@ res.zoom = { z, vu: K.vu(scene, z, [300, 400]), coin: K.vu(scene, z, [0, 0]),
 // l'échelle doit doubler à mi-chemin (×2), pas valoir ×2,5.
 const ce = K.courbeEchelle(1, 4, "none");
 res.courbe = { bornes: [ce(0), ce(1)], milieu: 1 + 3 * ce(0.5), plat: K.courbeEchelle(2, 2)(0.3) };
+
+// L'apparition nette (09/11/2026) : un fondu court, sans montée, sans flou ni échelle.
+appels.length = 0;
+const ligne = el(scene, "k-mot");
+K.apparition(tl, ligne, 1.2);
+res.apparition = appels.filter((a) => a.cible === ligne).map((a) => ({ m: a.m, de: a.a, vers: a.b, t: a.c }));
+// L'arrivée des objets : l'échelle peut rebondir, jamais l'opacité.
+appels.length = 0;
+const objet = new El("div"); objet.dataset.prof = "0.5"; objet.style.opacity = "0.7";
+K.arrivee(tl, [objet], 0.4);
+res.arrivee = appels.filter((a) => a.cible === objet).map((a) => ({ de: a.a, vers: a.b }));
+// Le curseur se pose à son premier point dès la construction, même donné après 0.
+appels.length = 0;
+const cur = K.curseur(el(scene, ""), "c2", true);
+K.trajet(tl, cur, [[1.5, 300, 400], [2, 500, 600, 0.4]]);
+res.trajet = appels.filter((a) => a.cible === cur).map((a) => ({ m: a.m, x: a.a.x, y: a.a.y, t: a.b }));
+// Le garde-fou des exemples, et le compteur qui affiche un emplacement sans compter.
+res.emplacements = K.emplacements("s1", { nom: "[PRÉNOM]", liste: [{ prix: "[SON PRIX]" }, 12], vrai: "Inès" });
+res.erreurs = erreurs.slice();
+res.sansEmplacement = K.emplacements("s1", { nom: "Inès", cases: [2, 3] });
+const chiffre = new El("div");
+appels.length = 0;
+K.compteur(tl, chiffre, 0, "[CHIFFRE]", 0.2, 1, 5);
+res.compteur = { texte: chiffre.textContent, tweens: appels.length };
 process.stdout.write(JSON.stringify(res));
 """
 
@@ -133,6 +162,17 @@ class KitSelonLeFormat(unittest.TestCase):
         sortie = subprocess.run(["node", "-e", HARNAIS, json.dumps(cas)], capture_output=True, text=True, timeout=60)
         self.assertEqual(sortie.returncode, 0, sortie.stderr)
         return json.loads(sortie.stdout)
+
+    def test_cadre_lu_sur_l_hote_d_abord(self):
+        """Une scène prête est écrite en 9:16 (sa racine à 1080 × 1920) : montée par un hôte en 16:9,
+        elle prend le format de l'hôte (revue du 09/11/2026 : une colonne de 1080 px dans un 16:9)."""
+        r = self.lancer(1920, 1080, hote=[1080, 1920])
+        self.assertEqual(r["cadre"], {"largeur": 1920, "hauteur": 1080})
+        # HyperFrames pose la racine intérieure à la taille écrite (1080 px) : elle prend celle de l'hôte.
+        self.assertEqual(r["racine"], {"taille": ["1920", "1080"], "style": ["1920px", "1080px"]})
+        self.assertEqual(self.lancer(1080, 1920, hote=[1920, 1080])["cadre"], {"largeur": 1080, "hauteur": 1920})
+        # Même taille que l'hôte : rien ne change.
+        self.assertEqual(self.lancer(1080, 1920, hote=[1080, 1920])["racine"]["style"], [None, None])
 
     def test_cadre_lu_sur_la_composition(self):
         self.assertEqual(self.lancer(1080, 1920)["cadre"], {"largeur": 1080, "hauteur": 1920})
@@ -199,6 +239,39 @@ class KitSelonLeFormat(unittest.TestCase):
         self.assertEqual(r["fantome"], [260, -60])
         self.assertAlmostEqual(r["fin"], 2.35)
 
+    def test_l_apparition_est_nette(self):
+        (a,) = self.lancer(1080, 1920)["apparition"]
+        self.assertEqual(a["m"], "fromTo")
+        self.assertEqual(a["de"], {"opacity": 0})
+        self.assertEqual(a["vers"]["opacity"], 1)
+        self.assertLessEqual(a["vers"]["duration"], 0.2)
+        for prop in ("y", "x", "filter", "scale"):
+            self.assertNotIn(prop, a["vers"])
+        self.assertEqual(a["t"], 1.2)
+
+    def test_l_opacite_ne_rebondit_jamais(self):
+        tweens = self.lancer(1080, 1920)["arrivee"]
+        for tw in tweens:
+            if "opacity" in tw["vers"]:
+                self.assertNotIn("back", tw["vers"].get("ease", ""), tw)
+                self.assertNotIn("scale", tw["vers"])
+                self.assertEqual(tw["vers"]["opacity"], 0.7)      # l'opacité que K.champ avait donnée
+        self.assertTrue(any("scale" in tw["vers"] for tw in tweens))
+
+    def test_le_curseur_se_pose_a_son_premier_point(self):
+        trajet = self.lancer(1080, 1920)["trajet"]
+        self.assertEqual(trajet[0], {"m": "gsap.set", "x": 300, "y": 400})   # dès la construction
+        self.assertIn({"m": "set", "x": 300, "y": 400, "t": 1.5}, trajet)  # et à son instant
+        self.assertIn({"m": "to", "x": 500, "y": 600, "t": 2}, trajet)
+
+    def test_le_garde_fou_des_exemples(self):
+        r = self.lancer(1080, 1920)
+        self.assertEqual(r["emplacements"], ["[PRÉNOM]", "[SON PRIX]"])
+        self.assertEqual(len(r["erreurs"]), 1)
+        self.assertIn("[PRÉNOM], [SON PRIX]", r["erreurs"][0])
+        self.assertEqual(r["sansEmplacement"], [])
+        self.assertEqual(r["compteur"], {"texte": "[CHIFFRE]", "tweens": 0})
+
     def test_options_depart_et_cible(self):
         r = self.lancer(1080, 1920, options={"depart": [100, 200], "cible": [300, 400]})
         self.assertEqual(r["depart"], [100, 200])
@@ -241,9 +314,36 @@ class KitTexte(unittest.TestCase):
         self.assertAlmostEqual(cqw * 1920 / 100, 300)   # 300 px en 16:9, comme avant
         self.assertLess(cqw * 1080 / 100, 200)          # et non plus 300 px en 9:16
 
+    def test_couleurs_de_la_marque(self):
+        """Revue du 09/11/2026 : le texte posé sur l'accent prend l'encre que la marque a choisie pour
+        lui, et la nuit du kit est celle de la marque (les gris du kit restent pour les interfaces)."""
+        css = re.sub(r"/\*.*?\*/", "", (KIT / "kit.css").read_text(encoding="utf-8"), flags=re.S)
+        regles = dict((m.group(1).strip(), m.group(2)) for m in re.finditer(r"([^{}]+)\{([^}]*)\}", css))
+        for sel, val in regles.items():
+            if "k-sur-accent" in sel or "k-tuile-accent" in sel or "k-fond-accent .k-logo-nu" in sel:
+                with self.subTest(sel):
+                    self.assertNotIn("--k-encre", val)
+                    self.assertIn("--brand-contrast", val)
+        self.assertIn("var(--brand-sombre", regles[".k-fond-sombre"])
+        self.assertNotIn("--k-gris:", css)   # inutilisé
+
+    def test_rien_que_gsap_deplace_n_a_de_transformation_css(self):
+        css = (KIT / "kit.css").read_text(encoding="utf-8")
+        fantome = re.sub(r"/\*.*?\*/", "", re.search(r"\.k-fantome \{([^}]*)\}", css).group(1), flags=re.S)
+        self.assertNotRegex(fantome, r"transform\s*:")
+
+    def test_seule_la_capture_du_telephone_le_remplit(self):
+        css = (KIT / "kit.css").read_text(encoding="utf-8")
+        self.assertIn(".k-tel-ecran > img {", css)
+        self.assertNotIn(".k-tel-ecran img {", css)
+
     def test_mode_d_emploi(self):
         md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
         self.assertIn('data-width="1080" data-height="1920"', md)
+        self.assertIn('id="s3-curseur-calque"', md)          # jamais un identifiant intérieur en -hote
+        for option in ("K.apparition(", "K.emplacements(", "K.entre(a, b, p)", "{ease, longueur}", "{de, a, duree, ecart}",
+                       "{svg, courbe, classe, taille}", "{etalement, duree, ease, ordre, graine}", "`k-ligne`"):
+            self.assertIn(option, md, option)
         self.assertIn("data-layout-ignore", md)
         self.assertNotIn("kit de l'extension", md)
 
@@ -254,7 +354,7 @@ class KitTexte(unittest.TestCase):
         md = (RACINE / ".claude" / "skills" / "studio" / "references" / "kit.md").read_text(encoding="utf-8")
         fonctions = sorted(set(re.findall(r"\bK\.(\w+) = function", js)))
         self.assertIn("tranche", fonctions)
-        manquantes = [f for f in fonctions if f"K.{f}" not in md and f not in ("entre",)]
+        manquantes = [f for f in fonctions if f"K.{f}" not in md]
         self.assertEqual(manquantes, [])
 
 

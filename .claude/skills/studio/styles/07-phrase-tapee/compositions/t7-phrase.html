@@ -11,8 +11,8 @@
   jointe au-dessus, les logos de ses outils empilés, le curseur clique sur envoyer ; la barre
   s'envole et la fenêtre du résultat s'ouvre et se remplit de ses vraies images, en cascade.
   Chaque texte se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`)
-  et ne bouge plus pendant qu'on le lit : les deux lignes (leurs mots s'allument tour à tour et
-  bondissent un peu), la demande dans la barre (sa vraie page glisse au-dessus et défile, ses logos
+  et ne bouge plus pendant qu'on le lit : les deux lignes (leurs mots s'allument tour à tour, sur
+  place), la demande dans la barre (sa vraie page glisse au-dessus et défile, ses logos
   arrivent un à un, puis le curseur vient cliquer), le titre de la fenêtre pendant que ses images
   tombent. La caméra ne fait qu'une dérive lente sous un texte qu'on lit.
   Durée : la scène la calcule (D dans le script) : 12,2 s avec l'objet EXEMPLE. Sans capture ni
@@ -44,7 +44,7 @@
   #t7p .t7p-lignes { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
     font-size: 124px; font-weight: 500; letter-spacing: -0.045em; line-height: 1.0; white-space: nowrap; }
   #t7p .t7p-l2 { color: var(--t7-gris); }
-  /* Les mots des deux lignes, une fois tapées : ils s'allument d'un coup à l'accent et bondissent
+  /* Les mots des deux lignes, une fois tapées : ils s'allument d'un coup à l'accent, sur place
      (leurs boîtes, hautes de la police, se touchent d'une ligne à l'autre ; les lettres, non). */
   #t7p .t7p-mots { display: none; }
   #t7p .t7p-mot { display: inline-block; }
@@ -116,7 +116,7 @@
           <div class="t7p-envoyer" id="t7p-envoyer"></div>
         </div>
       </div></div>
-      <div id="t7p-curseur-hote" style="position:absolute; inset:0; z-index:70;"></div>
+      <div id="t7p-curseur-calque" style="position:absolute; inset:0; z-index:70;"></div>
     </div>
   </div>
 </div>
@@ -179,7 +179,7 @@
     });
   }
   if (vertical) $("t7p-l1").parentNode.parentNode.style.fontSize = "96px";
-  var curseur = K.curseur($("t7p-curseur-hote"), "t7p-curseur", false);
+  var curseur = K.curseur($("t7p-curseur-calque"), "t7p-curseur", false);
 
   // États de départ
   K.cacher(["#t7p-p2", "#t7p-c2", "#t7p-fenetre"]);
@@ -196,7 +196,7 @@
   var tl = gsap.timeline({ paused: true });
 
   // 1. Deux lignes tapées sur l'ardoise, tenues le temps de leur lecture : une fois tapées, leurs mots
-  //    s'allument tour à tour à l'accent et bondissent un peu (la vie de la tenue, sans caméra)
+  //    s'allument tour à tour à l'accent, sans bouger (la vie de la tenue, sans caméra)
   K.taper(tl, $("t7p-l1"), EXEMPLE.ligne1, 0.1, 0.85, D);
   K.taper(tl, $("t7p-l2"), EXEMPLE.ligne2, 1.15, 1.9, D);
   tl.set("#t7p-c1", { opacity: 0 }, 1.0); tl.set("#t7p-c2", { opacity: 1 }, 1.0);
@@ -211,7 +211,6 @@
   mots.forEach(function (m, i) {
     var t = 2.1 + i * pasMot;
     tl.set(m, { attr: { "data-on": "1" } }, t);
-    tl.fromTo(m, { y: 0 }, { y: -14, duration: 0.16, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, t);
     tl.set(m, { attr: { "data-on": "0" } }, t + 0.38);
   });
 
@@ -227,7 +226,7 @@
   var logos = $("t7p-logos").children;
   var pasLogo = Math.min(0.7, (XB - XL - 2.6) / Math.max(1, logos.length));
   Array.prototype.forEach.call(logos, function (lg, i) {
-    tl.fromTo(lg, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1)" }, XL + 1.2 + i * pasLogo);
+    tl.fromTo(lg, { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(1)" }, XL + 1.2 + i * pasLogo).fromTo(lg, { opacity: 0 }, { opacity: 1, duration: 0.24, ease: "power2.out" }, XL + 1.2 + i * pasLogo);
   });
   // la page jointe : dévoilée de bas en haut (sans fondu), elle défile d'un écran au suivant, puis
   // s'envole avec la barre

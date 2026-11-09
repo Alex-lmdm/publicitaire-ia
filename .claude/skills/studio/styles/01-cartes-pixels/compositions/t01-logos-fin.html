@@ -9,7 +9,7 @@
        recule (l'entrée) et les logos des outils sortent de la case sur des tuiles blanches, deux ondes
        partent du bouton ; l'étiquette (2 à 4 mots) arrive et se lit 2,5 s ; puis tout se range :
        l'outil principal à gauche, la marque à droite, un fil, un point qui voyage de l'un à l'autre,
-       le maillon du milieu qui s'allume. Pendant ce temps, la caméra ne fait qu'une dérive lente.
+       le maillon du milieu qui s'allume. Pendant ce temps, la caméra se tient ; les tuiles flottent.
      3,65 → 9 s : un chevron en escalier part du bord droit, en couches (grille, couleur, gris,
        clair) et blanchit l'écran ; le logo se forme en pixels, le nom de l'offre se décode ; le
        bouton d'appel s'écrit lettre à lettre et le curseur clique. L'écran final se tient 3 s.
@@ -88,7 +88,7 @@
         <div class="t01-nom" id="t01-logos-fin-nom"></div>
       </div>
       <div class="t01-rangee" id="t01-logos-fin-rbouton"><div class="t01-bouton" id="t01-logos-fin-bouton"><span id="t01-logos-fin-btxt"></span></div></div>
-      <div id="t01-logos-fin-curseur-hote" style="position:absolute; inset:0; z-index:70;"></div>
+      <div id="t01-logos-fin-curseur-calque" style="position:absolute; inset:0; z-index:70;"></div>
     </div>
   </div>
 </div>
@@ -169,11 +169,10 @@
       tl.set(bloc, { opacity: 1 }, 0.02 + rpx() * 0.12).set(bloc, { opacity: 0 }, 0.22 + rpx() * 0.3);
     }
     K.cacher(rond);
-    tl.fromTo(rond, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1)" }, 0.12);
+    tl.fromTo(rond, { scale: 0.4 }, { scale: 1, duration: 0.5, ease: "back.out(1)" }, 0.12).fromTo(rond, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 0.12);
     // La caméra part de près et recule pendant que les tuiles sortent (l'entrée, avant tout texte) ;
-    // puis, pendant que l'étiquette se lit, elle ne fait qu'une dérive lente (4 %, sine.inOut).
-    tl.fromTo(cam, { scale: 1.35 }, { scale: 1.04, duration: 0.75, ease: "power3.inOut" }, 0.2);
-    tl.to(cam, { scale: 1, duration: 2.7, ease: "sine.inOut" }, 0.95);
+    // puis, pendant que l'étiquette se lit, elle se tient : les tuiles flottent autour.
+    tl.fromTo(cam, { scale: 1.35 }, { scale: 1, duration: 0.75, ease: "power3.inOut" }, 0.2);
     if (tuiles.length) K.cacher(tuiles);
     tuiles.forEach(function (t, i) {
       var dx = +t.dataset.dx, dy = +t.dataset.dy, t0 = (i % 2 ? 0.95 : 0.45) + Math.floor(i / 2) * 0.05;
@@ -196,11 +195,11 @@
     });
     tl.to(caseHub, { opacity: 0, scale: 0.8, duration: 0.35, ease: "power2.in" }, 2.2);
     if (principal) {
-      tl.to(rond, { x: ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+      tl.to(rond, { x: ecart, duration: 0.6, ease: "power3.inOut" }, 2.3);
       var rondOutil = K.el(cam, "div", "t01-rond"); poser(rondOutil, cx - R / 2, cy - R / 2, R, R);
       rondOutil.innerHTML = principal.innerHTML; tl.to(principal, { opacity: 0, scale: 0.5, duration: 0.3, ease: "power2.in" }, 2.25);
       K.cacher(rondOutil, { scale: 0.5 });
-      tl.to(rondOutil, { opacity: 1, scale: 1, x: -ecart, duration: 0.6, ease: "expo.inOut" }, 2.3);
+      tl.to(rondOutil, { opacity: 1, scale: 1, x: -ecart, duration: 0.6, ease: "power3.inOut" }, 2.3);
       var long = 2 * ecart - R - 44, x0 = cx - ecart + R / 2 + 22;
       var fil = K.el(cam, "div", "t01-fil", "<i></i>"); poser(fil, x0, cy - 1.5, long, 3);
       var maillon = K.el(cam, "div", "t01-maillon", K.ic("link")); poser(maillon, cx, cy);
@@ -208,7 +207,7 @@
       var voyageur = K.el(cam, "div", "t01-voyageur"); poser(voyageur, x0, cy);
       K.cacher([fil, maillon, voyageur, on]);
       tl.fromTo(fil, { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, 2.75);
-      tl.fromTo(maillon, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)" }, 2.8);
+      tl.fromTo(maillon, { scale: 0.4 }, { scale: 1, duration: 0.3, ease: "back.out(1)" }, 2.8).fromTo(maillon, { opacity: 0 }, { opacity: 1, duration: 0.18, ease: "power2.out" }, 2.8);
       tl.set(voyageur, { opacity: 1 }, 2.85).set(voyageur, { opacity: 0 }, 3.4);
       tl.to(voyageur, { x: long, duration: 0.55, ease: "power2.inOut" }, 2.85);
       tl.fromTo(fil.querySelector("i"), { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power2.inOut" }, 2.85);
@@ -264,16 +263,15 @@
     var bouton = q("#t01-logos-fin-bouton"), yb = H / 2 + (vertical ? 120 : 110);
     q("#t01-logos-fin-rbouton").style.top = yb + "px";
     K.cacher(bouton, { scale: 0.6 });
-    tl.to(bouton, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1)" }, F + 0.6);
+    tl.to(bouton, { scale: 1, duration: 0.45, ease: "back.out(1)" }, F + 0.6).to(bouton, { opacity: 1, duration: 0.27, ease: "power2.out" }, F + 0.6);
     K.taper(tl, q("#t01-logos-fin-btxt"), EXEMPLE.bouton, F + 0.65, F + 1.0, D);
-    var cur = K.curseur(q("#t01-logos-fin-curseur-hote"), ID + "-cur", true);
+    var cur = K.curseur(q("#t01-logos-fin-curseur-calque"), ID + "-cur", true);
     K.cacher(cur);
     tl.set(cur, { opacity: 1 }, F + 0.9);
     K.trajet(tl, cur, [[0, L * 0.82, H * 0.95], [F + 0.9, L / 2 + 70, yb + 70, 0.5, "power3.out"]]);
     K.clic(tl, cur, F + 1.45);
     tl.to(bouton, { scale: 0.95, duration: 0.07, yoyo: true, repeat: 1 }, F + 1.45);
-    // L'écran final se tient 3 s : une dérive lente seulement.
-    tl.fromTo(lockup, { scale: 1 }, { scale: 1.03, y: -6, duration: D - F - 0.7, ease: "sine.inOut" }, F + 0.7);
+    // L'écran final se tient 3 s, immobile : le nom et le bouton se lisent.
 
     window.__timelines[ID] = tl;
   })();

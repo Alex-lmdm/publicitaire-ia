@@ -74,14 +74,14 @@
       // déroulé de sa page) ; une étape sans matière vraie prend la liste de ce qu'on y fait.
       var CONTENU = {
         fond: "clair",                  // "clair" ou "sombre" (sa nuit)
-        etapes: [                       // 3 à 5 étapes vraies, dans l'ordre ; titre de 1 à 3 mots, délai de 1 à 3 mots
-          { titre: "Appel découverte", delai: "Jour 1",
+        etapes: [                       // 3 à 5 étapes vraies, dans l'ordre ; titre de 1 à 3 mots, délai de 1 à 3 mots (« Jour 1 », « Semaine 2 » : son vrai déroulé)
+          { titre: "Appel découverte", delai: "[DÉLAI 1]",
             matiere: { type: "agenda", titre: "Cette semaine", cases: ["Lun", "Mar", "Mer", "Jeu", "Ven"], marques: [2] } },
-          { titre: "Ton plan", delai: "Semaine 1",
+          { titre: "Ton plan", delai: "[DÉLAI 2]",
             matiere: { type: "liste", titre: "Plan d'action", lignes: ["Objectif à 90 jours", "Menus de la semaine", "Liste de courses"] } },
-          { titre: "Suivi hebdo", delai: "8 semaines",
+          { titre: "Suivi hebdo", delai: "[DÉLAI 3]",
             matiere: { type: "agenda", titre: "Tes séances", cases: 8, marques: [0, 1, 2, 3, 4, 5, 6, 7] } },
-          { titre: "Bilan final", delai: "Semaine 10",
+          { titre: "Bilan final", delai: "[DÉLAI 4]",
             matiere: { type: "liste", titre: "Ton bilan", lignes: ["Mesures finales", "Plan de suite", "Questions-réponses"] } }
         ],
         // matiere : { type: "liste", titre, lignes: [2 à 4] } ; { type: "agenda", titre, cases: [libellés] ou un nombre,
@@ -89,6 +89,7 @@
         zone: null                      // [haut, bas] en part de la hauteur (`zones`) ; défaut selon le format
       };
 
+      K.emplacements(ID, CONTENU);   // un emplacement d'exemple resté : la console le dit, `check` aussi
       var racine = document.getElementById(ID), cam = document.getElementById(ID + "-cam");
       var cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, V = H > L;
       var duree = K.duree(racine) || 30;   // une fois montée : la durée de son hôte dans index.html
@@ -148,7 +149,8 @@
 
       etapes.forEach(function (et, i) {
         var c = centreDe(i), x0 = c[0] - Wb / 2;
-        var st = K.el(toile, "div", "par-station k-plan", null, "left:" + x0 + "px; width:" + Wb + "px;");
+        // Une station est à plat (sans preserve-3d) : son flou de profondeur ne l'aplatit pas (kit.md, « Les pièges »).
+        var st = K.el(toile, "div", "par-station", null, "left:" + x0 + "px; width:" + Wb + "px;");
         st.setAttribute("data-layout-allow-overflow", "");   // les voisines sortent du cadre exprès
         // La tête : la borne sur le rail, la pastille de délai.
         var tete = K.el(st, "div", "par-tete", null, "height:" + hTete + "px; gap:" + 0.45 * fP + "px;");
@@ -280,6 +282,9 @@
       var cT = centreDe((n - 1) / 2);
       tl.to(cam, { scale: sVue, x: -sVue * (cT[0] - L / 2), y: -sVue * (cT[1] - H / 2), duration: 1, ease: "power3.out" }, t);
       tl.to(stations, { filter: "blur(0px)", duration: 0.5, ease: "power2.out" }, t + 0.1);
+      // Pendant la tenue, le monde dérive derrière (le fond se rapproche lentement) : l'image ne se
+      // fige jamais (`check`, motion_frozen), et les titres qu'on lit ne bougent plus.
+      tl.fromTo("#" + ID + "-fond", { scale: 1 }, { scale: 1.08, duration: 2.1, ease: "sine.inOut", immediateRender: false }, t + 0.5);
       t += 1 + 1.6;
 
       // La durée qu'il faut à la scène : `check` la signale si data-duration ne suffit pas.

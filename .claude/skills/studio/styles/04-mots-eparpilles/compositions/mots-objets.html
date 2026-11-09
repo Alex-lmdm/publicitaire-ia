@@ -21,7 +21,7 @@
     s) puis la lecture de sa phrase complète (`studio_motion.py lecture`) ; un écran, 1 s pour poser
     sa pastille puis sa lecture. La scène calcule ses instants : sa durée est FIN (console : « t04-mots
     dure … s ») ; reporte-la dans D et dans data-duration, ici et sur son hôte dans index.html. Aucun
-    recadrage : le papier pousse lentement (×1,03 sur toute sa tenue). Pendant la tenue, la vie vient
+    recadrage, et le papier ne bouge pas : ses mots se lisent immobiles. Pendant la tenue, la vie vient
     des cases qui arrivent sur les temps (« tenue 1, 2… ») : des matières contrastées (une capture
     sombre, un logo plein, un chiffre sur sa couleur) ; c'est ce que `rythme` voit.
 
@@ -55,7 +55,9 @@
              "carte" (paysage) ou "tel" (400 × 800), pose: [x, y, largeur, hauteur, angle Y, angle X,
              angle Z], graine }.
       5. CADENCE (écart entre deux mots, 0,22 à 0,3 s), seulement si la musique l'exige. OUVERTURE :
-         true quand la scène ouvre la vidéo (la première image porte déjà le premier mot et sa case).
+         true quand la scène ouvre la vidéo (la première image porte déjà le premier mot et sa case) ;
+         son premier mot porte alors data-accroche (`check` vérifie qu'il se lit dès 0,5 s,
+         composition.md) ; false dans une seconde copie (un seul élément de la vidéo le porte).
     Couleurs : celles de sa marque, rien d'autre (brand/tokens.css) : le papier est sa couleur
     claire, l'encre et la nuit sa couleur sombre, les cases et les pastilles empilées ses gris, la
     grille et la trame des traits fins en transparence, l'aplat, le surlignage et la fin sa couleur
@@ -252,7 +254,7 @@
           dessus = K.el(c, "div", "t04-mots-logo", logo);
           if (!deja) {
             K.cacher(dessus, { scale: 0.5 });
-            tl.to(dessus, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1)" }, tc + 0.2);
+            tl.to(dessus, { scale: 1, duration: 0.4, ease: "back.out(1)" }, tc + 0.2).to(dessus, { opacity: 1, duration: 0.24, ease: "power2.out" }, tc + 0.2);
           }
         } else {
           var long = (m.mot || String(m.chiffre)).length + (m.avant ? m.avant.length + 1 : 0) + (m.unite ? m.unite.length + 1 : 0) + (typeof m.chiffre === "number" && m.chiffre >= 1000 ? 1 : 0);
@@ -267,23 +269,25 @@
             K.compteur(tl, dessus, deja ? m.chiffre : 0, m.chiffre, tc + 0.2, 0.9, D, function (v) { return avant + nombre(v) + unite; }, "expo.out");
           } else dessus.textContent = m.mot || String(m.chiffre);
         }
-        // La case surgit, sa matière s'y pose 0,2 s après puis flotte (8 px ; un logo tourne de 3 degrés).
+        // La case surgit, sa matière s'y pose 0,2 s après ; une image ou un logo flotte ensuite (8 px ;
+        // un logo tourne de 3 degrés), un chiffre ou un mot se lit immobile.
         if (!deja) {
           gsap.set(c, { opacity: 0, scale: 0.55 });
-          tl.to(c, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)" }, tc);
+          tl.to(c, { scale: 1, duration: 0.3, ease: "back.out(1)" }, tc).to(c, { opacity: 1, duration: 0.18, ease: "power2.out" }, tc);
         }
         var a = logo ? 1 : 0, flotte = Math.max(0, tc) + 0.65;
-        tl.fromTo(dessus, { y: 0, rotation: 0 }, { y: -8, rotation: ((i % 3) - 1) * 3 * a, duration: Math.max(0.5, p.fin + PIX - flotte), ease: "sine.inOut", immediateRender: false }, flotte);
+        if (m.img || logo) tl.fromTo(dessus, { y: 0, rotation: 0 }, { y: -8, rotation: ((i % 3) - 1) * 3 * a, duration: Math.max(0.5, p.fin + PIX - flotte), ease: "sine.inOut", immediateRender: false }, flotte);
       }
 
       // ---------- Un papier : ses cases, ses mots, ses mots clés surlignés pendant la tenue ----------
       function papier(p, i) {
         var el = plan("t04-mots-papier");
-        el.setAttribute("data-layout-allow-overflow", "");   // le papier pousse de 3 % : il déborde exprès
+        el.setAttribute("data-layout-allow-overflow", "");   // le papier couvre le cadre bord à bord : il déborde exprès
         p.cases.forEach(function (o, k) { caseDe(el, p, o, k); });
         var cles = p.surligne || [];
         p.mots.forEach(function (m, k) {
           var e = K.el(el, "div", "t04-mots-mot", null, "left:" + m[1] + "px; top:" + m[2] + "px;");
+          if (i === 0 && k === 0 && OUVERTURE) e.setAttribute("data-accroche", "");   // l'accroche : son premier mot, là dès l'image 0
           // Les mots se frôlent exprès (zigzag serré) : leurs boîtes se touchent, pas leurs lettres.
           e.setAttribute("data-layout-allow-overlap", "");
           var j = cles.indexOf(m[0]);
@@ -301,8 +305,7 @@
           if (i === 0 && k === 0 && OUVERTURE) K.taper(tl, lettres, m[0], -0.2, -0.1, D);   // déjà là sur la première image
           else K.taper(tl, lettres, m[0], tw, tw + Math.min(0.1, 0.025 * m[0].length), D);
         });
-        // Le papier pousse lentement pendant toute sa tenue : la seule caméra de la scène.
-        tl.fromTo(el, { scale: 1 }, { scale: 1.03, duration: p.fin + PIX - p.debut, ease: "sine.inOut", transformOrigin: "50% 50%" }, p.debut);
+        // Le papier ne bouge pas pendant sa tenue (on lit ses mots) : la vie vient de ses cases.
         return el;
       }
 
@@ -349,7 +352,6 @@
         tl.to(pile, { rotation: 0, duration: 0.1 }, p.t0 + 0.98);
         // Le point de la pastille bat deux fois, comme un appel qui arrive.
         tl.to(pastille.querySelector("i"), { scale: 1.45, duration: 0.12, ease: "power2.out", yoyo: true, repeat: 3 }, p.t0 + 0.62);
-        tl.fromTo(pile, { y: 10 }, { y: -8, duration: duree - 0.3, ease: "sine.inOut" }, p.t0 + 0.3);
         return el;
       }
 

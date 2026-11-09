@@ -25,7 +25,7 @@
 
     La lecture (interdits.md, « La lecture ») : le nom et sa marque restent lecture(nom + marque)
     une fois posés (0,3 s par mot + 0,8 s, jamais moins de 1,5 s) avant que la caméra recule : la
-    scène place le recul seule. Pendant cette tenue, la caméra ne fait qu'une dérive lente.
+    scène place le recul seule. Pendant cette tenue, la caméra se tient : le nom se lit immobile.
     data-duration (ici et sur l'hôte dans index.html) = l'instant du recul + 2,8 s (la mosaïque se
     lit) ; la console le rappelle s'il manque.
 
@@ -150,7 +150,7 @@
       <div class="k-scene3d"><div class="k-camera" id="t02-carte-cam"></div></div>
       <div class="t02-carte-repere" id="t02-carte-rh" style="left:0; top:858px; width:1920px; height:2px;"></div>
       <div class="t02-carte-repere" id="t02-carte-rv" style="left:1308px; top:0; width:2px; height:1080px;"></div>
-      <div id="t02-carte-curseur-hote" style="position:absolute; inset:0; z-index:30;"></div>
+      <div id="t02-carte-curseur-calque" style="position:absolute; inset:0; z-index:30;"></div>
     </div>
   </div>
 
@@ -296,9 +296,8 @@
       var S0 = 2.6, CX = 960, CY = 540, S1 = 0.44, DX = -70, DY = -10;
       gsap.set(cam, { scale: S0, x: (1310 - CX) - S0 * (1700 - CX), y: (860 - CY) - S0 * (955 - CY) });
       tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.6, ease: K.courbeEchelle(S0, 1, "power3.inOut") }, 0.22);
-      // Pendant que le nom se lit : une dérive lente (3,5 %), rien d'autre.
-      tl.to(cam, { scale: 1.035, duration: RECUL - 1.0, ease: "sine.inOut" }, 1.0);
-      tl.to(cam, { scale: S1, x: 0, y: 0, duration: 0.85, ease: K.courbeEchelle(1.035, S1, "power3.inOut") }, RECUL);
+      // Pendant que le nom se lit, la caméra se tient (un mot qu'on lit ne bouge pas).
+      tl.to(cam, { scale: S1, x: 0, y: 0, duration: 0.85, ease: K.courbeEchelle(1, S1, "power3.inOut") }, RECUL);
       tl.to(cam, { x: DX, y: DY, duration: D - RECUL - 0.85, ease: "sine.inOut" }, RECUL + 0.85);
 
       // Les repères et le point du début ; les repères se rétractent pendant le recul.
@@ -321,7 +320,7 @@
         return K.el(cam, "u", "t02-carte-coin", null, "left:" + p[0] + "px; top:" + p[1] + "px;");
       });
       K.cacher(coins, { scale: 0 });
-      tl.to(coins, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(1)", stagger: 0.04 }, 0.6);
+      tl.to(coins, { scale: 1, duration: 0.25, ease: "back.out(1)", stagger: 0.04 }, 0.6).to(coins, { opacity: 1, duration: 0.15, ease: "power2.out", stagger: 0.04 }, 0.6);
       tl.to(coins, { scale: 0, duration: 0.2, ease: "power2.in", stagger: 0.03 }, 1.15);
 
       // ---------- La carte se construit par couches ----------
@@ -339,11 +338,10 @@
       gsap.set(gv, { scaleY: 0 }); gsap.set(gh, { scaleX: 0 }); K.cacher(pts, { scale: 0 });
       tl.to(gv, { scaleY: 1, duration: 0.42, ease: "expo.out", stagger: 0.05 }, 1.25);
       tl.to(gh, { scaleX: 1, duration: 0.42, ease: "expo.out", stagger: 0.05 }, 1.3);
-      tl.to(pts, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)", stagger: 0.04 }, 1.42);
+      tl.to(pts, { scale: 1, duration: 0.3, ease: "back.out(1)", stagger: 0.04 }, 1.42).to(pts, { opacity: 1, duration: 0.18, ease: "power2.out", stagger: 0.04 }, 1.42);
       K.entreeMots(tl, titre.querySelectorAll(".k-mot"), 1.4, { y: 34, flou: 12, decalage: 0.09 });
       if (signe) {
-        K.cacher(signe, { y: 16 });
-        tl.to(signe, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 1.62);
+        K.apparition(tl, signe, 1.62);   // sa marque : une étiquette, nette, sans montée
       }
       // 4. Pendant que le nom se lit, la même carte change de palette sur les temps (coupes
       //    franches). Sur une capture, c'est la bande qui bascule : sombre, accent, sombre.
@@ -379,7 +377,7 @@
       if (motsGeants.length) tl.fromTo(motsGeants, { scale: 0.82 }, { scale: 1, duration: 0.6, ease: "expo.out", stagger: 0.12 }, RECUL + 0.6);
       var bouton = avec("bouton")[0];
       if (bouton) {
-        var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
+        var curseur = K.curseur($("curseur-calque"), ID + "-curseur", true);
         K.cacher(curseur);
         gsap.set(bouton.remplir, { scaleX: 0 });
         // Le centre du bouton à l'écran au moment du clic (recul fini, la dérive a commencé).

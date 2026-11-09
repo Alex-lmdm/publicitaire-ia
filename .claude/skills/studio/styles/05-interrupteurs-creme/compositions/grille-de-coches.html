@@ -14,8 +14,9 @@
     en miniature), et la caméra plonge dans une carte qui devient la fenêtre plein écran de la
     scène 4 (« fenetre-annonce »).
     Rôle : la preuve que tout est servi (« tout est prêt », « pour chaque élève »).
-    La phrase se tient le temps de sa lecture (0,3 s par mot + 0,8 s : `studio_motion.py lecture`) :
-    la caméra ne fait alors qu'une dérive lente ; autour d'elle, les pastilles respirent deux fois.
+    La phrase paraît nette et se tient le temps de sa lecture (0,3 s par mot + 0,8 s :
+    `studio_motion.py lecture`) : la caméra se tient alors ; autour d'elle, les pastilles respirent
+    deux fois.
     Durée : la scène la calcule (D dans le script) : 4,9 s + la lecture de la phrase (7,7 s pour
     5 mots, 8,3 s pour 7). Reporte-la dans data-duration (ici et sur l'hôte).
 
@@ -187,9 +188,8 @@
         }
       });
 
-      // 2. Le centre se libère, la phrase s'écrit ; pendant qu'elle se lit, une dérive lente
-      //    seulement (Z → Z × 1,05)
-      tl.to(cam, { scale: Z * 1.05, duration: X - 1.0, ease: "sine.inOut" }, 1.0);
+      // 2. Le centre se libère, la phrase paraît ; pendant qu'elle se lit, rien ne bouge sous elle
+      //    (la caméra se tient à Z)
       centre.forEach(function (d) { tl.to(d, { scale: 0, duration: 0.45, ease: "power3.in" }, 1.45); });
       var tMots = mots(titre, TEXTE);
       if (vertical) titre.style.fontSize = "64px";     // vue à ×1,55 : 99 px à l'image (95 px en 16:9, à ×1,7)
@@ -215,8 +215,8 @@
         if (large > maxL) titre.style.fontSize = (fs0 * Math.max(maxL / large, 0.7)).toFixed(1) + "px";
         gsap.set(titre, { left: cx - 600, top: cy - titre.offsetHeight / 2 });
         var lignes = titre.querySelectorAll(".t05-ligne");
-        K.entreeMots(tl, lignes[0].querySelectorAll(".t05-mot"), 2.1, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
-        K.entreeMots(tl, lignes[1].querySelectorAll(".t05-mot"), 2.4, { y: 8, flou: 10, duree: 0.7, decalage: 0.07, echelle: 1 });
+        K.apparition(tl, lignes[0].querySelectorAll(".t05-mot"), 2.1, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
+        K.apparition(tl, lignes[1].querySelectorAll(".t05-mot"), 2.4, { decalage: 0.04 });   // la phrase : nette, sans montée ni flou
         // pendant la lecture, les pastilles respirent deux fois ensemble, au tiers et aux deux tiers
         // de la tenue (l'interface vit, la caméra non)
         [FE + (X - FE) / 3, FE + 2 * (X - FE) / 3].forEach(function (tv) {
@@ -241,7 +241,7 @@
         centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1)" }, 4.85 + O); });
 
         // 4. La plongée : la carte visée devient la fenêtre plein écran (raccord scène 4)
-        var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
+        var S = Z, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
         var ex = cx + S * (wx - cx), ey = cy + S * (wy - cy), cote = 200 * S;
         fen.innerHTML = fenetre(SALUTS[0], false);
         ajusterSalut(racine);

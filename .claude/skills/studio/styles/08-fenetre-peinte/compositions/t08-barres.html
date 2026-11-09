@@ -9,8 +9,8 @@
     puis les lignes une à une, de haut en bas, chaque barre grandit depuis la gauche ; toutes sont
     grises. Puis la ligne de l'offre se remplit de sa couleur, de gauche à droite (sa nuit, ou son
     accent s'il se lit sur le clair), son nom passe en gras et sa valeur compte au bout de ses
-    barres. Le graphique se tient 4 s, le temps de le lire ; la caméra ne fait qu'une dérive lente
-    vers la ligne forte (5 %), jamais de gros plan ni d'aller-retour pendant la lecture.
+    barres. Le graphique se tient 4 s, le temps de le lire, immobile : seule la lumière du papier
+    glisse derrière lui ; jamais de gros plan ni d'aller-retour pendant la lecture.
     Format : 16:9 (1920 × 1080) ; en 9:16, data-width="1080" data-height="1920" ici et sur l'hôte :
     les deux graphiques s'empilent (classe t08-vertical, réglée seule).
 
@@ -35,6 +35,10 @@
     background: var(--t08-papier); }
   #t08-barres.t08-accent-fort { --t08-fort: var(--brand-accent); --t08-sur-fort: var(--brand-contrast); }
   #t08-barres .t08-fond { position: absolute; inset: -2px; background: var(--t08-papier); }
+  /* La lumière du papier : une ombre douce sur les bords qui glisse lentement derrière le graphique
+     (le papier vit, les mots et les chiffres qu'on lit ne bougent pas). */
+  #t08-barres .t08-lumiere { position: absolute; inset: -12%; pointer-events: none;
+    background: radial-gradient(ellipse 48% 58% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.05) 100%); }
   #t08-barres .t08-graphe { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-origin: 50% 50%; }
   #t08-barres .t08-nom { position: absolute; font: 400 36px/48px var(--brand-font-body); color: var(--t08-appui); white-space: nowrap; letter-spacing: -0.01em; }
   #t08-barres .t08-nom.t08-fort { color: var(--t08-encre); font-weight: 700; }
@@ -53,6 +57,7 @@
 <div data-composition-id="t08-barres" data-width="1920" data-height="1080" data-duration="5" style="position:absolute; inset:0;">
   <div id="t08-barres" class="k-scene">
     <div class="t08-fond"></div>
+    <div class="t08-lumiere" id="t08-barres-lumiere" data-layout-ignore></div>
     <div class="t08-graphe" id="t08-barres-graphe"></div>
   </div>
 </div>
@@ -136,7 +141,7 @@
             tl.set(nom, { attr: { "class": "t08-nom t08-fort" } }, T_FORT);
             if (!accentFort) {
               var rep = K.el(nom, "span", "t08-repere"); K.cacher(rep, { scale: 0 });
-              tl.to(rep, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)" }, T_FORT + 0.05);
+              tl.to(rep, { scale: 1, duration: 0.3, ease: "back.out(1)" }, T_FORT + 0.05).to(rep, { opacity: 1, duration: 0.18, ease: "power2.out" }, T_FORT + 0.05);
             }
           }
         }
@@ -155,12 +160,10 @@
         }
       });
     });
-    // La caméra : une entrée qui se pose (avant que la lecture commence), puis une dérive lente
-    // vers la ligne forte (5 %, sine.inOut) pendant toute la lecture : aucun gros plan, aucun aller-retour.
-    var iFort = Math.max(0, LIGNES.map(function (l) { return l[3]; }).indexOf(true));
-    var Px = vertical ? L / 2 : (blocs[0].xNoms + blocs[1].x + blocs[1].l) / 2, Py = blocs[0].y + iFort * PAS + PAS / 2;
+    // La caméra : une entrée qui se pose (avant que la lecture commence), puis elle se tient pendant
+    // toute la lecture (aucun gros plan, aucun aller-retour) ; la lumière du papier glisse derrière.
     tl.fromTo(G, { scale: 1.06 }, { scale: 1, duration: 0.9, ease: "expo.out" }, 0);
-    tl.to(G, { scale: 1.05, x: (L / 2 - Px) * 0.05, y: (H / 2 - Py) * 0.05, duration: D - 0.9, ease: "sine.inOut" }, 0.9);
+    tl.fromTo("#" + ID + "-lumiere", { xPercent: -5, scale: 1 }, { xPercent: 5, scale: 1.06, duration: D, ease: "sine.inOut" }, 0);
 
     window.__timelines[ID] = tl;
   })();
