@@ -21,7 +21,8 @@ python3 ../../../tools/studio_motion.py palette exports/page.mp4
 ```
 
 `rythme` doit répondre « ok » (au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian,
-aucune image vraiment immobile plus de 1,5 s avant l'écran final, des plans de durées variées) ; un
+aucune image vraiment immobile plus de 1,5 s avant l'écran final, des plans de durées variées ;
+de 0,6 à 1,5 s, un avis : rien à faire si des mots s'y lisent, sinon un événement de contenu) ; un
 creux se comble par ce que le plan montre, jamais par un recadrage ajouté
 ([metier.md](metier.md), « Le rythme »). `cadre` doit répondre « ok » : chaque instant presque vide
 se corrige en approchant la caméra, en agrandissant le sujet ou en lui donnant un monde
@@ -57,10 +58,13 @@ de la précédente. Ouvre-les et regarde-les vraiment :
 - la première image déjà forte (vidéo de page : c'est elle qu'on voit si la lecture automatique est
   bloquée), la dernière propre (l'appel à l'action entier) ; une boucle de section qui raccorde sa
   dernière image à la première ;
-- **les collisions pendant les animations**, que ni `check` ni le relecteur ne voient : pour chaque
-  entrée ou sortie de mots et chaque passage, `npx hyperframes snapshot --range <début>,<fin>
-  --frames 8` ; aucun texte ne touche un autre texte, ne passe sous un objet ni ne sort du cadre,
-  même pendant deux images ;
+- **les collisions pendant les animations**, que le `check` ordinaire et le relecteur ne voient
+  pas : `npx hyperframes check --at-transitions --json` (une minute pour 35 s) regarde au début et à
+  la fin de chaque mouvement et liste les instants où un texte est recouvert ou déborde. Regarde
+  chacun (`npx hyperframes snapshot --at <t>`) : un objet qui passe sur un mot déjà lu, un volet,
+  c'est voulu ; un texte qu'on lit et qui touche un autre texte, passe sous un objet ou sort du
+  cadre, même pendant deux images, se corrige. Puis chaque passage de près (`snapshot --range
+  <début>,<fin> --frames 8`) ;
 - aucune image clé dont le seul sujet est une forme ou un aplat plus d'une seconde, hors fin et
   passage ; le sujet qui remplit le cadre ; en vertical, une mise en page recomposée ;
 - le test du spectateur froid ([ecriture.md](ecriture.md)) : à partir des seules vignettes, dans
@@ -93,8 +97,10 @@ un P0**, à corriger avant le reste. Sans sous-agent possible, fais la relecture
 des seules planches, avant de relire le script, et dis-le dans ta revue.
 
 **2. Le relevé.** `relecture exports/<vidéo>.mp4 --releve` ajoute à la consigne le script validé
-(section « Script » de `PLAN.md`) et ce que la vidéo doit faire dire. Le relecteur (le même, ou un
-neuf) rend une ligne par défaut : « t = 4,5 s · où · problème · changement exact · P0, P1 ou P2 ».
+(section « Script » de `PLAN.md`), ce que la vidéo doit faire dire et les mesures du rendu
+(`rythme`, `cadre`, `calage`, `emergence`), données comme des faits. Le relecteur (le même, ou un
+neuf) rend une ligne par défaut, située sur la grille de 6 × 6 cases de ses planches : « t = 4,5 s ·
+planche 1, image 10, cases B2 à D3 · problème · changement exact · P0, P1 ou P2 ».
 
 - **P0** casse la lecture, la compréhension ou un interdit : une phrase partie avant d'être lue, un
   texte illisible, l'offre jamais dite, un chiffre sans son contexte, une couleur hors de la marque,

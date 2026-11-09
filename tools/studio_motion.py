@@ -90,6 +90,11 @@ import voix as vx  # noqa: E402
 FPS = 30
 # Le rendu d'HyperFrames, presque sans perte : `couverture` fait le seul encodage qui compte.
 CRF_RENDU = 10
+# Les intentions que `check` vérifie sur la timeline (HyperFrames 0.9.19, `index.motion.json` à côté
+# d'index.html) : l'accroche (le texte qui porte `data-accroche`) lisible dès 0,5 s, rien de figé plus
+# de 1,5 s hors écran final. Un prix affiché y ajoute `staysInFrame` sur `[data-prix]` (composition.md).
+INTENTIONS = {"assertions": [{"kind": "appearsBy", "selector": "[data-accroche]", "bySec": 0.5},
+                             {"kind": "keepsMoving", "maxStaticSec": 1.5}]}
 
 
 def _lire_texte(f: Path, defaut: str = "") -> str:
@@ -1739,6 +1744,7 @@ def creer_projet(r: Path, dossier: Path, sujet: str, objectif: str, v: dict, dat
               "scripts": {"dev": "hyperframes preview", "check": "hyperframes check",
                           "render": f"hyperframes render --crf {CRF_RENDU} -o exports/{cle}.mp4"}}
     (projet / "package.json").write_text(json.dumps(paquet, indent=2) + "\n", encoding="utf-8")
+    (projet / "index.motion.json").write_text(json.dumps(INTENTIONS, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return projet
 
 
@@ -2059,6 +2065,9 @@ def cmd_planche(a) -> None:
 PLANCHE_RANGEES = 4                                                   # rangées d'une planche serrée
 RELECTURE_PAS, RELECTURE_PAS_LONG, RELECTURE_LONGUE = 0.5, 1.0, 75.0   # s entre deux images (1 s au-delà de 75 s)
 RELECTURE_GRILLE = {True: (4, 3, 360), False: (3, 4, 480)}            # vertical ou non : colonnes, lignes, largeur
+# Une grille de 6 × 6 cases sur chaque image : le relecteur situe un défaut par ses cases (« B2 à D3 »).
+# Avec elle, la note de mise en page d'un critique passe de 50 à 74 (Code2Video, 10/2025) ; 8 × 8 fait moins bien.
+GRILLE_RELECTURE = "drawgrid=w=iw/6:h=ih/6:t=1:c=0x00e5ff@0.4"
 
 CONSIGNE_FROID = """# Relecture à froid
 
@@ -2069,6 +2078,10 @@ autre fichier que ces planches : ni le dossier de la vidéo, ni un plan, ni une 
 Ce que tu reçois : {n} planche(s), à lire dans l'ordre. Chaque planche montre jusqu'à {par} images
 prises toutes les {pas} s, de gauche à droite puis de haut en bas. Une phrase vue sur une ou deux
 images seulement est restée moins de {court} s à l'écran.
+
+Une grille fine de 6 × 6 cases couvre chaque image : elle n'est pas dans la vidéo. Ses colonnes vont
+de A à F, de gauche à droite, ses rangées de 1 à 6, de haut en bas : situe ce que tu cites par ses
+cases (« planche 2, image 5, cases B2 à D3 »), jamais par « en haut » ou « à gauche ».
 
 {liste}
 
@@ -2093,12 +2106,13 @@ Réponds en français, sans note ni compliment :
 CONSIGNE_RELEVE = """# Relevé des défauts
 
 Tu reçois les mêmes planches que pour la relecture à froid, et cette fois le script validé par le
-client et ce que la vidéo doit faire dire. Compare ce qu'on voit à ce qui est écrit. Les planches :
+client et ce que la vidéo doit faire dire. Compare ce qu'on voit à ce qui est écrit. Les planches,
+avec leur grille de 6 × 6 cases (colonnes A à F de gauche à droite, rangées 1 à 6 de haut en bas) :
 {liste}
 
 Une ligne par défaut, du plus grave au moins grave, sans rien d'autre :
 
-`t = 4,5 s · où (planche 1, image 10) · problème · changement exact · P0, P1 ou P2`
+`t = 4,5 s · où (planche 1, image 10, cases B2 à D3) · problème · changement exact · P0, P1 ou P2`
 
 - **P0** casse la lecture ou la compréhension : une phrase partie avant d'être lue, un texte illisible
   ou caché, l'offre jamais dite, un chiffre sans son contexte, une couleur hors de la marque, une forme
@@ -2114,7 +2128,36 @@ Une ligne par défaut, du plus grave au moins grave, sans rien d'autre :
 ## Le script validé
 
 {script}
+
+## Les mesures du rendu
+
+Mesurées sur le MP4 par les contrôles du studio : ce sont des faits. Ne les contredis pas ; sers-t'en
+pour situer les défauts, et dis-le si ce que tu vois les explique (un creux, un sujet trop petit, une
+scène hors du temps de la musique, un bruitage couvert).
+
+{mesures}
 """
+
+
+# Les contrôles dont le relevé reçoit le résultat comme des faits (un défaut chiffré se corrige mieux
+# qu'un défaut décrit : recherche du 09/11/2026) ; « projet » : la commande prend le projet, pas le MP4.
+MESURES_RELEVE = (("Le rythme", "rythme", "video"), ("Le cadre", "cadre", "video"),
+                  ("Le calage sur la musique et la voix", "calage", "video"),
+                  ("Les bruitages au-dessus de la musique", "emergence", "projet"))
+
+
+def mesures_rendu(video: Path, projet: Path | None) -> str:
+    """Les réponses de `rythme`, `cadre`, `calage` et `emergence` sur cette vidéo, en sections courtes."""
+    blocs = []
+    for titre, commande, quoi in MESURES_RELEVE:
+        if quoi == "projet" and not projet:
+            continue
+        cible = str(projet if quoi == "projet" else video)
+        r = lancer([sys.executable, str(Path(__file__).resolve()), commande, cible])
+        lignes = [re.sub(r"^• ", "", l.strip()) for l in ((r.stdout or "") + (r.stderr or "")).splitlines()
+                  if l.strip() and not l.startswith("Traceback")]
+        blocs.append(f"### {titre}\n\n" + ("\n".join(f"- {l}" for l in lignes[:12]) or "- (rien à dire)"))
+    return "\n\n".join(blocs) or "(aucune mesure : la vidéo n'est pas dans un projet)"
 
 
 def dossier_relecture(video: Path) -> Path:
@@ -2173,7 +2216,8 @@ def cmd_relecture(a) -> None:
         shutil.rmtree(sortie, ignore_errors=True)
         sortie.mkdir(parents=True)
         r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{pas / 2:.3f}", "-i", str(video), "-an", "-vf",
-                    f"fps=1/{pas},scale={largeur}:-2,tile={colonnes}x{lignes}:padding=8:margin=8:color=0x202022",
+                    f"fps=1/{pas},scale={largeur}:-2,{GRILLE_RELECTURE},"
+                    f"tile={colonnes}x{lignes}:padding=8:margin=8:color=0x202022",
                     "-q:v", "3", str(sortie / "planche-%02d.jpg")])
         planches = sorted(sortie.glob("planche-*.jpg"))
         if r.returncode != 0 or not planches:
@@ -2192,8 +2236,10 @@ def cmd_relecture(a) -> None:
             sys.exit("ERREUR : la section « Script » de PLAN.md est vide : écris le script validé avant le relevé.")
         fiche = json.loads(offre.read_text(encoding="utf-8"))
         consigne = sortie / "RELEVE.md"
-        consigne.write_text(CONSIGNE_RELEVE.format(liste=liste, fiche=faits_releve(fiche), script=script), encoding="utf-8")
-        print(f"• relevé : {consigne} ({len(planches)} planches, le script et la fiche ajoutés)")
+        mesures = mesures_rendu(video, projet_de(video))
+        consigne.write_text(CONSIGNE_RELEVE.format(liste=liste, fiche=faits_releve(fiche), script=script, mesures=mesures),
+                            encoding="utf-8")
+        print(f"• relevé : {consigne} ({len(planches)} planches, le script, la fiche et les mesures du rendu ajoutés)")
         print("  Donne cette consigne et les planches à un relecteur (le même que pour la relecture à froid, ou un neuf).")
         print("  Chaque P0 et P1 se corrige, puis s'écrit en une ligne dans « Interdits de cette vidéo » (PLAN.md).")
         return
@@ -2230,6 +2276,10 @@ RYTHME_FPS, RYTHME_TAILLE = 10, (96, 54)
 # plage figée tolérée de 1 à 1,5 s, et seule une image vraiment immobile compte comme figée. La
 # vidéo en slides refusée (0,33 événement par seconde, 1,75 s d'écart, 67 % figée) échoue toujours.
 SEUIL_FIGE, FIGE_MAX = 0.1, 1.5        # écart moyen des pixels (0-255) sous lequel rien ne bouge ; plage tolérée (s)
+# Les meilleurs outils ne tolèrent que 0,6 s d'image entière immobile non voulue (veille du 09/11/2026).
+# Le MP4 ne dit pas si des mots s'y lisent (leur tenue est voulue : un mot posé ne bouge plus) : de 0,6 à
+# 1,5 s, c'est un avis à regarder, jamais une raison de faire bouger des mots qu'on lit.
+FIGE_AVIS = 0.6
 SEUIL_EVENEMENT = 2.0                   # un pic d'écart au-dessus = un événement (entrée, clic, coupe, compteur)
 EVENEMENTS_MIN, ECART_MEDIAN_MAX = 0.7, 1.2
 CREUX_SIGNALE, FIN_LIBRE = 2.0, 3.5    # creux entre deux événements montrés ; l'écran final peut se tenir
@@ -2253,13 +2303,16 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
     L'écran final (les `fin_libre` dernières secondes) peut se tenir."""
     duree = len(ecarts) / fps
     limite = max(0, len(ecarts) - int(fin_libre * fps))
-    figees, debut = [], None
+    figees, immobiles, debut = [], [], None
     for i, v in enumerate(ecarts[:limite] + [SEUIL_FIGE]):
         if v < SEUIL_FIGE:
             debut = i if debut is None else debut
         elif debut is not None:
+            plage = (round(debut / fps, 1), round((i - debut) / fps, 1))
             if (i - debut) / fps >= FIGE_MAX:
-                figees.append((round(debut / fps, 1), round((i - debut) / fps, 1)))
+                figees.append(plage)
+            elif (i - debut) / fps >= FIGE_AVIS:
+                immobiles.append(plage)
             debut = None
     pics = [i for i in range(1, len(ecarts) - 1)
             if ecarts[i] >= SEUIL_EVENEMENT and ecarts[i] >= ecarts[i - 1] and ecarts[i] >= ecarts[i + 1]]
@@ -2280,7 +2333,7 @@ def verdict_rythme(ecarts: list[float], fps: int = RYTHME_FPS, fin_libre: float 
     if mediane > ECART_MEDIAN_MAX:
         problemes.append(f"{mediane:.2f} s entre deux événements en général : {ECART_MEDIAN_MAX} s au plus")
     return {"duree": round(duree, 1), "evenements_par_s": round(par_s, 2), "ecart_median": round(mediane, 2),
-            "figees": figees, "creux": creux[:5], "problemes": problemes}
+            "figees": figees, "immobiles": immobiles, "creux": creux[:5], "problemes": problemes}
 
 
 # Les scènes d'un film se suivent à des durées variées (une rafale courte, une démonstration longue) :
@@ -2368,6 +2421,11 @@ def cmd_rythme(a) -> None:
           f"{sum(l for _d, l in v['figees']):.1f} s" + (f" · {len(scenes)} scènes" if scenes else ""))
     if v["creux"]:
         print("  plus longs creux à regarder : " + ", ".join(f"{d:.1f} s (+{l:.1f} s)" for d, l in v["creux"]))
+    if v["immobiles"]:
+        print(f"⚠️ image entière immobile {FIGE_AVIS:g} s ou plus : "
+              + ", ".join(f"à {d:.1f} s ({l:.1f} s)" for d, l in v["immobiles"][:8])
+              + ". Si des mots s'y lisent, c'est leur tenue : rien à faire. Sinon, un événement de contenu "
+              "(l'interface qui réagit, un objet qui arrive), jamais un mouvement de remplissage.")
     if v["problemes"]:
         for pb in v["problemes"]:
             print(f"✗ {pb}")
@@ -2970,6 +3028,13 @@ Chaque case de planche dure 0,5 s, de gauche à droite puis de haut en bas (24 c
 - **Les interfaces montrées** : lesquelles, reconstruites comment, animées comment ?
 - **La fin** :
 
+## Mesurer un geste qui te plaît
+
+Pour un mouvement précis (une carte qui arrive, un mot qui tombe, un zoom), sur l'ordinateur, sans
+rien envoyer : `npx hyperframes measure curve "<la vidéo>" --start <s> --end <s> --roi x,y,l,h`
+(la zone ne contient que ce qui bouge, dépassement compris) donne sa durée, son dépassement en % et
+la courbe GSAP la plus proche. Note-les ici : c'est son allure en chiffres, à reprendre telle quelle.
+
 ## Ce qu'on reprend pour la vidéo du client
 
 La grammaire seulement (rythme, densité, procédés), avec sa marque et son offre. Jamais le
@@ -3011,6 +3076,28 @@ def ranger_video(source: Path, sortie: Path, copie: bool = False) -> Path:
     return dest
 
 
+def plans_mesures(video: Path) -> list[float] | None:
+    """La durée de chaque plan d'une vidéo, d'après `hyperframes measure cuts` (local, sans réseau) :
+    il voit des coupes que le seul écart d'images manque, et met à part flashs et mouvements rapides."""
+    cli = hyperframes_cli()
+    if not cli:
+        return None
+    r = lancer([*cli, "measure", "cuts", str(video)])
+    try:
+        return [float(s["seconds"]) for s in json.loads(r.stdout).get("shots") or []] or None
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return None
+
+
+def ligne_plans(plans: list[float] | None) -> str:
+    """« - Plans : 9, durée médiane 1,4 s, de 0,3 à 19,8 s » ; "" sans mesure."""
+    if not plans:
+        return ""
+    tries = sorted(plans)
+    return (f"- Plans (HyperFrames `measure cuts`) : {len(plans)}, durée médiane {fr_nombre(tries[len(tries) // 2])} s, "
+            f"de {fr_nombre(tries[0])} à {fr_nombre(tries[-1])} s\n")
+
+
 def cmd_reference(a) -> None:
     ffmpeg = binaire("ffmpeg")
     if not ffmpeg:
@@ -3048,12 +3135,13 @@ def cmd_reference(a) -> None:
     if r.returncode != 0:
         sys.exit(f"ERREUR : planches impossibles : {r.stderr[-300:]}")
     coupes = coupes_video(ffmpeg, video)
+    plans = plans_mesures(video)
     v = verdict_rythme(ecarts_images(ffmpeg, video), fin_libre=0.0)
     planches = sorted(p.name for p in sortie.glob("planche-*.jpg"))
     texte = (f"# Vidéo de référence : {nom}\n\nSource : {lien or a.source}\n\n## Mesures\n\n"
              f"- Durée : {v['duree']:.0f} s\n- Événements : {v['evenements_par_s']:.2f} par seconde, écart médian "
              f"{v['ecart_median']:.2f} s\n- Image figée : {sum(l for _d, l in v['figees']):.1f} s\n"
-             f"- Coupes franches : {len(coupes)} ({', '.join(f'{t:.1f}' for t in coupes[:30])})\n"
+             f"- Coupes franches : {len(coupes)} ({', '.join(f'{t:.1f}' for t in coupes[:30])})\n" + ligne_plans(plans) +
              f"- Planches : {', '.join(planches)}\n" + ANALYSE_GRILLE)
     (sortie / "ANALYSE.md").write_text(texte, encoding="utf-8")
     print(f"• référence analysée : {sortie}")

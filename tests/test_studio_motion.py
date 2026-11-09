@@ -441,6 +441,14 @@ class Rythme(unittest.TestCase):
         ecarts = [3.0 if i % 20 == 0 else 0.0 for i in range(1, 400)]
         self.assertTrue(sm.verdict_rythme(ecarts)["figees"])
 
+    def test_image_entiere_immobile_des_0_6_s(self):
+        # 09/11/2026 : les meilleurs outils ne tolèrent que 0,6 s d'image entière immobile. Un avis, pas un
+        # refus : le MP4 ne dit pas si des mots s'y lisent (leur tenue est voulue).
+        vivant = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 100)]
+        v = sm.verdict_rythme(vivant + [0.0] * 8 + vivant + [0.0] * 4 + vivant)
+        self.assertEqual(v["immobiles"], [(9.9, 0.8)])            # 0,4 s : rien ; 0,8 s : un avis
+        self.assertEqual((v["figees"], v["problemes"]), ([], []))
+
     def test_ecran_final_libre(self):
         vivant = [3.0 if i % 5 == 0 else 0.8 for i in range(1, 200)]
         v = sm.verdict_rythme(vivant + [0.0] * 30)   # 3 s tenues à la fin
@@ -1336,6 +1344,10 @@ class Creation(unittest.TestCase):
             self.assertTrue((page / "brand" / "tokens.css").is_file())
             self.assertEqual(json.loads((page / "package.json").read_text(encoding="utf-8"))["scripts"]["render"],
                              "hyperframes render --crf 10 -o exports/page.mp4")
+            # Les intentions vérifiées par `check` (HyperFrames 0.9.19) : l'accroche dès 0,5 s, rien de figé.
+            intentions = json.loads((page / "index.motion.json").read_text(encoding="utf-8"))["assertions"]
+            self.assertIn({"kind": "appearsBy", "selector": "[data-accroche]", "bySec": 0.5}, intentions)
+            self.assertIn({"kind": "keepsMoving", "maxStaticSec": 1.5}, intentions)
             fiche = json.loads((dossier / "OFFRE.json").read_text(encoding="utf-8"))
             # le nom de l'offre se lit sur sa page (étape 2), pas dans le sujet de la vidéo (essai du 03/11/2026)
             self.assertEqual((fiche["produit"], fiche["objectif"]), ("", "vente"))
@@ -1828,3 +1840,19 @@ class Relecture(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RelecteurOutille(unittest.TestCase):
+    """Le relecteur situe sur une grille de 6 × 6 et reçoit les mesures comme des faits (09/11/2026)."""
+
+    def test_la_grille_et_les_mesures(self):
+        self.assertIn("6 × 6", sm.CONSIGNE_FROID)
+        self.assertIn("cases B2 à D3", sm.CONSIGNE_RELEVE)
+        self.assertIn("{mesures}", sm.CONSIGNE_RELEVE)
+        self.assertIn("drawgrid=w=iw/6:h=ih/6", sm.GRILLE_RELECTURE)
+        self.assertEqual([c for _t, c, _q in sm.MESURES_RELEVE], ["rythme", "cadre", "calage", "emergence"])
+
+    def test_les_plans_d_une_reference(self):
+        self.assertEqual(sm.ligne_plans([3.1, 0.53, 19.77, 1.43]),
+                         "- Plans (HyperFrames `measure cuts`) : 4, durée médiane 3,1 s, de 0,53 à 19,77 s\n")
+        self.assertEqual(sm.ligne_plans(None), "")

@@ -63,7 +63,8 @@ signale un texte parti trop tôt (`line_unread`).
   de 1,8 à 3 s en moyenne, jamais tous de la même durée ; avant une révélation, une pause de 0,3 à
   0,75 s ; aucun creux de plus de 2 s au milieu de la vidéo.
 - `rythme` mesure le MP4 : au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian, aucune
-  image immobile plus de 1,5 s avant l'écran final. C'est un plancher. **Un rythme trop bas se
+  image immobile plus de 1,5 s avant l'écran final ; dès 0,6 s d'image entière immobile, un avis (les
+  meilleurs outils n'en tolèrent pas plus), sauf pendant que des mots se lisent. C'est un plancher. **Un rythme trop bas se
   corrige par un événement de contenu** (un logo qui arrive, l'interface qui réagit, une carte de
   plus), jamais par la caméra. Ne comptent presque pas : un mot qui change seulement de couleur, une
   ligne tapée en petit, une carte gris clair sur blanc.
