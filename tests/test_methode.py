@@ -171,6 +171,8 @@ class Aides(unittest.TestCase):
         racine = re.search(r'<div id="root"[^>]*>', gabarit).group(0)
         self.assertIn('data-motion-blur="on"', racine)
         self.assertIn('data-motion-blur-shutter="180"', racine)
+        # Depuis HyperFrames 0.9.20, le mode automatique n'adoucit plus les rotations : capture demandé.
+        self.assertIn('data-motion-blur-tier="capture"', racine)
 
     def test_rien_de_la_video_concept_dans_le_produit(self):
         """La V2 du Reel concept utilisait la marque et les captures d'un vrai logiciel : rien n'en passe

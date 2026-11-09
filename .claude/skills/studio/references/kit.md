@@ -181,15 +181,15 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 ## Les pièges (tous rencontrés)
 
 - **Le flou de bougé** est réglé sur `#root` d'`index.html` (`data-motion-blur="on"
-  data-motion-blur-shutter="180"`) : posé seulement sur la racine d'une scène, il ne s'applique pas
-  (aucune ligne `[motion-blur]` dans le journal du rendu). Le journal dit comment il a été calculé
-  (`[motion-blur] on … tier=…`) : `tier=capture`, ou `tier=filter` avec `reasonCode=translation-only`
-  (tout ne fait que glisser : c'est voulu), sont normaux. Un `filter fallback` pour une autre raison
-  se corrige : un `backface-visibility: hidden` dans une scène en 3D (rotations et zooms seulement
-  adoucis) ; pour retourner une carte, échange ses deux faces à 90° plutôt que de cacher la face
-  arrière. N'anime jamais `#root` lui-même (transformation, opacité) :
-  le flou s'éteint. Un projet créé avant ce réglage ne l'a pas : ajoute les deux attributs sur
-  `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
+  data-motion-blur-tier="capture" data-motion-blur-shutter="180"`) : posé seulement sur la racine
+  d'une scène, il ne s'applique pas (aucune ligne `[motion-blur]` dans le journal du rendu). Le
+  journal dit comment il a été calculé (`[motion-blur] on … tier=…`) : `tier=capture` est normal.
+  Un `filter fallback` se corrige : `reasonCode=tier-auto`, c'est que `data-motion-blur-tier="capture"`
+  manque (depuis HyperFrames 0.9.20, le mode automatique n'adoucit plus que les rotations et les
+  zooms) ; sinon un `backface-visibility: hidden` dans une scène en 3D : pour retourner une carte,
+  échange ses deux faces à 90° plutôt que de cacher la face arrière. N'anime jamais `#root`
+  lui-même (transformation, opacité) : le flou s'éteint. Un projet créé avant ce réglage ne l'a pas :
+  ajoute les trois attributs sur `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
   `snapshot` et un extrait `render --start/--end` (« distributed-render » dans le journal) en sont
   privés. La traîne et l'allure d'un geste rapide se jugent sur la planche du MP4 entier.
 - **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :

@@ -73,7 +73,7 @@ signale un texte parti trop tôt (`line_unread`).
   étiquettes apparaissent nettes (un fondu de 0,15 à 0,2 s, sans montée ni flou).
 - **Un seul foyer dans une interface** : le curseur et ce qu'il touche bougent, le reste se tient.
 - **Le flou de bougé** : réglé sur `#root` d'`index.html` (`data-motion-blur="on"`,
-  `data-motion-blur-shutter="180"`) ; le journal du rendu dit s'il s'est appliqué (les pièges :
+  `data-motion-blur-tier="capture"`, `data-motion-blur-shutter="180"`) ; le journal du rendu dit s'il s'est appliqué (les pièges :
   [kit.md](kit.md)).
 
 ## Le rythme

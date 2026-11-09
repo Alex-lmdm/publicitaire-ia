@@ -38,10 +38,12 @@
     </style>
     <!-- Le flou de bougé : réglé ici, sur #root (posé sur la racine d'une scène, il ne s'applique pas).
          Un mouvement rapide laisse une traîne dans son sens, calculée au rendu. #root ne s'anime
-         jamais lui-même ; une carte qui se retourne échange ses faces à 90° (sans backface-visibility). -->
+         jamais lui-même ; une carte qui se retourne échange ses faces à 90° (sans backface-visibility).
+         Le mode « capture » est demandé : depuis HyperFrames 0.9.20, le mode automatique n'adoucit
+         plus que les rotations et les zooms (le Reel Notion en 0.9.26 sort identique à 0.9.19 avec lui). -->
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-motion-blur="on" data-motion-blur-shutter="180" data-start="0" data-duration="{{DUREE}}" data-fps="30" data-width="{{LARGEUR}}" data-height="{{HAUTEUR}}">
+    <div id="root" data-composition-id="main" data-motion-blur="on" data-motion-blur-tier="capture" data-motion-blur-shutter="180" data-start="0" data-duration="{{DUREE}}" data-fps="30" data-width="{{LARGEUR}}" data-height="{{HAUTEUR}}">
       <!-- Fond opaque, tout en bas de la pile : sans lui, une image vide passe en noir au rendu. -->
       <div id="fond" class="clip" data-start="0" data-duration="{{DUREE}}" data-track-index="0" style="position:absolute; inset:0; background:var(--brand-bg);"></div>
 

@@ -90,7 +90,7 @@ import voix as vx  # noqa: E402
 FPS = 30
 # Le rendu d'HyperFrames, presque sans perte : `couverture` fait le seul encodage qui compte.
 CRF_RENDU = 10
-# Les intentions que `check` vérifie sur la timeline (HyperFrames 0.9.19, `index.motion.json` à côté
+# Les intentions que `check` vérifie sur la timeline (HyperFrames 0.9.26, `index.motion.json` à côté
 # d'index.html) : l'accroche (le texte qui porte `data-accroche`) lisible dès 0,5 s, rien de figé plus
 # de 1,5 s hors écran final. Un prix affiché y ajoute `staysInFrame` sur `[data-prix]` (composition.md).
 INTENTIONS = {"assertions": [{"kind": "appearsBy", "selector": "[data-accroche]", "bySec": 0.5},
