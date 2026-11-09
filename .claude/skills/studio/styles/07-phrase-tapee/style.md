@@ -120,17 +120,17 @@ de toutes les scènes »).
    bondissant de 14 px, puis coupe.
 2. **Les objets dans la ligne** (`t7-accroche`) : le premier morceau est là dès la première image,
    les autres montent un à un (0,3 s d'écart, 0,45 s, expo.out, flou 8 px → 0) ; la vignette et la
-   pastille surgissent dans la phrase (back.out(2.2)) ; la vignette change d'image d'un coup toutes
+   pastille surgissent dans la phrase (back.out(1)) ; la vignette change d'image d'un coup toutes
    les 0,45 s avec un petit rebond, le petit curseur clique deux fois la pastille ; puis les mots
    de la suite s'allument tour à tour, d'un coup, à l'accent (0,32 s d'écart) en sautant de 14 px.
 3. **La demande envoyée** (`t7-phrase`) : la caméra recule sur la barre pendant que la demande se
    tape (×1,18 → 1 en 1 s ; ×1,04 en 9:16), puis ne fait qu'une dérive de 2 % ; sa page jointe se
    dévoile au-dessus et défile, les logos surgissent un à un, le curseur clique sur envoyer
-   (back.out(3)), la barre s'envole (0,45 s, power3.in), la fenêtre arrive floue (0,7 s, expo.out),
-   puis ses images tombent (0,12 s d'écart, back.out(1.6)) ou sa capture se dévoile (0,8 s).
+   (back.out(1)), la barre s'envole (0,45 s, power3.in), la fenêtre arrive floue (0,7 s, expo.out),
+   puis ses images tombent (0,12 s d'écart, back.out(1)) ou sa capture se dévoile (0,8 s).
 4. **Le désordre rangé** (`t7-eparpille`) : la phrase se tape, se tient, s'efface lettre à lettre
    et se retape (trois fins, chacune lue) ; à chaque fin, un groupe d'objets surgit en deux salves
-   (back.out(1.7), 0,7 s d'écart) et dérive autour d'elle, à une place qui ne couvre ni la phrase
+   (back.out(1), 0,7 s d'écart) et dérive autour d'elle, à une place qui ne couvre ni la phrase
    ni un mot ; captures et logos parfois flous, jamais un mot. Puis la phrase s'efface et tout se
    range d'un coup : chaque objet file vers sa place dans trois rangs nets (captures au-dessus,
    outils puis mots au-dessous ; 0,75 s, power3.inOut), se redresse, devient net et se tasse en se
@@ -143,7 +143,7 @@ de toutes les scènes »).
    droits ; les outils « se connectent » un par un (liseré plein de l'accent) et quatre fois les
    orbites et la carte passent d'un coup à l'accent plein (0,16 s). Pendant que la ligne de la carte
    se lit, la carte ne bouge pas : seuls les anneaux poussent lentement (×1,05). Puis ses mots
-   s'effacent, la caméra recule à ×0,36 en 1,6 s (expo.inOut) sur ses autres systèmes, le fond passe
+   s'effacent, la caméra recule à ×0,36 en 1,6 s (power3.inOut, sur `K.courbeEchelle`) sur ses autres systèmes, le fond passe
    à la nuit, tout passe au flou (6 px) sous un voile de la nuit (55 %), et la conclusion se tape.
 6. **Le point d'encre** (`t7-orbite`) : coupe sur fond clair, un point d'encre se contracte et se
    déforme (0,55 s) puis devient le logo (sans logo, pas de point : le nom monte du flou) ; le nom

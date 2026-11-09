@@ -248,7 +248,7 @@
   // 1. La carte dans la phrase : sa capture se dévoile de haut en bas (une page qui se charge), son
   //    nom monte ; les mots puis le nom se lisent, ils s'allument un à un sans bouger de place
   tl.fromTo(gauche, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.05);
-  tl.fromTo(laCarte, { opacity: 0, scale: 0.6, rotation: -4 }, { opacity: 1, scale: 0.75, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 0.3);
+  tl.fromTo(laCarte, { opacity: 0, scale: 0.6, rotation: -4 }, { opacity: 1, scale: 0.75, rotation: 0, duration: 0.55, ease: "back.out(1)" }, 0.3);
   tl.fromTo(droite, { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out", stagger: 0.12 }, 0.6);
   var apercu = laCarte.querySelector(".t7o-apercu, .t7o-marque");
   if (apercu) tl.fromTo(apercu, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", duration: 0.7, ease: "power2.out", immediateRender: false }, 0.5);
@@ -269,7 +269,7 @@
   centre.anneaux.forEach(function (a, i) {
     tl.fromTo(a.cercle, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, OB + i * 0.14);
     a.items.forEach(function (it, j) {
-      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.2)" }, OB + 0.2 + i * 0.18 + j * 0.035);
+      tl.fromTo(it, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1)" }, OB + 0.2 + i * 0.18 + j * 0.035);
     });
   });
   // la rotation : chaque anneau à sa vitesse (celui du dehors, qui porte ses captures, lentement), les
@@ -305,7 +305,7 @@
 
   // 3. Une fois la carte lue, la caméra recule, le fond passe à la nuit, tout passe au flou, la
   //    conclusion se tape et se tient le temps de sa lecture (les orbites tournent toujours)
-  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: "expo.inOut" }, RE);
+  tl.to(monde, { scale: s0 * 0.36, rotation: -6, duration: 1.6, ease: K.courbeEchelle(s0, s0 * 0.36, "power3.inOut") }, RE);
   // les mots de la carte (et les étiquettes) ont été lus : ils s'effacent dès le recul, la carte
   // garde sa capture (un mot qui rapetisse sous la conclusion ne se lit plus et la gênerait)
   var motsCarte = Array.prototype.slice.call(laCarte.querySelectorAll("h5, p")).concat(Array.prototype.slice.call(document.querySelectorAll("#t7o .t7o-etiquette")));

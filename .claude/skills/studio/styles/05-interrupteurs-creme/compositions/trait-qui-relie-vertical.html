@@ -161,7 +161,7 @@
       function selon(fn) { var o = { t: 0 }; tl.to(o, { t: D, duration: D, ease: "none", onUpdate: function () { fn(o.t); } }, 0); fn(0); }
       // Caméra : échelle s autour du point P du monde, qui se pose au point V de l'image.
       function vers(s, P, V) { V = V || P; return { scale: s, x: V[0] - L / 2 - s * (P[0] - L / 2), y: V[1] - H / 2 - s * (P[1] - H / 2) }; }
-      function recadre(t, s, P, V, duree, ease) { tl.to(cam, Object.assign(vers(s, P, V), { duration: duree || 0.7, ease: ease || "expo.inOut" }), t); }
+      function recadre(t, s, P, V, duree, ease) { tl.to(cam, Object.assign(vers(s, P, V), { duration: duree || 0.7, ease: ease || "power3.inOut" }), t); }
       function mots(hote, lignes) { hote.innerHTML = lignes.map(function (l) { return '<span class="t05-ligne">' + l.split(" ").map(function (m) { return '<span class="t05-mot">' + m + "</span>"; }).join(" ") + "</span>"; }).join(""); return hote.querySelectorAll(".t05-mot"); }
       // Boîte (x, y, largeur, hauteur) des mots d'un texte, dans le repère de la caméra.
       function boite(hote) { var ms = hote.querySelectorAll(".t05-mot"), x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; ms.forEach(function (m) { var x = hote.offsetLeft + m.offsetLeft, y = hote.offsetTop + m.offsetTop; x0 = Math.min(x0, x); x1 = Math.max(x1, x + m.offsetWidth); y0 = Math.min(y0, y); y1 = Math.max(y1, y + m.offsetHeight); }); return { x: x0, y: y0, l: x1 - x0, h: y1 - y0 }; }
@@ -232,7 +232,7 @@
         var tBM = (0.12 + 0.08 * (nMot - 1) + 0.7 + XM) / 2;
         tl.set(blocM, { opacity: 1 }, tBM);
         tl.set(tMot, { color: (surAccentM ? csM.getPropertyValue("--brand-contrast") : csM.getPropertyValue("--brand-clair")).trim() }, tBM);
-        tl.fromTo(blocM, { scaleX: 0.85 }, { scaleX: 1, duration: 0.25, ease: "back.out(2)", immediateRender: false }, tBM);
+        tl.fromTo(blocM, { scaleX: 0.85 }, { scaleX: 1, duration: 0.25, ease: "back.out(1)", immediateRender: false }, tBM);
         tl.set(blocM, { opacity: 0 }, XM - 0.12);
         tl.set(tMot, { color: csM.getPropertyValue("--t05-encre").trim() }, XM - 0.12);
         K.sortieMots(tl, tMot, XM, { y: -10, flou: 12, duree: 0.38, decalage: 0.05 });
@@ -277,7 +277,7 @@
           gsap.set(e, { left: x - t / 2, top: y - t / 2, width: t, height: t });
           K.cacher(e, { scale: 0.3 });
           tl.set(e, { opacity: 1 }, P0 + 1.2 + i * 0.03);
-          tl.to(e, { scale: 1, duration: 0.35, ease: "back.out(1.8)" }, P0 + 1.2 + i * 0.03);
+          tl.to(e, { scale: 1, duration: 0.35, ease: "back.out(1)" }, P0 + 1.2 + i * 0.03);
           tl.to(e, { y: -10, duration: XP - P0 - 1.6, ease: "sine.inOut" }, P0 + 1.6);
           tl.to(e, { scale: 0.2, duration: 0.25, ease: "power2.in" }, XP);
           tl.set(e, { opacity: 0 }, XP + 0.25);
@@ -290,7 +290,7 @@
         // 5. Les membres deviennent des anneaux (vague depuis la rangée la plus proche du nom) ;
         //    la cinquième colonne arrive juste avant, comme les disques de la scène 1.
         // pendant la lecture du nom : la cinquième colonne surgit d'un coup, puis tous deviennent des anneaux
-        nouveaux.forEach(function (d) { tl.set(d, { opacity: 1 }, XP + 1.0 + (+d.dataset.r) * 0.01); tl.fromTo(d, { scale: 0.3 }, { scale: 1, duration: 0.3, ease: "back.out(1.7)", immediateRender: false }, XP + 1.0 + (+d.dataset.r) * 0.01); });
+        nouveaux.forEach(function (d) { tl.set(d, { opacity: 1 }, XP + 1.0 + (+d.dataset.r) * 0.01); tl.fromTo(d, { scale: 0.3 }, { scale: 1, duration: 0.3, ease: "back.out(1)", immediateRender: false }, XP + 1.0 + (+d.dataset.r) * 0.01); });
         discs.forEach(function (d) {
           var t0 = XP + 1.55 + (+d.dataset.r) * 0.012 + (+d.dataset.c) * 0.006;
           tl.to(d.querySelector(".t05-ic"), { scale: 0.4, rotation: -90, opacity: 0, duration: 0.3, ease: "power2.in" }, t0);
@@ -301,12 +301,12 @@
         // revient au plan large entre deux textes (le mot sort, la phrase sort), puis glisse vers le
         // bas une fois le nom lu : la grille d'anneaux remplit l'image (raccord scène 3).
         recadre(0.15, 1.04, TC, [TC[0] - 12, TC[1]], XM - 0.15, "sine.inOut");
-        recadre(XM, 1, TC, TC, 0.65, "expo.inOut");
+        recadre(XM, 1, TC, TC, 0.65, "power3.inOut");
         recadre(P0 + 0.25, 1.035, TC, [TC[0] + 10, TC[1]], XP - P0 - 0.25, "sine.inOut");
-        recadre(XP, 1.02, TC, TC, 0.6, "expo.inOut");
+        recadre(XP, 1.02, TC, TC, 0.6, "power3.inOut");
         recadre(XP + 0.6, 1.05, TC, [TC[0] - 10, TC[1]], XN - XP - 0.6, "sine.inOut");
-        tl.to(cam, { x: FIN_CAM.x, y: FIN_CAM.y, scale: 1, duration: 1.05, ease: "expo.inOut" }, XN);
-        tl.to(discs, { x: 0, y: 0, duration: 1.05, ease: "expo.inOut" }, XN);
+        tl.to(cam, { x: FIN_CAM.x, y: FIN_CAM.y, scale: 1, duration: 1.05, ease: "power3.inOut" }, XN);
+        tl.to(discs, { x: 0, y: 0, duration: 1.05, ease: "power3.inOut" }, XN);
         window.__timelines[ID] = tl;
       }
     })();

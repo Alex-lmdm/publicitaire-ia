@@ -99,9 +99,11 @@
       return texte.slice(0, paliers[i]);
     });
   };
-  // Compteur : de → à, avec une courbe GSAP et un format libre.
+  // Compteur : de → à, avec une courbe GSAP et un format libre. Des chiffres de largeur fixe : sinon
+  // le nombre tremble à chaque chiffre qui change (un 1 est plus étroit qu'un 8).
   K.compteur = function (tl, el, de, a, debut, duree, dureeScene, format, courbe) {
     var ease = gsap.parseEase(courbe || "expo.out");
+    el.style.fontVariantNumeric = "tabular-nums";
     format = format || function (v) { return String(Math.round(v)); };
     K.texteSelon(tl, el, dureeScene, function (t) {
       var p = t <= debut ? 0 : t >= debut + duree ? 1 : ease((t - debut) / duree);
@@ -142,7 +144,7 @@
   K.clic = function (tl, el, t) {
     var svg = el.querySelector("svg"), onde = el.querySelector(".k-onde");
     tl.to(svg, { scale: 0.8, duration: 0.07, ease: "power2.out" }, t)
-      .to(svg, { scale: 1, duration: 0.22, ease: "back.out(3)" }, t + 0.07)
+      .to(svg, { scale: 1, duration: 0.22, ease: "back.out(1)" }, t + 0.07)
       .fromTo(onde, { scale: 0.25, opacity: 0.95 }, { scale: 1.5, opacity: 0, duration: 0.5, ease: "power2.out" }, t);
   };
 
@@ -152,7 +154,7 @@
   // `o.vers` = [x, y] pour l'amener ailleurs qu'au centre. `el` : un élément de la scène (pour lire
   // son cadre). Rend { scale, x, y }, à passer tel quel à la caméra :
   //   var z = K.zoom(cam, [300, 1240], 1.3);
-  //   tl.to(cam, Object.assign({ duration: 0.6, ease: "expo.inOut" }, z), 3.1);
+  //   tl.to(cam, Object.assign({ duration: 0.7, ease: K.courbeEchelle(1, z.scale, "power2.inOut") }, z), 3.1);
   // Exact pour ce qui est posé à plat dans la caméra ; une rotation de quelques degrés ou un objet
   // avancé en z décale un peu : vérifie à l'image.
   K.zoom = function (el, point, echelle, o) {
@@ -160,6 +162,15 @@
     var c = K.cadre(el), cx = c.largeur / 2, cy = c.hauteur / 2, s = echelle == null ? 1 : echelle;
     var cible = o.vers || [cx, cy];
     return { scale: s, x: cible[0] - cx - (point[0] - cx) * s, y: cible[1] - cy - (point[1] - cy) * s };
+  };
+  // La courbe d'un zoom ou d'une plongée de l'échelle `de` à l'échelle `a` : animée en ligne droite, une
+  // échelle qui grandit paraît ralentir (de ×1 à ×2 frappe plus que de ×3 à ×4). Celle-ci anime son
+  // logarithme sur la courbe `courbe` (power2.inOut par défaut) ; à donner au tween de la caméra qui
+  // porte scale, x et y ensemble.
+  K.courbeEchelle = function (de, a, courbe) {
+    var base = gsap.parseEase(courbe || "power2.inOut"), r = a / de;
+    if (!(r > 0) || Math.abs(r - 1) < 1e-3) return base;
+    return function (p) { return (Math.pow(r, base(p)) - 1) / (r - 1); };
   };
   // Où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` (ce que
   // rend K.zoom, ou { scale, x, y } écrits à la main) : pour mener le curseur, qui vit hors de la
@@ -337,13 +348,15 @@
         { x: a * Math.cos(ph * 6.28), y: a * 0.6 * Math.sin(ph * 6.28), rotation: rot * 0.4, duration: duree, ease: "sine.inOut" }, debut);
     });
   };
-  // Arrivée des objets depuis la profondeur, en rafale.
+  // Arrivée des objets depuis la profondeur, en rafale : le premier mène, les autres suivent avec des
+  // écarts inégaux (jamais en file régulière), et se posent presque sans rebond.
   K.arrivee = function (tl, els, t, o) {
     o = o || {};
+    var hasard = K.rng(o.graine || 11);
     els.forEach(function (e, i) {
-      var prof = parseFloat(e.dataset.prof);
-      tl.fromTo(e, { scale: 0, opacity: 0 }, { scale: 1, opacity: parseFloat(e.style.opacity), duration: o.duree || 0.6, ease: o.ease || "back.out(1.6)" },
-        t + (o.ordre === "prof" ? prof : i / els.length) * (o.etalement || 0.6));
+      var prof = parseFloat(e.dataset.prof), rang = i === 0 ? 0 : Math.max(0.15, i + (hasard() - 0.5) * 0.8);
+      tl.fromTo(e, { scale: 0, opacity: 0 }, { scale: 1, opacity: parseFloat(e.style.opacity), duration: o.duree || 0.6, ease: o.ease || "back.out(1)" },
+        t + (o.ordre === "prof" ? prof : rang / els.length) * (o.etalement || 0.6));
     });
   };
 
@@ -368,7 +381,7 @@
     gsap.set(plein, { scaleX: 0 });
     tl.fromTo(fantome, { x: 260 * echelle, opacity: 0 }, { x: -60 * echelle, opacity: 1, duration: 2.4, ease: "power2.out" }, t);
     K.entreeMots(tl, mots, t + 0.1, { decalage: 0.06 });
-    tl.fromTo(inter, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, t + 0.3);
+    tl.fromTo(inter, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1)" }, t + 0.3);
     // L'interrupteur est centré en largeur, 96 px sous le milieu (kit.css) : la pointe du curseur
     // tombe sur sa moitié droite, là où la bille arrive.
     var cx = o.cible ? o.cible[0] : L / 2 + 18, cy = o.cible ? o.cible[1] : H / 2 + 122;

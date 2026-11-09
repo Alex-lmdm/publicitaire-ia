@@ -261,9 +261,9 @@
         feuilles.forEach(function (f, k) {
           var tk = tOuvre + 0.04 + k * 0.08;
           tl.set(f.el, { opacity: 1 }, tk);
-          tl.to(f.el, { y: 0, rotation: f.rot, duration: 0.55, ease: "back.out(1.15)" }, tk);
-          tl.set(f.libelle, { visibility: "visible" }, tk + 0.55 * franchit("back.out(1.15)", f.repos, 0, f.libre, true));
-          tl.fromTo(f.puce, { scale: 0 }, { scale: 1, duration: 0.32, ease: "back.out(2.2)", immediateRender: false }, tk + 0.45 + (n - 1 - k) * 0.1);
+          tl.to(f.el, { y: 0, rotation: f.rot, duration: 0.55, ease: "back.out(1)" }, tk);
+          tl.set(f.libelle, { visibility: "visible" }, tk + 0.55 * franchit("back.out(1)", f.repos, 0, f.libre, true));
+          tl.fromTo(f.puce, { scale: 0 }, { scale: 1, duration: 0.32, ease: "back.out(1)", immediateRender: false }, tk + 0.45 + (n - 1 - k) * 0.1);
         });
         // Les étiquettes se lisent dès le milieu de leur montée ; elles retombent de l'avant à l'arrière.
         var tRetombe = tOuvre + 0.25 + Math.max.apply(null, elements.map(lecture));
@@ -276,7 +276,7 @@
         tl.to(face, Object.assign({ duration: 0.24, ease: "power2.in" }, fermer), tFerme);
         // Il les reçoit : un petit tassement, puis il se repose (la sortie peut partir pendant ce temps).
         tl.to(objet, { scaleY: 0.95, scaleX: 1.025, duration: 0.09, ease: "power2.out" }, tFerme + 0.22);
-        tl.to(objet, { scaleY: 1, scaleX: 1, duration: 0.4, ease: "back.out(2.4)" }, tFerme + 0.31);
+        tl.to(objet, { scaleY: 1, scaleX: 1, duration: 0.4, ease: "back.out(1)" }, tFerme + 0.31);
         tRepos = tFerme + 0.32;
       }
 

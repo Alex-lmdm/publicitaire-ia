@@ -32,7 +32,8 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
 5. **La fin**, refaite en grand : ce qu'on a vu revient et devient l'appel, la marque (son logo, son
    nom) en grand sur la dernière image, qui bouge encore ; elle se tient 2,5 s au moins. Une petite
    carte figée sur un grand fond n'est pas une fin, même tenue le temps qu'il faut.
-6. **La typographie** : une entrée différente à chaque plan, et au moins un mot qui joue ce qu'il dit.
+6. **La typographie** : le mot fort de chaque plan a son entrée travaillée, différente d'un plan à
+   l'autre, et au moins un mot joue ce qu'il dit ; les lignes d'appui apparaissent nettes.
 7. **Le sujet ne rapetisse pas** : ce que le spectateur doit lire (les mots, un bouton, l'interface
    qui porte l'information) reste lisible sur un téléphone à chaque instant où il compte. Un plan
    large est permis s'il dure moins d'une seconde, ou s'il se resserre ensuite sur son sujet (un

@@ -186,7 +186,7 @@
           tl.fromTo(c.el, { y: p.y + H * 0.28, z: p.z + 380, rotationX: -32, rotation: p.rz + 10 },
             { y: p.y, z: p.z, rotationX: 0, rotation: p.rz, duration: 0.62, ease: "expo.out", immediateRender: false }, ti);
         }
-        K.claque(tl, c.past, Math.max(0.06, ti + tEtiq), { de: 0.45, duree: 0.38, ease: "back.out(1.8)" });
+        K.claque(tl, c.past, Math.max(0.06, ti + tEtiq), { de: 0.45, duree: 0.38, ease: "back.out(1)" });
         K.compteur(tl, c.chiffre, 0, c.rs.chiffre || 0, Math.max(0.06, ti + tEtiq), 0.75, duree, function (v) { return formater(c.rs.format, v); }, "expo.out");
         if (c.ctx) K.entreeMots(tl, c.ctx, Math.max(0.1, ti + tEtiq + 0.12), { y: 18, flou: 8, duree: 0.4 });
       });

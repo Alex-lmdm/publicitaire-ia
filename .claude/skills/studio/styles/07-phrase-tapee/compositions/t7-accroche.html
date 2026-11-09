@@ -166,7 +166,7 @@
   mots.forEach(function (m, i) {
     if (!i) return;
     var objet = m === carte || m === pastille, t = 0.05 + i * 0.3;
-    if (objet) tl.fromTo(m, { opacity: 0, scale: 0.3, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(2.2)" }, t);
+    if (objet) tl.fromTo(m, { opacity: 0, scale: 0.3, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.45, ease: "back.out(1)" }, t);
     else tl.fromTo(m, { opacity: 0, y: 26, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t);
   });
   // pendant la lecture : la vignette change d'un coup, avec un petit rebond (ses vraies images)
@@ -174,7 +174,7 @@
     for (var s = 1; 0.75 + s * 0.45 < X1 - 0.3; s++) {
       var tv = 0.75 + s * 0.45, iv = s % vignettes.length, ip = (s - 1) % vignettes.length;
       tl.set(vignettes[ip], { opacity: 0 }, tv); tl.set(vignettes[iv], { opacity: 1 }, tv);
-      tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, tv);
+      tl.fromTo(carte, { scale: 0.92 }, { scale: 1, duration: 0.3, ease: "back.out(1)", immediateRender: false }, tv);
     }
   }
   // et le petit curseur clique la pastille, deux fois

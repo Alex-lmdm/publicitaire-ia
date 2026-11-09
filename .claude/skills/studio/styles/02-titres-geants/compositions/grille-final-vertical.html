@@ -279,7 +279,7 @@
       gsap.set(sel, { left: cx - 88, top: cy - 88, width: 176, height: 176 });
       K.cacher(sel);
       var camA = $("camA"), ZX = (540 - cx) * 1.5, ZY = (960 - cy) * 1.5 - 80;
-      tl.to(camA, { scale: 1.5, x: ZX, y: ZY, duration: 0.9, ease: "expo.inOut" }, Z);
+      tl.to(camA, { scale: 1.5, x: ZX, y: ZY, duration: 0.9, ease: "power3.inOut" }, Z);
       tl.fromTo(sel, { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.22, ease: "power3.out" }, Z + 0.75);
       tl.set(choisie, { attr: { class: "t02-final-case choisie" } }, Z + 0.83);
       tl.to(autres, { opacity: 0.45, duration: 0.3, ease: "power2.out" }, Z + 0.85);
@@ -293,7 +293,7 @@
       var plein = K.el(choisie, "div", "t02-final-plein");
       choisie.insertBefore(plein, choisie.firstChild);
       gsap.set(plein, { scale: 0 });
-      tl.to(plein, { scale: 1, duration: 0.4, ease: "back.out(2)" }, A_LU + 0.15);
+      tl.to(plein, { scale: 1, duration: 0.4, ease: "back.out(1)" }, A_LU + 0.15);
       tl.set(choisie, { attr: { class: "t02-final-case choisie pleine" } }, A_LU + 0.2);
       tl.to(autres, { opacity: 0.22, filter: "blur(3px)", duration: 0.5, ease: "power2.inOut" }, A_LU + 0.45);
       gsap.set(etqBloc, { scaleX: 0 });
@@ -315,7 +315,7 @@
       K.entreeMots(tl, l2.querySelectorAll(".k-mot"), B + 0.16, { y: 60, flou: 16, decalage: 0.08, duree: 0.6 });
       K.entreeMots(tl, l3.querySelectorAll(".k-mot"), B + 0.30, { y: 60, flou: 16, decalage: 0.08, duree: 0.6 });
       tl.set(point, { opacity: 1 }, B + 0.8);
-      tl.to(point, { scale: 1, y: 0, duration: 0.45, ease: "back.out(2.4)" }, B + 0.8);
+      tl.to(point, { scale: 1, y: 0, duration: 0.45, ease: "back.out(1)" }, B + 0.8);
       // Pendant la lecture, le slogan pousse lentement et ses mots changent de graisse sur les temps
       // (les deux premières lignes : le point, sur la 3e, ne bouge pas).
       tl.fromTo(lignesS, { scale: 1 }, { scale: 1.035, duration: C - B, ease: "sine.inOut", transformOrigin: "0% 50%" }, B);

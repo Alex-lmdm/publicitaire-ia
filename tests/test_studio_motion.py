@@ -808,6 +808,14 @@ class Musique(unittest.TestCase):
             self.assertLess(premiere, 0.03)                                  # le premier temps à 0 s
             self.assertAlmostEqual(len(graves) / fps, 15.6, delta=0.1)       # coupé à la durée de la vidéo
 
+    def test_le_tempo_lu_aux_trois_quarts_du_vrai(self):
+        # 08/11/2026 : un morceau drill lu à 139,8 sur le morceau entier, à 103,7 sur l'extrait calé.
+        self.assertEqual(sm.tempo_rapporte(103.7, 139.8), 139.8)
+        self.assertEqual(sm.tempo_rapporte(69.9, 139.8), 139.8)          # la moitié
+        self.assertIsNone(sm.tempo_rapporte(118.9, 120.0))               # une vraie dérive : `calage` a raison
+        self.assertIsNone(sm.tempo_rapporte(100.0, 139.8))               # sans rapport simple
+        self.assertIsNone(sm.tempo_rapporte(103.7, None))                # rien de noté
+
     def test_filtres_calage(self):
         plus_tard = sm.filtres_calage({"facteur": 0.98, "decalage": -1.5}, 20)
         self.assertEqual(plus_tard, "atempo=0.980000,adelay=1500|1500,asetpts=N/SR/TB,atrim=duration=20.60")
@@ -832,6 +840,7 @@ class Musique(unittest.TestCase):
             premiere = next(i for i, v in enumerate(graves) if v > max(graves) * 0.3) / fps
             self.assertAlmostEqual(premiere, 8.0, delta=0.15)          # la batterie arrive à 8 s
             self.assertGreater(sm.silence_initial(sm.enveloppe(ffmpeg, sortie), fps), 1.0)
+            self.assertAlmostEqual(sm.tempo_note(sortie), 120.0, delta=0.01)   # noté pour `calage`
 
 
 class Emergence(unittest.TestCase):

@@ -2445,19 +2445,52 @@ def tempo_precis(graves: list[float], fps: float, bpm: float, ecart: float = 1.5
     return meilleur[1], meilleur[2]
 
 
+# Le tempo du morceau entier, que `musique` note dans le fichier calé : sur un extrait, une basse
+# syncopée fait lire un tempo aux trois quarts, aux deux tiers ou à la moitié du vrai (08/11/2026 : un
+# morceau drill lu à 139,8 sur le morceau entier, à 103,7 sur l'extrait calé de 35 s, et `calage`
+# refusait toutes les scènes, qui tombaient pourtant sur les temps).
+TAG_TEMPO = "publicitaire-ia tempo="
+RAPPORTS_TEMPO = (4 / 3, 3 / 4, 3 / 2, 2 / 3, 2.0, 0.5)
+
+
+def tempo_note(musique: Path) -> float | None:
+    """Le tempo que `musique` a noté dans le fichier calé (son commentaire), ou None."""
+    ffprobe = binaire("ffprobe")
+    if not ffprobe:
+        return None
+    r = lancer([ffprobe, "-v", "error", "-show_entries", "format_tags=comment", "-of", "json", str(musique)])
+    try:
+        commentaire = (json.loads(r.stdout).get("format") or {}).get("tags", {}).get("comment") or ""
+        return float(commentaire.split(TAG_TEMPO, 1)[1].split()[0]) if TAG_TEMPO in commentaire else None
+    except (ValueError, IndexError, AttributeError):
+        return None
+
+
+def tempo_rapporte(lu: float, note: float | None, tolerance: float = 0.03) -> float | None:
+    """Le tempo noté, quand celui qu'on lit n'en est qu'un rapport simple (4/3, 3/2, 2…) ; None si la
+    lecture tient (à 3 % près : une petite dérive est réelle, `calage` a alors raison) ou n'a rien à voir."""
+    if not note or abs(lu / note - 1) <= tolerance:
+        return None
+    return note if any(abs(lu * r / note - 1) <= tolerance for r in RAPPORTS_TEMPO) else None
+
+
 def grille_musique(ffmpeg: str, musique: Path) -> dict:
     """Le tempo (120 s'il en est à 0,1 battement : `musique` l'y a ramené), le premier temps, le début
     du son (après le silence de tête que `musique` ajoute quand le morceau démarre plus tard dans la
-    vidéo) et l'entrée franche du fichier posé, en secondes du fichier."""
+    vidéo) et l'entrée franche du fichier posé, en secondes du fichier. Un tempo lu à un rapport simple
+    de celui que `musique` a noté (`tempo_rapporte`) cède la place au tempo noté ; « lu » le dit."""
     env, graves = enveloppe(ffmpeg, musique), enveloppe(ffmpeg, musique, graves=True)
     fps = MUSIQUE_SR / MUSIQUE_PAS
     bpm, phase = tempo_precis(graves, fps, tempo_de(env, fps))
+    lu, vrai = None, tempo_rapporte(bpm, tempo_note(musique))
+    if vrai:
+        lu, (bpm, phase) = bpm, tempo_precis(graves, fps, vrai, ecart=0.3)
     if abs(bpm - CALAGE_GRILLE) <= CALAGE_PRES_GRILLE:
         bpm, phase = CALAGE_GRILLE, phase_de(graves, fps, CALAGE_GRILLE)
     seuil = 0.02 * max(env, default=0.0)
     tete = next((i for i, e in enumerate(env) if e > seuil), 0)
     entree = entree_de(env[tete:], fps)          # sans le silence de tête, qui passerait pour l'entrée
-    return {"bpm": bpm, "phase": phase, "tete": round(tete / fps, 3),
+    return {"bpm": bpm, "phase": phase, "tete": round(tete / fps, 3), "lu": lu,
             "entree": round(entree + tete / fps, 2) if entree is not None else None}
 
 
@@ -2636,6 +2669,9 @@ def cmd_calage(a) -> None:
                   + (f" ({entendue:.2f} s) : c'est celle qu'on entend qui compte." if entendue is not None
                      else " (le morceau n'a pas d'entrée franche) : le pivot se marque à l'image."))
         geste = geste_autour(ecarts, ips, entree) if entree is not None else None
+        if grille.get("lu"):
+            print(f"ℹ️ tempo lu {grille['lu']:g} sur le fichier posé : un rapport simple du tempo du morceau entier, "
+                  f"noté par `musique` ; la grille garde {grille['bpm']:g} (une basse syncopée trompe la lecture).")
         ligne.append(f"tempo {grille['bpm']:g} (un temps toutes les {pas:.3f} s)")
         ligne.append(f"entrée franche à {entree:.2f} s" if entree is not None else "pas d'entrée franche")
     if mots:
@@ -3478,7 +3514,7 @@ def cmd_musique(a) -> None:
     else:
         c = calage(entree, phase, bpm, a.bpm, a.a)
     r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(source), "-af", filtres_calage(c, a.duree), "-c:a", "pcm_s16le",
-                str(a.sortie)])
+                "-metadata", f"comment={TAG_TEMPO}{bpm * c['facteur']:.2f}", str(a.sortie)])
     if r.returncode != 0:
         sys.exit(f"ERREUR : préparation impossible : {r.stderr[-300:]}")
     ecart = ecart_calage(ffmpeg, Path(a.sortie), c)

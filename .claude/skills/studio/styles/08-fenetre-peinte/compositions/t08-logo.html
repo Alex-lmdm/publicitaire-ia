@@ -121,9 +121,9 @@
       var largeurNom = NOM.length * TN * 0.52, decale = vertical ? 0 : (ECART + largeurNom) / 2, monte = vertical ? (ECART + TN + 28) / 2 : 0;
       tl.fromTo(cube, { rotationX: -62, rotationY: 128, rotationZ: 28, scale: 0.55 },
         { rotationX: 0, rotationY: 0, rotationZ: 0, scale: 1, duration: 1.0, ease: "expo.out" }, 0);
-      tl.fromTo(scene3d, { x: decale, y: monte }, { x: 0, y: 0, duration: 0.7, ease: "expo.inOut" }, 0.42);
+      tl.fromTo(scene3d, { x: decale, y: monte }, { x: 0, y: 0, duration: 0.7, ease: "power3.inOut" }, 0.42);
       gsap.set(nom, { xPercent: vertical ? 0 : -104, yPercent: vertical ? -110 : 0 });
-      tl.to(nom, { xPercent: 0, yPercent: 0, duration: 0.7, ease: "expo.inOut" }, 0.5);
+      tl.to(nom, { xPercent: 0, yPercent: 0, duration: 0.7, ease: "power3.inOut" }, 0.5);
       // Posé, le cube continue de flotter : un léger quart de tour qui se calme.
       tl.to(cube, { rotationY: 16, rotationX: -7, duration: D - 1.1, ease: "sine.inOut" }, 1.1);
     } else {

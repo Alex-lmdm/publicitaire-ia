@@ -191,7 +191,7 @@
           // centre vers les bords)
           var t0 = 0.1 + Math.floor(k / parSalve) * 0.42 + (k % parSalve) * 0.012;
           gsap.set(e, { opacity: 0, scale: 0.6, rotation: p.rot });
-          tl.to(e, { opacity: 1, scale: 1, rotation: 0, duration: 0.16, ease: "back.out(2)" }, t0);
+          tl.to(e, { opacity: 1, scale: 1, rotation: 0, duration: 0.16, ease: "back.out(1)" }, t0);
           traits.forEach(function (el) { el.setAttribute("pathLength", "100"); el.setAttribute("stroke-dasharray", "100"); el.setAttribute("stroke-dashoffset", "100"); tl.to(el, { attr: { "stroke-dashoffset": 0 }, duration: 0.32, ease: "power2.out" }, t0 + 0.02); });
           var ecrit = e.querySelector(".t06-mot");
           if (ecrit) tl.fromTo(ecrit, { clipPath: "inset(-20% 100% -20% 0%)" }, { clipPath: "inset(-20% 0% -20% 0%)", duration: 0.3, ease: "power2.out", immediateRender: true }, t0 + 0.04);

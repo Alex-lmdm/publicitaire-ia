@@ -227,7 +227,7 @@
       // les objets d'un groupe surgissent en deux salves pendant la tenue de leur version (la moitié
       // tout de suite, l'autre 0,7 s plus tard) : la vie de la lecture
       var moitie = Math.ceil(g.length / 2), salve = j < moitie ? 0 : 1, k = salve ? j - moitie : j;
-      tl.fromTo(e, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.7)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
+      tl.fromTo(e, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1)", immediateRender: false }, t + salve * 0.7 + k * 0.04);
     });
   });
   var derives = tous.map(function (e, i) {      // dérive lente, plus ample pour les objets flous (proches)

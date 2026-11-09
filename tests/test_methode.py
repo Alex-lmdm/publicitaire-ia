@@ -184,3 +184,31 @@ class Aides(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Mouvement(unittest.TestCase):
+    """Les exemples presque sans rebond (09/11/2026) : 117 `back.out` dans les scènes, le kit et les
+    styles, dont 47 au-delà du plafond de la méthode. Claude copie les exemples plus que les règles."""
+    DOSSIERS = (RACINE / "templates" / "scenes", RACINE / "templates" / "kit", RACINE / "templates" / "accueil",
+                SKILL / "styles", REF)
+
+    def fichiers(self):
+        return [p for d in self.DOSSIERS for p in d.rglob("*") if p.suffix in (".html", ".js", ".tpl", ".md")]
+
+    def test_aucun_rebond_au_dela_de_4_pour_cent(self):
+        trop = [f"{p.relative_to(RACINE)} : back.out({m.group(1)})" for p in self.fichiers()
+                for m in re.finditer(r"back\.out\((\d+(?:\.\d+)?)\)", p.read_text(encoding="utf-8"))
+                if float(m.group(1)) > 1 and "4s³" not in p.read_text(encoding="utf-8")]
+        self.assertEqual(trop, [])
+
+    def test_la_camera_ne_voyage_plus_en_expo_inout(self):
+        motif = re.compile(r"tl\.(?:to|fromTo)\((?:cam|camA|monde|bureau|scene3d)\b[^;]*expo\.inOut")
+        trop = [str(p.relative_to(RACINE)) for p in self.fichiers() if motif.search(p.read_text(encoding="utf-8"))]
+        self.assertEqual(trop, [])
+
+    def test_les_regles_du_mouvement(self):
+        metier = (REF / "metier.md").read_text(encoding="utf-8")
+        for phrase in ("Presque aucun rebond", "Deux horloges", "La boîte se pose, puis le texte entre",
+                       "Pas de yo-yo", "K.courbeEchelle", "deux tiers de l'écran"):
+            self.assertIn(phrase, metier)
+        self.assertIn("lignes d'appui apparaissent nettes", (REF / "seconde-passe.md").read_text(encoding="utf-8"))

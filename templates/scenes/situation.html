@@ -189,7 +189,7 @@
       aCharger.forEach(function (e, i) {
         var ti = debutCharge + i * pas;
         tl.to(elCarte, { clipPath: masque(i + 2), duration: 0.34, ease: "expo.out" }, ti);
-        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1.6)", immediateRender: false }, ti);
+        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1)", immediateRender: false }, ti);
       });
 
       // --- Le compteur : le prix de la corvée, avec son contexte ---------------------------

@@ -170,7 +170,7 @@
 
       // 1. La caméra s'approche d'abord (aucun texte encore), puis la vague : chaque anneau se
       //    remplit, la coche se trace ; autour du centre, le nom de l'élément coché s'écrit
-      tl.to(cam, { scale: Z, duration: 0.9, ease: "expo.inOut" }, 0.1);
+      tl.to(cam, { scale: Z, duration: 0.9, ease: "power3.inOut" }, 0.1);
       var vu = vertical ? H / Z : L / Z, debutVu = (vertical ? cy : cx) - vu / 2;
       disques.forEach(function (d) {
         if (centre.indexOf(d) >= 0) return;
@@ -238,7 +238,7 @@
           tl.to(d, { x: dx, y: dy, width: 200, height: 200, borderRadius: 48, duration: 0.55, ease: "power3.inOut" }, t0 + 0.2);
           tl.to(d.querySelector(".t05-mini"), { opacity: 1, duration: 0.3, ease: "power1.out" }, t0 + 0.45);
         });
-        centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 4.85 + O); });
+        centre.forEach(function (d) { tl.to(d, { scale: 1, duration: 0.5, ease: "back.out(1)" }, 4.85 + O); });
 
         // 4. La plongée : la carte visée devient la fenêtre plein écran (raccord scène 4)
         var S = Z * 1.05, wx = +cible.dataset.x + (cible.dataset.x - cx) * 0.25, wy = +cible.dataset.y + (cible.dataset.y - cy) * 0.25;
@@ -256,10 +256,10 @@
         tl.set(fen, { opacity: 1 }, PL);
         tl.set(cible, { opacity: 0 }, PL);
         // La découpe suit une fonction pure du temps (un tween sur la chaîne clip-path ne s'interpole pas).
-        var ouvrir = gsap.parseEase("expo.inOut"), o = { t: 0 }, poser = function () { var p = o.t <= PL ? 0 : o.t >= PL + 0.85 ? 1 : ouvrir((o.t - PL) / 0.85), q = 1 - p; fen.style.clipPath = decoupe(h * q, (L - g - cote) * q, (H - h - cote) * q, g * q, rad * q); };
+        var ouvrir = gsap.parseEase("power3.inOut"), o = { t: 0 }, poser = function () { var p = o.t <= PL ? 0 : o.t >= PL + 0.85 ? 1 : ouvrir((o.t - PL) / 0.85), q = 1 - p; fen.style.clipPath = decoupe(h * q, (L - g - cote) * q, (H - h - cote) * q, g * q, rad * q); };
         tl.to(o, { t: D, duration: D, ease: "none", onUpdate: poser }, 0); poser();
-        tl.to(miniF, { x: 0, y: 0, scale: vertical ? 0.86 : 1, duration: 0.85, ease: "expo.inOut" }, PL);
-        tl.to(cam, { scale: S * 1.9, x: -(wx - cx) * S * 0.9, y: -(wy - cy) * S * 0.9, duration: 0.85, ease: "expo.inOut" }, PL);
+        tl.to(miniF, { x: 0, y: 0, scale: vertical ? 0.86 : 1, duration: 0.85, ease: "power3.inOut" }, PL);
+        tl.to(cam, { scale: S * 1.9, x: -(wx - cx) * S * 0.9, y: -(wy - cy) * S * 0.9, duration: 0.85, ease: "power3.inOut" }, PL);
         window.__timelines[ID] = tl;
       }
     })();

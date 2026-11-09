@@ -147,6 +147,24 @@ class MusiqueSansVoix(unittest.TestCase):
             self.assertAlmostEqual(float(_attribut(ligne, "data-volume")), sons.lin(-12), places=3)
             self.assertNotIn(str(sons.lin(-12)), _attribut(ligne, "data-automation"))
 
+    def test_un_son_qui_revient_change_un_peu_de_hauteur(self):
+        # « Même son plusieurs fois » (09/11/2026) : au-delà des 3 s de la règle, un même clic revient
+        # un peu plus aigu ou plus grave, sans autre fichier ; "hauteur": 1 le garde tel quel.
+        with tempfile.TemporaryDirectory() as d:
+            projet, audio = self.projet(d, 0.1)
+            clic = audio / "clic.wav"
+            sons.poser(projet, [{"src": clic, "start": t, "vol": -12} for t in (1.0, 4.5, 8.0)]
+                       + [{"src": clic, "start": 9.5, "vol": -12, "hauteur": 1}], musique=audio / "musique.wav")
+            lignes = {l.split('id="')[1].split('"')[0]: l for l in (projet / "index.html").read_text().splitlines()
+                      if 'id="sfx-' in l}
+            srcs = [_attribut(lignes[f"sfx-0{i}"], "src") for i in range(1, 5)]
+            self.assertEqual(len(set(srcs[:3])), 3)                       # trois hauteurs, trois fichiers préparés
+            self.assertNotIn("variante", srcs[0])                         # le premier passage, tel quel
+            self.assertEqual(srcs[3], srcs[0])                            # "hauteur": 1 : le son d'origine
+            durees = [float(_attribut(lignes[f"sfx-0{i}"], "data-duration")) for i in (1, 2, 3)]
+            self.assertAlmostEqual(durees[1], durees[0] / 1.04, delta=0.01)
+            self.assertAlmostEqual(durees[2], durees[0] / 0.97, delta=0.01)
+
 
 if __name__ == "__main__":
     unittest.main()

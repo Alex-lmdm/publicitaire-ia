@@ -282,7 +282,7 @@
         { z: 0, rotationX: rx0, rotationY: ry0, y: 0, duration: 0.9, ease: "expo.out" }, 0);
       // La caméra s'approche du geste, recule sur la réponse, puis dérive lentement.
       tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, { scale: C1.s, x: C1.x, y: C1.y, duration: tClicChamp - tApproche - 0.02, ease: "power2.inOut" }, tApproche);
-      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.8, ease: "expo.inOut" }, tRecul);
+      tl.to(cam, { scale: 1, x: 0, y: 0, duration: 0.8, ease: "power3.inOut" }, tRecul);
       var tDerive = tRecul + 0.8, finDerive = tFlash + 0.6;
       tl.to(cam, { scale: 1.03, duration: finDerive - tDerive, ease: "sine.inOut" }, tDerive);
       var C2 = { s: 1 + 0.03 * gsap.parseEase("sine.inOut")((tClic - tDerive) / (finDerive - tDerive)), x: 0, y: 0 };
@@ -299,7 +299,7 @@
       tl.set(caret, { opacity: 1 }, tClicChamp).set(caret, { opacity: 0 }, tEnvoi + 0.05);
       if (!avecCapture) {
         tl.to(elChamp, { boxShadow: "inset 0 0 0 4px " + encre, duration: 0.18, ease: "power2.out" }, tClicChamp);
-        tl.to(envoi, { scale: 0.86, duration: 0.08, ease: "power2.out" }, tEnvoi).to(envoi, { scale: 1, duration: 0.3, ease: "back.out(2.4)" }, tEnvoi + 0.08);
+        tl.to(envoi, { scale: 0.86, duration: 0.08, ease: "power2.out" }, tEnvoi).to(envoi, { scale: 1, duration: 0.3, ease: "back.out(1)" }, tEnvoi + 0.08);
         tl.to(elChamp, { boxShadow: "inset 0 0 0 3px " + (K.jeton("--brand-gris-4") || "#d2d2d3"), duration: 0.25, ease: "power2.out" }, tEnvoi + 0.1);
       }
 
@@ -316,7 +316,7 @@
         tl.set(ln.etat, { opacity: 0 }, tDebut);
         tl.fromTo(ln.roue, { rotation: 0 }, { rotation: 600 * (tCoche - tDebut), duration: tCoche - tDebut, ease: "none", immediateRender: false }, tDebut);
         tl.set(ln.roue, { opacity: 0 }, tCoche).set(ln.texte, { color: encre }, tCoche).set(ln.fond, { opacity: 0 }, tCoche + 0.12);
-        tl.fromTo(ln.coche, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(2.2)", immediateRender: false }, tCoche);
+        tl.fromTo(ln.coche, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(1)", immediateRender: false }, tCoche);
         var x0 = liste.x + ln.cx, y0 = liste.y + ln.cy - ap.h / 2;
         var x1 = V ? pl.l - ap.l - 46 + v[0] : pl.l + 10 + v[0], y1 = V ? liste.y - 4 + v[1] * (hautV - ap.h) * 0.9 : v[1] * (pl.h - ap.h);
         gsap.set(ap.el, { x: x0, y: y0, scale: 0.3, transformOrigin: "0% 50%" });
@@ -332,8 +332,8 @@
       K.texteSelon(tl, statut, duree, function (t) { return String((t < tFond ? CONTENU.attente : CONTENU.resultat) || ""); });
       tl.set(statut, { color: encre }, tFond);
       tl.fromTo(elPied, { scale: 1 }, { scale: 1.045, duration: 0.12, ease: "power2.out", immediateRender: false }, tFond)
-        .to(elPied, { scale: 1, duration: 0.4, ease: "back.out(2)" }, tFond + 0.12);
-      tl.fromTo(cochePied, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(2.2)", immediateRender: false }, tFond + 0.04);
+        .to(elPied, { scale: 1, duration: 0.4, ease: "back.out(1)" }, tFond + 0.12);
+      tl.fromTo(cochePied, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(1)", immediateRender: false }, tFond + 0.04);
       K.volet(tl, boutonFond, tFond + 0.06, { duree: 0.3 });
       tl.set(boutonTexte, { color: K.jeton("--brand-contrast") || encre }, tFond + 0.14);
       tl.set(bouton, { boxShadow: "none" }, tFond + 0.36);
@@ -350,12 +350,12 @@
         [0, V ? 0.78 * L : pl.x + pl.l * 0.8, pl.y + pl.h * (V ? 0.58 : 0.8)],
         [tApproche, pChamp[0], pChamp[1], tClicChamp - tApproche - 0.05, "power3.inOut"],
         [tFinFrappe + 0.02, pEnvoiC1[0], pEnvoiC1[1], tEnvoi - tFinFrappe - 0.07, "power3.inOut"],
-        [tRecul, pEnvoiC0[0], pEnvoiC0[1], 0.8, "expo.inOut"],
+        [tRecul, pEnvoiC0[0], pEnvoiC0[1], 0.8, "power3.inOut"],
         [tEtape0 + 0.4, pRepos[0], pRepos[1], 0.7, "power2.inOut"],   // il s'écarte des aperçus
         [tFond - 0.35, pBouton[0], pBouton[1], tClic - tFond + 0.3, "power3.inOut"]
       ]);
       [tClicChamp, tEnvoi, tClic].forEach(function (tc) { K.clic(tl, curseur, tc); });
-      tl.to(bouton, { scale: 0.93, duration: 0.07, ease: "power2.out" }, tClic).to(bouton, { scale: 1, duration: 0.26, ease: "back.out(2.6)" }, tClic + 0.07);
+      tl.to(bouton, { scale: 0.93, duration: 0.07, ease: "power2.out" }, tClic).to(bouton, { scale: 1, duration: 0.26, ease: "back.out(1)" }, tClic + 0.07);
 
       // La ligne d'appui tient toute la démonstration, puis sort avant le flash ; le flash de
       // l'accent part du clic et couvre l'écran (la scène suivante peut s'ouvrir sur l'accent).

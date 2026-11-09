@@ -206,7 +206,7 @@
       K.cacher([nom, bouton]);
       tl.fromTo(nom, { opacity: 0, y: 24, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, tn + 0.02);
       tl.set(bouton, { opacity: 1 }, tn + 0.27);
-      tl.fromTo(bouton, { y: 18, scale: 0.8 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(2)", immediateRender: false }, tn + 0.27);
+      tl.fromTo(bouton, { y: 18, scale: 0.8 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(1)", immediateRender: false }, tn + 0.27);
       var curseur = K.curseur($("curseur-hote"), ID + "-curseur", true);
       K.cacher(curseur);
       tl.to(curseur, { opacity: 1, duration: 0.2 }, tn + 0.62);
@@ -225,7 +225,7 @@
         var e = K.el($("outils"), "div", "t04-fin-outil", svg, "left:" + p[0] + "px; top:" + p[1] + "px; width:" + p[2] + "px; height:" + p[2] + "px; filter:blur(" + p[3] + "px);");
         var arrive = complet + 0.3 + k * (efface - complet - 0.5) / Math.max(1, PLACES.length - 1);
         gsap.set(e, { scale: 0 });
-        tl.to(e, { scale: 1, duration: 0.4, ease: "back.out(2)" }, arrive);
+        tl.to(e, { scale: 1, duration: 0.4, ease: "back.out(1)" }, arrive);
         var ampl = p[2] >= 200 ? 60 : 34;
         tl.fromTo(e, { x: 0, y: 0, rotation: 0 }, { x: (k % 2 ? -1 : 1) * ampl * 0.6, y: (k % 2 ? 1 : -1) * ampl, rotation: (k % 2 ? 9 : -9), duration: Math.max(0.5, FIN - arrive - 0.4), ease: "sine.inOut", immediateRender: false }, arrive + 0.4);
       });

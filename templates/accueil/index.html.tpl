@@ -49,7 +49,7 @@
       window.__timelines = window.__timelines || {};
       const tl = gsap.timeline({ paused: true });
       tl.from("#marque", { y: 30, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.1);
-      tl.from(".pastille", { scale: 0.6, opacity: 0, duration: 0.45, stagger: 0.08, ease: "back.out(1.6)" }, 0.3);
+      tl.from(".pastille", { scale: 0.6, opacity: 0, duration: 0.45, stagger: 0.08, ease: "back.out(1)" }, 0.3);
       tl.from(".police", { y: 24, opacity: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" }, 0.6);
       window.__timelines["accueil"] = tl;
     </script>

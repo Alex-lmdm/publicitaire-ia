@@ -244,10 +244,10 @@
       var tl = gsap.timeline({ paused: true });
       var kick = function (nd, t, f) {
         tl.to(nd.el, { scale: f || 1.08, duration: 0.09, ease: "power2.out" }, t);
-        tl.to(nd.el, { scale: 1, duration: 0.42, ease: "back.out(2.6)" }, t + 0.09);
+        tl.to(nd.el, { scale: 1, duration: 0.42, ease: "back.out(1)" }, t + 0.09);
       };
       var coche = function (nd, t) {
-        tl.fromTo(nd.coche, { scale: 0 }, { scale: 1, duration: 0.34, ease: "back.out(2.4)", immediateRender: false }, t);
+        tl.fromTo(nd.coche, { scale: 0 }, { scale: 1, duration: 0.34, ease: "back.out(1)", immediateRender: false }, t);
       };
       // Le fil : un point par lien, qui dessine sa pointe puis se fond dans le nœud d'arrivée.
       var parcourir = function (lien, t, d) {
@@ -283,7 +283,7 @@
       nS_.forEach(function (nd, j) {
         var tj = tS + j * 0.24, a = tj + 0.48;
         parcourir(liensS[j], tj, 0.48);
-        K.claque(tl, nd.el, a - 0.05, { de: 0.55, duree: 0.45, ease: "back.out(1.6)" });
+        K.claque(tl, nd.el, a - 0.05, { de: 0.55, duree: 0.45, ease: "back.out(1)" });
         coche(nd, a + 0.2);
         finLecture = Math.max(finLecture, a + lecture(nd.nom));
         tDernier = a;

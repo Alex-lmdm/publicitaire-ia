@@ -102,6 +102,10 @@ const z = K.zoom(scene, [300, 400], 1.3);
 res.zoom = { z, vu: K.vu(scene, z, [300, 400]), coin: K.vu(scene, z, [0, 0]),
   ailleurs: K.vu(scene, K.zoom(scene, [300, 400], 2, { vers: [100, 120] }), [300, 400]),
   neutre: K.vu(scene, null, [10, 20]) };
+// La courbe d'une plongée de ×1 à ×4 (09/11/2026) : avec la courbe de base linéaire du faux GSAP,
+// l'échelle doit doubler à mi-chemin (×2), pas valoir ×2,5.
+const ce = K.courbeEchelle(1, 4, "none");
+res.courbe = { bornes: [ce(0), ce(1)], milieu: 1 + 3 * ce(0.5), plat: K.courbeEchelle(2, 2)(0.3) };
 process.stdout.write(JSON.stringify(res));
 """
 
@@ -180,6 +184,12 @@ class KitSelonLeFormat(unittest.TestCase):
                 for v, attendu in zip(r["ailleurs"], (100, 120)):
                     self.assertAlmostEqual(v, attendu)
                 self.assertEqual(r["neutre"], [10, 20])
+
+    def test_la_courbe_du_zoom_anime_le_logarithme_de_l_echelle(self):
+        r = self.lancer(1080, 1920)["courbe"]
+        self.assertEqual(r["bornes"], [0, 1])
+        self.assertAlmostEqual(r["milieu"], 2.0)          # ×1 → ×4 : ×2 à mi-chemin, comme l'œil le perçoit
+        self.assertAlmostEqual(r["plat"], 0.3)            # sans changement d'échelle : la courbe de base
 
     def test_16_9_inchange(self):
         # Les valeurs d'avant le passage au 9:16, à l'identique : aucun projet 16:9 ne bouge.

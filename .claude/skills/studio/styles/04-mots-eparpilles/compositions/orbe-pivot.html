@@ -139,7 +139,7 @@
       }
       var bat = function (t, echelle, monte, descend) {
         tl.to(disque, { scale: echelle, duration: monte, ease: "power2.out" }, t);
-        tl.to(disque, { scale: 1, duration: descend, ease: "back.out(2.5)" }, t + monte);
+        tl.to(disque, { scale: 1, duration: descend, ease: "back.out(1)" }, t + monte);
       };
       if (sortie - complet > 2.2) bat(complet + 1.9, 1.03, 0.18, 0.3);
       // La phrase sort d'un coup, comme elle est entrée (un texte sombre fondu sur son jaune ferait de l'olive).
@@ -156,7 +156,7 @@
         if (LOGO) {   // un fichier du projet : sans lui, le disque resterait vide (retire alors LOGO)
           var img = K.el(logo, "img"); img.alt = ""; img.src = LOGO;
           gsap.set(logo, { scale: 0 });
-          tl.to(logo, { scale: 1, duration: 0.45, ease: "back.out(1.8)" }, sortie + 0.1);
+          tl.to(logo, { scale: 1, duration: 0.45, ease: "back.out(1)" }, sortie + 0.1);
           tl.to(logo, { scale: 0, duration: 0.3, ease: "power2.in" }, ouverture);
         } else logo.remove();
         if (NOM) {
@@ -171,9 +171,9 @@
         bat(pose + 1.05, 1.06, 0.18, 0.35);
         if (LOGO) {
           tl.to(logo, { scale: 1.04, duration: 0.2, ease: "power2.out" }, pose + 0.35);
-          tl.to(logo, { scale: 1, duration: 0.22, ease: "back.out(2.5)" }, pose + 0.55);
+          tl.to(logo, { scale: 1, duration: 0.22, ease: "back.out(1)" }, pose + 0.55);
           tl.to(logo, { scale: 1.06, duration: 0.18, ease: "power2.out" }, pose + 1.05);
-          tl.to(logo, { scale: 1, duration: 0.35, ease: "back.out(2.5)" }, pose + 1.23);
+          tl.to(logo, { scale: 1, duration: 0.35, ease: "back.out(1)" }, pose + 1.23);
         }
         tl.to(anneaux, { opacity: 0.55, duration: 0.15, ease: "power2.out", stagger: 0.05 }, pose + 1.1);
         tl.to(anneaux, { opacity: 1, duration: 0.4, ease: "power1.out", stagger: 0.05 }, pose + 1.3);

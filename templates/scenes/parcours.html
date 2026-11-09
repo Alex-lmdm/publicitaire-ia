@@ -237,12 +237,12 @@
       // L'arrivée à une station : sa borne se coche, son délai claque, sa matière s'anime.
       var arriver = function (i, t) {
         var b = bornes[i];
-        tl.fromTo(b.plein, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(2.2)", immediateRender: false }, t);
+        tl.fromTo(b.plein, { scale: 0 }, { scale: 1, duration: 0.36, ease: "back.out(1)", immediateRender: false }, t);
         tl.fromTo(b.delai, { scale: 1.18 }, { scale: 1, duration: 0.45, ease: "expo.out", immediateRender: false }, t + 0.06);
         var evts = aCocher[i], pas = Math.min(0.3, 0.75 / Math.max(1, evts.length));
         evts.forEach(function (e, k) {
           if (e.image) tl.fromTo(e.el, { scale: 1.1 }, { scale: 1, duration: 0.9, ease: "expo.out", immediateRender: false }, t);
-          else tl.fromTo(e.el, { scale: 0 }, { scale: 1, duration: 0.32, ease: "back.out(2)", immediateRender: false }, t + 0.18 + k * pas);
+          else tl.fromTo(e.el, { scale: 0 }, { scale: 1, duration: 0.32, ease: "back.out(1)", immediateRender: false }, t + 0.18 + k * pas);
           if (e.bande) {
             tl.to(e.bande, { scaleX: 1, duration: 0.3, ease: "power3.inOut" }, t + 0.1 + k * pas);
             tl.set(e.mot, { color: K.jeton("--brand-clair") }, t + 0.2 + k * pas);

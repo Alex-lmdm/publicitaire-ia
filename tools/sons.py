@@ -9,7 +9,8 @@ l'app d'afficher chaque son comme un clip de la timeline. « Reel » désigne ic
     sons.poser(reel, evenements, musique=..., voix_off=..., ecart=(18, 8), entree=None, ecraser=False)
 
 Un évènement est un dict : {"src": Path, "start": s, "vol": dB, "trim": (t0, t1) | None,
-"fondu_entree": s, "fondu_sortie": s, "af": filtre ffmpeg | None}. Ce que HyperFrames ne sait pas
+"fondu_entree": s, "fondu_sortie": s, "af": filtre ffmpeg | None, "hauteur": facteur | None}. Un même
+son qui revient change un peu de hauteur à chaque retour (`HAUTEURS_RETOUR`), sauf `"hauteur": 1`. Ce que HyperFrames ne sait pas
 faire lui-même (variante « af » : accélérer, inverser…, musique trop courte à boucler) est
 préparé en fichier par ffmpeg dans assets/sons/, puis posé tel quel. Un son déjà rangé dans
 assets/ du Reel (trouvé dans l'app par find_sound_effect ou find_music) y reste : pas de copie.
@@ -58,6 +59,26 @@ MUSIQUE_SANS_VOIX_LUFS = -30.0
 MUSIQUE_TROP_BASSE = 3.0     # dB sous la référence : la musique ne porte plus la vidéo
 BLOC_RE = re.compile(r"( *)<!-- SONS:DEBUT[^>]*empreinte (\w+) -->\n(.*?)\n *<!-- SONS:FIN -->", re.S)
 PLACE = "<!-- SONS -->"   # emplacement posé par le gabarit de chaque vidéo
+# Un même bruitage qui revient (au-delà des 3 s de la règle : son.md) change un peu de hauteur à chaque
+# retour, comme un geste refait : sinon l'oreille entend un copier-coller. Facteur de vitesse, comme un
+# échantillonneur : 1,04 = un peu plus aigu et 4 % plus court. Le premier passage garde le son tel quel.
+HAUTEURS_RETOUR = (1.0, 1.04, 0.97, 1.06, 0.95)
+
+
+def hauteur_de(e: dict, vus: dict) -> float:
+    """La hauteur d'un évènement : la sienne (`"hauteur"`), sinon celle de son rang parmi les retours du
+    même son (même fichier, même `trim`). `vus` compte les passages, dans l'ordre du temps."""
+    cle = (str(Path(e["src"]).resolve()), tuple(e.get("trim") or ()))
+    rang = vus.get(cle, 0)
+    vus[cle] = rang + 1
+    if e.get("hauteur") is not None:
+        return float(e["hauteur"])
+    return HAUTEURS_RETOUR[rang % len(HAUTEURS_RETOUR)]
+
+
+def filtre_hauteur(h: float) -> str:
+    """Le filtre ffmpeg qui joue le son `h` fois plus vite (hauteur et durée ensemble)."""
+    return f"aresample=48000,asetrate={round(48000 * h)},aresample=48000"
 
 
 class Erreur(Exception):
@@ -433,10 +454,14 @@ def lignes(reel: Path, evenements, musique: Path | None, musique_db: float | Non
         pistes.append({"src": reel / chemin, "start": 0.0, "duree": total, "media_start": 0.0, "volume": v,
                        "fondu_entree": fe, "fondu_sortie": fs})
     fins = []   # une piste par son qui se chevauche : deux clips sur la même piste, l'un disparaît
+    vus: dict = {}
     for n, e in enumerate(sorted(evenements, key=lambda x: x["start"]), start=1):
         src = Path(e["src"])
         if not src.exists():
             raise Erreur(f"son introuvable : {src}")
+        h = hauteur_de(e, vus)
+        if abs(h - 1) > 1e-3:
+            e = {**e, "af": ",".join(x for x in (e.get("af"), filtre_hauteur(h)) if x)}
         if e.get("af"):
             nom, garde = _preparer_variante(e, dossier, sfx_dir)
             chemin, debut = f"assets/sons/{nom}", 0.0

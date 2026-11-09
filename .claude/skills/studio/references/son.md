@@ -275,10 +275,11 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
 - **Le tempo qui fait foi est celui du morceau entier** (piège rencontré le 08/11/2026, un morceau
   drill d'Epidemic Sound à 139,8 battements, basse 808 syncopée) : `musique` lit 139,8 sur le
   morceau entier, mais 103,7 sur le fichier calé de 35 s, et `calage` refuse alors toutes les
-  scènes alors qu'elles tombent sur les temps. Note dans `PLAN.md` le tempo de `musique` sur le
-  morceau d'origine et vérifie-le sur l'extrait (les coups de basse tombent sur ta grille). Si
-  `calage` annonce un autre tempo, ce n'est pas le montage : dis-le dans la revue, et ne recale
-  jamais les scènes sur ce faux tempo. Même piège, plus discret (08/11/2026, « Signal Loss » de
+  scènes alors qu'elles tombent sur les temps. Depuis le 09/11/2026, `musique` note le tempo du
+  morceau entier dans le fichier calé, et `calage` le reprend quand il lit un rapport simple de
+  celui-ci (3/4, 2/3, 1/2 : « tempo lu … » dans sa réponse). Un fichier calé avant cette date ne le
+  porte pas : refais-le avec `musique`. Si `calage` annonce encore un autre tempo, ce n'est pas le
+  montage : dis-le dans la revue, et ne recale jamais les scènes sur ce faux tempo. Même piège, plus discret (08/11/2026, « Signal Loss » de
   Slowya.roll, basse syncopée) : `calage` lit 120,76 au lieu de 120 et voit des scènes « à 0,05 à
   0,20 s du temps », de plus en plus près au fil de la vidéo ; recalé à 119,245 pour le contenter, il
   lit 140,46. Avant de bouger une scène, mesure la phase : les attaques des graves (sous 150 Hz,
@@ -331,7 +332,10 @@ qui travaille **en dessous** :
   sons voisins de la famille (`click-mouse-click`, `starter-click-mouse`, `click-mac-single`,
   `click-mouse-deep` ; `ui-pop-up`, `starter-pop`, `ui-bubble-pop`, `starter-pop-mouth`). Ne répète
   pas un son marquant (impact, riser, cha-ching). Retour du créateur : « on répète le
-  même bruitage plusieurs fois d'affilée, c'est un peu chiant ».
+  même bruitage plusieurs fois d'affilée, c'est un peu chiant ». Un son qui revient plus loin change
+  un peu de hauteur à chaque retour, tout seul (`sons` le prépare : 4 % plus aigu, 3 % plus grave…) ;
+  `"hauteur": 1` dans l'évènement le garde tel quel, `"hauteur": 1.1` en choisit une. La règle des
+  3 s et des 6 s ne change pas.
 - **Les sons qui trompent** : certains noms du pack cachent une rafale. `click-short-snap` n'est pas
   un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic
   tic tic » par le client : posé 11 fois, il a gâché la story v3) ; `click-hard` fait trois clics ;

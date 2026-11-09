@@ -111,7 +111,7 @@ sur la nuit vire à l'olive ou au brun (`palette` relève ces images). D'où les
 
 1. **La mise au point et le recul** (`t3-onglets`, 0 → 2,25 s) : les mots géants, flous de 16 px,
    deviennent nets en 0,45 s (power2.out) ; la caméra recule à une échelle intermédiaire en 0,75 s
-   (expo.inOut), la ligne se recentre ; la fin de phrase entre mot à mot, chacun par un volet qui
+   (power3.inOut), la ligne se recentre ; la fin de phrase entre mot à mot, chacun par un volet qui
    monte (0,3 s d'écart au plus), pendant un dernier recul jusqu'à sa taille de lecture. Puis la
    phrase se tient immobile : derrière elle, la trame s'allume et s'élargit (5 %), la lumière
    glisse, ses captures (2 ou 3) arrivent de la profondeur dans le verre, une toutes les 0,6 s,
@@ -134,7 +134,7 @@ sur la nuit vire à l'olive ou au brun (`palette` relève ces images). D'où les
    deux, qui rapproche aussi la caméra (×1,12 puis ×1,2), puis la seule dérive lente pendant que
    la partie se lit et agit. Ses gestes : le prix tourne (0,9 s, expo.out), les puces s'allument ;
    le curseur glisse (0,95 s, power2.inOut) et clique (0,07 s), la pastille du paiement glisse,
-   l'interrupteur bascule et se remplit par un volet (0,28 s), les champs tombent (back.out(1.8)) ;
+   l'interrupteur bascule et se remplit par un volet (0,28 s), les champs tombent (back.out(1)) ;
    le total tourne (0,7 s), le curseur clique le bouton.
 5. **La trame de points** : le texte se forme d'abord en points blancs (étiré de 25 %, un écho flou
    deux fois plus grand qui se résorbe en 0,7 s), le texte plein prend le relais d'un coup 0,3 s

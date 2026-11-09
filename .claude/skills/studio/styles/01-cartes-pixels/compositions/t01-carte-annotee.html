@@ -198,7 +198,7 @@
     K.cacher(pixels, { scale: 0.3 });
     pixels.forEach(function (e, i) {
       var f = FORME[i];
-      tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 0.05 + (f[0] + f[1]) * 0.05);
+      tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1)" }, 0.05 + (f[0] + f[1]) * 0.05);
       // Les teintes tournent par vagues (diagonale), toutes les 0,12 s.
       for (var k = 0; k < 9; k++) {
         var n = ["1", "2", "3"][(k + f[0] + f[1] * 2) % 3];
@@ -277,7 +277,7 @@
       var t = 3.2 + i * 0.32;
       tl.to(e, { opacity: 1, scale: 1, duration: 0.3, ease: "expo.out" }, t);
       tl.fromTo(eclair, { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power2.in" }, t + 0.05);
-      tl.fromTo(tag, { y: 8 }, { y: 0, duration: 0.3, ease: "back.out(2)" }, t + 0.05);
+      tl.fromTo(tag, { y: 8 }, { y: 0, duration: 0.3, ease: "expo.out" }, t + 0.05);
     });
 
     // ---- La vie autour : les cases de la grille ; la caméra -----------------------------------
@@ -293,7 +293,7 @@
     var cam = "#t01-carte-annotee-cam", S1 = vertical ? 1.03 : (apercu ? 1.04 : 1.1);
     var Px = C.x + C.l / 2, Py = C.y + C.h / 2, Qx = L / 2, Qy = H / 2 + (vertical ? 60 : 40);
     var viser = function (s) { return { scale: s, x: Qx - L / 2 - (Px - L / 2) * s, y: Qy - H / 2 - (Py - H / 2) * s }; };
-    tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, Object.assign(viser(S1), { duration: 0.7, ease: "expo.inOut" }), 1.5);
+    tl.fromTo(cam, { scale: 1, x: 0, y: 0 }, Object.assign(viser(S1), { duration: 0.7, ease: "power3.inOut" }), 1.5);
     tl.to(cam, Object.assign(viser(S1 * 1.045), { duration: D - 2.25, ease: "sine.inOut" }), 2.25);
     decoder(q("#t01-carte-annotee-label"), EXEMPLE.etiquette, 0.1, 0.55);
 

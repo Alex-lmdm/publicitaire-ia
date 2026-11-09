@@ -264,7 +264,7 @@
       var tPoint = tAppel + 0.08 * motsAppel.length + 0.3;
       if (point) {
         gsap.set(point, { scale: 0 });
-        tl.to(point, { scale: 1, duration: 0.42, ease: "back.out(2.2)" }, tPoint);
+        tl.to(point, { scale: 1, duration: 0.42, ease: "back.out(1)" }, tPoint);
       }
       if (fleche) {
         var hF = V ? 170 : 130, lF = hF * 0.7, ep = V ? 14 : 12;

@@ -292,8 +292,8 @@
     tl.to("#t3o-a", { filter: "blur(0px)", duration: 0.45, ease: "power2.out" }, 0.02);
     tl.fromTo("#t3o-trame", { opacity: 0, scale: 1.25 }, { opacity: 0.9, scale: 1, duration: 0.5, ease: "power2.out" }, 0.12);
     tl.to("#t3o-trame", { opacity: 0, duration: 0.5, ease: "power2.in" }, 0.85);
-    tl.to("#t3o-zoom", { scale: sMid, duration: 0.75, ease: "expo.inOut" }, 0.42);
-    tl.to("#t3o-ligne", { x: 0, y: 0, duration: 0.75, ease: "expo.inOut" }, 0.62);
+    tl.to("#t3o-zoom", { scale: sMid, duration: 0.75, ease: "power3.inOut" }, 0.42);
+    tl.to("#t3o-ligne", { x: 0, y: 0, duration: 0.75, ease: "power3.inOut" }, 0.62);
     tl.fromTo(bm, { y: 16, clipPath: "inset(100% 0% 0% 0%)" }, { y: 0, clipPath: "inset(0% 0% 0% 0%)", duration: 0.5, ease: "expo.out", stagger: pasMot, immediateRender: false }, 0.98);
     tl.to("#t3o-zoom", { scale: sFin, duration: 1.05, ease: "power2.inOut" }, 1.18);
     // 2. La tenue (2,25 s → la lecture de la promesse) : la phrase ne bouge plus. Derrière elle, la

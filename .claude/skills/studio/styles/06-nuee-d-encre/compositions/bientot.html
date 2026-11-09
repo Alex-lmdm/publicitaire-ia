@@ -103,7 +103,7 @@
       var pts = points.querySelectorAll("i");
       tl.set(sigle, { attr: { "data-points": "1" } }, ETATS[3].t);
       gsap.set(pts, { scale: 0 });
-      [].forEach.call(pts, function (p, k) { tl.to(p, { scale: 1, duration: 0.14, ease: "back.out(3)" }, 0.8 + k * 0.12); });
+      [].forEach.call(pts, function (p, k) { tl.to(p, { scale: 1, duration: 0.14, ease: "back.out(1)" }, 0.8 + k * 0.12); });
       tl.set($("p1"), { opacity: 0 }, T_LIGNES - 0.02);
 
       // 2. Les deux lignes, posées d'un coup (la deuxième un temps après la première)

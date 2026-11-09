@@ -94,7 +94,8 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 | `K.curseur(hote, id, clair)` | crée le curseur (`clair` = blanc, sur fond sombre) |
 | `K.trajet(tl, curseur, [[t, x, y, durée, courbe], …])` | déplace le curseur ; le premier point le place |
 | `K.clic(tl, curseur, t)` | le curseur s'enfonce, une onde part de la pointe |
-| `K.zoom(el, [x, y], echelle, {vers})` | la caméra qui amène le point [x, y] de la scène au centre du cadre (ou à `vers`), à cette échelle : rend `{scale, x, y}`, à passer tel quel à la caméra (`tl.to(cam, Object.assign({duration: 0.6, ease: "expo.inOut"}, z), t)`) |
+| `K.zoom(el, [x, y], echelle, {vers})` | la caméra qui amène le point [x, y] de la scène au centre du cadre (ou à `vers`), à cette échelle : rend `{scale, x, y}`, à passer tel quel à la caméra (`tl.to(cam, Object.assign({duration: 0.7, ease: K.courbeEchelle(1, z.scale, "power2.inOut")}, z), t)`) |
+| `K.courbeEchelle(de, a, courbe)` | la courbe d'un zoom ou d'une plongée de l'échelle `de` à `a`, qui anime son logarithme : l'échelle paraît grandir régulièrement au lieu de ralentir |
 | `K.vu(el, zoom, [x, y])` | où l'on voit à l'écran le point [x, y] de la scène quand la caméra est posée sur `zoom` : pour mener le curseur (hors de la caméra) sur ce qu'elle montre (`var p = K.vu(cam, z, [x, y])`, puis `K.trajet`). Exact pour ce qui est à plat dans la caméra ; une rotation de quelques degrés décale un peu |
 | `K.taper(tl, el, texte, debut, fin, D)` | frappe au clavier par petits groupes de lettres (le caret est en CSS) |
 | `K.compteur(tl, el, de, a, debut, duree, D, format, courbe)` | chiffre qui tourne (format libre : « 3,3 M », « 2:59:41 », « 97 € ») |
@@ -104,7 +105,7 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 | `K.tuileMarque(fond, encre, svg, bord)` | un logo sur une tuile à ses couleurs : seulement pour une **icône d'application** montrée comme telle (l'écran d'accueil d'un téléphone, un dock), jamais pour les objets flottants |
 | `K.tuile(classe, svg)` | fabrique d'objets génériques (à éviter pour les champs flottants) |
 | `K.derive(tl, objets, debut, duree, amplitude)` | dérive lente, plus ample au premier plan |
-| `K.arrivee(tl, objets, t, {etalement})` | les objets surgissent de la profondeur en rafale |
+| `K.arrivee(tl, objets, t, {etalement})` | les objets surgissent de la profondeur en rafale, le premier en tête, les autres à des écarts inégaux |
 | `K.flash(tl, disque, x, y, t, duree)` | un disque de couleur part de (x, y) et couvre l'écran |
 | `K.chapitre(tl, racine, curseur, t, {depart, cible})` | chapitre complet (mot fantôme, étiquette, curseur, interrupteur) ; rend l'instant de la plongée. Le clic vise l'interrupteur d'après la taille de la composition, en 9:16 comme en 16:9 ; `cible: [x, y]` seulement si le CSS de la scène a déplacé l'interrupteur |
 | `K.jeton(nom)` | la valeur d'un jeton de la marque (`K.jeton("--brand-gris-2")`), pour un tween de couleur (GSAP n'interpole pas une variable CSS) |

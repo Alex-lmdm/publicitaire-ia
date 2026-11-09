@@ -252,7 +252,7 @@
       aCharger.forEach(function (e, i) {
         var ti = tLigne + i * 0.4;
         tl.to(cA.el, Object.assign(etat(deja + i + 1), { duration: 0.34, ease: "expo.out" }), ti);
-        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1.6)", immediateRender: false }, ti);
+        tl.fromTo(e, { y: 40 }, { y: 0, duration: 0.42, ease: "back.out(1)", immediateRender: false }, ti);
       });
       var tFinA = aCharger.length ? tLigne + (aCharger.length - 1) * 0.4 + 0.4 : tLigne;
 
@@ -265,7 +265,7 @@
         var coche = K.el(puce, "span", "aa-coche", '<svg viewBox="0 0 40 40"><path d="M11 20.5 L17.5 27 L29 14"/></svg>');
         gsap.set(coche, { scale: 0 });
         var ti = tCoche + i * 0.4;
-        tl.to(coche, { scale: 1, duration: 0.36, ease: "back.out(2)" }, ti);
+        tl.to(coche, { scale: 1, duration: 0.36, ease: "back.out(1)" }, ti);
         K.trace(tl, coche.querySelector("path"), ti + 0.1, 0.26, { longueur: 30 });
       });
       var tFinB = cB.lignes.length ? tCoche + (cB.lignes.length - 1) * 0.4 + 0.5 : tCoche;

@@ -132,7 +132,7 @@
     var BOUGE = FOND === "accent" && !FOND_IMAGE ? 2 : 7;
     var viser = function (t, wx, wy, s, duree) {
       var plan = s <= 1.01, p = plan ? [L / 2, H / 2] : P(wx, wy), sc = plan ? 1 : s * SERRE * (L / 1920) / k;
-      tl.to(bureau, { x: -(p[0] - L / 2) * sc, y: -(p[1] - H / 2) * sc, scale: sc, duration: duree, ease: "expo.inOut" }, t);
+      tl.to(bureau, { x: -(p[0] - L / 2) * sc, y: -(p[1] - H / 2) * sc, scale: sc, duration: duree, ease: "power3.inOut" }, t);
       // le flou de bougé : 7 px, sauf sur l'aplat de l'accent (2 px), où un flou plus fort mêlerait son
       // jaune au bord sombre de la fenêtre (du brun, de l'olive : `palette` le relève)
       tl.to(bureau, { filter: "blur(" + BOUGE + "px)", duration: duree * 0.45, ease: "power2.in" }, t).to(bureau, { filter: "blur(0px)", duration: duree * 0.55, ease: "power2.out" }, t + duree * 0.45);

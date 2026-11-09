@@ -227,7 +227,7 @@
   var logos = $("t7p-logos").children;
   var pasLogo = Math.min(0.7, (XB - XL - 2.6) / Math.max(1, logos.length));
   Array.prototype.forEach.call(logos, function (lg, i) {
-    tl.fromTo(lg, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2.2)" }, XL + 1.2 + i * pasLogo);
+    tl.fromTo(lg, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1)" }, XL + 1.2 + i * pasLogo);
   });
   // la page jointe : dévoilée de bas en haut (sans fondu), elle défile d'un écran au suivant, puis
   // s'envole avec la barre
@@ -243,7 +243,7 @@
   tl.to(curseur, { opacity: 1, duration: 0.15 }, XB - 0.8);
   K.clic(tl, curseur, XB - 0.15);
   tl.to("#t7p-envoyer", { scale: 0.88, duration: 0.08, ease: "power2.out" }, XB - 0.15);
-  tl.to("#t7p-envoyer", { scale: 1, duration: 0.25, ease: "back.out(3)" }, XB - 0.07);
+  tl.to("#t7p-envoyer", { scale: 1, duration: 0.25, ease: "back.out(1)" }, XB - 0.07);
 
   // 3. La barre s'envole ; la fenêtre du résultat s'ouvre et se remplit de sa vraie matière, et se
   //    tient le temps de lire son titre (la caméra ne fait qu'une dérive lente)
@@ -262,7 +262,7 @@
       // pâlit les couleurs : `palette` le relève)
       cartes.forEach(function (c, i) {
         tl.set(c, { opacity: 1 }, W0 + 0.5 + i * 0.12);
-        tl.fromTo(c, { y: 30, scale: 0.9 }, { y: 0, scale: 1, duration: 0.45, ease: "back.out(1.6)", immediateRender: false }, W0 + 0.5 + i * 0.12);
+        tl.fromTo(c, { y: 30, scale: 0.9 }, { y: 0, scale: 1, duration: 0.45, ease: "back.out(1)", immediateRender: false }, W0 + 0.5 + i * 0.12);
       });
     }
     tl.fromTo("#t7p-cam", { rotationX: 0, y: 0 }, { rotationX: 4, y: -10, duration: D - W0 - 0.1, ease: "sine.inOut", immediateRender: false }, W0 + 0.1);

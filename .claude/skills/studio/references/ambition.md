@@ -35,12 +35,12 @@ fond qui vit ; des ombres qui posent les objets ; un flou qui grandit avec la di
 interface qui se redresse en arrivant vaut mieux qu'une interface posée à plat. La perspective du
 navigateur (la caméra du kit) suffit, sans moteur 3D.
 
-**3. Des mots qui jouent ce qu'ils disent.** Peu de mots, très grands, et chacun entre à sa façon :
-révélé par un masque, des lettres en désordre qui se remettent en ligne, une machine à sous qui
-s'arrête sur le bon mot, un compteur à rouleaux, des lettres qui viennent des objets, un mot qui
-change de couleur sous le bord d'un objet qui passe, un mot qui claque, s'étire, se barre, se
-surligne, tombe. Une entrée différente presque à chaque plan. Puis le mot se tient, immobile, le
-temps d'être lu.
+**3. Des mots qui jouent ce qu'ils disent.** Peu de mots, très grands. Le mot fort de chaque plan
+entre à sa façon : révélé par un masque, des lettres en désordre qui se remettent en ligne, une
+machine à sous qui s'arrête sur le bon mot, un compteur à rouleaux, des lettres qui viennent des
+objets, un mot qui change de couleur sous le bord d'un objet qui passe, un mot qui claque, s'étire,
+se barre, se surligne, tombe ; une entrée différente d'un plan à l'autre. Les lignes d'appui
+apparaissent nettes, sans effet. Puis le mot se tient, immobile, le temps d'être lu.
 
 **4. Des interfaces qui vivent.** Son produit ne se montre pas en capture posée : il charge, répond,
 se réorganise. Un curseur qui agit (l'état d'avant, l'approche, le clic, la réaction), une frappe,
@@ -50,7 +50,8 @@ remplit, un aperçu qui sort de la fenêtre et flotte à côté. Simplifier pour
 
 **5. Une caméra qui a une raison de bouger.** Elle s'approche du geste (le champ où l'on tape, le
 bouton qu'on clique), plonge dans un objet pour passer au plan suivant, recule sur le résultat,
-suit ce qui relie deux idées. Elle ne bouge jamais pour remplir. **Les mots sortent dès qu'ils sont
+suit ce qui relie deux idées. Elle ne bouge jamais pour remplir, et ne fait jamais le yo-yo (avancer
+puis revenir au même cadre). **Les mots sortent dès qu'ils sont
 lus, pour la libérer** : pendant la lecture elle tient (au plus, le monde dérive à peine derrière
 des mots restés dans leur calque) ; dès que les mots partent, elle voyage.
 
@@ -60,7 +61,9 @@ du poids aux passages et de la vitesse aux arrivées. Il est réglé dans chaque
 
 **7. Des vitesses qui contrastent, sur la musique.** Une rafale, puis une démonstration qui tient
 son cadre pendant que l'interface agit ; une courte pause avant la révélation ; le geste le plus
-fort sur le temps fort du morceau. Une courbe par rôle, jamais la même partout.
+fort sur le temps fort du morceau. Deux ou trois façons de bouger, chacune pour un rôle ; l'interface
+à sa vraie vitesse (100 à 300 ms), le film à la sienne ; presque aucun rebond, aucun sur un texte
+([metier.md](metier.md)).
 
 **8. Sa vraie matière, en grand, avec des touches de couleur vraie.** Le sujet remplit le cadre :
 son produit en action, ses vrais chiffres mis en scène, le schéma de son vrai mécanisme, puis
@@ -72,7 +75,8 @@ de 15 s, au moins trois objets connus, logos compris.
 ## Ce qui fait « vidéo générée »
 
 Chacun de ces réflexes est un signe que rien n'a été décidé : tout qui entre par un fondu qui
-monte, tout centré, tout en même temps ; le même `power2.out` de 0,5 s partout ; des boucles qui
+monte, tout centré, tout en même temps ; le même `power2.out` de 0,5 s partout ; tout qui rebondit ;
+le texte qui change en même temps que sa boîte ; des éléments qui partent en file régulière ; des boucles qui
 flottent, pulsent ou respirent à la place d'un mouvement ; une poussée lente en fin de scène ; un
 tremblement de caméra ; des halos, néons, orbes, reflets d'objectif, particules ou nuées
 décoratives, dégradés violets ; trois cartes en ligne, un titre sur une capture assombrie, des
