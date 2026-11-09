@@ -231,6 +231,10 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 - **Une couleur qui passe de l'encre à l'accent** (un dossier sombre qui prend l'accent) ne se fond
   pas : à mi-chemin, elle est olive. Elle change d'un coup (`tl.set`), quand un volet ou un
   mouvement la couvre.
+- **Un compteur à rouleaux** (une bande de chiffres qui défile dans une fenêtre, écrit sur mesure)
+  montre sur sa première image ses chiffres de départ, nets : un faux nombre qui se lit (« +42 098 »
+  pour « +10 000 », Reel Notion Sites, 09/11/2026). Cache-le jusqu'à ce que les rouleaux tournent
+  (`tl.set(el, { opacity: 1 }, debut + 0.08)`) : lancés, ils passent trop vite pour se lire.
 - **Les grands titres et `check`** : la boîte d'un texte vaut 1,4 fois sa taille, même
   avec un interligne serré ; deux textes empilés qui se touchent à l'œil se « chevauchent » pour
   `check`. Laisse environ 0,2 fois la taille de police entre la boîte de l'un et celle de l'autre.
