@@ -13,6 +13,9 @@ Télécharge Publicitaire IA depuis https://github.com/Alex-lmdm/publicitaire-ia
 Copie la phrase depuis ta formation : elle contient le lien de tes 35 musiques de lancement, qui
 s'installent en même temps.
 
+Avec **Codex**, choisis d'abord **Accès complet** (dans le terminal : `/permissions`), le temps de
+l'installation : sans lui, Codex ne peut ni télécharger ni écrire le dossier.
+
 L'IA télécharge le dossier, vérifie ton ordinateur, te dit ce qu'il manque, puis installe tout.
 **Quand elle te propose de commencer, réponds « go ».** Elle exécute les commandes : tu n'as rien
 à recopier dans un terminal. Si une manipulation est nécessaire de ton côté, elle te guide.
@@ -32,7 +35,13 @@ d'erreur → cause probable → UNE action corrective), puis retente.
 Sous Windows : `npm.cmd` et `npx.cmd` au lieu de `npm` et `npx` (PowerShell refuse souvent leurs
 scripts `.ps1`), et `python` au lieu de `python3` (ou `py -3` si `python` ne répond pas).
 
-**0. Le dossier.** Si le dossier courant contient déjà `produit.json` et
+**0. Le dossier.** **Tu es Codex ?** Avant toute commande, dis-lui de choisir **Accès complet**
+(« Full access » ; dans le terminal, `/permissions`) pour le temps de l'installation : par défaut,
+Codex n'a pas le réseau et n'écrit que dans le dossier où il a été ouvert, et ni le téléchargement,
+ni `npm ci`, ni les musiques ne passeraient. Il reviendra au réglage habituel à la fin (« Avec
+Codex, une fois l'installation finie »).
+
+Si le dossier courant contient déjà `produit.json` et
 `tools/studio_motion.py`, c'est lui : passe à l'étape 1 (si tu es dans une vignette « Accueil … »
 de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
 
@@ -45,8 +54,17 @@ de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
   interrompue (pour rouvrir l'assistant, par exemple) : reprends à l'étape 1, dans ce dossier. Avec
   `node_modules/`, c'est une **mise à jour** : voir « Mettre à jour » plus bas, et ne touche à rien
   de ce qui appartient au client.
-- Sinon, on installe toujours **la version publiée**, la branche `stable` (jamais `main`, où se
-  prépare la version suivante). Avec git : `git clone --branch stable
+- Sinon, d'abord : **git est-il là ?** Sur Mac, lance `xcode-select -p`, jamais `git` directement :
+  sans les « outils de développement » du Mac, `git` (comme `python3`) ouvre leur fenêtre
+  d'installation sans prévenir. `xcode-select -p` répond un chemin : git est là. Il échoue : annonce la fenêtre (« Une
+  fenêtre du Mac va s'ouvrir pour installer ses outils de développement, qui apportent git et Python :
+  clique « Installer », quelques minutes. Réponds « go ». »), lance `xcode-select --install`, attends
+  qu'il te dise que c'est fini, puis clone. S'il préfère ne pas attendre, prends l'archive : l'étape 1
+  reviendra sur ces outils pour Python. Sous Windows, `git --version` ; sans réponse, l'archive.
+- On installe toujours **la version publiée**, la branche `stable` (jamais `main`, où se
+  prépare la version suivante). **Avec git, de préférence** (la mise à jour est plus sûre, et Codex
+  travaille mieux dans un dossier git : il y écrit sans réglage spécial et y trouve son garde-fou
+  depuis chaque vidéo) : `git clone --branch stable
   https://github.com/Alex-lmdm/publicitaire-ia.git "<emplacement>"`. Sans git : télécharge
   `https://github.com/Alex-lmdm/publicitaire-ia/archive/refs/heads/stable.zip` dans un dossier
   temporaire, décompresse-le, et range le dossier `publicitaire-ia-stable` à l'emplacement, renommé
@@ -58,8 +76,10 @@ de l'app HyperFrames, le bon dossier est son parent). Sinon, télécharge-le :
   l'assistant, et l'étape 5 le reprend toute seule.
 
 **1. Bilan, sans rien installer.** `node --version` (22.12 ou plus), `python3 --version` (3.9 ou
-plus), `ffmpeg -version`. Montre un tableau ✅ / ❌. S'il manque quelque chose, dis en une phrase ce
-que tu vas installer **et les fenêtres qui vont s'ouvrir**, puis attends qu'il réponde « go » :
+plus), `ffmpeg -version`. Sur Mac, `xcode-select -p` d'abord : s'il échoue, ne lance pas `python3`
+(il ouvrirait sans prévenir la fenêtre des outils de développement) et compte Python ❌. Montre un
+tableau ✅ / ❌. S'il manque quelque chose, dis en une phrase ce que tu vas installer **et les
+fenêtres qui vont s'ouvrir**, puis attends qu'il réponde « go » :
 
 - **Mac.** Tu n'as pas de terminal où taper son mot de passe : chaque installeur officiel s'ouvre
   dans une fenêtre du Mac, où **il** clique et tape le mot de passe de son Mac. Annonce-le avant le
@@ -68,27 +88,33 @@ que tu vas installer **et les fenêtres qui vont s'ouvrir**, puis attends qu'il 
   taperas le mot de passe de ton Mac. Réponds « go ». » **Jamais le script `curl … install.sh` de
   Homebrew** : sans terminal, il s'arrête sur « Need sudo access ». Dans cet ordre, en attendant
   après chaque fenêtre qu'il te dise que l'installation est finie :
-  - Python manque : `python3 --version` fait apparaître la fenêtre des « outils de développement »
-    du Mac ; il clique « Installer » (quelques minutes). Fenêtre fermée par erreur :
-    `xcode-select --install` la rouvre.
+  - Python manque (`xcode-select -p` échoue) : `xcode-select --install` ouvre la fenêtre des
+    « outils de développement » du Mac, qui apportent Python ; il clique « Installer » (quelques
+    minutes).
   - Node manque, ou est plus ancien que 22.12 : l'installeur officiel de la dernière version LTS
-    (environ 100 Mo), téléchargé dans Téléchargements, puis ouvert :
+    (environ 100 Mo), téléchargé dans `.cache/` du dossier (pas dans Téléchargements, que macOS peut
+    refuser à l'assistant), puis ouvert, depuis la racine du dossier :
     ```bash
-    V=$(curl -fsSL https://nodejs.org/dist/index.tab | awk -F'\t' 'NR>1 && $10 != "-" && !v {v=$1} END {print v}')
-    curl -fL -o ~/Downloads/node-$V.pkg "https://nodejs.org/dist/$V/node-$V.pkg" && open ~/Downloads/node-$V.pkg
+    mkdir -p .cache && V=$(curl -fsSL https://nodejs.org/dist/index.tab | awk -F'\t' 'NR>1 && $10 != "-" && !v {v=$1} END {print v}')
+    curl -fL -o ".cache/node-$V.pkg" "https://nodejs.org/dist/$V/node-$V.pkg" && open ".cache/node-$V.pkg"
     ```
   - ffmpeg manque : si Homebrew est là (`brew --version`), `brew install ffmpeg`. Sinon, d'abord
     l'installeur officiel de Homebrew (dernière version, environ 150 Mo), même geste :
     ```bash
-    curl -fL -o ~/Downloads/Homebrew.pkg https://github.com/Homebrew/brew/releases/latest/download/Homebrew.pkg && open ~/Downloads/Homebrew.pkg
+    mkdir -p .cache && curl -fL -o .cache/Homebrew.pkg https://github.com/Homebrew/brew/releases/latest/download/Homebrew.pkg && open .cache/Homebrew.pkg
     ```
     puis `brew install ffmpeg` (sur puce Apple, `/opt/homebrew/bin/brew install ffmpeg` tant que
     l'assistant n'a pas été rouvert).
 - **Windows** : `winget install -e --id OpenJS.NodeJS.LTS`, `winget install -e --id Python.Python.3.12`,
-  `winget install -e --id Gyan.FFmpeg`.
+  `winget install -e --id Gyan.FFmpeg`, chacun suivi de `--accept-source-agreements
+  --accept-package-agreements` (sinon winget attend une réponse que personne ne voit). Annonce avant
+  le « go » les fenêtres de Windows, par exemple : « Il manque Node et ffmpeg. Je les installe :
+  Windows va te demander une ou deux fois « Voulez-vous autoriser cette application à apporter des
+  modifications ? » : clique « Oui ». Réponds « go ». »
 - Après une installation, Mac ou Windows, fais-lui fermer et rouvrir l'assistant (sinon le nouveau
-  chemin n'est pas vu), ouvert dans le dossier Publicitaire IA, puis écrire « Continue
-  l'installation de Publicitaire IA avec son INSTALL.md » : reprends alors ici, au bilan.
+  chemin n'est pas vu), dans le dossier Publicitaire IA : donne-lui d'abord le geste exact, dans
+  « Rouvrir l'assistant dans le dossier » plus bas. Puis il écrit « Continue l'installation de
+  Publicitaire IA avec son INSTALL.md » : reprends alors ici, au bilan.
 
 **2. `npm ci`** à la racine du dossier (Windows : `npm.cmd ci`) : il installe HyperFrames et GSAP aux
 versions prévues, puis prépare le dossier (instructions de l'assistant, style de départ, vignette
@@ -107,7 +133,8 @@ rangée » → `npm.cmd run app -- installer`, qui la range là et l'ajoute au m
 `npm run app -- brancher` (Windows : `npm.cmd run app -- brancher`). Il permet à l'app de
 lire les instructions de ce dossier : une ligne ajoutée à la configuration de Claude Code
 (`~/.claude/settings.json`), avec une sauvegarde. Rien d'autre n'est modifié, ni la configuration
-de Codex. Explique-le en une phrase avant. Sans l'app, saute cette étape.
+de Codex, et c'est réversible : `npm run app -- debrancher` retire seulement cette ligne. Avec
+Codex aussi : l'app lance Claude Code. Explique-le en une phrase avant. Sans l'app, saute cette étape.
 
 **5. Les musiques de lancement** (offertes avec la formation, 35 en tout) :
 `python3 tools/studio_motion.py musiques installer` : il reprend le lien noté à l'étape 0 (ou
@@ -118,17 +145,38 @@ expiré, pas de lien), ne bloque pas l'installation : dis-lui de coller plus tar
 mes musiques de lancement » du module Musique de sa formation.
 
 **6. Test final** : `python3 tools/studio_motion.py verifier`. La dernière ligne doit être « ok ».
-Les lignes « marque pas encore réglée » et « Pack SFX : pas installé » sont normales.
+Il contrôle aussi que HyperFrames est à la version de `package.json` et que la copie des skills pour
+Codex (`.agents/skills/`) est là ; sinon il dit quoi relancer (`npm ci` ou `npm run sync`). Les lignes
+« marque pas encore réglée » et « Pack SFX : pas installé » sont normales.
 
 **7. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
-navigateur, app HyperFrames ou « sans l'app », musiques, test final). Si tout est ✅, conclus par :
+navigateur, app HyperFrames ou « sans l'app », musiques, test final, dont HyperFrames à la bonne
+version et les skills pour Codex). Si tout est ✅, conclus par :
 « C'est installé. Écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce
 que tu vends, une seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
 ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
-installé dans ton dossier Vidéos. Ouvre le dossier Publicitaire IA dans ton assistant, dans une
-nouvelle conversation, puis écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque
-et ce que tu vends, une seule fois, puis on fait ta première vidéo. » Mise à jour : pas de tableau, une seule ligne,
+installé dans ton dossier Films (Vidéos sous Windows). Ouvre le dossier Publicitaire IA dans ton
+assistant, dans une nouvelle conversation (puis le geste exact, ci-dessous), et écris « Personnalise
+Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce que tu vends, une seule
+fois, puis on fait ta première vidéo. » Avec Codex, ajoute ce qui est à faire une fois (ci-dessous).
+Mise à jour : pas de tableau, une seule ligne,
 « Publicitaire IA est à jour, tout est ✅. » (le tableau ne s'affiche que si une étape a échoué).
+
+**Rouvrir l'assistant dans le dossier.** Chaque fois que tu lui fais fermer l'assistant, donne-lui
+avant le geste exact pour le rouvrir au bon endroit : le dossier `Publicitaire IA`, dans Films sur
+Mac (`~/Movies`), dans Vidéos sous Windows. Selon ce qu'il utilise :
+
+- l'app Claude : onglet **Code**, choisis le dossier `Publicitaire IA`, puis une nouvelle session ;
+- l'app Codex : ouvre le dossier `Publicitaire IA` comme projet, puis une nouvelle conversation ;
+- un terminal, sur Mac : `cd "$HOME/Movies/Publicitaire IA" && claude` (ou `&& codex`) ; sous
+  Windows (PowerShell) : `cd "$env:USERPROFILE\Videos\Publicitaire IA"; claude` (ou `; codex`).
+
+**Avec Codex, une fois l'installation finie.** Dis-lui, en trois lignes : il peut remettre Codex sur
+son réglage habituel (`/permissions`) ; à la première ouverture du dossier, Codex lui demande s'il
+fait confiance au dossier : oui ; puis il approuve, une seule fois, le garde-fou du dossier
+(`.codex/hooks.json`, qui refuse qu'une adresse email parte vers un site, et les commandes de
+HyperFrames qui publient) : dans le terminal, `/hooks`, puis approuver celui de Publicitaire IA ;
+dans l'app Codex, Réglages, Hooks. Sans cette approbation, Codex ne le lance pas.
 
 ---
 
@@ -138,8 +186,9 @@ Elles s'installent avec Publicitaire IA, par le lien de ta phrase d'installation
 (installé avant le 2 novembre 2026, ou lien expiré) ? Colle la phrase « Installe mes musiques de
 lancement » du module Musique de ta formation : elle contient un lien neuf. Chaque vidéo prend
 celle qui va avec son but. (Pour l'IA : `python3 tools/studio_motion.py musiques installer --lien
-"<lien>"` ; sans lien, `musiques installer` prend les 18 de Mixkit et un fichier
-`musiques-lancement.zip` de Téléchargements, ou une archive donnée en argument.)
+"<lien>"` ; sans lien, `musiques installer` prend toutes les archives `musiques-*.zip` de
+Téléchargements (et les dossiers `musiques-…` que Safari a décompressés), ou les archives données
+en argument, puis les 18 de Mixkit.)
 
 ## Le Pack SFX (si tu l'as acheté)
 
@@ -182,6 +231,10 @@ l'historique git (`.git/`).
 Puis refais les étapes 2, 3 et 6, et `python3 tools/studio_motion.py musiques` : s'il en manque
 (il en a moins de 35), `musiques installer` reprend celles de Mixkit ; pour les 17 de la formation,
 dis-lui de coller la phrase « Installe mes musiques de lancement » du module Musique.
+
+Avec Codex : la mise à jour télécharge, il faut donc **Accès complet** le temps de la faire (étape 0).
+Si la nouvelle version a changé `.codex/hooks.json`, Codex redemande l'approbation du garde-fou
+(`/hooks`, comme à l'installation) : dis-le-lui en une phrase.
 
 ## Problèmes courants
 

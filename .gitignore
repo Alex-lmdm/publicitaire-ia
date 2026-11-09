@@ -5,10 +5,9 @@ __pycache__/
 *.pyc
 .DS_Store
 
-# Générés par `npm run sync` : instructions de l'agent, copie des skills pour Codex, GSAP (installé
-# par npm, jamais redistribué ici).
-/CLAUDE.md
-/AGENTS.md
+# Générés par `npm run sync` : copie des skills pour Codex, GSAP (installé par npm, jamais redistribué
+# ici). CLAUDE.md et AGENTS.md de la racine, eux aussi générés, sont versionnés : Codex a ainsi ses
+# consignes dès le téléchargement, avant `npm ci` (un test vérifie qu'ils suivent le modèle).
 /.agents/
 /assets/vendor/
 

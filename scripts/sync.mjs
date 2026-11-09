@@ -5,7 +5,9 @@
  *   1. GSAP, installé par npm, copié dans assets/vendor/ (jamais redistribué dans le dépôt) ;
  *   2. le style de la marque (brand/) et l'accueil de l'app HyperFrames, par l'outil Python
  *      (`studio_motion.py style`, seul propriétaire de la marque) ;
- *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl ;
+ *   3. CLAUDE.md et AGENTS.md, à la racine et dans l'accueil, depuis templates/AGENT.md.tpl. Ceux de la
+ *      racine sont aussi versionnés (Codex a ses consignes dès le téléchargement, avant `npm ci`) : la
+ *      régénération les réécrit à l'identique, et un test (sync.test.mjs) les compare au modèle ;
  *   4. la copie des skills pour Codex (.claude/skills/ -> .agents/skills/) ;
  *   5. le retrait des fichiers du produit qu'une version a supprimés : une mise à jour par archive
  *      recopie par-dessus sans rien effacer, et des consignes périmées restées en place
@@ -144,8 +146,10 @@ export function genererInstructions(racine = ROOT) {
   ];
   let plusLong = 0;
   for (const lieu of lieux) {
-    const valeurs = { PRODUIT: produit.nom, CODE: produit.code, VERSION: produit.version, MAISON: lieu.maison };
-    for (const [fichier, agent] of [["CLAUDE.md", "CLAUDE_CODE"], ["AGENTS.md", "CODEX"]]) {
+    // STUDIO : la commande du skill (`/studio` dans Claude Code, `$studio` dans Codex) ; CONSIGNES : le
+    // fichier que cet assistant lit, celui d'un projet vidéo compris.
+    for (const [fichier, agent, studio] of [["CLAUDE.md", "CLAUDE_CODE", "/studio"], ["AGENTS.md", "CODEX", "$studio"]]) {
+      const valeurs = { PRODUIT: produit.nom, CODE: produit.code, VERSION: produit.version, MAISON: lieu.maison, STUDIO: studio, CONSIGNES: fichier };
       const contenu = remplir(resoudreBlocs(modele, [agent, lieu.bloc]), valeurs);
       plusLong = Math.max(plusLong, Buffer.byteLength(contenu));
       ecrireSiDifferent(path.join(lieu.dir, fichier), contenu);

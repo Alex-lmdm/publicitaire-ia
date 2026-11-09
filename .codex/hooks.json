@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const f=require('fs'),p=require('path'),u=require('url'),s=p.join('.claude','hooks','garde-identite.mjs');let d=process.cwd();for(let i=0;i<8;i++){if(f.existsSync(p.join(d,s)))break;d=p.dirname(d)}import(u.pathToFileURL(p.join(d,s)).href).then(m=>m.garder()).catch(()=>{})\"; exit 0",
+            "commandWindows": "node -e \"const f=require('fs'),p=require('path'),u=require('url'),s=p.join('.claude','hooks','garde-identite.mjs');let d=process.cwd();for(let i=0;i<8;i++){if(f.existsSync(p.join(d,s)))break;d=p.dirname(d)}import(u.pathToFileURL(p.join(d,s)).href).then(m=>m.garder()).catch(()=>{})\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

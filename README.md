@@ -81,11 +81,12 @@ dossier Monteur IA ».
 ## Contenu
 
 - `.claude/skills/studio/` : la méthode, une référence par étape (bienvenue et marque, fiche de
-  l'offre, repérage, structures par but, idées, écriture, supports, voix, image, mouvement, scènes,
-  kit, contrat d'une composition HyperFrames, son, revue, livraison) et, dans `styles/`, les 8
+  l'offre, repérage, structures par but, idées, écriture, supports, voix, interdits, ambition et
+  métier du motion design, scènes, kit, contrat d'une composition HyperFrames, son, revue, seconde
+  passe, livraison) et, dans `styles/`, les 8
   styles de motion design (une fiche et des scènes chacun).
-- `templates/scenes/` : les scènes prêtes, déjà construites et contrôlées en 9:16 et en 16:9, que
-  l'IA remplit avec la vraie matière du client ; `templates/kit/` : les briques de chaque scène.
+- `templates/scenes/` : des exemples de scènes, dont l'IA s'inspire pour écrire les siennes avec la
+  vraie matière du client (pas des gabarits à remplir) ; `templates/kit/` : les briques de chaque scène.
 - `tools/studio_motion.py` : marque, création des vidéos par support et par format, vérification
   de la fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones,
   planche, rythme, calage de la musique, pose et émergence des sons, mastering, couverture,
@@ -99,6 +100,9 @@ dossier Monteur IA ».
   `tools/sons.py` : écriture des sons dans la vidéo. Python 3.9+, sans dépendance.
 - `scripts/` : `sync.mjs` (prépare le dossier après `npm ci`), `app-hyperframes.mjs` (ouvre une
   vidéo dans l'app HyperFrames).
+- `.claude/settings.json` (Claude Code) et `.codex/hooks.json` (Codex) : le garde-fou du dossier,
+  `.claude/hooks/garde-identite.mjs`, qui refuse qu'une adresse email parte vers un site et les
+  commandes de HyperFrames qui enverraient quelque chose hors de ton ordinateur.
 - `templates/` : le point de départ de chaque vidéo, le kit de briques de motion design, la
   vignette d'accueil et le modèle des instructions de l'assistant.
 - `assets/` : deux polices libres (Inter, Anton), 22 sons de démarrage (CC0) et les aperçus muets

@@ -24,3 +24,7 @@
 *.ico binary
 *.pdf binary
 *.zip binary
+
+# Les notes de maintenance de l'éditeur (bancs d'essai, verdicts, règles périmées) restent hors de l'archive
+# ZIP que télécharge le client (git archive, l'archive de GitHub) : ce ne sont pas des consignes.
+/notes/ export-ignore

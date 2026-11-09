@@ -485,5 +485,51 @@ class NomDuProduit(unittest.TestCase):
             self.assertNotIn(ancien, install, ancien)
 
 
+class Installation(unittest.TestCase):
+    """Revue du 09/11/2026 (D) : ce que l'installation dit à Codex, sous Windows et sur Mac."""
+
+    def setUp(self):
+        self.install = " ".join((RACINE / "INSTALL.md").read_text(encoding="utf-8").split())
+
+    def etape(self, debut: str, fin: str) -> str:
+        return self.install[self.install.index(debut):self.install.index(fin)]
+
+    def test_codex_choisit_son_reglage_des_l_etape_0_et_approuve_le_garde_fou(self):
+        etape0 = self.etape("**0. Le dossier.**", "**1. Bilan")
+        self.assertLess(etape0.index("Accès complet"), etape0.index("Si le dossier courant contient déjà"))
+        self.assertIn("/permissions", etape0)
+        self.assertIn("**Avec git, de préférence**", etape0)
+        codex = self.etape("**Avec Codex, une fois l'installation finie.**", "## Tes 35 musiques")
+        for attendu in ("/hooks", "Réglages, Hooks", "fait confiance au dossier", "`.codex/hooks.json`"):
+            self.assertIn(attendu, codex)
+        self.assertTrue((RACINE / ".codex" / "hooks.json").is_file())
+
+    def test_windows_winget_sans_question_cachee_et_fenetres_annoncees(self):
+        windows = self.etape("- **Windows** : `winget", "**2. `npm ci`**")
+        for paquet in ("OpenJS.NodeJS.LTS", "Python.Python.3.12", "Gyan.FFmpeg"):
+            self.assertIn(f"winget install -e --id {paquet}", windows)
+        self.assertIn("--accept-source-agreements --accept-package-agreements", windows)
+        self.assertLess(windows.index("Voulez-vous autoriser cette application"), windows.index("Réponds « go »"))
+
+    def test_mac_sans_fenetre_surprise_ni_installeur_dans_telechargements(self):
+        etape0 = self.etape("**0. Le dossier.**", "**1. Bilan")
+        self.assertLess(etape0.index("xcode-select -p"), etape0.index("git clone"))
+        bilan = self.etape("**1. Bilan", "- **Mac.**")
+        self.assertLess(bilan.index("xcode-select -p"), bilan.index("ne lance pas `python3`"))
+        self.assertNotIn("~/Downloads/", self.install)
+        self.assertIn('curl -fL -o ".cache/node-$V.pkg"', self.install)
+        self.assertIn("-o .cache/Homebrew.pkg", self.install)
+
+    def test_le_geste_pour_rouvrir_l_assistant_dans_le_dossier(self):
+        rouvrir = self.etape("**Rouvrir l'assistant dans le dossier.**", "**Avec Codex, une fois")
+        for attendu in ("l'app Claude", "l'app Codex", 'cd "$HOME/Movies/Publicitaire IA" && claude', "&& codex",
+                        'cd "$env:USERPROFILE\\Videos\\Publicitaire IA"; claude'):
+            self.assertIn(attendu, rouvrir)
+        self.assertIn("« Rouvrir l'assistant dans le dossier »", self.etape("**1. Bilan", "**2. `npm ci`**"))
+
+    def test_les_musiques_prennent_toutes_les_archives(self):
+        self.assertIn("toutes les archives `musiques-*.zip`", self.install)
+
+
 if __name__ == "__main__":
     unittest.main()
