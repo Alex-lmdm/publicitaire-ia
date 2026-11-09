@@ -33,10 +33,13 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
    nom) en grand sur la dernière image, qui bouge encore ; elle se tient 2,5 s au moins. Une petite
    carte figée sur un grand fond n'est pas une fin, même tenue le temps qu'il faut.
 6. **La typographie** : une entrée différente à chaque plan, et au moins un mot qui joue ce qu'il dit.
-7. **Le sujet ne rapetisse pas** : chaque plan montre son sujet au moins aussi grand qu'avant. Deux
-   objets ne se partagent pas l'écran en petit (l'un devant, l'autre en profondeur), et rien ne reste
-   collé à un bord avec le vide de l'autre côté. `cadre` regarde une médiane et ne le voit pas :
-   compare les planches case à case.
+7. **Le sujet ne rapetisse pas** : ce que le spectateur doit lire (les mots, un bouton, l'interface
+   qui porte l'information) reste lisible sur un téléphone à chaque instant où il compte. Un plan
+   large est permis s'il dure moins d'une seconde, ou s'il se resserre ensuite sur son sujet (un
+   recul qui révèle, une vue d'ensemble juste avant de plonger sur un détail). Restent interdits :
+   deux objets qui se partagent l'écran en petit pendant tout un plan (l'un devant, l'autre en
+   profondeur), et un sujet collé à un bord avec le vide de l'autre côté. `cadre` regarde une médiane
+   et ne le voit pas : compare les planches case à case.
 
 ## La marche
 
@@ -55,7 +58,8 @@ chaque plan, au niveau d'[ambition.md](ambition.md).
    puis le rendu.
 5. Compare les deux planches serrées (`planche exports/<vidéo>.mp4 --pas 0.5` et celle de l'étape 2)
    aux mêmes instants : chaque objectif doit se voir, et chaque règle de l'étape 3 tenir ; un plan
-   resté presque identique, ou dont le sujet a rapetissé, se refait.
+   resté presque identique, ou dont le sujet reste petit plus d'une seconde sans se resserrer, se
+   refait.
 6. Les collisions pendant les animations ([revue.md](revue.md), porte 2), puis la revue (contrôles,
    relecteur neuf, son, export) et la livraison mise à jour.
 

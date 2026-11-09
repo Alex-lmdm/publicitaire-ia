@@ -151,6 +151,16 @@ class SecondePasse(unittest.TestCase):
                 self.assertIn(lecon, page)
         self.assertIn("comme une règle qui vaudrait pour n'importe quelle image", lire(REF / "revue.md"))
 
+    def test_un_plan_large_bref_reste_permis(self):
+        """Alex (09/11/2026) : la règle du sujet qui ne rapetisse pas ne doit pas interdire un recul qui
+        révèle ; les deux cas de la V3 (deux téléphones petits tout le plan, un téléphone collé au bord)
+        restent interdits."""
+        page = lire(REF / "seconde-passe.md")
+        self.assertIn("Un plan large est permis s'il dure moins d'une seconde, ou s'il se resserre ensuite", page)
+        self.assertIn("deux objets qui se partagent l'écran en petit pendant tout un plan", page)
+        self.assertIn("un sujet collé à un bord avec le vide de l'autre côté", page)
+        self.assertIn("lisible sur un téléphone à chaque instant où il compte", page)
+
     def test_les_mots_d_une_interface_ne_sont_pas_des_faits(self):
         self.assertIn("jamais des barres grises à leur place", lire(REF / "interdits.md"))
 
