@@ -18,6 +18,7 @@ le projet :
 python3 ../../../tools/studio_motion.py rythme exports/page.mp4
 python3 ../../../tools/studio_motion.py cadre exports/page.mp4
 python3 ../../../tools/studio_motion.py palette exports/page.mp4
+python3 ../../../tools/studio_motion.py mouvement
 ```
 
 `rythme` doit répondre « ok » (au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian,
@@ -29,7 +30,8 @@ se corrige en approchant la caméra, en agrandissant le sujet ou en lui donnant 
 ([metier.md](metier.md), « Le cadre »). `palette` connaît les couleurs du kit et des logos du
 projet, et liste les autres instants : chacun est une vraie capture, l'interface d'une plateforme
 ou un objet connu construit pour la vidéo, ou se corrige ([interdits.md](interdits.md), « La
-palette »).
+palette »). `mouvement` lit les compositions et relève chaque geste de 0,3 à 1 s à vitesse
+constante (il démarre et s'arrête net) : donne-lui sa courbe, ou marque-le s'il est voulu.
 
 **Seul le MP4 rendu fait foi.** `check` et `snapshot` téléchargent une police qui manque, le rendu
 non : une police sans fichier passe en police système seulement dans le MP4. Le journal du rendu

@@ -23,7 +23,7 @@ Parle sa langue, simplement, sans jargon. Dis toujours qui agit maintenant. Ses 
 |---|---|---|
 | **Les interdits** | [interdits.md](references/interdits.md) | avant le script, avant d'animer, avant de livrer. Courts et non négociables : rien d'inventé, pas de diaporama de sa page, sa palette, la lecture, le son, les deux validations, rien qui quitte son ordinateur |
 | **L'ambition** | [ambition.md](references/ambition.md) | avant d'animer, puis à la passe du directeur. Le niveau visé, en principes : à toi d'écrire le code qui l'atteint |
-| **La boîte à outils** | [composition.md](references/composition.md) (le contrat d'une scène, à lire avant la première), [kit.md](references/kit.md), [metier.md](references/metier.md), [scenes.md](references/scenes.md), [son.md](references/son.md), [supports.md](references/supports.md), [voix.md](references/voix.md) | à la demande, quand il te faut une fonction, un chiffre, un exemple ou un piège. Rien n'y est un passage obligé |
+| **La boîte à outils** | [composition.md](references/composition.md) (le contrat d'une scène, à lire avant la première), [kit.md](references/kit.md), [gestes.md](references/gestes.md), [metier.md](references/metier.md), [scenes.md](references/scenes.md), [son.md](references/son.md), [supports.md](references/supports.md), [voix.md](references/voix.md) | à la demande, quand il te faut une fonction, un chiffre, un exemple ou un piège. Rien n'y est un passage obligé |
 
 Les étapes du film (brief, fiche, repérage, structure, script) ont chacune leur référence, lue au
 moment d'y arriver.

@@ -539,6 +539,139 @@
     });
   };
 
+  // --- Une ligne, une entrée : six façons de faire arriver une ligne -----------------------
+  // Pour qu'une ligne n'arrive pas comme la précédente. Aucune ne mesure le texte à l'écran (la police
+  // peut se charger après la construction) : chaque place vient de la mise en page elle-même.
+
+  // Le décodage : chaque lettre défile en signes, puis se fixe, de gauche à droite (o.depuis :
+  // "centre" pour partir du milieu). La vraie lettre tient sa place dès le début : la ligne ne
+  // bouge pas pendant qu'elle se décode. `couleur` : celle des signes (l'accent, un gris).
+  var SIGNES = { maj: "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*+=?", min: "abcdefghijkmnopqrstuvwxyz0123456789#%&*+=?" };
+  K.decoder = function (tl, el, t, o) {
+    o = o || {};
+    var duree = o.duree || 0.7, cadence = o.cadence || 18, n = 0;
+    var lettres = K.lettres(el).map(function (s) {
+      var c = s.textContent, vrai = K.el(null, "span", "k-decode-vrai", null), signe = K.el(null, "span", "k-decode-signe", null);
+      vrai.textContent = c;
+      s.textContent = "";
+      s.classList.add("k-decode");
+      s.appendChild(vrai);
+      s.appendChild(signe);
+      signe.setAttribute("data-layout-ignore", "");   // des signes de passage : pas un texte à lire
+      if (o.couleur) signe.style.color = o.couleur;
+      var pool = c.toLowerCase() === c && c.toUpperCase() !== c ? SIGNES.min : SIGNES.maj;
+      return { vrai: vrai, signe: signe, pool: pool, i: n++ };
+    });
+    var centre = (n - 1) / 2, loinMax = Math.max(centre, 1);
+    lettres.forEach(function (l) {
+      var rang = o.depuis === "centre" ? Math.abs(l.i - centre) / loinMax : n > 1 ? l.i / (n - 1) : 0;
+      // la ponctuation ne se brouille pas : elle paraît telle quelle au départ
+      l.fixe = /[0-9A-Za-zÀ-ÿ]/.test(l.vrai.textContent) ? t + duree * (0.3 + 0.7 * rang) : t;
+    });
+    var etat = { t: 0 }, fin = t + duree + 0.05;
+    var rendre = function () {
+      var u = etat.t;
+      lettres.forEach(function (l) {
+        var avant = u < t, fixe = u >= l.fixe;
+        l.vrai.style.opacity = !avant && fixe ? "1" : "0";
+        if (avant || fixe) { if (l.signe.textContent) l.signe.textContent = ""; return; }
+        var r = K.rng((l.i + 1) * 7919 + Math.floor((u - t) * cadence) * 104729);
+        var s = l.pool[Math.floor(r() * l.pool.length)];
+        if (l.signe.textContent !== s) l.signe.textContent = s;
+      });
+    };
+    tl.to(etat, { t: fin, duration: fin, ease: "none", onUpdate: rendre }, 0);
+    rendre();
+  };
+
+  // Le rouleau : un emplacement de la phrase où défilent des mots, comme un sélecteur qui tourne, et
+  // qui s'arrête sur le dernier (`mots`, le mot final en dernier). L'emplacement a la largeur du mot
+  // final : posé en fin de ligne ou seul sur sa ligne, il ne pousse rien. Un mot plus large que le
+  // final est coupé pendant qu'il passe.
+  K.rouleau = function (tl, el, mots, t, o) {
+    o = o || {};
+    el.textContent = "";
+    el.classList.add("k-rouleau");
+    K.el(el, "span", "k-rouleau-place").textContent = mots[mots.length - 1];
+    var bande = K.el(el, "span", "k-rouleau-bande");
+    mots.forEach(function (m, i) {
+      var e = K.el(bande, "span", "k-rouleau-mot");
+      e.textContent = m;
+      if (i < mots.length - 1) e.setAttribute("data-layout-ignore", "");   // un mot qui passe ne se lit pas
+    });
+    tl.fromTo(bande, { yPercent: 0 }, { yPercent: -100 * (mots.length - 1) / mots.length,
+      duration: o.duree || 0.9, ease: o.ease || "power3.inOut", immediateRender: true }, t);
+    return bande;
+  };
+
+  // La permutation : l'ancien mot part par le haut de sa place et le nouveau monte dans la même
+  // place (o.sens: "bas" pour l'inverse). La place a la largeur du plus large des deux.
+  K.permuter = function (tl, el, nouveau, t, o) {
+    o = o || {};
+    var ancien = K.el(null, "span", "k-permute-mot"), neuf = K.el(null, "span", "k-permute-mot");
+    while (el.firstChild) ancien.appendChild(el.firstChild);
+    neuf.textContent = nouveau;
+    el.classList.add("k-permute");
+    el.appendChild(ancien);
+    el.appendChild(neuf);
+    var s = o.sens === "bas" ? -1 : 1;
+    // l'ancien a presque quitté sa place quand le nouveau y entre : les deux ne se chevauchent pas
+    var d = o.duree || 0.5;
+    gsap.set(neuf, { yPercent: 115 * s });
+    tl.to(ancien, { yPercent: -115 * s, duration: d * 0.5, ease: "power3.in" }, t);
+    tl.to(neuf, { yPercent: 0, duration: d, ease: o.ease || "expo.out" }, t + d * 0.4);
+    return neuf;
+  };
+
+  // L'assemblage : les lettres viennent de part et d'autre de la ligne (une d'en haut, une d'en bas)
+  // et se rangent à leur place, du milieu vers les bords. La ligne masque ce qui dépasse.
+  K.assembler = function (tl, el, t, o) {
+    o = o || {};
+    var lettres = K.lettres(el);
+    el.classList.add("k-assemble");
+    lettres.forEach(function (l, i) {
+      tl.fromTo(l, { yPercent: i % 2 ? 130 : -130 }, { yPercent: 0, duration: o.duree || 0.6, ease: o.ease || "expo.out" },
+        t + Math.abs(i - (lettres.length - 1) / 2) * (o.decalage != null ? o.decalage : 0.025));
+    });
+    return lettres;
+  };
+
+  // L'ouverture : les mots arrivent collés, puis les espaces s'ouvrent (une ligne centrée s'ouvre
+  // depuis son milieu). Sur une ligne qui vient d'arriver (K.claque) ou qui tient déjà.
+  K.ouvrir = function (tl, el, t, o) {
+    o = o || {};
+    tl.fromTo(el, { wordSpacing: (o.de != null ? o.de : -0.28) + "em" },
+      { wordSpacing: "0em", duration: o.duree || 0.7, ease: o.ease || "expo.out" }, t);
+  };
+
+  // Les tranches : la ligne arrive coupée en bandes horizontales, décalées une à gauche, une à
+  // droite, qui se recollent ; à la fin, la ligne d'origine reprend la place (aucun joint ne reste).
+  // À utiliser seule sur sa ligne : un geste posé ensuite sur `el` ne toucherait pas les bandes.
+  K.tranches = function (tl, el, t, o) {
+    o = o || {};
+    var n = o.nombre || 4, d = o.duree || 0.55, ecart = o.ecart != null ? o.ecart : 8;
+    if (window.getComputedStyle && getComputedStyle(el).position === "static") el.style.position = "relative";
+    var html = el.innerHTML, porteur = K.el(null, "span", "k-tranche-texte"), bandes = [];
+    while (el.firstChild) porteur.appendChild(el.firstChild);
+    el.appendChild(porteur);
+    K.cacher(porteur);
+    for (var i = 0; i < n; i++) {
+      var b = K.el(el, "span", "k-tranche", html);
+      b.style.clipPath = "inset(" + (i * 100 / n) + "% 0 " + (100 - (i + 1) * 100 / n) + "% 0)";
+      b.setAttribute("aria-hidden", "true");
+      b.setAttribute("data-layout-ignore", "");   // des copies : le texte lu est la ligne d'origine
+      bandes.push(b);
+    }
+    bandes.forEach(function (b, i) {
+      K.cacher(b);
+      tl.set(b, { opacity: 1 }, t);
+      tl.fromTo(b, { xPercent: (i % 2 ? 1 : -1) * ecart }, { xPercent: 0, duration: d, ease: o.ease || "expo.out" }, t + i * 0.035);
+      tl.set(b, { opacity: 0 }, t + d + n * 0.035);
+    });
+    tl.set(porteur, { opacity: 1 }, t + d + n * 0.035);
+    return bandes;
+  };
+
   // --- Le schéma qui se trace et le fil rouge ---------------------------------------------
   // Un lien courbe entre deux points [x, y] de la composition (SVG `k-liens` posé sur `parent`,
   // aux pixels de la composition) ; `o.svg` pour en ajouter au même dessin. Rend le chemin.

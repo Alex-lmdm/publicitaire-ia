@@ -48,7 +48,8 @@ signale un texte parti trop tôt (`line_unread`).
   l'autre, plus bas). Une arrivée se pose sur une longue traîne (`expo.out`, `power4.out`) ;
   une traversée ou une sortie accélère (`power3.in`) ; la caméra et un fond qui change accélèrent
   et freinent (`power2.inOut`, `power3.inOut`). Vitesse constante seulement pour une tête de
-  lecture, une barre de progression, une rotation.
+  lecture, une barre de progression, une rotation, une dérive lente (`studio_motion.py mouvement`
+  relève les gestes qui l'ont reçue par erreur).
 - **Presque aucun rebond** : un objet d'interface qui arrive (une fenêtre, une carte, un bouton, une
   pastille) dépasse sa place de 1 à 4 %, `back.out(0.6)` à `back.out(1)` ; un texte, jamais (il se
   pose net) ; la caméra, presque pas. Au-delà, tout paraît en caoutchouc et plus rien n'a l'air
@@ -71,7 +72,8 @@ signale un texte parti trop tôt (`line_unread`).
   le porte. L'ancien sort, la boîte change de taille ou de place, le nouveau entre une fois la boîte
   posée (le premier signe d'une animation générée, sinon).
 - **Le mot fort, puis des lignes nettes** : le mot fort du plan a son entrée travaillée (masque,
-  lettres, machine à sous, claque…), différente d'un plan à l'autre ; les lignes d'appui et les
+  lettres, machine à sous, claque, décodage, rouleau, permutation, tranches… : [kit.md](kit.md)),
+  différente d'un plan à l'autre ; les lignes d'appui et les
   étiquettes apparaissent nettes (un fondu de 0,15 à 0,2 s, sans montée ni flou : `K.apparition`).
 - **Un seul foyer dans une interface** : le curseur et ce qu'il touche bougent, le reste se tient.
 - **Le flou de bougé** : réglé sur `#root` d'`index.html` (`data-motion-blur="on"`,

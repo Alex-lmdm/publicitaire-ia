@@ -18,7 +18,7 @@ def lire(p: Path) -> str:
 class TroisPiles(unittest.TestCase):
     def test_les_trois_piles_existent_et_le_skill_les_nomme(self):
         skill = lire(SKILL / "SKILL.md")
-        for f in ("interdits.md", "ambition.md", "metier.md", "kit.md", "scenes.md", "composition.md"):
+        for f in ("interdits.md", "ambition.md", "metier.md", "kit.md", "gestes.md", "scenes.md", "composition.md"):
             self.assertTrue((REF / f).is_file(), f)
             self.assertIn(f"references/{f}", skill, f)
         self.assertIn("Trois piles", skill)

@@ -2081,3 +2081,50 @@ class RevueDu9NovembreAvecFfmpeg(unittest.TestCase):
             mesure = sm.mesure_sonore(shutil.which("ffmpeg"), sortie)
             self.assertLessEqual(float(mesure["input_tp"]), -2.0, mesure)
             self.assertLessEqual(abs(float(mesure["input_i"]) + 13), 1.0, mesure)
+
+
+class MouvementsConstants(unittest.TestCase):
+    """`mouvement` relève un geste à vitesse constante, pas une horloge, une boucle ni une dérive."""
+
+    def releve(self, code: str) -> list[dict]:
+        return sm.mouvements_constants(code)
+
+    def test_un_geste_lineaire_est_releve(self):
+        r = self.releve('tl.to(carte, { x: 400, y: -20, duration: 0.6, ease: "none" }, 1.2);')
+        self.assertEqual(len(r), 1)
+        self.assertEqual(r[0]["proprietes"], ["x", "y"])
+        self.assertEqual(r[0]["ligne"], 1)
+
+    def test_linear_et_power0_aussi(self):
+        self.assertEqual(len(self.releve("tl.to(a, { scale: 2, duration: 0.5, ease: 'linear' }, 0);")), 1)
+        self.assertEqual(len(self.releve('tl.to(a, { y: 9, duration: 0.5, ease: "power0.none" }, 0);')), 1)
+
+    def test_ce_qui_passe(self):
+        passent = [
+            'tl.to(o, { t: D, duration: D, ease: "none", onUpdate: rendre }, 0);',          # horloge
+            'tl.to(o, { t: 4, duration: 0.6, ease: "none", onUpdate: rendre }, 0);',
+            'tl.to(p, { x: 4, duration: 0.5, yoyo: true, repeat: 2, ease: "none" }, 1);',  # boucle
+            'tl.to(roue, { rotation: 600, duration: 0.8, ease: "none" }, 1);',             # roue
+            'tl.to(b, { opacity: 0, duration: 0.5, ease: "none" }, 1);',                    # fondu
+            'tl.to(b, { x: 30, duration: 0.12, ease: "none" }, 1);',                        # secousse
+            'tl.to(fond, { y: -260, duration: 2.2, ease: "none" }, 0.1);',                  # dérive lente
+            'tl.to(fond, { y: -260, duration: D - 1, ease: "none" }, 1);',                  # durée calculée
+            'tl.to(c, { x: 9, duration: 0.6, ease: "none" }, 1); // vitesse-constante : tapis roulant',
+            'tl.to(c, { x: 9, duration: 0.6, ease: "expo.out" }, 1);',
+        ]
+        for code in passent:
+            with self.subTest(code=code):
+                self.assertEqual(self.releve(code), [])
+
+    def test_la_ligne_du_geste(self):
+        code = "var a = 1;\n\ntl.fromTo(m, { y: 40 }, {\n  y: 0,\n  duration: 0.4,\n  ease: \"none\"\n}, 2);"
+        self.assertEqual([r["ligne"] for r in self.releve(code)], [6])
+
+    def test_les_modeles_livres_passent(self):
+        """Les scènes prêtes et les styles ne donnent jamais l'exemple d'un geste à vitesse constante."""
+        fichiers = list((RACINE / "templates" / "scenes").glob("*.html")) + \
+            list((RACINE / ".claude" / "skills" / "studio" / "styles").glob("*/compositions/*.html"))
+        self.assertTrue(fichiers)
+        for f in fichiers:
+            with self.subTest(fichier=f.name):
+                self.assertEqual(sm.mouvements_constants(f.read_text(encoding="utf-8")), [])

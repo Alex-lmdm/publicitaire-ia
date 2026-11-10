@@ -3095,6 +3095,100 @@ def verdict_cadre(occupations: list[float], fps: int = CADRE_FPS) -> dict:
             "plages": plages}
 
 
+# ---------------------------------------------------------------------------
+# Les gestes à vitesse constante : un objet qui part, glisse ou grandit sans accélérer ni ralentir
+# démarre et s'arrête net, et fait mécanique. On lit les compositions (pas le MP4) : chaque tween dont
+# la courbe est linéaire, qui bouge quelque chose de visible, le temps d'un geste. Une dérive lente de
+# plus d'une seconde (un fond qui glisse, une caméra qui avance, une barre de progression) passe : à
+# vitesse constante, elle ne se voit pas (relevé sur les vidéos du 25/10 au 09/11/2026).
+# ---------------------------------------------------------------------------
+EASE_LINEAIRE = re.compile(r"""ease\s*:\s*(?:["'](?:none|linear|power0(?:\.\w+)?)["']|Linear\.easeNone|Power0\.\w+)""")
+PROPRIETES_VISIBLES = {"x", "y", "z", "xPercent", "yPercent", "scale", "scaleX", "scaleY", "opacity", "autoAlpha",
+                       "left", "top", "right", "bottom", "width", "height", "filter", "clipPath", "rotationX",
+                       "rotationY", "skewX", "skewY", "backgroundPosition", "strokeDashoffset", "wordSpacing",
+                       "letterSpacing"}
+ROTATIONS = {"rotation", "rotationZ", "rotate"}
+GESTE_MIN, GESTE_MAX = 0.3, 1.0   # s : en dessous, un scintillement, une secousse ; au-dessus, une dérive
+FONDUS = {"opacity", "autoAlpha"}
+
+
+def _objet_autour(texte: str, i: int) -> tuple[int, int] | None:
+    """Les bornes de l'objet `{…}` qui contient la position i (accolades équilibrées)."""
+    prof, debut = 0, None
+    for j in range(i, -1, -1):
+        c = texte[j]
+        if c == "}":
+            prof += 1
+        elif c == "{":
+            if prof == 0:
+                debut = j
+                break
+            prof -= 1
+    if debut is None:
+        return None
+    prof = 0
+    for j in range(debut, len(texte)):
+        if texte[j] == "{":
+            prof += 1
+        elif texte[j] == "}":
+            prof -= 1
+            if prof == 0:
+                return debut, j + 1
+    return None
+
+
+def mouvements_constants(texte: str) -> list[dict]:
+    """Les gestes à vitesse constante d'un fichier : un tween linéaire de GESTE_MIN à GESTE_MAX
+    secondes (durée écrite en chiffres) qui déplace, agrandit, découpe ou floute. Exceptés : une
+    horloge (onUpdate), une boucle (repeat), une rotation seule (une roue), un simple fondu, une durée
+    calculée (le plus souvent une dérive jusqu'à la fin de la scène), et la ligne qui porte le
+    commentaire `vitesse-constante`."""
+    trouves = []
+    for m in EASE_LINEAIRE.finditer(texte):
+        ligne = texte.count("\n", 0, m.start()) + 1
+        fin_ligne = texte.find("\n", m.start())
+        if "vitesse-constante" in texte[texte.rfind("\n", 0, m.start()) + 1:fin_ligne if fin_ligne >= 0 else None]:
+            continue
+        bornes = _objet_autour(texte, m.start())
+        if not bornes:
+            continue
+        objet = texte[bornes[0] + 1:bornes[1] - 1]
+        cles = set(re.findall(r"(?:^|[{,\s])([A-Za-z_$][\w$]*)\s*:", objet))
+        if cles & {"onUpdate", "repeat"}:
+            continue
+        visibles = cles & (PROPRIETES_VISIBLES | ROTATIONS)
+        if not visibles or visibles <= ROTATIONS or visibles <= FONDUS:
+            continue
+        d = re.search(r"duration\s*:\s*([0-9]*\.?[0-9]+)\s*[,}\s]", objet + " ")
+        duree = float(d.group(1)) if d else None
+        if duree is None or not GESTE_MIN <= duree <= GESTE_MAX:
+            continue
+        trouves.append({"ligne": ligne, "proprietes": sorted(visibles), "duree": duree})
+    return trouves
+
+
+def cmd_mouvement(a) -> None:
+    projet = Path(a.projet)
+    fichiers = ([projet / "index.html"] if (projet / "index.html").is_file() else []) + \
+        sorted((projet / "compositions").glob("*.html"))
+    if not fichiers:
+        sys.exit(f"ERREUR : ni index.html ni compositions/ dans {projet} : lance-la depuis le projet de la vidéo.")
+    total = 0
+    for f in fichiers:
+        for t in mouvements_constants(f.read_text(encoding="utf-8")):
+            total += 1
+            duree = f"{t['duree']:.2f} s".replace(".", ",")
+            print(f"✗ {f.relative_to(projet)}:{t['ligne']} : {', '.join(t['proprietes'])} à vitesse constante ({duree})")
+    if not total:
+        print("ok : aucun geste à vitesse constante (de 0,3 à 1 s ; les dérives plus longues, les horloges, "
+              "les boucles, les rotations et les fondus passent).")
+        return
+    print("→ une arrivée en expo.out, un départ en power3.in, un trajet ou un zoom en power3.inOut, une dérive "
+          "lente en sine.inOut. Voulu (un défilement continu, un tapis roulant) : ajoute `// vitesse-constante : "
+          "<raison>` sur la ligne (references/metier.md, « Les courbes et les durées »).")
+    sys.exit(1)
+
+
 def cmd_cadre(a) -> None:
     ffmpeg, ffprobe = binaire("ffmpeg"), binaire("ffprobe")
     if not ffmpeg or not ffprobe:
@@ -4674,6 +4768,10 @@ def parseur() -> argparse.ArgumentParser:
     ca = s.add_parser("cadre", help="Relève les instants où l'image est presque vide (un petit sujet au milieu d'un grand fond).")
     ca.add_argument("video")
     ca.set_defaults(f=cmd_cadre)
+    mv = s.add_parser("mouvement", help="Relève les gestes à vitesse constante des compositions (ils démarrent et s'arrêtent "
+                                        "net).")
+    mv.add_argument("projet", nargs="?", default=".")
+    mv.set_defaults(f=cmd_mouvement)
     pl = s.add_parser("planche", help="Planche de contrôle avec les zones dessinées.")
     pl.add_argument("video")
     pl.add_argument("--support", choices=sorted(SUPPORTS), help="Défaut : celui du projet.")

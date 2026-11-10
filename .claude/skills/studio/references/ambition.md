@@ -100,8 +100,8 @@ Le kit ([kit.md](kit.md)) retire de la friction (le curseur et ses clics, la fra
 la caméra et son zoom, les objets connus, les mots qui claquent) ; tout le reste s'écrit sur
 mesure, en GSAP et en CSS. Les scènes prêtes de `templates/scenes/` et celles des styles sont des
 **exemples** ([scenes.md](scenes.md)) : prends-y un geste, un calcul, une idée, ou copie-en une et
-transforme-la ; aucune n'est un passage obligé. Les repères chiffrés du métier (courbes, durées,
-passages, cadre, typographie) sont dans [metier.md](metier.md), à consulter quand tu hésites.
+transforme-la ; aucune n'est un passage obligé. Un plan sans idée : [gestes.md](gestes.md), rangé
+par besoin. Les repères chiffrés du métier sont dans [metier.md](metier.md), quand tu hésites.
 
 Avec un style 1 à 8, sa grammaire décide des gestes (un style à plat reste à plat) ; cette page
 garde le niveau : des passages causés, des interfaces qui vivent, des mots qui jouent, la finition.
