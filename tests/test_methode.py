@@ -52,6 +52,23 @@ class TroisPiles(unittest.TestCase):
         self.assertLess(total, 650, total)
         self.assertLess(len((REF / "interdits.md").read_text(encoding="utf-8").splitlines()), 110)
 
+    def test_trois_arrets_avant_de_fabriquer(self):
+        """Décision d'Alex du 10/11/2026 : le client attend le moins possible. L'accueil ne pose qu'une
+        question (ce qu'il vend n'était lu par aucun outil), la fiche part avec les trois idées, le
+        script avec le style et la musique. Les deux validations restent."""
+        skill = " ".join((SKILL / "SKILL.md").read_text(encoding="utf-8").split())
+        for attendu in ("Trois arrêts avant de fabriquer, pas un de plus", "La fiche et trois idées, dans un seul message",
+                        "Le script, avec le style et la musique", "première validation obligatoire",
+                        "deuxième validation obligatoire", "« ok, 0, 1 »"):
+            self.assertIn(attendu, skill)
+        brief = (REF / "brief.md").read_text(encoding="utf-8")
+        self.assertIn("Une seule question, une seule fois", brief)
+        for doc in (REF / "brief.md", RACINE / "INSTALL.md", RACINE / "README.md"):
+            self.assertNotRegex(doc.read_text(encoding="utf-8"), r"(?i)ce que tu vends|tu vends surtout|\"vend\"", doc.name)
+        ecriture = " ".join((REF / "ecriture.md").read_text(encoding="utf-8").split())
+        self.assertIn("Le script part **seul**", ecriture)      # rien à choisir, ou une voix off
+        self.assertIn("dans le message de la fiche et des trois idées", " ".join((REF / "reperage.md").read_text(encoding="utf-8").split()))
+
 
 class Interdits(unittest.TestCase):
     """Les leçons payées cher : chacune doit rester écrite dans la page des interdits."""

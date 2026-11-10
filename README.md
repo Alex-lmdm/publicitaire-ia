@@ -6,7 +6,7 @@ habituel. Pas d'abonnement en plus.
 
 Tu vends une formation, un coaching, un logiciel, un template ? Tu écris « Fais-moi une nouvelle
 vidéo » (raccourci : `/studio`, dans Codex `$studio`). Ton assistant
-te pose quelques questions à choix (une seule fois sur ta marque et ce que tu vends, puis à chaque
+te pose quelques questions à choix (une seule fois, d'où prendre ta marque ; puis à chaque
 vidéo : le but et où tu vas la mettre), et fabrique la vidéo.
 
 **Du texte à l'écran et de la musique, par défaut.** Tu n'as rien à enregistrer : la musique vient

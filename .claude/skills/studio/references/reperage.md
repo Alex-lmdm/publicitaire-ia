@@ -8,7 +8,7 @@ et ses photos n'entrent que pour montrer le résultat ([interdits.md](interdits.
 diaporama de sa page »).
 
 Elle vient juste après la porte de vérité (`offre.md`), avant la structure. Elle prend quelques
-minutes et ne pose au plus qu'une question au client.
+minutes et ne pose au plus qu'une question au client, dans le message de la fiche et des trois idées.
 
 ## 1. Le design de sa page
 
@@ -68,8 +68,7 @@ groupe, les portfolios d'élèves avant / après [sources/eleves], leurs message
 ## 3. Ce qui manque : une seule question
 
 Si une surface importante n'a pas de matière (une capture floue, aucune image de son produit en
-action), ou si des phrases du script n'auraient que du texte à montrer, demande-la **en un seul
-message à choix**, avec ta recommandation ; vise d'abord la matière de ces plans-là (faute de
+action), ou si des phrases du script n'auraient que du texte à montrer, demande-la **à choix**, dans le message de la fiche et des trois idées (SKILL.md, étape 3), avec ta recommandation ; vise d'abord la matière de ces plans-là (faute de
 matière, une vidéo finit en disques et en carrés seuls à l'écran) :
 
 > Pour que ta vidéo montre vraiment ton produit, il me manque des images de [ton logiciel / ton
@@ -80,7 +79,7 @@ matière, une vidéo finit en disques et en carrés seuls à l'écran) :
 > Je te conseille a. Réponds par lettres (« a b »).
 
 Sans réponse, ou « c », avance avec la matière disponible et dis dans la livraison ce qu'une
-capture aurait apporté. Le style de la vidéo ne se demande pas ici : il se choisit à l'étape 4,
+capture aurait apporté. Le style de la vidéo ne se demande pas ici : il se choisit à l'étape 3 bis,
 le style maison (0), un des 8 styles, ou d'après une vidéo qu'il aime (section 4).
 
 ## 4. La vidéo de référence (si le client en donne une)

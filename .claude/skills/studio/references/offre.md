@@ -80,7 +80,8 @@ de fermeture.
 
 ## 4. Le montrer au client
 
-Cinq à sept lignes, dans ses mots à lui, pas un JSON :
+Dans le même message que les trois idées (SKILL.md, étape 3) : la fiche d'abord, les idées ensuite,
+une seule réponse attendue. Cinq à sept lignes, dans ses mots à lui, pas un JSON :
 
 > Voici ce que j'ai compris de ta page (exemple) :
 > - **Freelance en 8 semaines**, pour les illustrateurs qui débutent : trouver tes premiers clients.
@@ -92,7 +93,8 @@ Cinq à sept lignes, dans ses mots à lui, pas un JSON :
 > C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si quelque chose est faux ou
 > manque.
 
-Une correction du client met à jour la fiche (source `client`), puis on revérifie. Son accord
+Une correction du client met à jour la fiche (source `client`), puis on revérifie. Son accord (un
+« ok », ou le choix d'une idée sans correction)
 s'écrit en tête de `PLAN.md` (« Fiche validée par le client le <date> ») : une session reprise
 plus tard sait ainsi où en est la vidéo.
 

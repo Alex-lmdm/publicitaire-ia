@@ -30,10 +30,11 @@ pas ; son ambition (`references/ambition.md`) donne le niveau visé ; le reste e
   sons, planche, rythme, calage, cadre, palette, mouvement, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
-  plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide ou non validée (« Fiche validée par le
-  client le … » absent du plan), étape 2 ; fiche validée sans repérage, étape 2 bis ; repérage fait
-  sans idée retenue, étape 3 ; idée retenue sans « Script validé par le client le … », étape 3 bis ;
-  script validé sans « Style et musique », étape 4 ; sinon, le plan, la fabrication, puis la passe
+  plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide, étape 2 ; fiche remplie sans « Fiche
+  validée par le client le … » dans le plan, le repérage puis le message de l'étape 3 (la fiche et
+  les trois idées) ; fiche validée sans « Script validé par le client le … », étape 3 bis ; script
+  validé sans « Style et musique », la page des styles et des musiques (étape 3 bis) ; sinon,
+  l'étape 4 (la bande-son, le plan), la fabrication, puis la passe
   du directeur artistique (section « Passe du directeur » du plan) et la revue.
 - Retouche demandée : relis d'abord « Interdits de cette vidéo » dans `{{DOSSIER}}PLAN.md` (les
   défauts déjà corrigés), modifie seulement ce qui est demandé, puis refais la livraison de CETTE

@@ -98,8 +98,26 @@ Plan par plan, ce qu'on voit d'abord, les mots ensuite, sans jargon de fabricati
 >    « Il classe. » (4,5 s)
 > 3. …
 >
-> En tout : 36 mots à lire, 0,9 par seconde. Dis-moi ce que tu changes (un mot, un plan, l'ordre),
-> ou « ok ».
+> En tout : 36 mots à lire, 0,9 par seconde. Dis-moi ce que tu changes (un mot, un plan, l'ordre).
+>
+> Je t'ai aussi ouvert une page avec les styles et 3 musiques pour cette vidéo. Je te conseille le
+> style 0, « Sur mesure », notre style maison, et la musique 1. Réponds par exemple « ok, 0, 1 » : ok
+> pour le script, puis le style, puis la musique. Ou « ok, choisis ».
+
+Le script et la page partent dans le même message (SKILL.md, étape 3 bis) :
+
+- Un style et une musique donnés sans retouche valident le script. Une retouche : corrige-la et
+  confirme en une ligne ; la page ne se rouvre que si la durée change de plus d'un quart.
+- Un autre style (le lien d'une vidéo qu'il aime : `reference` ; une description ; « aucun ») : la
+  fiche du style 0, « Quand il décrit un autre style », jamais un style improvisé. S'il a noté une
+  vidéo dont il aime le style (`reference_style` de `studio.config.json`), propose-la aussi
+  ([reperage.md](reperage.md), section 4).
+- Son propre morceau, ou un morceau de son compte Epidemic Sound, remplace le choix musical
+  ([son.md](son.md)).
+- Le script part **seul**, sans la page, quand il n'y a rien à choisir (un style gardé et « choisis
+  toujours pour moi », la boucle muette d'une section de page) ou **avec une voix off** : il est le
+  texte de la voix, il se valide d'abord, la voix se fait, puis le style et la musique se
+  choisissent pour aller dessous ([voix.md](voix.md)).
 
 ## L'accroche (les 2 à 3 premières secondes)
 

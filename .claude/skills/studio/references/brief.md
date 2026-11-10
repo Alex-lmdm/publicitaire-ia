@@ -1,51 +1,44 @@
-# Les questions à choix : le profil, puis le brief
+# Les questions à choix : la marque, puis le brief
 
 Le client n'est pas technique et ne sait pas toujours ce qu'il veut. Des choix numérotés lui
 évitent la page blanche : il répond « 1, b, A » en trois secondes, ou décrit autre chose. Pose
 toujours toutes les questions d'une étape **dans un seul message**, avec une valeur par défaut
 recommandée, et saute celles dont tu connais déjà la réponse.
 
-## Au premier usage : la marque et le profil (une seule fois)
+## Au premier usage : sa marque (une seule question, une seule fois)
 
-Si `marque.json` ou `studio.config.json` n'existe pas à la racine du dossier, commence par là, en
-un seul message (saute la question dont tu connais déjà la réponse) :
+Si `marque.json` ou `studio.config.json` n'existe pas à la racine du dossier, commence par là :
 
-> Bienvenue dans Publicitaire IA 🎬 Trois questions, une seule fois, pour que tes vidéos portent ta marque et partent
-> toujours de ton offre :
+> Bienvenue dans Publicitaire IA 🎬 Une seule question, une seule fois, pour que tes vidéos portent ta
+> marque :
 >
-> **1. Ta marque (couleurs, polices, logo) : je la prends où ?**
+> **Ta marque (couleurs, polices, logo) : je la prends où ?**
 > a) sur ta page de vente : colle son lien (le plus simple) ·
 > b) sur des images ou des captures de ta marque : glisse-les ici ·
 > c) sur une vidéo dont tu aimes le style : son lien, ou le fichier ·
 > d) j'ai Monteur IA : je reprends ses réglages
 >
-> **2. Qu'est-ce que tu vends surtout ?** (plusieurs choix possibles)
-> a) une formation · b) un coaching ou un accompagnement · c) un logiciel ou une app ·
-> d) un template, un guide, un ebook · e) une communauté · f) autre chose (dis-moi)
->
-> **3. La musique de tes vidéos** (tes vidéos sont en texte à l'écran et en musique ; une voix
-> off s'ajoute quand tu veux, il suffit de la demander) :
-> A) mes 35 musiques de lancement (le bonus de ta formation) : colle ici la phrase « Installe mes
-> musiques de lancement » du module Musique ·
-> B) j'ai déjà ma musique : glisse le fichier ici ·
-> C) plus tard
->
-> Réponds par exemple « a monsite.fr/formation, a, A ».
+> Réponds par exemple « a monsite.fr/formation ».
 
-Saute la question 3 si `python3 tools/studio_motion.py musiques` dit qu'elles sont installées (le cas
-normal : l'installation les a mises) ; il n'y a alors que deux questions.
+Ne demande pas ce qu'il vend : sa page le dit, et le brief de chaque vidéo demande ce qu'on présente.
 
-La réponse 1 se traite avec [marque.md](marque.md) : l'outil lit la source, puis tu lui montres
-sa marque et tu attends son accord. La réponse 3 A : `python3 tools/studio_motion.py musiques installer --lien "<le lien de sa phrase>"`
-([son.md](son.md), « Les musiques de lancement ») ;
-3 B : `python3 tools/studio_motion.py marque regler --musique "<fichier>"`. Enregistre le reste
-dans `studio.config.json` : `{"vend": [...], "page": "...", "voix": "texte", "dm": null,
-"reference_style": null, "supports_habituels": [], "preferences": []}` (`page` vient de la
-réponse 1 a, sinon du premier brief ; `voix` reste `texte` tant qu'il ne demande pas de voix off,
-puis `voix-ia` (Google AI Studio, avec `voix_ia` pour le nom de sa voix), `ma-voix` ou
-`voix-heygen` (avec `voix_heygen` pour l'id de sa voix). Les préférences dites
-plus tard (« toujours sans musique », « choisis toujours la musique pour moi », « mes vidéos en
-noir ») s'y ajoutent et se relisent à chaque vidéo.
+La réponse se traite avec [marque.md](marque.md) : l'outil lit la source, puis tu lui montres sa
+marque et tu attends son accord. Écris ensuite `studio.config.json` : `{"page": "...", "voix":
+"texte", "dm": null, "reference_style": null, "supports_habituels": [], "preferences": []}` (`page`
+vient de la réponse a, sinon du premier brief ; `voix` reste `texte` tant qu'il ne demande pas de
+voix off, puis `voix-ia` (Google AI Studio, avec `voix_ia` pour le nom de sa voix), `ma-voix` ou
+`voix-heygen` (avec `voix_heygen` pour l'id de sa voix)). Les préférences dites plus tard (« toujours
+sans musique », « choisis toujours la musique pour moi », « mes vidéos en noir ») s'y ajoutent et se
+relisent à chaque vidéo.
+
+**Ses musiques.** `python3 tools/studio_motion.py musiques` dit si les 35 musiques de lancement sont
+installées (le cas normal : l'installation les a mises). S'il en manque, ne pose pas de question :
+termine ton message de bienvenue par une ligne, « Tes musiques de lancement ne sont pas toutes
+installées : colle quand tu veux la phrase « Installe mes musiques de lancement » du module Musique
+de ta formation. » Sa phrase collée : `python3 tools/studio_motion.py musiques installer --lien "<le
+lien de sa phrase>"` ([son.md](son.md), « Les musiques de lancement »). Sa propre musique pour toutes
+ses vidéos (un fichier qu'il glisse) : `python3 tools/studio_motion.py marque regler --musique
+"<fichier>"`.
 
 ## À chaque vidéo : le brief
 

@@ -35,6 +35,8 @@ Recommande-en une avec la raison, puis attends.
 
 ## Le format de la proposition
 
+Le message s'ouvre sur la fiche de l'offre ([offre.md](offre.md), « Le montrer au client »), puis :
+
 > Trois idées pour la vidéo de ta page de vente (exemple : une formation pour devenir
 > illustrateur freelance) :
 >
@@ -49,7 +51,7 @@ Recommande-en une avec la raison, puis attends.
 > de chacun, puis l'offre.
 >
 > Je te conseille la 1 : ta page démarre muette, et elle se comprend sans le son. Le Reel suivra
-> la même idée, en 30 secondes. Réponds 1, 2 ou 3, ou mélange.
+> la même idée, en 30 secondes. Réponds 1, 2 ou 3 (ou mélange), ou corrige-moi d'abord si j'ai mal compris ton offre.
 
 Pour une **pub**, propose de garder les trois : trois accroches sur le même corps, c'est ainsi
 qu'on trouve la gagnante.

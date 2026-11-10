@@ -152,13 +152,13 @@ Codex (`.agents/skills/`) est là ; sinon il dit quoi relancer (`npm ci` ou `npm
 **7. Bilan.** Première installation : un tableau ✅ / ❌ (dossier, Node, Python, ffmpeg, npm ci,
 navigateur, app HyperFrames ou « sans l'app », musiques, test final, dont HyperFrames à la bonne
 version et les skills pour Codex). Si tout est ✅, conclus par :
-« C'est installé. Écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce
-que tu vends, une seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
+« C'est installé. Écris « Personnalise Publicitaire IA à ma marque » : je te demande d'où prendre ta marque,
+une seule fois, puis on fait ta première vidéo. » Si tu as téléchargé le dossier à l'étape 0 (tu étais
 ouvert ailleurs, ses instructions ne sont donc pas encore chargées), conclus plutôt par : « C'est
 installé dans ton dossier Films (Vidéos sous Windows). Ouvre le dossier Publicitaire IA dans ton
 assistant, dans une nouvelle conversation (puis le geste exact, ci-dessous), et écris « Personnalise
-Publicitaire IA à ma marque » : je te demande d'où prendre ta marque et ce que tu vends, une seule
-fois, puis on fait ta première vidéo. » Avec Codex, ajoute ce qui est à faire une fois (ci-dessous).
+Publicitaire IA à ma marque » : je te demande d'où prendre ta marque, une seule fois, puis on fait
+ta première vidéo. » Avec Codex, ajoute ce qui est à faire une fois (ci-dessous).
 Mise à jour : pas de tableau, une seule ligne,
 « Publicitaire IA est à jour, tout est ✅. » (le tableau ne s'affiche que si une étape a échoué).
 

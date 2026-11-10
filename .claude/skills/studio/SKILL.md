@@ -47,77 +47,81 @@ Windows : `python` (ou `py -3`) au lieu de `python3`, `npm.cmd` et `npx.cmd` au 
 |---|---|---|
 | 0. La marque et le profil (une seule fois) | [brief.md](references/brief.md), [marque.md](references/marque.md) | `marque.json` validé, `studio.config.json` |
 | 1. Le brief à choix | [brief.md](references/brief.md) | le dossier de la vidéo (`nouvelle`) |
-| 2. La porte de vérité | [offre.md](references/offre.md) | `OFFRE.json` validé par le client |
+| 2. La porte de vérité | [offre.md](references/offre.md) | `OFFRE.json` rempli et vérifié |
 | 2 bis. Le repérage | [reperage.md](references/reperage.md) | l'inventaire de sa vraie matière |
-| 3. La structure et trois idées | [structures.md](references/structures.md), [angles.md](references/angles.md) | l'idée choisie |
-| 3 bis. Le script | [ecriture.md](references/ecriture.md), [interdits.md](references/interdits.md) | le film en plans, validé par le client |
-| 4. Le style, la musique, le plan | [styles/README.md](styles/README.md) et la fiche du style, [son.md](references/son.md), [ambition.md](references/ambition.md) | `PLAN.md` scène par scène |
+| 3. La fiche et trois idées, dans un seul message | [structures.md](references/structures.md), [angles.md](references/angles.md) | la fiche validée par le client, l'idée choisie |
+| 3 bis. Le script, avec le style et la musique | [ecriture.md](references/ecriture.md), [interdits.md](references/interdits.md), [styles/README.md](styles/README.md), [son.md](references/son.md) | le film en plans validé par le client, le style et le morceau choisis |
+| 4. La bande-son, puis le plan | la fiche du style, [son.md](references/son.md), [ambition.md](references/ambition.md) | `PLAN.md` scène par scène |
 | 5. La fabrication | [composition.md](references/composition.md), puis la boîte à outils à la demande | les scènes, le premier rendu |
 | 5 bis. La passe du directeur artistique | [ambition.md](references/ambition.md), « La passe du directeur artistique » | la version travaillée, rendue |
 | 6. La revue | [revue.md](references/revue.md) | une vidéo qui passe ses portes |
 | 7. La livraison | [livraison.md](references/livraison.md) | `livraison/` complet |
 
+**Trois arrêts avant de fabriquer, pas un de plus** : le brief (1), la fiche avec les trois idées
+(3), le script avec le style et la musique (3 bis). Entre deux arrêts, tu ne lui demandes rien.
+
 ### 0. La marque et le profil, une seule fois
 
-Si `marque.json` ou `studio.config.json` manque à la racine : les questions de bienvenue de
-`brief.md`, puis sa marque avec `marque.md`. L'outil la lit, tu lui montres l'aperçu, **tu attends
-son accord**, puis `marque valider`. Ensuite, relis `studio.config.json` à chaque vidéo.
+Si `marque.json` ou `studio.config.json` manque à la racine : la question de bienvenue de `brief.md`
+(une seule : d'où prendre sa marque), puis sa marque avec `marque.md`. L'outil la lit, tu lui montres
+l'aperçu, **tu attends son accord**, puis `marque valider`. Relis `studio.config.json` à chaque vidéo.
 
 ### 1. Le brief à choix
 
 Un seul message à choix numérotés : le but, où elle sera mise (chaque support aura son format), ce
 qu'on présente. Recommande toujours une combinaison ; saute ce que tu sais déjà. Un style demandé
 d'emblée (« fais-moi une vidéo dans le style 3 », « dans le style Verre sombre », « le template
-3 ») se note et ne se redemande pas à l'étape 4. Puis `python3 tools/studio_motion.py nouvelle
+3 ») se note et ne se redemande pas à l'étape 3 bis. Puis `python3 tools/studio_motion.py nouvelle
 "<sujet>" --objectif <objectif> --videos <supports>` : le dossier naît dans `videos/<sujet> · <date>/`,
 avec un projet par vidéo et par format.
 
 ### 2. La porte de vérité
 
 Capture sa page, remplis `OFFRE.json` avec la source de chaque fait, `offre "<dossier>"` jusqu'à
-« ok ». Montre-lui ce que tu as compris en 5 à 7 lignes : « C'est tout ce que ta vidéo aura le
-droit d'affirmer. Corrige-moi si quelque chose est faux ou manque. » **Attends sa réponse** :
-première validation obligatoire.
+« ok ». Ne t'arrête pas ici, sauf si sa page ne se laisse pas lire (`offre.md`) : la fiche se montre
+à l'étape 3, avec les trois idées.
 
 ### 2 bis. Le repérage
 
 L'univers de sa page, l'inventaire de tout ce qui peut se montrer de vrai, les objets que son public
-reconnaît, les logos de ses outils. S'il manque une matière importante : **une seule question à
-choix**. Une vidéo de référence donnée ici : `reference "<dossier>" "<lien>"`.
+reconnaît, les logos de ses outils. Une matière importante manque : **une seule question à choix**,
+dans le message de l'étape 3. Une vidéo de référence donnée ici : `reference "<dossier>" "<lien>"`.
 
-### 3. La structure et trois idées
+### 3. La fiche et trois idées, dans un seul message
 
-L'objectif donne la structure ; propose **trois idées réellement différentes** dedans, recommande-en
-une, **attends son choix** (sauf s'il t'a dit de choisir). Pour une pub, propose de garder les trois
-comme accroches à tester.
+L'objectif donne la structure ; trouve **trois idées réellement différentes** dedans. Puis **un seul
+message** ([angles.md](references/angles.md), « Le format de la proposition ») : la fiche en 5 à 7
+lignes (« C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si quelque chose est faux
+ou manque. »), les trois idées, celle que tu recommandes, la question du repérage s'il y en a une.
+**Attends sa réponse** : première validation obligatoire. Un choix sans correction valide la fiche
+(note-le dans `PLAN.md`) ; une correction passe d'abord dans `OFFRE.json`. S'il t'a dit de choisir :
+la fiche et ton idée seule. Pour une pub, propose de garder les trois comme accroches à tester.
 
-### 3 bis. Le script, validé avant tout le reste
+### 3 bis. Le script, avec le style et la musique
 
 Le film en **plans** : pour chacun, ce qu'on voit se passer, puis 0 à 8 mots à l'écran, et la clé de
 `OFFRE.json` qui le prouve. Le dernier plan porte l'appel à l'action **du support** (`supports`
 le donne : « Commente MOT », « lien en bio », le bouton d'une pub…), tiré de la clé `cta` de la
 fiche. `lecture "<mots du plan 1>" "<mots du plan 2>" … --duree <s> --final` donne la tenue et le
 compte (`--final` : le dernier texte est l'écran final, 3 s au moins) : **au plus un mot à lire par
-seconde**. Montre-le plan par plan, **attends son accord** : deuxième validation obligatoire, c'est
-ici qu'une vidéo se réussit. Note-la dans `PLAN.md` (« Script validé par le client le <date> »).
-Avec une voix off, ce script est le texte de la voix ([voix.md](references/voix.md)).
+seconde**.
 
-### 4. Le style, la musique, puis le plan
+Le script écrit, ouvre la page des styles et des musiques depuis le projet du support principal
+(`musiques choisir --duree <durée du script> --ouvrir` : le style 0, **« Sur mesure », notre style
+maison**, les 8 styles et trois musiques, ton conseil marqué ; un style déjà connu : `--sans-styles`),
+puis envoie **un seul message** : le script plan par plan, et « Réponds par exemple « ok, 0, 1 » :
+ok pour le script, puis le style, puis la musique. Ou « ok, choisis ». » **Attends sa réponse** :
+deuxième validation obligatoire, c'est ici qu'une vidéo se réussit. Note-la dans `PLAN.md` (« Script
+validé par le client le <date> », puis « Style et musique »). Le message, ses réponses possibles et
+les cas où le script part seul (rien à choisir, une voix off) : [ecriture.md](references/ecriture.md),
+« Montrer le script au client » ; le conseil de style : [styles/README.md](styles/README.md).
 
-`musiques choisir --ouvrir` lui montre en vidéo le style 0, **« Sur mesure », notre style maison**,
-puis les 8 styles, et trois musiques ; la page marque ton conseil, le style 0 sans `--style`
-([styles/README.md](styles/README.md), « Appliquer un style », point 1, dit quand en conseiller un
-autre). Il répond « 0, 2 », écrit « choisis » (ton conseil), colle le lien d'une vidéo qu'il aime
-(`reference`), décrit ce qu'il veut ou répond « aucun » : la fiche du style 0, « Quand il décrit un
-autre style », jamais un style improvisé. Un style déjà connu ne se redemande
-pas (`--sans-styles`). S'il a noté une vidéo dont il aime le style (`reference_style` de
-`studio.config.json`), propose-la aussi : reprendre sa grammaire, c'est `reference`
-([reperage.md](references/reperage.md), section 4). Un morceau donné par le client ou choisi sur son compte Epidemic Sound
-remplace ce choix musical ([son.md](references/son.md)).
+### 4. La bande-son, puis le plan
 
-**La bande-son précède le plan d'animation** : la voix d'abord s'il en veut une (`voix.md`),
-puis le morceau, analysé et calé, ses repères notés dans `PLAN.md` (son.md, « Construire l'image
-sur la bande-son »). Pas d'animation avant que ces repères soient fixés.
+**La bande-son précède le plan d'animation** : la voix d'abord, seulement s'il la demande (une voix
+IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone : `voix.md`), puis le morceau,
+analysé et calé, ses repères notés dans `PLAN.md` (son.md, « Construire l'image sur la bande-son »).
+Pas d'animation avant que ces repères soient fixés.
 
 Puis, avec [ambition.md](references/ambition.md) en tête, le tableau scène par scène de `PLAN.md`,
 qui suit le script : pour chaque plan, la scène et **son moment signature** (le geste qu'on a envie
@@ -126,10 +130,6 @@ objet devient quoi), le son. Le tableau ne se montre pas (le script est validé)
 une vidéo de page de plus d'une minute, ou un client qui veut tout valider : pose d'abord 4 plans
 clés sans leur animation, montre leur image (`npx hyperframes snapshot --at …`) et attends son
 accord avant d'animer.
-
-Voix : texte à l'écran et musique par défaut. Une voix off seulement à sa demande : le texte
-d'abord, validé, puis une voix IA gratuite de Google AI Studio, ou sa voix enregistrée au téléphone
-([voix.md](references/voix.md)).
 
 ### 5. La fabrication
 

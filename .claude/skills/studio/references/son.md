@@ -188,7 +188,7 @@ Le client peut coller, avec son nouveau fichier :
 ### Choisir le morceau
 
 Une proposition par vidéo, depuis son projet (le but et le support sont lus dans le projet), sur
-la même page que les styles (le style se choisit avec la musique, SKILL.md étape 4) :
+la même page que les styles (le style se choisit avec la musique, dans le message du script : SKILL.md, étape 3 bis) :
 
 ```bash
 python3 ../../../tools/studio_motion.py musiques choisir --duree <durée de la vidéo> --a <pivot> --ouvrir
@@ -220,10 +220,10 @@ suppose vers 20 % de la vidéo, et l'entrée de batterie de chaque morceau, affi
 placer. Une boucle de section de page est muette : pas de musique, la page ne montre que les styles.
 
 La page s'ouvre dans son navigateur : le style 0 et les 8 styles en vidéo, puis les 3 musiques
-(chaque extrait démarre quelques secondes avant l'entrée de la batterie). Dis-lui : « Je t'ai ouvert
+(chaque extrait démarre quelques secondes avant l'entrée de la batterie). Dis-lui, à la suite du script : « Je t'ai ouvert
 une page avec les styles et 3 musiques pour cette vidéo ; je te conseille le style 0, « Sur mesure »,
-notre style maison, construit pour ta vidéo, et la musique 1. Réponds par exemple « 0, 1 » (ou
-« choisis » : je prends mes conseils). Aucun ne te plaît ? Décris ce que tu veux. » Sans styles sur la page : « …
+notre style maison, construit pour ta vidéo, et la musique 1. Réponds par exemple « ok, 0, 1 » : ok
+pour le script, puis le style, puis la musique (ou « ok, choisis » : je prends mes conseils). Aucun ne te plaît ? Décris ce que tu veux. » Sans styles sur la page : « …
 3 musiques ; je te conseille la 1. Réponds par le numéro. » S'il a dit une fois « choisis toujours
 pour moi » (préférence de `studio.config.json`), prends la première musique sans demander et dis
 laquelle.

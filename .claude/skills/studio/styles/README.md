@@ -8,7 +8,7 @@ Puis huit styles de motion design, chacun repris d'une vraie vidéo de lancement
 ses preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé en 16:9
 et en 9:16, sur une marque claire comme sur une marque sombre : chaque scène a sa mise en page
 verticale (un fichier `-vertical.html`, ou une scène qui se remet en page seule). Le client les voit
-en vidéo sur la page des styles et des musiques, à chaque vidéo (étape 4 du skill), et dans sa
+en vidéo sur la page des styles et des musiques, à chaque vidéo (étape 3 bis du skill), et dans sa
 formation (module « Styles »). Il les demande par leur numéro, leur nom ou la marque d'origine :
 « dans le style 3 », « le style Verre sombre », « comme celle de Polymarket » ; « template » veut
 dire la même chose ; « le style maison » ou « sur mesure » veulent le style 0. « Interrupteurs
