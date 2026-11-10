@@ -170,12 +170,12 @@
   var EXEMPLE = { // À REMPLACER : tout vient de sa vraie page de paiement et de OFFRE.json (prix, bonus, echeances), ou la ligne se retire
     formules: ["Essentiel", "Complet"],          // ses formules, la 2e est active ; [] retire la ligne
     menu: "Accès à vie",                         // petit menu à droite, texture ("" le retire)
-    paiements: ["Paiement unique", "En plusieurs fois"],
+    paiements: ["Paiement unique", "En plusieurs fois"],   // le sélecteur, avec foisMax 2 ou plus (foisMax 1 le retire)
     nom: "Ton offre",                            // le nom de l'offre (OFFRE.json, produit)
     acces: "Accès immédiat",                     // sous le nom, texture ("" la retire)
     prix: "[SON PRIX]",                          // son vrai prix TTC en euros, un nombre (prix.montant)
     inclus: [["play", "Vidéos"], ["file-text", "Modèles"], ["users", "Groupe"], ["gift", "Bonus"]],   // [icône du kit, ce qui est inclus]
-    foisMax: 3,                                  // paiement en 1 à N fois (echeances) ; 1 retire le curseur
+    foisMax: 3,                                  // paiement en 1 à N fois (echeances) ; 1 retire le curseur, le sélecteur et « Aujourd'hui »
     foisLab: "Nombre de paiements",
     bonus: "[SON BONUS]", bonusNom: "Ton bonus", bonusLab: "Ajouter le bonus",   // le vrai prix du bonus en euros, un nombre ; 0 retire la ligne
     aujourdhui: "Aujourd'hui", total: "Total",
@@ -201,7 +201,10 @@
   EXEMPLE.inclus.forEach(function (p) { K.el($("t3c-puces"), "div", "t3c-puce", K.ic(p[0]) + "<span>" + p[1] + "</span>"); });
   $("t3c-fois-lab").textContent = EXEMPLE.foisLab;
   for (var c = 0; c < EXEMPLE.foisMax; c++) K.el($("t3c-piste"), "div", "t3c-cran", null, "left:" + (EXEMPLE.foisMax > 1 ? (c / (EXEMPLE.foisMax - 1)) * 100 : 0) + "%");
-  if (EXEMPLE.foisMax <= 1) $("t3c-l-fois").style.display = "none";
+  // Un seul paiement (10/11/2026) : ni curseur, ni sélecteur (son « En plusieurs fois » serait faux),
+  // ni « Aujourd'hui » (il répéterait le total).
+  var plusieurs = EXEMPLE.foisMax > 1, reglage = plusieurs || !!EXEMPLE.bonus;
+  if (!plusieurs) ["t3c-l-fois", "t3c-segment", "t3c-l-auj"].forEach(function (id) { $(id).style.display = "none"; });
   $("t3c-bonus-lab").textContent = EXEMPLE.bonusLab;
   $("t3c-champs").innerHTML = '<div class="t3c-champ">' + K.ic("gift") + "<span>" + EXEMPLE.bonusNom + '</span></div><div class="t3c-champ"><span>+ ' + montant(EXEMPLE.bonus) + '</span><span class="t3c-tag">' + K.ic("check") + "</span></div>";
   if (!EXEMPLE.bonus) { $("t3c-l-bonus").style.display = "none"; $("t3c-bonus").style.display = "none"; }
@@ -245,9 +248,13 @@
     // entier : le premier cadrage le montre tout entier, centré.
     var vise = function (t, cible) { tl.to("#t3c-rail", { y: -cible, duration: 0.7, ease: "power3.inOut" }, t); };
     var A = vertical ? (bon.offsetHeight - hBonus) / 2 : milieu("t3c-l-prix") - 60;
-    var B = EXEMPLE.foisMax > 1 ? (milieu("t3c-l-fois") + (EXEMPLE.bonus ? milieu("t3c-l-bonus") + hBonus / 2 : milieu("t3c-l-fois"))) / 2 : milieu("t3c-l-bonus") + hBonus / 2;
+    // Sans rien à régler (un seul paiement, pas de bonus), le deuxième cadrage montre ce qui est
+    // inclus : une ligne masquée se mesure à 0, et la caméra visait le haut vide du bon (10/11/2026).
+    var B = !reglage ? milieu("t3c-puces")
+      : plusieurs ? (milieu("t3c-l-fois") + (EXEMPLE.bonus ? milieu("t3c-l-bonus") + hBonus / 2 : milieu("t3c-l-fois"))) / 2
+      : milieu("t3c-l-bonus") + hBonus / 2;
     // le total et le bouton ; en vertical, le bas du bon se pose près du bas de l'image
-    var C = vertical ? bon.offsetHeight * 0.62 : (milieu("t3c-l-auj") + milieu("t3c-bouton")) / 2;   // le bonus est déjà dans la mesure
+    var C = vertical ? bon.offsetHeight * 0.62 : (milieu(plusieurs ? "t3c-l-auj" : "t3c-l-total") + milieu("t3c-bouton")) / 2;   // le bonus est déjà dans la mesure
     gsap.set("#t3c-rail", { y: -A });
     // la dérive lente de toute la scène : le bon tourne de quelques degrés
     tl.to("#t3c-cam", { rotationY: -5, rotationZ: -1.5, duration: D, ease: "sine.inOut" }, 0);
@@ -271,8 +278,19 @@
     tl.to("#t3c-cam", { scale: cam.s * 1.12, duration: 0.7, ease: "power3.inOut" }, 2.4);
     var piste = $("t3c-piste"), wPiste = piste.offsetWidth, px = x(piste), py = y(piste) + 6;
     var aujourdhui = function (fois, bonus) { return reel ? euros((EXEMPLE.prix + (bonus ? EXEMPLE.bonus : 0)) / fois) : "[PRIX" + (fois > 1 ? " ÷ " + fois : "") + "]"; };
-    K.trajet(tl, curseur, [[2.85, px + wPiste * 0.55, py + 260], [2.95, px + 4, py + 6, 0.5, "power3.out"]]);
-    tl.to(curseur, { opacity: 1, duration: 0.2 }, 2.95);
+    var by = milieu("t3c-bouton"), bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
+    if (reglage) {
+      var depart = plusieurs ? [px, py] : [x($("t3c-inter")) + 62, y($("t3c-inter")) + 30];
+      K.trajet(tl, curseur, [[2.85, depart[0] + wPiste * 0.55, depart[1] + 260], [2.95, depart[0] + 4, depart[1] + 6, 0.5, "power3.out"]]);
+      tl.to(curseur, { opacity: 1, duration: 0.2 }, 2.95);
+    } else {
+      // rien à régler : ce qui est inclus s'allume une seconde fois, une puce après l'autre ; le
+      // curseur n'arrive que pour le bouton
+      tl.fromTo("#t3c-puces .t3c-puce", { y: 0 }, { y: -10, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1, stagger: 0.14, immediateRender: false }, 3.2);
+      tl.fromTo("#t3c-puces svg", { scale: 1 }, { scale: 1.25, duration: 0.22, ease: "power2.out", yoyo: true, repeat: 1, stagger: 0.14, immediateRender: false }, 3.2);
+      K.trajet(tl, curseur, [[6.2, bx + 140, by + 300]]);
+      tl.to(curseur, { opacity: 1, duration: 0.2 }, 6.3);
+    }
     var G = 3.58;                                // le curseur glisse (G → G + 0,95 s)
     if (EXEMPLE.foisMax > 1) {
       K.clic(tl, curseur, G - 0.08);
@@ -307,7 +325,6 @@
     tl.to("#t3c-cam", { scale: cam.s * 1.2, rotationX: cam.rx - 4, duration: 0.7, ease: "power3.inOut" }, 6.0);
     K.texteSelon(tl, $("t3c-v-auj"), D, function (t) { return aujourdhui(fois(t), t >= 6.75); });
     K.compteur(tl, $("t3c-v-total"), reel ? EXEMPLE.prix : 0, reel ? EXEMPLE.prix + (EXEMPLE.bonus || 0) : "[TOTAL]", 6.75, 0.7, D, arrondi(EXEMPLE.prix + (EXEMPLE.bonus || 0)), "expo.out");
-    var by = milieu("t3c-bouton"), bx = x($("t3c-bouton")) + $("t3c-bouton").offsetWidth * 0.62;
     tl.to(curseur, { x: bx, y: by + 6, duration: 0.7, ease: "power3.inOut" }, 6.8);
     K.clic(tl, curseur, 7.6);
     tl.to("#t3c-bouton", { scale: 0.965, duration: 0.08, ease: "power2.out" }, 7.6);

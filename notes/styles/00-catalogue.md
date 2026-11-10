@@ -79,3 +79,9 @@ Corrigés le 10/11/2026, après la v0.9.3, à la demande d'Alex :
 - **Le garde-fou du style 1** : `K.emplacements` ne compte plus un crochet suivi d'une espace ; un
   emplacement s'écrit collé (« [SON PRIX] »), l'étiquette du style aère les siens. Test dans
   `tests/test_kit.py`.
+- **Le bon de commande du style 3** (`t3-commande`, après la v0.9.4) : sans paiement en plusieurs
+  fois ni bonus, la caméra visait une ligne masquée (mesurée à 0) et montrait le haut vide du bon.
+  Le deuxième cadrage montre alors ce qui est inclus (les puces s'allument une seconde fois) et le
+  curseur n'arrive que pour le bouton ; avec un seul paiement, le sélecteur (« En plusieurs fois »,
+  faux) et « Aujourd'hui » (égal au total) se retirent. Rendus vérifiés : prix unique, complet
+  (3 fois et bonus), bonus seul.
