@@ -129,6 +129,4 @@ avertissement de lecture, de taille, de contraste ou de mise en page (reste `fil
 n'a pas de son) ; rendu 16:9 : `rythme` 1,38 événement par seconde, écart médian 0,50 s, aucune
 image figée ; `palette` « ok ».
 
-**Reste hors de ce ménage** : l'aperçu `assets/styles/06-nuee-d-encre.mp4|.jpg` (5 s) montre
-l'ancienne scène 1 : un cercle vide, le point à l'accent posé seul au centre, puis une nuée qui ne
-porte rien, avec des légendes « LMDM. PUBLICITAIRE IA » ; il est à retourner avec ces scènes.
+**L'aperçu** (`assets/styles/06-nuee-d-encre.mp4|.jpg`, 5 s) : retourné le 10/11/2026 avec ces scènes (voir `00-catalogue.md`, « Les aperçus du 10/11/2026 ») : le cercle au pinceau autour de « Ta vidéo arrive. », la numérisation qui le défait, puis l'initiale en points dans la rafale de planches. L'ancien (07/11) montrait un cercle vide, un point seul et une nuée qui ne portait rien.

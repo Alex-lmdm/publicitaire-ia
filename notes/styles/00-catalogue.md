@@ -38,3 +38,33 @@ contraste, les rappels de palette et de lecture) se dit une fois dans l'index, �
 style », point 6 « La loi de toutes les scènes ». Chaque scène regroupe ses textes d'exemple dans
 un objet `EXEMPLE` marqué « À REMPLACER » ; `tests/test_styles.py` (classes `Menage` et
 `Exemples`) le vérifie.
+
+## Les aperçus du 10/11/2026
+
+Les aperçus des styles 1 à 8 (`assets/styles/<dossier>.mp4|.jpg`) ont été refaits depuis les scènes
+actuelles des styles, et non plus découpés dans les vidéos d'essai du 06/11 (d'anciennes copies des
+scènes, qui affichaient encore 97 € et 2 974 €). La méthode, pour les refaire :
+
+- un projet par style dans `videos/Aperçus des styles · 2026-11-10/` (hors git), créé par `nouvelle`,
+  marque LMDM, la fiche de la story d'ouverture (`OFFRE.json` : 67 €, 2 976 €, ses 35 musiques…) et
+  les vraies captures de la page ;
+- deux à quatre scènes du style copiées telles quelles, seul l'objet `EXEMPLE` rempli (et, au style 4,
+  les places des mots de `PLANS`, calées sur les phrases) ; rendu entier en HyperFrames 0.9.26, flou
+  de bougé compris ;
+- 5 s découpées en un ou deux passages (coupe franche), 1280 × 720, 30 i/s, h264 muet, CRF 20 à 26
+  pour rester sous 900 Ko ; l'affiche prise sur l'image qui montre le mieux le style.
+
+Gestes montrés : 1 le mur de bruit, la mosaïque, les pixels qui deviennent la fiche annotée ;
+2 le titre qui déborde, la carte et la mosaïque ; 3 la barre filée et sa pastille, la plongée,
+le carrousel chiffré ; 4 les mots éparpillés et leurs cases, la transition en pixels, le pivot en
+disque ; 5 la cascade d'interrupteurs, le trait qui entoure ; 6 le cercle au pinceau, la
+numérisation, l'initiale et la rafale de planches ; 7 le mot géant sur l'aplat, la demande envoyée
+et sa fenêtre ; 8 la phrase tapée, la fenêtre filmée sur sa couleur.
+
+Laissé de côté, et pourquoi : le cube logo du style 8 (le flou de bougé en mode `capture` l'aplatit :
+face grise sans logo ; signalé à Alex), ses barres comparatives (aucune comparaison chiffrée dans la
+fiche), le verre piloté du style 3 (sans paiement en plusieurs fois ni bonus, son deuxième cadrage
+vise un élément caché et montre la moitié haute vide ; signalé à Alex).
+Autre défaut vu en montant le style 1, signalé à Alex : le garde-fou des exemples (`K.emplacements`)
+prend le label mono du style (« [ 02 · LA SOLUTION ] ») pour un emplacement oublié ; `check` sort
+donc en erreur sur toute vidéo qui garde ce label dans `t01-carte-annotee` ou `t01-chiffre`.
