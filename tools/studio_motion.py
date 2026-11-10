@@ -1230,7 +1230,7 @@ CONSIGNE_STYLE_MUSIQUE = ("Regarde les styles, écoute les musiques (chaque extr
 
 
 def _vitrine_styles(r: Path, a) -> list[dict]:
-    """Le style maison et les 8 styles à montrer avec les musiques (SKILL.md, étape 4), ton conseil
+    """Le style maison et les 8 styles à montrer avec les musiques (SKILL.md, étape 3 bis), ton conseil
     marqué (le style maison sans `--style`) ; aucun quand son style est déjà connu (`--sans-styles`, ou
     un style gardé dans ses préférences : `--style` rouvre alors la page, s'il en veut un autre). Le
     style maison vaut 0 : tout se compare à None."""
@@ -1703,9 +1703,9 @@ def creer(r: Path, sujet: str, objectif: str, videos: list[dict], date: str) -> 
             "## Repérage\n\n(l'univers de sa page, les surfaces à montrer, les logos, la matière qui manque : references/reperage.md)\n",
             "## Structure et angle retenus\n\n(à remplir après le choix du client)\n",
             "## Script\n\n(le film en plans numérotés : ce qu'on voit se passer, puis les mots à l'écran (0 à 8), leur "
-            "tenue et la clé de OFFRE.json ; validé par le client avant le style et la musique : references/ecriture.md, "
+            "tenue et la clé de OFFRE.json ; validé par le client, dans le même message que le style et la musique : references/ecriture.md, "
             "« Le film »)\n",
-            "## Style et musique\n\n(le style et la musique choisis à l'étape 4, ou la vidéo de référence)\n", "## Vidéos\n"]
+            "## Style et musique\n\n(le style et la musique choisis avec le script, à l'étape 3 bis, ou la vidéo de référence)\n", "## Vidéos\n"]
     for v in videos:
         s = SUPPORTS[v["support"]]
         lo, hi = s["ideal"]

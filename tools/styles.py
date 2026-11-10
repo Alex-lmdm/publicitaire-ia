@@ -4,7 +4,7 @@ de `.claude/skills/studio/styles/`, lus dans leur index, et leurs aperçus
 (`assets/styles/<dossier>.mp4|.jpg`).
 
 Appelé par `studio_motion.py musiques choisir` : le style se choisit avec la musique, sur la même
-page (SKILL.md, étape 4). Un style gardé par le client (« garde ce style pour mes prochaines
+page (SKILL.md, étape 3 bis). Un style gardé par le client (« garde ce style pour mes prochaines
 vidéos ») est `style N` dans les préférences de `studio.config.json` ; ses premières vidéos
 disaient `template N`, qui vaut pareil.
 """
