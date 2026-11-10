@@ -112,4 +112,4 @@ Leur détail, avec la lecture, la palette et le son : `references/interdits.md` 
 - Skill : `studio` (la méthode : ses interdits, son ambition, et une boîte à outils à consulter ; le
   contrat d'une composition HyperFrames est dans sa référence `composition.md`).
 
-Version 0.9.1.
+Version 0.9.2.
