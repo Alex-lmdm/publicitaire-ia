@@ -206,6 +206,11 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   ajoute les trois attributs sur `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
   `snapshot` et un extrait `render --start/--end` (« distributed-render » dans le journal) en sont
   privés. La traîne et l'allure d'un geste rapide se jugent sur la planche du MP4 entier.
+- **Un objet qui bouge se dessine devant ce qui ne bouge pas** (10/11/2026, vidéo de lancement Dupliq.me) : en
+  mode `capture`, le rendu dessine les objets en mouvement dans une passe à part, posée par-dessus le reste, quel
+  que soit leur `z-index`. Une fenêtre qui grandit sous une vraie vidéo la recouvre le temps de son mouvement ;
+  un disque qui grandit sous une carte immobile passe devant elle. Le correctif : `data-motion-blur="off"` sur le
+  sous-arbre qui bouge dessous (il perd sa traîne, il garde sa place).
 - **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :
   - `backdrop-filter` (le verre dépoli) et `mix-blend-mode` sur un objet qui bouge, ou sur un de ses
     parents, disparaissent dans le mode de flou qui rend les rotations : le verre seulement sur un

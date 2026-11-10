@@ -285,6 +285,17 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   P1 expliqué, revue.md). Un fichier calé par une version plus ancienne ne porte pas son tempo :
   refais-le avec `musique`. Le geste fort sur l'entrée franche, lui, est un vrai défaut quand
   `calage` le relève (un clic seul ne suffit pas : un flash, des mots qui changent d'un coup).
+- **Une grosse caisse en 3-3-2** (trap, reggaeton : une attaque toutes les trois doubles croches) fait lire les
+  4/3 du vrai tempo, même sur le morceau entier (10/11/2026 : « Attitude », 103,8 lu 139,8, et l'entrée franche
+  lue à 4,49 s au lieu de 4,60 s). `musique` note alors ce faux tempo, que `calage` reprend. Avant d'écrire le
+  plan, vérifie sur l'onde : les grosses caisses qui reviennent à écart fixe donnent la mesure (ici 2,31 s, soit
+  4 temps à 103,8), et le nombre de mesures entre deux entrées tombe rond. Un tempo noté faux se réécrit dans le
+  fichier calé (`ffmpeg -i musique.wav -c copy -metadata comment="publicitaire-ia tempo=103.76" corrige.wav`).
+  Trois temps du vrai tempo valent quatre du faux : des scènes posées sur ces multiples tombent juste.
+- **Un morceau monté** (deux passages raccordés par une pause, pour finir sur sa vraie fin) : après la coupe,
+  les temps ne prolongent plus ceux du début, et `calage` garde la grille du début. Cale les scènes d'après sur
+  les attaques mesurées dans le fichier posé (la première grosse caisse du refrain, l'accord final) et écris-le
+  dans `PLAN.md` (un P1 expliqué).
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : la même musique que le Reel, comme toute vidéo (elle se regarde souvent muette : tout
   s'y lit sans le son).
@@ -380,6 +391,10 @@ qui travaille **en dessous** :
   une voix, aucun bruitage ne dépasse la voix qui l'entoure. Depuis le 08/11/2026, la crête se
   mesure sur les bruitages seuls : sur le mélange, les coups de grosse caisse d'un morceau rythmé
   passaient pour le bruitage.
+- **Un bruitage posé dans un silence du morceau** (la montée et l'impact juste avant une entrée franche) :
+  `emergence` le compare à un fond presque muet et demande de le baisser à chaque mesure, sans fin (10/11/2026 :
+  un impact descendu à -30 dB en cinq passes). Règle-le à la main sur un son du même rôle posé en plein refrain.
+  Et `alimiter` refuse un plafond sous 0,0625 : écris-le avec quatre décimales.
 - Évite les sons très aigus en série : ils fatiguent à l'écoute au téléphone.
 
 ## Le niveau final
