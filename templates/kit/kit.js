@@ -93,10 +93,12 @@
   // Le garde-fou des exemples : un emplacement (« [PRÉNOM] », « [SON PRIX] », « [CHIFFRE RÉEL] »)
   // resté dans l'objet CONTENU (ou EXEMPLE) d'une scène passerait au rendu comme un fait inventé.
   // La console le dit, et `check` le compte en erreur. Rend la liste des emplacements trouvés.
+  // Un emplacement s'écrit collé à ses crochets ; une étiquette typographique les aère
+  // (« [ 02 · LA SOLUTION ] », le label du style 1) : elle n'en est pas un (10/11/2026).
   K.emplacements = function (id, contenu) {
     var restes = [];
     (function fouiller(v) {
-      if (typeof v === "string") (v.match(/\[[^\]]+\]/g) || []).forEach(function (m) { if (restes.indexOf(m) < 0) restes.push(m); });
+      if (typeof v === "string") (v.match(/\[(?!\s)[^\]]+\]/g) || []).forEach(function (m) { if (restes.indexOf(m) < 0) restes.push(m); });
       else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { fouiller(v[k]); });
     })(contenu);
     if (restes.length && window.console) {

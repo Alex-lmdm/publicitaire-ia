@@ -49,8 +49,9 @@
   #t08-logo .t08-lockup { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: center; }
   #t08-logo .t08-scene3d { position: relative; perspective: 1400px; flex: none; }
   #t08-logo .t08-cube { position: absolute; inset: 0; transform-style: preserve-3d; }
-  /* Le cube est fermé et opaque : le tri en profondeur montre ses faces avant, sans backface-visibility
-     (il éteint le flou de bougé du rendu : kit.md, « Les pièges »). */
+  /* Le cube est fermé et opaque, sans backface-visibility (il éteint le flou de bougé du rendu :
+     kit.md, « Les pièges ») : le rendu avec flou peint ses faces dans l'ordre du document, la face
+     du logo s'écrit donc en dernier (10/11/2026 : écrite en premier, la face arrière grise la couvrait). */
   #t08-logo .t08-face { position: absolute; inset: 0; border-radius: 7%; display: grid; place-items: center; overflow: hidden; }
   #t08-logo .t08-face img { width: 58%; height: 58%; object-fit: contain; }
   #t08-logo .t08-masque { overflow: hidden; padding: 10px 6px 18px 0; }
@@ -107,8 +108,9 @@
     var cube = q("#t08-logo-cube"), scene3d = q("#t08-logo-scene3d");
     scene3d.style.width = scene3d.style.height = S + "px";
     var avant = FACE === "accent" ? "var(--brand-accent)" : "var(--t08-face)";
-    var FACES = [["rotateY(0deg)", avant, true], ["rotateY(180deg)", "var(--t08-face-3)"], ["rotateY(90deg)", "var(--t08-face-3)"],
-      ["rotateY(-90deg)", "var(--t08-face-2)"], ["rotateX(90deg)", "var(--t08-face-2)"], ["rotateX(-90deg)", "var(--t08-face-3)"]];
+    // De l'arrière vers l'avant : la face du logo en dernier (le rendu avec flou peint dans cet ordre).
+    var FACES = [["rotateY(180deg)", "var(--t08-face-3)"], ["rotateY(90deg)", "var(--t08-face-3)"], ["rotateY(-90deg)", "var(--t08-face-2)"],
+      ["rotateX(90deg)", "var(--t08-face-2)"], ["rotateX(-90deg)", "var(--t08-face-3)"], ["rotateY(0deg)", avant, true]];
     if (LOGO) {
       FACES.forEach(function (f) {
         var face = K.el(cube, "div", "t08-face", null, "transform:" + f[0] + " translateZ(" + S / 2 + "px); background:" + f[1] + ";");

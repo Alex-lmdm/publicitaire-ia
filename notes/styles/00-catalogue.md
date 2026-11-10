@@ -61,10 +61,21 @@ disque ; 5 la cascade d'interrupteurs, le trait qui entoure ; 6 le cercle au pin
 numérisation, l'initiale et la rafale de planches ; 7 le mot géant sur l'aplat, la demande envoyée
 et sa fenêtre ; 8 la phrase tapée, la fenêtre filmée sur sa couleur.
 
-Laissé de côté, et pourquoi : le cube logo du style 8 (le flou de bougé en mode `capture` l'aplatit :
-face grise sans logo ; signalé à Alex), ses barres comparatives (aucune comparaison chiffrée dans la
+Laissé de côté, et pourquoi : le cube logo du style 8 (face grise sans logo dans le rendu avec flou ;
+corrigé le même jour, voir plus bas), ses barres comparatives (aucune comparaison chiffrée dans la
 fiche), le verre piloté du style 3 (sans paiement en plusieurs fois ni bonus, son deuxième cadrage
 vise un élément caché et montre la moitié haute vide ; signalé à Alex).
 Autre défaut vu en montant le style 1, signalé à Alex : le garde-fou des exemples (`K.emplacements`)
 prend le label mono du style (« [ 02 · LA SOLUTION ] ») pour un emplacement oublié ; `check` sort
 donc en erreur sur toute vidéo qui garde ce label dans `t01-carte-annotee` ou `t01-chiffre`.
+
+Corrigés le 10/11/2026, après la v0.9.3, à la demande d'Alex :
+- **Le cube du style 8** : le rendu avec flou (`tier=capture`, html-in-canvas) peint les faces dans
+  l'ordre du document, sans tri en profondeur ; la face arrière grise, écrite après celle du logo, la
+  couvrait. `t08-logo` écrit ses faces de l'arrière vers l'avant, le logo en dernier ; le flou reste
+  en `tier=capture`. Essayés et écartés : `data-motion-blur="off"` sur le cube (aucun effet, la
+  page entière reste rendue par html-in-canvas), `backface-visibility: hidden` (le logo revient,
+  mais tout le rendu retombe en `filter fallback`). Le piège est dans `kit.md`.
+- **Le garde-fou du style 1** : `K.emplacements` ne compte plus un crochet suivi d'une espace ; un
+  emplacement s'écrit collé (« [SON PRIX] »), l'étiquette du style aère les siens. Test dans
+  `tests/test_kit.py`.

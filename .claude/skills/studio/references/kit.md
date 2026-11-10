@@ -200,8 +200,10 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   manque (depuis HyperFrames 0.9.20, le mode automatique n'adoucit plus que les rotations et les
   zooms) ; sinon un `backface-visibility: hidden` dans une scène en 3D : pour retourner une carte,
   échange ses deux faces à 90° plutôt que de cacher la face arrière ; un volume fermé et opaque
-  (le cube du style 8, l'ordinateur du kit) se trie seul en profondeur, ses faces écartées de 1 ou
-  2 px ; sinon `data-motion-blur="off"` sur ce sous-arbre. Le kit n'en pose aucun. N'anime jamais `#root`
+  (le cube du style 8, l'ordinateur du kit) garde ses deux faces, mais le rendu avec flou les peint
+  dans l'ordre du document, sans les trier en profondeur : écris de l'arrière vers l'avant, la face
+  vue au repos en dernier (10/11/2026 : la face arrière grise du cube, écrite après celle du logo,
+  la couvrait dans chaque vidéo) ; sinon `data-motion-blur="off"` sur ce sous-arbre. Le kit n'en pose aucun. N'anime jamais `#root`
   lui-même (transformation, opacité) : le flou s'éteint. Un projet créé avant ce réglage ne l'a pas :
   ajoute les trois attributs sur `#root`, puis `npm run check`. **Le flou n'existe que dans un rendu entier** : les images de
   `snapshot` et un extrait `render --start/--end` (« distributed-render » dans le journal) en sont

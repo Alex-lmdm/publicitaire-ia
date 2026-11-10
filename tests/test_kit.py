@@ -136,6 +136,8 @@ res.trajet = appels.filter((a) => a.cible === cur).map((a) => ({ m: a.m, x: a.a.
 res.emplacements = K.emplacements("s1", { nom: "[PRÉNOM]", liste: [{ prix: "[SON PRIX]" }, 12], vrai: "Inès" });
 res.erreurs = erreurs.slice();
 res.sansEmplacement = K.emplacements("s1", { nom: "Inès", cases: [2, 3] });
+// L'étiquette du style 1 aère ses crochets : ce n'est pas un emplacement (10/11/2026).
+res.etiquette = K.emplacements("s1", { etiquette: "[ 02 · LA SOLUTION ]", reste: "[ 03 · [SA SOURCE]" });
 const chiffre = new El("div");
 appels.length = 0;
 K.compteur(tl, chiffre, 0, "[CHIFFRE]", 0.2, 1, 5);
@@ -289,6 +291,7 @@ class KitSelonLeFormat(unittest.TestCase):
         self.assertEqual(len(r["erreurs"]), 1)
         self.assertIn("[PRÉNOM], [SON PRIX]", r["erreurs"][0])
         self.assertEqual(r["sansEmplacement"], [])
+        self.assertEqual(r["etiquette"], ["[SA SOURCE]"])
         self.assertEqual(r["compteur"], {"texte": "[CHIFFRE]", "tweens": 0})
 
     def test_options_depart_et_cible(self):
