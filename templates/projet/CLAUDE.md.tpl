@@ -27,7 +27,7 @@ pas ; son ambition (`references/ambition.md`) donne le niveau visé ; le reste e
 - Outil : `python3 {{MAISON}}tools/studio_motion.py` (Windows : `python`, et `npm.cmd`, `npx.cmd`) : zones, lecture, logos,
   musiques (le style et la musique : `musiques choisir --duree <durée> --ouvrir`, le style 0 conseillé par défaut, puis
   `musiques prendre <n> --a <pivot> --duree <durée>`), musique,
-  sons, planche, rythme, calage, cadre, palette, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
+  sons, planche, rythme, calage, cadre, palette, mouvement, relecture, son, export. Texte à l'écran et musique par défaut ; une voix off seulement
   à la demande du client (`references/voix.md`).
 - **Où en est la vidéo** : reprends le parcours du skill là où `{{DOSSIER}}PLAN.md` (le brief, le
   plan) et `{{DOSSIER}}OFFRE.json` s'arrêtent : fiche vide ou non validée (« Fiche validée par le
@@ -61,6 +61,6 @@ pas ; son ambition (`references/ambition.md`) donne le niveau visé ; le reste e
   rendu ; le client ne voit jamais le premier jet. Puis `studio_motion.py rythme`, `calage`, `cadre` et
   `palette` sur `exports/{{VIDEO}}.mp4` : ils doivent répondre « ok » (pour `palette`, seules ses
   vraies captures, les interfaces des plateformes et les objets connus construits pour la vidéo
-  peuvent rester signalés). Puis `studio_motion.py relecture
+  peuvent rester signalés), et `studio_motion.py mouvement`, qui lit les compositions. Puis `studio_motion.py relecture
   exports/{{VIDEO}}.mp4` : un relecteur neuf (un sous-agent qui ne voit que ses planches) doit
   dire ce qui est vendu, à qui et quoi faire (`references/revue.md`, porte 3).

@@ -37,7 +37,7 @@ Windows : `python` (ou `py -3`) au lieu de `python3`, `npm.cmd` et `npx.cmd` au 
   `supports`, `zones`, `nouvelle`, `ajouter`, `capture`, `offre`, `lecture`, `reference`, `livrer`.
 - **Depuis le projet d'une vidéo** (le dossier qui contient `index.html`), `python3
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir`, `musiques prendre`,
-  `heygen …`, `musique`, `sons`, `rythme`, `calage`, `palette`, `cadre`, `relecture`, `planche`,
+  `heygen …`, `musique`, `sons`, `rythme`, `calage`, `palette`, `cadre`, `mouvement`, `relecture`, `planche`,
   `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`, `export`), avec
   `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
@@ -156,7 +156,7 @@ directement la version travaillée.
 ### 6. La revue (personne d'autre ne la fera)
 
 Les portes de `revue.md`, pour **chaque** vidéo : les contrôles sur le MP4 rendu (`check`, `rythme`,
-`cadre`, `palette`, `calage`), la planche regardée par toi, le relecteur neuf (une IA qui n'a pas
+`cadre`, `palette`, `calage`) et sur les compositions (`mouvement`), la planche regardée par toi, le relecteur neuf (une IA qui n'a pas
 fait la vidéo dit ce qui est vendu, à qui, quoi faire), le son (`emergence`, `son`, puis toujours
 `mastering`), la revue critique notée, puis la couverture (`couverture`, qui écrit la vidéo de
 `livraison/`) et l'export de ce fichier. Chaque défaut corrigé s'écrit dans « Interdits de cette

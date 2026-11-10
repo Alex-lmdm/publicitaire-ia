@@ -24,7 +24,12 @@ class El {
   setAttribute(k, v) { this.attrs[k] = String(v); }
   getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; }
   hasAttribute(k) { return k in this.attrs; }
-  appendChild(c) { c.parentElement = this; this.children.push(c); return c; }
+  appendChild(c) { const p = c.parentElement; if (p) p.children.splice(p.children.indexOf(c), 1);
+    c.parentElement = this; this.children.push(c); return c; }
+  get firstChild() { return this.children[0] || null; }
+  get lastElementChild() { return this.children[this.children.length - 1] || null; }
+  get classList() { const e = this, a = (c) => (" " + e.className + " ").includes(" " + c + " ");
+    return { contains: a, add: (c) => { if (!a(c)) e.className = (e.className + " " + c).trim(); } }; }
   set innerHTML(v) { this._html = v; } get innerHTML() { return this._html; }
   matches(sel) {
     const re = /\.([\w-]+)|\[([\w-]+)\]/g; let m, ok = true, vu = false;
@@ -135,6 +140,14 @@ const chiffre = new El("div");
 appels.length = 0;
 K.compteur(tl, chiffre, 0, "[CHIFFRE]", 0.2, 1, 5);
 res.compteur = { texte: chiffre.textContent, tweens: appels.length };
+// La permutation enchaînée (10/11/2026) : rappelée sur le même élément, elle fait sortir le mot en
+// place. Remis dans un nouveau span, les mots déjà posés devenaient du texte en ligne, que leurs
+// tweens ne déplaçaient plus : les deux premiers mots se lisaient côte à côte.
+appels.length = 0;
+const place = new El("span"); scene.appendChild(place); place.appendChild(new El("span"));
+const mot2 = K.permuter(tl, place, "annuelle", 1), mot3 = K.permuter(tl, place, "à vie", 2.5);
+res.permuter = { mots: place.children.map((c) => c.className), dernier: place.lastElementChild === mot3,
+  sorties: appels.filter((a) => a.cible === mot2 && a.m === "fromTo").map((a) => [a.a.yPercent, a.b.yPercent, a.c]) };
 process.stdout.write(JSON.stringify(res));
 """
 
@@ -257,6 +270,12 @@ class KitSelonLeFormat(unittest.TestCase):
                 self.assertNotIn("scale", tw["vers"])
                 self.assertEqual(tw["vers"]["opacity"], 0.7)      # l'opacité que K.champ avait donnée
         self.assertTrue(any("scale" in tw["vers"] for tw in tweens))
+
+    def test_la_permutation_s_enchaine_sur_la_meme_place(self):
+        p = self.lancer(1080, 1920)["permuter"]
+        self.assertEqual(p["mots"], ["k-permute-mot"] * 3, "chaque mot reste un enfant direct de la place")
+        self.assertTrue(p["dernier"])
+        self.assertEqual(p["sorties"], [[0, -115, 2.5]], "le deuxième mot sort quand le troisième entre")
 
     def test_le_curseur_se_pose_a_son_premier_point(self):
         trajet = self.lancer(1080, 1920)["trajet"]

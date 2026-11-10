@@ -101,7 +101,7 @@ Leur détail, avec la lecture, la palette et le son : `references/interdits.md` 
 ## Les outils
 
 - `python3 tools/studio_motion.py` (Windows : `python`) : `verifier`, `marque`, `police`,
-  `style`, `pack-sfx`, `musiques`, `heygen`, `nouvelle`, `offre`, `capture`, `logos`, `musique`, `sons`, `planche`, `rythme`, `calage`, `cadre`, `palette`, `relecture`, `son`,
+  `style`, `pack-sfx`, `musiques`, `heygen`, `nouvelle`, `offre`, `capture`, `logos`, `musique`, `sons`, `planche`, `rythme`, `calage`, `cadre`, `palette`, `mouvement`, `relecture`, `son`,
   `mastering`, `export`, `livrer`…
   (`--help` les liste). Toujours lancé depuis le dossier indiqué par le skill.
 - `node scripts/app-hyperframes.mjs ouvrir "<projet>"` : ouvre un projet de vidéo dans l'app

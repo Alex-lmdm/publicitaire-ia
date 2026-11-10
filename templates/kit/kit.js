@@ -605,20 +605,28 @@
   };
 
   // La permutation : l'ancien mot part par le haut de sa place et le nouveau monte dans la même
-  // place (o.sens: "bas" pour l'inverse). La place a la largeur du plus large des deux.
+  // place (o.sens: "bas" pour l'inverse). La place a la largeur du plus large des mots. Rappelée
+  // sur le même élément, elle enchaîne : le mot en place sort, le suivant entre.
   K.permuter = function (tl, el, nouveau, t, o) {
     o = o || {};
-    var ancien = K.el(null, "span", "k-permute-mot"), neuf = K.el(null, "span", "k-permute-mot");
-    while (el.firstChild) ancien.appendChild(el.firstChild);
+    var neuf = K.el(null, "span", "k-permute-mot"), ancien;
+    if (el.classList.contains("k-permute")) {
+      // déjà permuté : le mot en place est le dernier posé. Le remettre dans un nouveau `span` en
+      // ferait un texte en ligne, que les tweens déjà posés ne déplaceraient plus.
+      ancien = el.lastElementChild;
+    } else {
+      ancien = K.el(null, "span", "k-permute-mot");
+      while (el.firstChild) ancien.appendChild(el.firstChild);
+      el.classList.add("k-permute");
+      el.appendChild(ancien);
+    }
     neuf.textContent = nouveau;
-    el.classList.add("k-permute");
-    el.appendChild(ancien);
     el.appendChild(neuf);
     var s = o.sens === "bas" ? -1 : 1;
     // l'ancien a presque quitté sa place quand le nouveau y entre : les deux ne se chevauchent pas
     var d = o.duree || 0.5;
     gsap.set(neuf, { yPercent: 115 * s });
-    tl.to(ancien, { yPercent: -115 * s, duration: d * 0.5, ease: "power3.in" }, t);
+    tl.fromTo(ancien, { yPercent: 0 }, { yPercent: -115 * s, duration: d * 0.5, ease: "power3.in", immediateRender: false }, t);
     tl.to(neuf, { yPercent: 0, duration: d, ease: o.ease || "expo.out" }, t + d * 0.4);
     return neuf;
   };
