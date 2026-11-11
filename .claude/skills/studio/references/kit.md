@@ -158,6 +158,21 @@ Partout où une scène prend une icône (`icone` d'un `CONTENU`, `K.ic`), un `ob
 place d'une icône d'un seul trait quand l'idée a un objet connu. Ces couleurs ne débordent jamais sur un fond, un texte ou un
 trait ; `palette` les connaît.
 
+**Un objet demandé « en vraie 3D » s'écrit en code, jamais en image toute faite** (11/11/2026, Reel
+écran Publicitaire IA : « un vrai cerveau en 3D, comme l'émoji cerveau mais en vraie 3D ») : des émojis
+3D tout faits (Fluent Emoji de Microsoft) posés à sa place ont été refusés le jour même (« je voulais
+pas des objets en 3D tout faits, je voulais un cerveau que t'as créé toi en code »). Ni émoji 3D, ni
+banque d'objets : un `<canvas>` dessiné pixel par pixel, sans moteur 3D. La recette du cerveau de cette
+vidéo (`kit/cerveau.js` de son projet) :
+- des ellipsoïdes touchés par un rayon par pixel (une formule fermée) ;
+- un relief tiré d'un bruit 3D à graine, dont le gradient creuse les normales ;
+- une lumière qui enveloppe, un contre-jour et un reflet ;
+- le canvas au double de sa taille affichée, pour lisser les bords.
+
+Il se redessine dans `tl.eventCallback("onUpdate", …)` à partir de `tl.time()` seul (lacet, tangage,
+lueur), et seulement pendant qu'on le voit. Un dessin de 640 px prend de 60 à 80 ms, que le rendu
+supporte. Le reste de la scène garde ses icônes d'un trait, dessinées en code.
+
 ### Le mot qui joue, le schéma, le fil conducteur, la coupe
 
 Des façons de faire jouer un mot, de tracer un schéma, de trancher l'écran ([ambition.md](ambition.md),
