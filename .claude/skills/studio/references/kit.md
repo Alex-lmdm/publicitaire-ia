@@ -321,3 +321,14 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 - **Des lettres en désordre** (un mot qui « joue » le chaos avant de se remettre en ligne) se
   chevauchent pour `check` (`content_overlap`) : écart vertical de ±15 px et rotation de ±7° au
   plus, puis `data-layout-allow-overlap` sur la ligne, après avoir vérifié à l'image qu'elle se lit.
+- **`K.claque` anime `y`** (de `o.y`, 0 par défaut, à 0) : un objet placé par `gsap.set(…, { y })`
+  retombe en haut de son parent (11/11/2026 : le badge ×16 collé au bord du cadre). Place ce qui
+  claque par `left` / `top`, ou par un parent.
+- **`K.tranches` sur une ligne tenue moins de 4 s** : `check` lit ses bandes comme autant de copies
+  du texte (« Motion designer Motion designer… », `line_unread`). Réserve-la aux lignes longtemps
+  tenues ; sinon une autre entrée.
+- **Un schéma (`K.lien`) près d'un logo** : un style `#scène path { … }` repeint aussi les tracés du
+  logo (le logo de Claude devenu un carré jaune, 11/11/2026). Vise `svg.k-liens path`.
+- **Sur l'aplat de l'accent, la traîne du flou de bougé** d'un objet sombre (des cartes qui
+  jaillissent, un nom qui claque) vire à l'olive : `palette` le relève. `data-motion-blur="off"` sur
+  la caméra et le calque des mots de cette scène.

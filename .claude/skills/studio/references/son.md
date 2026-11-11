@@ -303,6 +303,10 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   les temps ne prolongent plus ceux du début, et `calage` garde la grille du début. Cale les scènes d'après sur
   les attaques mesurées dans le fichier posé (la première grosse caisse du refrain, l'accord final) et écris-le
   dans `PLAN.md` (un P1 expliqué).
+- **Avec une voix, `calage` peut lire un faux tempo sur le mélange** (11/11/2026, story « prompt secret » :
+  143,5 lu au lieu de 120, sans rapport simple) et refuser une scène qui part pile sur l'entrée franche qu'il
+  mesure lui-même. Si la scène part à l'instant de `"musique_entree"` (posé par `musique` sur un temps fort),
+  ne la déplace pas : écris-le dans `PLAN.md` (un P1 expliqué).
 - L'écran final tombe sur le dernier temps fort, puis la musique s'éteint en fondu (0,8 à 1,5 s).
 - Stories : la même musique que le Reel, comme toute vidéo (elle se regarde souvent muette : tout
   s'y lit sans le son).

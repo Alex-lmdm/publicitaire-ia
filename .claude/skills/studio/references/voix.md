@@ -186,6 +186,17 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    Le silence s'allonge au milieu de la pause la plus proche, les mots suivants reculent d'autant
    dans `transcript.json` ; l'ancienne voix reste dans `voix-avant-respiration.wav`. Fais-le avant
    d'écrire le plan, sinon décale ensuite les scènes d'après.
+   Une respiration de moins de 1,5 s ne fait pas remonter la musique (`sons` : « remontée dans 0
+   respiration ») : l'entrée franche s'y perd sous la voix. Pour qu'elle claque, 1,5 s même en Reel
+   ou en story.
+
+   Piège (11/11/2026, story « prompt secret ») : pour changer la longueur d'une respiration, repars
+   de `voix-avant-respiration.wav` et **retranscris** (`transcribe`, puis `voix caler`) avant la
+   nouvelle `respiration` : `transcript-brut.json` garde les temps déjà décalés, et `voix caler`
+   les décalait une seconde fois (les mots d'après tombaient 0,6 s trop tard). Après une
+   respiration, Parakeet peut aussi brouiller la fin (des mots placés dans le silence) : vérifie
+   les dernières phrases sur `ffmpeg -af silencedetect=n=-40dB:d=0.25` (une phrase entre deux
+   silences) et corrige leurs temps dans `transcript.json` s'il le faut.
 
 ## 3. Caler la vidéo sur la voix
 
