@@ -148,6 +148,13 @@ La règle :
   l'enveloppe. Si tu écris toi-même une enveloppe (le son d'une vraie vidéo, par exemple), fais
   pareil ; le niveau écrit dans les deux est compté deux fois (constaté le 08/11/2026 : 0,5 sous une
   enveloppe à 0,5 sort à -12 dB).
+  **Une vidéo posée avant cette correction** (son bloc porte le même niveau dans `data-volume` et
+  dans l'enveloppe de la musique) sonne au carré de son réglage : « -10,5 dB » y sort à -21. La
+  reposer avec le même `"musique_db"` monte donc la musique d'autant, d'un coup (11/11/2026, story
+  d'ouverture : +10,5 dB, alors que le client avait réglé ce niveau à l'oreille). Avant de reposer,
+  lis la ligne `<audio id="musique">` : si l'enveloppe ne monte pas à 1, écris dans `"musique_db"`
+  le double du réglage (le niveau entendu), puis règle les bruitages dessus. Même piège pour les
+  sons à fondu, qui sonnaient plus bas que leur réglage.
 
 ## La musique
 
