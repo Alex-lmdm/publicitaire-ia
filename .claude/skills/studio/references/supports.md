@@ -77,3 +77,16 @@ une flèche qui montre un vide.
 
 17 caractères par seconde au plus, 42 caractères par ligne au plus, 2 lignes au plus, chaque
 groupe affiché au moins 0,7 s. Dans la zone de texte, jamais sur le bas d'un format vertical.
+
+**Où les poser quand l'image est déjà pleine** (11/11/2026, Reel écran Publicitaire IA : des sous-titres
+retirés à la seconde passe, redemandés ensuite « bien pensés, au bon endroit, bien affichés ») :
+- regarde une image par phrase avant de choisir : là où les grands mots occupent le haut, les sous-titres
+  vont en bas, et l'inverse ; sur un aplat clair ils passent à l'encre et s'alignent sur la colonne de la scène ;
+- la place ne change qu'à une coupe de scène, jamais au milieu d'une scène ;
+- une ligne ne traverse jamais une coupe ni un volet : elle part juste avant ;
+- une longue phrase se coupe là où elle respire (une virgule, un « et »), jamais au milieu d'un groupe de mots ;
+- un mot arrive plein, à l'instant où il est dit (la transcription de la voix, pas une répartition à la main),
+  sans fondu ; du texte nu avec une ombre douce, pas une pastille (elle se confondrait avec les étiquettes de
+  l'image) ; un ou deux mots à l'accent au plus, le jaune reste aux grands mots ;
+- les lignes s'écrivent dans le HTML (un clip par ligne, son début et sa durée), sur une composition à part
+  montée au-dessus des scènes.
