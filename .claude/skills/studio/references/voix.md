@@ -66,6 +66,13 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    Si tu pilotes toi-même le navigateur intégré, il te faut sa connexion Google : il se connecte,
    jamais toi. Le bouton Download y range le fichier dans ses Téléchargements sous le nom
    « Generated Audio <date>.wav ».
+   **11/11/2026, Gemini 3.8 Flash TTS** : le panneau Speaker 1 a un filtre « Gender » (Feminine,
+   Masculine) ; pour une voix féminine en français, **Cleo** (« Warm and engaging ») a tout dit juste,
+   question montante comprise, en 31 s pour 100 mots. Kira allait trop vite (27 s) et disait
+   « Commande » pour « Commente » ; Nika disait « Publicitaire AI » à l'anglaise. Dans le texte,
+   écris « Publicitaire I.A. » (avec les points) et un mot-clé en minuscules entre guillemets
+   (« pub ») : en capitales, la voix risque de l'épeler. Les balises de pause ne sont pas
+   nécessaires : la ponctuation suffit, et `voix respiration` ouvre les vraies pauses ensuite.
 
 ### B. Sa voix, enregistrée sur son téléphone
 
@@ -175,9 +182,11 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    silencedetect=n=-40dB:d=0.3 -f null -`, une phrase entre deux pauses) et sur `work/voix.txt`.
 
 3. **Les respirations.** Une voix de synthèse ne laisse presque aucune pause (aucune d'une seconde
-   lors d'un essai). Ouvre-en une de 1,5 s juste avant la phrase du pivot (sur une page de
-   vente, 1 s en Reel), et une d'environ 1 s quand le résultat s'affiche : la musique entre dans ce
-   trou au lieu de couvrir le nom de l'offre (son.md, « Sous une voix off »).
+   lors d'un essai). Ouvre-en une de 1,5 s juste avant la phrase du pivot, **en Reel aussi**, et
+   une d'environ 1 s quand le résultat s'affiche : la musique entre dans ce trou au lieu de couvrir
+   le nom de l'offre (son.md, « Sous une voix off »). Piège du 11/11/2026 : une respiration de 1 s
+   au pivot d'un Reel ne fait pas remonter la musique (`sons` ne la remonte qu'à partir de 1,45 s :
+   « remontée dans 0 respiration(s) »), et sa cassure passe sous la voix ; à 1,5 s, elle éclate.
 
    ```bash
    python3 ../../../tools/studio_motion.py voix respiration <instant de la pause, en s du fichier> [--secondes 1.5]

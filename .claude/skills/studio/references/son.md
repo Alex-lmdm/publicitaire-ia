@@ -360,6 +360,13 @@ qui travaille **en dessous** :
   un peu de hauteur à chaque retour, tout seul (`sons` le prépare : 4 % plus aigu, 3 % plus grave…) ;
   `"hauteur": 1` dans l'évènement le garde tel quel, `"hauteur": 1.1` en choisit une. La règle des
   3 s et des 6 s ne change pas.
+- **Après une cassure forte, sous une voix** (11/11/2026, Reel écran Publicitaire IA) : quand la
+  musique devient dense (batterie pleine), un bruitage ne peut plus être à la fois 4 dB au-dessus
+  d'elle et sous la voix ; `emergence` dit « faible », puis, une fois monté, « plus fort que la
+  voix ». La voix passe d'abord : garde seulement les gestes forts (impact sur le nom, clic d'envoi,
+  notification), juste sous la voix, retire les petits bruitages que la batterie couvre de toute
+  façon, et écris le refus d'`emergence` restant dans `PLAN.md` (un P1 expliqué). Ne baisse pas la
+  musique pour eux.
 - **Les sons qui trompent** : certains noms du pack cachent une rafale. `click-short-snap` n'est pas
   un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic
   tic tic » par le client : posé 11 fois, il a gâché la story v3) ; `click-hard` fait trois clics ;
