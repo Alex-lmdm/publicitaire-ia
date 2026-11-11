@@ -332,3 +332,15 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 - **Sur l'aplat de l'accent, la traîne du flou de bougé** d'un objet sombre (des cartes qui
   jaillissent, un nom qui claque) vire à l'olive : `palette` le relève. `data-motion-blur="off"` sur
   la caméra et le calque des mots de cette scène.
+- **`K.assembler` puis `K.permuter` sur le même élément** (11/11/2026, « méthode. » → « méthodes ») :
+  `k-assemble` (inline-block) écrase la grille de `k-permute`, et les deux mots s'affichent côte à
+  côte (`check` : `container_overflow`). Emboîte deux éléments : l'assemblage sur l'intérieur, la
+  permutation sur son parent.
+- **`K.surligner` avec `encre` sur un mot de l'accent** : l'encre passe du jaune au sombre en 0,1 s,
+  donc par l'olive. Surligne sans `encre`, puis change la couleur d'un coup (`tl.set`) quand le bloc
+  est à moitié passé.
+- **Un aplat qui envahit l'écran** (le monde qui devient jaune) : un petit disque agrandi vingt fois a
+  un bord flou, même sans flou de bougé. Pose un plein cadre de la couleur et ouvre-le en cercle :
+  `clipPath` de `circle(60px at x y)` à `circle(2300px at x y)`.
+- **Masquer les traits d'un schéma** : `calque.querySelector("svg")` trouve le premier svg, souvent le
+  logo posé dans le même calque ; vise `lien.ownerSVGElement`.

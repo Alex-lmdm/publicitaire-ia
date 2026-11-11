@@ -175,7 +175,9 @@ l'image sur la bande-son »). Sans voix, chaque scène part sur un temps de la m
 0,12 s du temps » : fais finir celle d'avant sur ce temps) ; avec une voix, chaque scène part avec
 la phrase qui la porte, aucune ne change au milieu d'un mot, et la batterie n'entre jamais sous un
 mot (une respiration : `voix respiration`) ; dans les deux cas, un geste fort se voit sur l'entrée
-franche de la batterie (le nom qui claque, un flash, une coupe). Chaque refus est un P1, sauf le
+franche de la batterie (le nom qui claque, un flash, une coupe). `calage` cherche ce geste à
+± 0,15 s de l'attaque : le plus gros changement d'image doit tomber dans cette fenêtre (11/11/2026,
+une fiche qui arrivait en grand 0,17 s après la chute ne comptait pas). Chaque refus est un P1, sauf le
 faux tempo d'une basse syncopée ([son.md](son.md), « Le caler ») : mesure la phase avant de bouger
 une scène. `son` mesure le niveau, puis `mastering`, toujours : le fichier livré est la version
 masterisée ([son.md](son.md), « Le niveau final »). Réécoute le
