@@ -162,16 +162,37 @@ trait ; `palette` les connaît.
 écran Publicitaire IA : « un vrai cerveau en 3D, comme l'émoji cerveau mais en vraie 3D ») : des émojis
 3D tout faits (Fluent Emoji de Microsoft) posés à sa place ont été refusés le jour même (« je voulais
 pas des objets en 3D tout faits, je voulais un cerveau que t'as créé toi en code »). Ni émoji 3D, ni
-banque d'objets : un `<canvas>` dessiné pixel par pixel, sans moteur 3D. La recette du cerveau de cette
-vidéo (`kit/cerveau.js` de son projet) :
+banque d'objets : un `<canvas>` dessiné pixel par pixel, sans moteur 3D ni WebGL. La recette du cerveau
+de cette vidéo (`assets/cerveau.js` de son projet) :
 - des ellipsoïdes touchés par un rayon par pixel (une formule fermée) ;
-- un relief tiré d'un bruit 3D à graine, dont le gradient creuse les normales ;
+- un vrai relief : le rayon avance dans l'épaisseur des plis jusqu'à la surface creusée, donc le contour
+  lui-même est bosselé ;
 - une lumière qui enveloppe, un contre-jour et un reflet ;
 - le canvas au double de sa taille affichée, pour lisser les bords.
 
+**Le premier jet a été refusé** (11/11/2026 : « plus beau, plus propre, un peu comme l'émoji Apple mais en
+3D ») : un bruit de Perlin qui ne penchait que les normales donnait un œuf lisse au dessin nerveux, à
+l'aspect métallique. Ce qui l'a rendu propre :
+- le relief est réel (ci-dessus), pas une normale penchée sur un contour lisse ;
+- le dessin des plis est une somme d'ondes de même longueur, à graine fixe, dont les passages par zéro
+  sont les sillons ; divisée par sa pente le long de la surface, elle donne des sillons de largeur
+  constante. Des ondes tirées dans toutes les directions font des îlots ronds (des « yeux ») : tirées
+  autour d'un axe (20 à 54° de l'axe avant-arrière), elles font de longs boudins ;
+- ce dessin est calculé une fois au chargement et rangé par direction (six faces d'un cube, 80 ms) : il
+  est le même sur toute l'épaisseur, les parois des sillons sont droites, et le lire coûte quatre cases ;
+- peu de plis, gros (une dizaine dans la largeur), une matière claire et lisse : l'ombre reste rose
+  (jamais grise), un seul reflet net sur les sommets, rien dans les sillons ;
+- deux volumes qui se touchent presque à plat (un lobe et son hémisphère) mêlent leurs normales, sinon
+  leur rencontre fait un pli parasite ; des rayures sur un volume fermé se referment en cible à leurs
+  deux pôles : cache un pôle contre un autre volume et efface-les autour ;
+- plusieurs graines essayées sur une planche, à la taille de l'écran et dans les poses de la scène,
+  avant d'en garder une.
+
 Il se redessine dans `tl.eventCallback("onUpdate", …)` à partir de `tl.time()` seul (lacet, tangage,
-lueur), et seulement pendant qu'on le voit. Un dessin de 640 px prend de 60 à 80 ms, que le rendu
-supporte. Le reste de la scène garde ses icônes d'un trait, dessinées en code.
+lueur), et seulement pendant qu'on le voit. Un dessin de 640 px prend environ 100 ms, que le rendu
+supporte. Pour le régler sans navigateur : un script Node qui donne au fichier un faux canvas
+(`createImageData`, `putImageData`) et écrit un PNG. Le reste de la scène garde ses icônes d'un trait,
+dessinées en code.
 
 ### Le mot qui joue, le schéma, le fil conducteur, la coupe
 
