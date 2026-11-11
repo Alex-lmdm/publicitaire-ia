@@ -188,6 +188,18 @@ l'aspect métallique. Ce qui l'a rendu propre :
 - plusieurs graines essayées sur une planche, à la taille de l'écran et dans les poses de la scène,
   avant d'en garder une.
 
+**Puis le client a donné une image de référence** (le même jour : un cerveau en pâte à modeler, rose saumon,
+mat, vu de profil). Une référence se lit trait par trait, et chaque trait se règle dans le code, sans
+jamais montrer l'image (ici une image de banque filigranée) :
+- la matière : la teinte relevée sur l'image (sommets, sillons, ombres), presque plus de reflet, une
+  lumière venue d'en haut ;
+- les plis : de larges coussins bombés (une entaille étroite plus une épaule large et douce) et de courts
+  plis fins, seulement au milieu des grands coussins ;
+- l'anatomie : le lobe temporal déborde sur le côté et sa rencontre avec l'hémisphère s'assombrit (la
+  scissure) ; sur lui le dessin est lu tourné d'un quart de tour, sinon les plis le hachent en travers
+  comme une rangée de dents ; le cervelet finement rayé, le tronc qui descend ;
+- la pose : celle de l'image (presque de profil, à hauteur d'œil), réglée dans la scène.
+
 Il se redessine dans `tl.eventCallback("onUpdate", …)` à partir de `tl.time()` seul (lacet, tangage,
 lueur), et seulement pendant qu'on le voit. Un dessin de 640 px prend environ 100 ms, que le rendu
 supporte. Pour le régler sans navigateur : un script Node qui donne au fichier un faux canvas
