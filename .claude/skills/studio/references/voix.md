@@ -80,6 +80,10 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    prises de 45 s ; retranscrit seul (`-ss 14 -t 22`), le passage y était. Retranscris le passage
    avant de régénérer. Dans le panneau des voix, un filtre (Style…) reste actif quand on cherche
    un nom : repasse-le sur « All styles », sinon la voix cherchée n'apparaît pas.
+   Un nom anglais se dit mal : Autonoe disait « Silence » pour « Seedance ». Écrit **« Sidance »**
+   dans le texte de la voix (l'écran garde la vraie orthographe), il était dit juste ;
+   « Si-dennse » et « Seed-dance » sortaient « Syndance » et « Suddence ». Teste deux ou trois
+   écritures à la française et vérifie le passage seul avec Whisper, en `-l fr` puis en `-l en`.
 
 ### B. Sa voix, enregistrée sur son téléphone
 
