@@ -429,3 +429,19 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `clipPath` de `circle(60px at x y)` à `circle(2300px at x y)`.
 - **Masquer les traits d'un schéma** : `calque.querySelector("svg")` trouve le premier svg, souvent le
   logo posé dans le même calque ; vise `lien.ownerSVGElement`.
+- **Une scène en volume dans un écran qui masque** (12/11/2026, Reel motion, « rendu en vidéo » : la toile
+  d'un lecteur se couche en sol, un mot s'y dresse en lettres épaisses, un cercle devient une bille) : la
+  `perspective` se pose sur l'écran lui-même (`overflow: hidden` l'aplatit, mais il la donne à ses enfants), le
+  sol et ce qui s'y dresse sont en `preserve-3d`. La pente du sol (`rotateX`) et le tour de la caméra
+  (`rotateZ`) vont sur deux éléments emboîtés : sur un seul, GSAP applique la pente d'abord et l'image roule
+  au lieu de tourner autour du sol. Un mot épais, c'est sa face et ses couches derrière elle
+  (`translateZ(-3px × k)`), écrites de l'arrière vers l'avant, avec `data-layout-ignore`, et **cachées tant
+  qu'il est à plat** (la perspective les ferait dépasser de la face). Une bille, c'est un disque qui défait le
+  lacet et la pente (`rotateZ(-lacet) rotateX(-pente)`) pour rester face à la caméra. Les volumes s'ombrent en
+  aplats de la palette (un disque clair décalé dans un disque sombre, des couches d'une autre teinte), pas en
+  dégradé : `palette` passe.
+- **`check` mesure un contraste « 1:1 » dans un sous-arbre `data-motion-blur="off"`** (12/11/2026) : il ne
+  sait pas y isoler le texte et prend sa couleur pour celle du fond (un mot nuit sur orange, des lettres
+  papier sur rouge). Pose l'attribut au plus près de ce qui bouge (le cadre qui se resserre, pas la bande qui
+  porte le mot) ; ce qui reste est un faux positif, qui va et vient avec les instants que `check` tire :
+  note-le dans le plan.
