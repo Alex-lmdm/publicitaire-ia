@@ -326,6 +326,8 @@ class KitTexte(unittest.TestCase):
         self.assertNotIn("Math.random", js)
         self.assertNotIn("Date.now", js)
         self.assertNotIn("performance.now", js)
+        # 12/11/2026 : color-mix() dans le dégradé du fond vivant rendait des rectangles nets devant le texte.
+        self.assertNotIn("color-mix(in", js)
 
     def test_fantome_proportionnel_a_la_largeur(self):
         css = (KIT / "kit.css").read_text(encoding="utf-8")

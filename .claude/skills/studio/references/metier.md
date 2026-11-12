@@ -146,6 +146,9 @@ au résultat). Une couleur qui disparaît s'efface par un volet net.
 - Le fond est celui de sa marque. Il peut changer à un moment fort (le nom de l'offre, le prix, un
   avant / après), avec une cause visible (un clic, un volet, un objet qui grandit). Ceux du kit : le
   clair à grille, l'aplat de l'accent, l'écran coupé, et la nuit pour une marque qui a un fond sombre.
+  Le fond vivant (`K.fondVivant` : des taches neutres qui dérivent sous un grain) seulement à sa
+  demande ou quand sa référence en a un : essayé le 12/11/2026, propre mais pas assez fort pour
+  être un choix par défaut.
 - Des logos qui flottent seulement quand la scène parle de leur outil : les vrais logos nus
   (`K.logoNu`), 6 à 8, en vraie profondeur (petits au loin, moyens nets, un ou deux grands et flous
   devant), jamais collés aux mots ni dans la bande du sticker. Sans logo pertinent, pas de champ.

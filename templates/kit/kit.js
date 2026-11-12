@@ -760,4 +760,78 @@
     tl.to(copie, { y: ecart, x: 50, rotation: 4, duration: d, ease: "power3.in" }, t + 0.04);
     return copie;
   };
+
+  // Le fond vivant, SUR DEMANDE seulement (le client le demande, ou sa référence en a un) : des taches
+  // de lumière et d'ombre aux neutres de la marque dérivent lentement, dans un seul sens, sous un grain
+  // fixe. Essai du 12/11/2026 : propre, pas assez fort pour être le fond par défaut. Le grain fixe
+  // efface les bandes d'un grand dégradé sombre, même au débit d'un réseau social ; un grain animé
+  // pesait 15 fois plus et se défaisait en pavés. Jamais l'accent dans une tache (interdits.md).
+  var GRAIN_FIXE = "url(\"data:image/svg+xml," + encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'>" +
+    "<filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/>" +
+    "<feColorMatrix type='matrix' values='0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0.33 0.33 0.33 0 0  0 0 0 0 1'/>" +
+    "<feComponentTransfer><feFuncR type='linear' slope='2.2' intercept='-0.6'/><feFuncG type='linear' slope='2.2' intercept='-0.6'/>" +
+    "<feFuncB type='linear' slope='2.2' intercept='-0.6'/></feComponentTransfer>" +
+    "</filter><rect width='100%' height='100%' filter='url(#g)'/></svg>") + "\")";
+  var FONDS_VIVANTS = {
+    nuit: {
+      base: "var(--brand-sombre, var(--k-noir))", grain: "mix-blend-mode:overlay; opacity:0.42;",
+      taches: [
+        { couleur: "#ffffff", force: 0.15, w: 1.05, h: 0.85, x: 0.24, y: 0.30 },   // plus fort, un texte grisé passe sous 3:1
+        { couleur: "var(--brand-gris-3, #9b9b9c)", force: 0.22, w: 0.80, h: 1.10, x: 0.76, y: 0.68 },
+        { couleur: "#ffffff", force: 0.07, w: 0.65, h: 0.55, x: 0.58, y: 0.12 },
+        { couleur: "#000000", force: 0.55, w: 0.95, h: 0.80, x: 0.90, y: 0.08 },
+        { couleur: "#000000", force: 0.50, w: 0.85, h: 0.95, x: 0.06, y: 0.92 }
+      ]
+    },
+    clair: {
+      base: "var(--k-clair)", grain: "opacity:0.07;",
+      taches: [
+        { couleur: "#ffffff", force: 0.95, w: 1.00, h: 0.85, x: 0.30, y: 0.35 },
+        { couleur: "var(--brand-gris-3, #9b9b9c)", force: 0.34, w: 0.90, h: 0.95, x: 0.82, y: 0.78 },
+        { couleur: "var(--brand-gris-4, #d2d2d3)", force: 0.45, w: 0.70, h: 0.60, x: 0.66, y: 0.10 },
+        { couleur: "var(--brand-gris-2, #636364)", force: 0.18, w: 0.80, h: 0.80, x: 0.04, y: 0.95 }
+      ]
+    }
+  };
+  // "#9b9b9c", "rgb(155, 155, 156)" ou "var(--brand-gris-3, #9b9b9c)" (lu sur `el`) → "155,155,156".
+  // Pas de color-mix() dans un dégradé : le rendu en tirait des rectangles nets, posés devant le texte (12/11/2026).
+  function rgbDe(el, couleur) {
+    var v = String(couleur).trim(), m = v.match(/^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\)$/);
+    if (m) v = getComputedStyle(el).getPropertyValue(m[1]).trim() || (m[2] || "").trim();
+    var h = v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (h) {
+      var x = h[1].length === 3 ? h[1].replace(/./g, "$&$&") : h[1];
+      return [0, 2, 4].map(function (i) { return parseInt(x.substr(i, 2), 16); }).join(",");
+    }
+    var n = v.match(/\d+(\.\d+)?/g);
+    return n && n.length >= 3 ? n.slice(0, 3).join(",") : "128,128,128";
+  }
+  K.fondVivant = function (tl, fond, o) {
+    o = o || {};
+    var ton = FONDS_VIVANTS[o.ton] || FONDS_VIVANTS.nuit, r = K.rng(o.graine || 1);
+    var cadre = K.cadre(fond), W = cadre.largeur, H = cadre.hauteur;
+    var debut = o.debut || 0, duree = o.duree || K.duree(fond);
+    fond.style.background = ton.base;
+    fond.style.overflow = "hidden";
+    (o.taches || ton.taches).forEach(function (d) {
+      var w = d.w * W, h = d.h * W, c = rgbDe(fond, d.couleur);
+      // Une chute douce, proche d'une gaussienne, d'une couleur vers elle-même transparente.
+      var degrade = [[1, 0], [0.82, 20], [0.55, 42], [0.28, 64], [0.09, 84], [0, 100]].map(function (p) {
+        return "rgba(" + c + "," + (d.force * p[0]).toFixed(3) + ") " + p[1] + "%";
+      }).join(", ");
+      var t = K.el(fond, "div", "", "", "position:absolute; pointer-events:none; width:" + w + "px; height:" + h +
+        "px; left:" + (d.x * W - w / 2) + "px; top:" + (d.y * H - h / 2) + "px; background:radial-gradient(closest-side, " + degrade + ");");
+      t.setAttribute("data-layout-allow-overflow", "");   // une tache déborde du cadre exprès
+      var ang = r() * Math.PI * 2, dist = (0.10 + r() * 0.10) * W;
+      gsap.set(t, { scale: 0.92 + r() * 0.1, rotation: (r() - 0.5) * 30 });
+      tl.to(t, { x: Math.cos(ang) * dist, y: Math.sin(ang) * dist * 0.75, scale: 1.05 + r() * 0.15,
+        rotation: "+=" + ((r() - 0.5) * 50), duration: duree, ease: "sine.inOut" }, debut);
+    });
+    if (o.grain !== false) {
+      K.el(fond, "div", "", "", "position:absolute; inset:0; pointer-events:none; background-image:" + GRAIN_FIXE +
+        "; background-size:320px 320px; " + ton.grain);
+    }
+    return fond;
+  };
 })();

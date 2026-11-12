@@ -94,6 +94,7 @@ de la vidéo (au départ, la durée visée de son support : une fin plus courte 
 | `K.entre(a, b, p)` | la valeur entre `a` et `b` à la part `p` (0 à 1) : une place, une taille réparties |
 | `K.cadre(el)` | `{largeur, hauteur}` de la composition qui contient `el`, lus sur `data-width` / `data-height` : ceux de l'hôte dans `index.html` d'abord, sinon de la composition la plus haute qui en porte |
 | `K.duree(el)` | la durée donnée à la scène qui contient `el` (sa racine, ou son hôte une fois montée : HyperFrames retire `data-duration` de la racine intérieure au montage) |
+| `K.fondVivant(tl, fond, {ton, graine, debut, duree, taches, grain})` | **sur demande seulement** (le client le demande, ou sa référence a un fond qui bouge ou du grain) : dans un `k-fond` vide, des taches de lumière et d'ombre aux neutres de la marque dérivent lentement sous un grain fixe ; `ton` : `"nuit"` (défaut) ou `"clair"` ; `taches` remplace les siennes (`{couleur, force, w, h, x, y}`, tailles et places en part du cadre), jamais l'accent ; `grain: false` le retire |
 | `K.entreeMots(tl, cible, t, {decalage, y, flou, echelle, duree, ease})` | **le mot fort du plan seulement** : il entre mot par mot en montant d'un flou qui se dissipe (46 px, 14 px de flou par défaut) |
 | `K.apparition(tl, cible, t, {decalage, duree, ease})` | **les lignes d'appui, les étiquettes, un contexte** : ils paraissent nets sur place, d'un fondu de 0,18 s, sans montée, sans flou ni échelle ([metier.md](metier.md), « Le mot fort, puis des lignes nettes ») ; `decalage` pour une liste lue élément par élément |
 | `K.sortieMots(tl, cible, t, {decalage, y, flou, duree, ease})` | sortie rapide (une sortie peut bouger : elle part) |
@@ -311,7 +312,9 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
     Chrome le dessine à sa taille de départ : il reste flou une fois grand. Ne le pose jamais : ni
     le kit ni les exemples n'en posent (un test l'interdit dans `templates/` et dans les styles).
   - Un grand dégradé linéaire sombre en plein cadre fait des bandes à l'encodage (des marches de
-    130 px) : un aplat, un dégradé radial, ou un aplat avec une lueur locale.
+    130 px) : un aplat, un dégradé radial, ou un aplat avec une lueur locale. Un grain fixe les efface
+    aussi, même au débit d'un réseau social (`K.fondVivant` le pose) ; un grain qui change à chaque
+    image pèse 15 fois plus à la livraison et se défait en pavés (essai du 12/11/2026).
   - Une capture d'écran filmée de son produit posée dans la vidéo : `npm run render --
     --video-frame-format png` (l'extraction en JPEG abîme les aplats et le texte fin).
 - **Un identifiant intérieur égal à celui de l'hôte** d'une scène dans `index.html` (`a04-hote`) :
