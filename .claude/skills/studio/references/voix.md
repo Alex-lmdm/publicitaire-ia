@@ -212,6 +212,10 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    Une respiration de moins de 1,5 s ne fait pas remonter la musique (`sons` : « remontée dans 0
    respiration ») : l'entrée franche s'y perd sous la voix. Pour qu'elle claque, 1,5 s même en Reel
    ou en story.
+   Sauf pour une voix rapide de Reel (12/11/2026, Reel motion) : 1,5 s après « six heures » sonnait comme un
+   blanc (« on attend quasiment deux secondes »). Là, 0,7 s au plus : cale l'attaque de la batterie juste
+   après le dernier mot, note-la dans `"musique_entree"`, et décale la musique d'autant que la voix (tout ce
+   qui suit garde son calage).
 
    Piège (11/11/2026, story « prompt secret ») : pour changer la longueur d'une respiration, repars
    de `voix-avant-respiration.wav` et **retranscris** (`transcribe`, puis `voix caler`) avant la
