@@ -30,8 +30,7 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
   d'images, un décor : jamais, même si sa page n'a que ça.
 - Jamais en fond plein cadre, jamais une carte photo sous un titre posé, jamais une photo qui
   dérive pendant qu'on lit. Une photo fixe ne porte jamais deux plans de suite, et au plus un plan
-  sur quatre. Le test : cache ses photos ; s'il ne reste qu'un titre et un cadre, le plan est une
-  diapositive.
+  sur quatre. Le test : cache ses photos ; s'il ne reste qu'un titre et un cadre, le plan est une diapositive.
 - Une vidéo d'exemple faite pour une autre offre reste dans sa vignette, jamais en plein écran : on
   la prendrait pour sa pub.
 
@@ -59,14 +58,15 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
 - Chaque groupe de mots reste au moins **0,8 s plus 0,3 s par mot**, jamais moins de 1,5 s
   (`studio_motion.py lecture`), quel que soit le tempo d'un style ou d'une référence. Avec une voix,
   un texte ne part jamais avant la fin de sa phrase. Seule exception à ces deux règles : les
-  sous-titres d'une voix off, qui suivent la voix ([supports.md](supports.md), « Sous-titres et
-  texte »).
+  sous-titres d'une voix off, qui la suivent ([supports.md](supports.md), « Sous-titres et texte »).
 - **Un mot posé ne bouge plus tant qu'on le lit** : son entrée et sa sortie jouent, sa tenue est
   immobile. Pendant qu'on lit, la caméra ne recadre pas sous lui : elle attend qu'il sorte, ou il vit
   dans son propre calque (`k-mots`) au-dessus d'elle.
 - Tout texte à lire fait au moins **28 px** rapporté à un petit côté de 1080 px, et tient dans la
   **zone sûre** du support (`studio_motion.py zones`) ; rien dans la bande du sticker d'une story.
-- **L'accroche se lit dès 0,5 s** ; dans une pub, son texte est là dès la première image.
+- **L'accroche se lit dès 0,5 s** (dans une pub, dès la première image) **et se comprend sans ses mots** :
+  ses deux premières secondes montrent le sujet qui agit, les mots l'accompagnent. Le test : cache les mots,
+  coupe le son, on sait encore de quoi parle la vidéo ; des mots seuls sur un aplat ne retiennent personne.
 - **Les mots ne recouvrent jamais ce que le plan montre** (l'interface qui agit, le chiffre, le
   résultat) : chacun a sa place à l'écran.
 

@@ -121,6 +121,18 @@ Le script et la page partent dans le même message (SKILL.md, étape 3 bis) :
 
 ## L'accroche (les 2 à 3 premières secondes)
 
+**L'image d'abord.** Écris l'accroche comme ce qu'on voit se passer pendant les deux premières
+secondes, puis seulement ses mots : c'est le seul plan que tout le monde voit, souvent sans le son.
+Une image qui démontre vaut mieux qu'une phrase qui annonce :
+- un logiciel, une IA : la demande se tape dans son vrai champ et le résultat se construit sous nos
+  yeux ;
+- une formation, un coaching : le résultat d'un élève apparaît (son vrai chiffre, son écran), ou la
+  corvée qu'on quitte se défait ;
+- un service, un template : l'avant qui devient l'après d'un geste.
+
+Le script vient du client, avec sa voix ? Sa phrase ne change pas, l'image du plan 1 reste à
+inventer : décris-la dans le script comme les autres plans.
+
 Elle dit de quoi on parle, pour qui, et ce que le spectateur gagne à rester. Choisis selon ce que
 l'audience sait déjà, sans jamais supposer qu'elle connaît le produit :
 

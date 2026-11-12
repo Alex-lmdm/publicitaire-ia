@@ -84,8 +84,7 @@ Chacun de ces réflexes est un signe que rien n'a été décidé :
   les lit.
 - **Le remplissage** : des boucles qui flottent, pulsent ou respirent à la place d'un mouvement ; une
   poussée lente en fin de scène ; un tremblement de caméra.
-- **La décoration** : des halos, néons, orbes, reflets d'objectif, particules ou nuées décoratives,
-  dégradés violets.
+- **La décoration** : des halos, néons, orbes, reflets d'objectif, particules ou nuées décoratives, dégradés violets.
 - **La mise en page** : tout centré ; trois cartes en ligne ; un titre sur une capture assombrie ;
   des étiquettes dans les coins ; des compteurs « 01 / 02 ».
 - **La marque** : des icônes génériques à la place des vrais logos ; le logo rangé dans un coin
@@ -131,6 +130,7 @@ premier jet.
    - **la caméra** : bouge-t-elle pour une raison ? Les mots sortent-ils dès qu'ils sont lus pour la
      laisser partir ?
    - **les fonds** : changent-ils avec le film, avec une cause ? Un temps fort a-t-il le sien ?
+   - **l'accroche** : sans ses mots ni le son, ses deux premières secondes disent-elles de quoi on parle ?
    - **la fin** : ramasse-t-elle le film, la marque en grand sur la dernière image, qui bouge encore ?
    - **la finition** : la traîne du flou, les courbes, les ombres, les alignements, la première et
      la dernière image, le geste sur le temps fort.

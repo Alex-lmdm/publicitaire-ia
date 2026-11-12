@@ -134,7 +134,9 @@ la fin.
 
 1. **Compréhension** : ta note, d'après les trois phrases du relecteur neuf (lui ne note pas) ; s'il
    n'a pas su dire ce qui est vendu, à qui et quoi faire, 3 au plus.
-2. **Accroche** : avant 3 s, on sait de quoi on parle, pour qui, et ce qu'on gagne à rester.
+2. **Accroche** : avant 3 s, on sait de quoi on parle, pour qui, et ce qu'on gagne à rester, **même
+   sans lire ses mots** (la réponse 7 du relecteur) ; une accroche faite de mots seuls sur un fond, 5 au
+   plus.
 3. **Structure** : chaque bloc remplit son rôle, dans l'ordre ; le problème avant le produit ; le
    comment montré.
 4. **Lecture** : chaque groupe de mots reste le temps de le lire à voix haute ; trop rapide, 4 au

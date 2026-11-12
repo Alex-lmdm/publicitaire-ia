@@ -2175,6 +2175,9 @@ Réponds en français, sans note ni compliment :
    ou d'extraits de vidéo (recadrés, zoomés, posés en cartes ou en fond) et quelle part est animée
    (des textes, des interfaces, des objets, des schémas qui bougent). Cite le plus long passage où
    des photos se succèdent, avec ses planches.
+7. **Les trois premières secondes, sans lire** : regarde les six premières images de la planche 1 en
+   ignorant tous les mots. De quoi parle la vidéo ? Si seuls les mots le disent, écris « l'ouverture ne
+   montre rien », et décris ce qu'on y voit.
 """
 
 CONSIGNE_RELEVE = """# Relevé des défauts
