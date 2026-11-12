@@ -2890,6 +2890,11 @@ def couleurs_marque(tokens_css: str) -> list[str]:
         m = re.search(rf"--brand-{re.escape(nom)}:\s*(#[0-9a-fA-F]{{6}})\b", tokens_css)
         if m and m.group(1).lower() not in vues:
             vues.append(m.group(1).lower())
+    # Une palette propre à une vidéo, à la demande du client (12/11/2026, Reel motion : « pas mes couleurs
+    # LMDM pour celle-là, plus de couleurs ») : ses teintes en plus, `--brand-couleur-<nom>`.
+    for m in re.finditer(r"--brand-couleur-[a-z0-9-]+:\s*(#[0-9a-fA-F]{6})\b", tokens_css):
+        if m.group(1).lower() not in vues:
+            vues.append(m.group(1).lower())
     return vues
 
 

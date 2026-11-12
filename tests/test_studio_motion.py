@@ -211,6 +211,12 @@ class Palette(unittest.TestCase):
         css = "--brand-bg: #202022;\n--brand-accent: #ffee00;\n--brand-text: #FFFFFF;\n--brand-sombre: #202022;"
         self.assertEqual(sm.couleurs_marque(css), ["#202022", "#ffffff", "#ffee00"])
 
+    def test_une_palette_propre_a_la_video(self):
+        """12/11/2026, Reel motion : « pas mes couleurs pour celle-là, plus de couleurs ». Les jetons
+        --brand-couleur-* du projet entrent dans la palette, après ceux de la marque."""
+        css = "--brand-bg: #0d0e16;\n--brand-couleur-rouge: #CF1F17;\n--brand-couleur-nuit: #0d0e16;"
+        self.assertEqual(sm.couleurs_marque(css), ["#0d0e16", "#cf1f17"])
+
     def test_les_objets_connus_gardent_leurs_couleurs(self):
         """08/11/2026 : « jaune, noir, blanc, on ne voit que ça ». Le dossier bleu du Mac, un PDF, les
         boutons d'une fenêtre passent ; le brun tiré du jaune reste signalé."""

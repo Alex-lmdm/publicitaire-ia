@@ -333,6 +333,10 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 - **Sur un aplat de sa couleur, rien n'entre en fondu, en flou ni avec une ombre sombre** : un élément
   sombre à demi transparent sur un jaune fait de l'olive, et `palette` le relève. Fais-le paraître
   à pleine opacité et grandir, ou entrer par un volet.
+- **Une palette propre à une vidéo** (12/11/2026, Reel motion : « n'utilise pas mes couleurs pour celle-là, plus
+  de couleurs ») : écris à la main le `brand/tokens.css` du projet (et `fonts.css` pour ses polices, avec
+  `police <famille>` à la racine), ses teintes en jetons `--brand-couleur-<nom>` que `palette` accepte, et une
+  note en tête « ne pas régénérer avec `style` ». La marque du client (`marque.json`) ne change pas.
 - **Un projet créé avant la version 0.9.0** n'a pas les jetons de palette (`--brand-sombre`,
   `--brand-clair`, `--brand-gris-1` à `4`, `--brand-accent-lisible`) que les scènes des styles
   utilisent : sans eux, un fond de nuit devient transparent. Recopie `brand/tokens.css` du dossier

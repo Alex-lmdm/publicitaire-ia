@@ -227,6 +227,12 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   pour une voix HeyGen) : un élément arrive **avec** le mot qui le nomme, pas après. Chaque scène
   commence avec la phrase qui la porte ; allonge ou raccourcis la scène (`data-duration` dans
   `index.html`, en gardant la grille de 0,5 s autant que possible) plutôt que de presser la voix.
+  Piège (12/11/2026, Reel motion) : une voix de synthèse enchaîne ses phrases sans silence de 0,25 s, donc
+  presque aucun mot n'« ouvre une phrase » pour `calage`, et cinq scènes posées sur leur phrase ont été
+  refusées. Fais alors partir chaque scène sur un temps de la grille que `calage` mesure (à 0,04 s près),
+  entre deux mots (à plus de 0,06 s de leur cœur) : calcule les candidats avec ses propres fonctions
+  (`pistes_audio`, `mots_de_la_voix`, `grille_musique`, `temps_de_la_grille`, `_mot_coupe` de
+  `tools/studio_motion.py`), puis déplace le texte d'une scène dans la fin de la précédente s'il le faut.
 - Pose la voix avec les sons, dans `work/sons.json` : `"voix": "assets/audio/voix.wav"`,
   `"voix_debut": 0.3` (son départ dans la vidéo). La musique passe d'elle-même sous la voix, à un
   écart mesuré sur le morceau, baissée pendant la parole et remontée dans les respirations (son.md,
