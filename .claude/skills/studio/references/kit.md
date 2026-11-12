@@ -261,6 +261,27 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   que soit leur `z-index`. Une fenêtre qui grandit sous une vraie vidéo la recouvre le temps de son mouvement ;
   un disque qui grandit sous une carte immobile passe devant elle. Le correctif : `data-motion-blur="off"` sur le
   sous-arbre qui bouge dessous (il perd sa traîne, il garde sa place).
+- **Un volume qui se retourne (un téléphone avec son dos et sa tranche) montre sa face à travers son dos**
+  (12/11/2026, le Reel écran) : dans `snapshot`, la face du téléphone (écrite en dernier, sans transformation à
+  elle) se peignait par-dessus le dos, et l'écran se voyait à l'envers quand le téléphone arrivait de dos ; le
+  rendu avec flou, lui, peint déjà dans l'ordre du document. Ne compte donc pas sur le tri en profondeur. Le
+  correctif, sans `backface-visibility` : à chaque image (`tl.eventCallback("onUpdate", …)`, et une fois à la
+  construction), cache les plans tournés vers l'arrière. Pour chaque plan, garde son centre et sa normale vers
+  l'extérieur ; lis la pose avec `new DOMMatrix(el.style.transform)`, transforme les deux points autour de
+  l'origine du pivot, et mets `visibility: hidden` quand (normale) · (caméra − centre) est négatif (la caméra :
+  le centre du cadre, à la distance de `perspective`). Un volume convexe sans ses faces arrière se peint juste
+  dans n'importe quel ordre. La tranche d'un contour arrondi : 4 côtés droits et 5 facettes par coin, chacune
+  `translate3d(milieu) rotateZ(angle) rotateX(90deg)` ; la face reste à z = 0 (le raccord avec un objet à plat
+  tombe au pixel), le corps part derrière, et le pivot se met au milieu de l'épaisseur (`transformOrigin` à trois
+  valeurs). Vérifié sur les images de `snapshot` ; pas encore sur un rendu entier.
+- **Un fond qui se brise en éclats** (même vidéo) : chaque éclat est une boîte à la taille de son morceau, découpée
+  par `clip-path`, qui porte son bout de fond décalé (la grille reste alignée). Trois détails le rendent propre :
+  le fond entier posé par-dessus et caché après la première image (au repos, les joints laisseraient voir ce
+  qu'il y a derrière) ; chaque morceau débordant de 0,8 px sur ses voisins (sinon un filet de l'accent passe
+  entre deux morceaux qui n'ont pas encore bougé, et vire à l'olive) ; le bout de fond rentré de 4 px dans un
+  éclat de couleur plus claire, qui lui fait un chant net (on lit du verre, sans lueur). L'espace des éclats a
+  son flou de bougé coupé (`clip-path` qui bouge, sombre sur l'accent). Un trajet 1,5 à 2 fois plus long que la
+  sortie du cadre : l'éclat sort encore rapide, jamais en ralentissant.
 - **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :
   - `backdrop-filter` (le verre dépoli) et `mix-blend-mode` sur un objet qui bouge, ou sur un de ses
     parents, disparaissent dans le mode de flou qui rend les rotations : le verre seulement sur un
