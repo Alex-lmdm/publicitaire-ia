@@ -84,8 +84,9 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    texte de la voix seulement (l'écran garde la vraie orthographe) et génère plusieurs écritures
    d'un coup. **Seule l'oreille du client tranche** : « Sidance » a été transcrit « Sidance » par
    Whisper, mais dit « saïdense » à l'oreille. Whisper écarte seulement les ratés francs
-   (« Sîdènse » → « Syndesia », « Ci-dense » → « Science ») ; « Sea Dance » et « Si-danse » sont
-   ressortis « Seedance ». Une consigne de prononciation dans le champ Style aplatit l'intonation.
+   (« Sîdènse » → « Syndesia », « Ci-dense » → « Science »). **Retenu à l'oreille : « Si-danse »**
+   (deux mots français liés par un tiret), écrit ainsi dans le texte de la voix. Une consigne de
+   prononciation dans le champ Style aplatit l'intonation : préfère réécrire le mot.
 
 ### B. Sa voix, enregistrée sur son téléphone
 
