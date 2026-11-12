@@ -73,6 +73,13 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    écris « Publicitaire I.A. » (avec les points) et un mot-clé en minuscules entre guillemets
    (« pub ») : en capitales, la voix risque de l'épeler. Les balises de pause ne sont pas
    nécessaires : la ponctuation suffit, et `voix respiration` ouvre les vraies pauses ensuite.
+   **12/11/2026, mêmes voix pilotées dans son Chrome (extension)** : 128 mots, rythme soutenu,
+   en 40 s pour **Mako** (la seule voix du style « Energetic ») et Ludo, 45 s pour Koda et Cleo ;
+   toutes ont dit « Commente » et « l'I.A. » juste. Piège : une phrase absente de la transcription
+   d'une prise entière n'est pas une phrase sautée par la voix. Whisper en perdait une sur deux
+   prises de 45 s ; retranscrit seul (`-ss 14 -t 22`), le passage y était. Retranscris le passage
+   avant de régénérer. Dans le panneau des voix, un filtre (Style…) reste actif quand on cherche
+   un nom : repasse-le sur « All styles », sinon la voix cherchée n'apparaît pas.
 
 ### B. Sa voix, enregistrée sur son téléphone
 
