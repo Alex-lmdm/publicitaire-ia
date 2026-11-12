@@ -274,14 +274,6 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `translate3d(milieu) rotateZ(angle) rotateX(90deg)` ; la face reste à z = 0 (le raccord avec un objet à plat
   tombe au pixel), le corps part derrière, et le pivot se met au milieu de l'épaisseur (`transformOrigin` à trois
   valeurs). Vérifié sur les images de `snapshot` ; pas encore sur un rendu entier.
-- **Un fond qui se brise en éclats** (même vidéo) : chaque éclat est une boîte à la taille de son morceau, découpée
-  par `clip-path`, qui porte son bout de fond décalé (la grille reste alignée). Trois détails le rendent propre :
-  le fond entier posé par-dessus et caché après la première image (au repos, les joints laisseraient voir ce
-  qu'il y a derrière) ; chaque morceau débordant de 0,8 px sur ses voisins (sinon un filet de l'accent passe
-  entre deux morceaux qui n'ont pas encore bougé, et vire à l'olive) ; le bout de fond rentré de 4 px dans un
-  éclat de couleur plus claire, qui lui fait un chant net (on lit du verre, sans lueur). L'espace des éclats a
-  son flou de bougé coupé (`clip-path` qui bouge, sombre sur l'accent). Un trajet 1,5 à 2 fois plus long que la
-  sortie du cadre : l'éclat sort encore rapide, jamais en ralentissant.
 - **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :
   - `backdrop-filter` (le verre dépoli) et `mix-blend-mode` sur un objet qui bouge, ou sur un de ses
     parents, disparaissent dans le mode de flou qui rend les rotations : le verre seulement sur un
