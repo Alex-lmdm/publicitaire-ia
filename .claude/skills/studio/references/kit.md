@@ -274,6 +274,22 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `translate3d(milieu) rotateZ(angle) rotateX(90deg)` ; la face reste à z = 0 (le raccord avec un objet à plat
   tombe au pixel), le corps part derrière, et le pivot se met au milieu de l'épaisseur (`transformOrigin` à trois
   valeurs). Vérifié sur les images de `snapshot` ; pas encore sur un rendu entier.
+- **Découper une image du film en couches** (12/11/2026, le Reel écran : l'image qui se fige, bascule et s'ouvre
+  en vue éclatée) : la scène suivante commence sur des captures de la dernière image de la précédente, empilées,
+  et la coupe ne se voit pas. Travaille sur une copie du projet dans `.hyperframes/scratch` (`index.html`,
+  `compositions/`, `kit/`, `brand/`, un lien vers `assets/`), jamais dans le projet : ajoute une feuille de style
+  avant `</head>` qui cache les sous-titres et tout sauf une couche (`visibility: hidden !important`), puis
+  `hyperframes snapshot <copie> --at <fin de la scène − 0,001>`. Une couche se capture deux fois, sur fond noir
+  et sur fond blanc (`html, body, #root, #fond { background: … !important }`, le fond et la vignette de la scène
+  cachés) : sa transparence est 1 − (blanc − noir) / 255, sa couleur noir / transparence ; on la rogne à ce qui
+  n'est pas vide et on la pose à ces coordonnées. Trois pièges : la vignette du kit passe sous l'espace 3D
+  (`z-index`), elle ne couvre que le fond, donc elle se multiplie dans la couche du fond seulement (la poser sur
+  toutes assombrissait le cerveau de 35 niveaux) ; les couches s'écrivent de l'arrière vers l'avant et, à 0 s,
+  restent à `z: 0` (un décalage, même d'un pixel, déplace l'image à la coupe) ; compare l'empilement à l'image
+  entière avant de t'en servir (ici 10 niveaux d'écart au plus, sur un trait de 2 px). Les captures vieillissent :
+  si la scène d'avant change, elles se refont, et le plan le dit.
+- **Des lignes de code dans un éditeur** : `white-space: pre` se pose sur le texte de chaque ligne, pas sur leur
+  conteneur, sinon les retours à la ligne du HTML entre deux lignes s'affichent et la fenêtre double de hauteur.
 - **Ce qui se rend mal** (le flou de bougé et l'encodage, mesurés le 09/11/2026) :
   - `backdrop-filter` (le verre dépoli) et `mix-blend-mode` sur un objet qui bouge, ou sur un de ses
     parents, disparaissent dans le mode de flou qui rend les rotations : le verre seulement sur un
