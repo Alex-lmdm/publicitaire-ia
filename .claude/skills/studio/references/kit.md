@@ -275,7 +275,8 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   tombe au pixel), le corps part derrière, et le pivot se met au milieu de l'épaisseur (`transformOrigin` à trois
   valeurs). Vérifié sur les images de `snapshot` ; pas encore sur un rendu entier.
 - **Découper une image du film en couches** (12/11/2026, le Reel écran : l'image qui se fige, bascule et s'ouvre
-  en vue éclatée) : la scène suivante commence sur des captures de la dernière image de la précédente, empilées,
+  en vue éclatée ; essayée puis défaite le jour même, le client préférait la scène d'avant, la technique reste
+  bonne) : la scène suivante commence sur des captures de la dernière image de la précédente, empilées,
   et la coupe ne se voit pas. Travaille sur une copie du projet dans `.hyperframes/scratch` (`index.html`,
   `compositions/`, `kit/`, `brand/`, un lien vers `assets/`), jamais dans le projet : ajoute une feuille de style
   avant `</head>` qui cache les sous-titres et tout sauf une couche (`visibility: hidden !important`), puis
