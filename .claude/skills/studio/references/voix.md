@@ -80,10 +80,12 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    prises de 45 s ; retranscrit seul (`-ss 14 -t 22`), le passage y était. Retranscris le passage
    avant de régénérer. Dans le panneau des voix, un filtre (Style…) reste actif quand on cherche
    un nom : repasse-le sur « All styles », sinon la voix cherchée n'apparaît pas.
-   Un nom anglais se dit mal : Autonoe disait « Silence » pour « Seedance ». Écrit **« Sidance »**
-   dans le texte de la voix (l'écran garde la vraie orthographe), il était dit juste ;
-   « Si-dennse » et « Seed-dance » sortaient « Syndance » et « Suddence ». Teste deux ou trois
-   écritures à la française et vérifie le passage seul avec Whisper, en `-l fr` puis en `-l en`.
+   Un nom anglais se dit mal : Autonoe disait « Silence » pour « Seedance ». Réécris-le dans le
+   texte de la voix seulement (l'écran garde la vraie orthographe) et génère plusieurs écritures
+   d'un coup. **Seule l'oreille du client tranche** : « Sidance » a été transcrit « Sidance » par
+   Whisper, mais dit « saïdense » à l'oreille. Whisper écarte seulement les ratés francs
+   (« Sîdènse » → « Syndesia », « Ci-dense » → « Science ») ; « Sea Dance » et « Si-danse » sont
+   ressortis « Seedance ». Une consigne de prononciation dans le champ Style aplatit l'intonation.
 
 ### B. Sa voix, enregistrée sur son téléphone
 
