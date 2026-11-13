@@ -331,6 +331,11 @@ qui travaille **en dessous** :
   le morceau (sa section la plus forte sous la voix) : plus de gain fixe, l'écart tient quel que soit
   le morceau. Une version accessible (public âgé ou malentendant) : `"musique_ecart": 20` dans
   `sons.json`. `"musique_db"` reste un réglage manuel, qui prime.
+  **« La musique un peu plus forte »** (13/11/2026, story vente) : lis le niveau posé sous la voix
+  (`data-volume` × le point bas de l'enveloppe), écris dans `"musique_db"` ce niveau + 3 à 4 dB (un
+  écart d'environ 11 LU reste clair), et **ne remonte pas les bruitages d'autant** : sous la voix, ils
+  passent alors au-dessus d'elle (21 sur 30 sur l'essai). Ils perdent ces dB d'émergence sur la
+  musique, et `emergence` le signale : c'est un P1 expliqué, le prix de la demande.
 - **Le ducking : une courbe calculée sur les pauses de la voix**, jamais un compresseur. Une pause de
   moins de 1,5 s ne fait pas remonter la musique (elle pomperait) ; une respiration d'au moins 1,5 s,
   le temps avant le premier mot (s'il arrive après 1,5 s) et la fin après le dernier mot la font
