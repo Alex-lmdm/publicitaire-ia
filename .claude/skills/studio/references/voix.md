@@ -168,6 +168,16 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    npx hyperframes transcribe assets/audio/voix.wav --engine parakeet --language fr
    ```
 
+   Piège (13/11/2026, HyperFrames 0.9.26) : avec `--language fr`, ce n'est pas Parakeet qui
+   transcrit mais Whisper (« Parakeet chooses its own language, so whisper transcribes --language
+   fr », puis « Transcribing with small.en »), même avec Parakeet installé. Sans `--language`,
+   `--engine parakeet` transcrit bien par Parakeet (« Transcribing with Parakeet »). Les deux se
+   trompent sur des mots différents : sur cinq prises Google, Whisper entendait « puissant » pour
+   « épuisant » et « Montereya » pour « Monteur I.A. », Parakeet perdait « quatre-vingt-dix-sept »
+   et entendait « une solution » pour « une seule fois ». Pour **vérifier des prises**, passe les
+   deux et ne signale au client que ce que les deux ratent ou ce qu'un seul rate franchement ;
+   `voix caler` remet de toute façon le texte juste.
+
    Il écrit `assets/audio/transcript.json`, à côté de la voix : chaque mot, son début et sa fin en
    secondes (quelques secondes de calcul). Puis, **toujours**, remets le texte juste sur ces temps :
 
