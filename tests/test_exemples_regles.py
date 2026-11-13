@@ -105,7 +105,8 @@ class Intentions(unittest.TestCase):
     OUVERTURES = {"01-cartes-pixels": ["t01-bruit"], "02-titres-geants": ["titre-geant", "titre-geant-vertical"],
                   "03-verre-sombre": ["t3-onglets"], "04-mots-eparpilles": ["mots-objets", "mots-objets-vertical"],
                   "05-interrupteurs-creme": ["interrupteurs-cascade"], "06-nuee-d-encre": ["coup-de-pinceau"],
-                  "07-phrase-tapee": ["t7-accroche"], "08-fenetre-peinte": ["t08-logo"]}
+                  "07-phrase-tapee": ["t7-accroche"], "08-fenetre-peinte": ["t08-logo"],
+                  "09-objets-en-scene": ["t9-accroche"]}
     PRIX = {"01-cartes-pixels": "t01-carte-annotee", "03-verre-sombre": "t3-commande"}
 
     def test_chaque_style_marque_son_accroche(self):

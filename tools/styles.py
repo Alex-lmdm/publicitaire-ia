@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LES STYLES DU CATALOGUE : le style maison (0, « Sur mesure », le conseil par défaut) et les 8 looks
+"""LES STYLES DU CATALOGUE : le style maison (0, « Sur mesure », le conseil par défaut) et les 9 looks
 de `.claude/skills/studio/styles/`, lus dans leur index, et leurs aperçus
 (`assets/styles/<dossier>.mp4|.jpg`).
 
@@ -26,7 +26,7 @@ MAISON = 0              # le style maison : le conseil par défaut, et toujours 
 AMBIANCES = {1: ["tech-minimale"], 2: ["lancement-energique", "montee-cinematique"],
              3: ["tech-minimale", "montee-cinematique"], 4: ["premium-calme", "montee-cinematique"],
              5: ["premium-calme", "tech-minimale"], 6: ["montee-cinematique"], 7: ["lancement-energique"],
-             8: ["tech-minimale", "premium-calme"]}
+             8: ["tech-minimale", "premium-calme"], 9: ["court-percutant", "lancement-energique"]}
 
 
 def catalogue(racine: Path) -> list[dict]:

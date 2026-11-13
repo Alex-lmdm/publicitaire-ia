@@ -8,7 +8,7 @@ fonds qui changent avec une cause.
 **D'après :** aucune vidéo en particulier : le niveau des films de lancement faits par les grands
 studios de motion design, décrit dans [ambition.md](../../references/ambition.md).
 
-**Pourquoi « sur mesure ».** Les styles 1 à 8 reprennent la grammaire d'une vidéo qui existe.
+**Pourquoi « sur mesure ».** Les styles 1 à 9 reprennent la grammaire d'une vidéo qui existe.
 Celui-ci n'impose aucun geste : chaque vidéo y prend une forme à elle, écrite pour son offre et son
 script. Son seul cahier des charges est l'ambition (des passages causés, de la profondeur, des mots
 qui jouent, des interfaces qui vivent, une caméra qui a une raison de bouger, le flou de bougé) et

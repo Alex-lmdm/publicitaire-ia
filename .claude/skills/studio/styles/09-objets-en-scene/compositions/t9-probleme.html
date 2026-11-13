@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Style n°9 · Objets en scène · scène « Le problème a un visage ».
+  Ce qu'elle montre : sur le clair de ta marque, une balance. La petite étiquette de ta solution (à
+  l'accent, sans visage) se pose sur un plateau ; la grosse étiquette du problème (à la couleur de la
+  mauvaise nouvelle, avec un visage) s'écrase sur l'autre : la balance bascule, la petite est projetée en
+  l'air ; la grosse sue, puis montre les dents. Au-dessus, la phrase en gros mots, mot à mot, un mot
+  surligné. Le seul passage de la vidéo où un objet a un visage : celui qui incarne le problème.
+  Passage : la caméra plonge dans le nom de la grosse étiquette (la scène suivante peut s'ouvrir sur le
+  même nom, au plus près : style.md, « Les transitions »).
+  Durée : la scène la calcule (D dans le script) : 4,8 s avec l'objet EXEMPLE ; reporte-la dans
+  data-duration (ici et sur l'hôte).
+  16:9 (1920 × 1080) ; en 9:16, la racine passe à 1080 × 1920 et la scène se remet en page seule.
+  À remplacer : l'objet EXEMPLE en tête du script (chaque champ y est décrit). Aucun prix sur les
+  étiquettes : leur taille dit le coût ; un vrai prix n'y va que s'il est dans la fiche.
+  Les objets rebondissent plus que « presque aucun rebond » (metier.md : le dépassement de back.out(s) vaut
+  4s³ / 27(s+1)²) : c'est leur élan, la signature du style ; les mots, eux, se posent net.
+  Couleurs : seulement les jetons de ta marque : son clair en fond, son accent pour la solution, son
+  jeton négatif pour le problème, son sombre pour les mots et la balance.
+  Charge d'abord objets-en-scene.js et objets-en-scene.css du style (P.balance, P.etiquette, P.coups) : style.md, « Les
+  compositions du kit ».
+  Identifiant : t9p (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t9p { background: var(--brand-clair); font-family: var(--brand-font-display); color: var(--brand-sombre); overflow: hidden; }
+  #t9p .t9p-cadre { position: absolute; inset: 0; }
+  #t9p .t9p-monde { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #t9p .t9p-phrase { position: absolute; left: 40px; right: 40px; text-align: center; text-transform: uppercase; line-height: 0.95; z-index: 20; }
+  #t9p .t9p-phrase span { display: inline-block; }
+</style>
+
+<div data-composition-id="t9p" data-width="1920" data-height="1080" data-duration="4.8" style="position:absolute; inset:0;">
+  <div id="t9p" class="k-scene">
+    <div class="t9p-cadre" id="t9p-cadre">
+      <div class="t9p-monde" id="t9p-monde"></div>
+      <div class="t9p-phrase" id="t9p-phrase"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json ou de son script validé, ou la ligne se retire
+    phrase: ["Bien", "moins", "cher"],   // la phrase en gros mots, mot à mot (3 à 5 mots)
+    surligne: 1,                         // le rang du mot surligné à l'accent (-1 : aucun)
+    solution: "Toi",                     // le nom sur la petite étiquette (ta solution, son outil), un mot court
+    probleme: "L'autre",                 // le nom sur la grosse étiquette (ce qui coûte, ce qui gêne), un mot court
+    plonger: true                        // la caméra plonge dans le nom du problème à la fin (false : elle recule)
+  };
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.max(plancher || 1.5, 0.3 * n + 0.8); }
+  var $ = function (id) { return document.getElementById(id); };
+  var racine = $("t9p"), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var tl = gsap.timeline({ paused: true });
+  var n = EXEMPLE.phrase.length, tMots = 0.1 + (n - 1) * 0.28;
+  var tPetite = 0.5, tGrosse = Math.max(tMots + 0.35, 1.3), tDents = tGrosse + 0.9;
+  var D = Math.ceil(Math.max(tDents + 1.2, 0.1 + lecture(EXEMPLE.phrase, 2.4)) * 10) / 10 + 0.3;
+
+  // --- La phrase, mot à mot, au-dessus de la balance --------------------------------------------------------
+  var phrase = $("t9p-phrase"); phrase.style.fontSize = (vertical ? 140 : 172) + "px"; phrase.style.top = (vertical ? 150 : 54) + "px";
+  var mots = EXEMPLE.phrase.map(function (m, i) { var s = K.el(phrase, "span", "", m); s.setAttribute("data-motion-blur", "off"); if (i < n - 1) phrase.appendChild(document.createTextNode(" ")); return s; });
+  mots.forEach(function (s, i) { K.claque(tl, s, 0.1 + i * 0.28, { de: 1.5, duree: 0.28 }); });
+  if (EXEMPLE.surligne >= 0 && mots[EXEMPLE.surligne]) K.surligner(tl, mots[EXEMPLE.surligne], 0.1 + EXEMPLE.surligne * 0.28 + 0.16, { couleur: K.jeton("--brand-accent"), encre: K.jeton("--brand-contrast") });
+
+  // --- La balance et ses deux étiquettes ---------------------------------------------------------------------
+  var monde = $("t9p-monde"); gsap.set(monde, { width: L, height: H });
+  var bx = L / 2, by = vertical ? H * 0.74 : H * 0.94, s0 = vertical ? 0.74 : 1;
+  var bal = P.balance(monde, bx, by, { l: 430 * s0, haut: 480 * s0, pend: 230 * s0, wPlateau: 380 * s0 });
+  var pG = bal.plateaux[0], pD = bal.plateaux[1];
+  var petite = P.sansVisage(P.etiquette(pD.el, { x: 0, y: bal.pend - 8, w: 200 * s0, h: 280 * s0, couleur: "accent", mot: EXEMPLE.solution, ombre: false }));
+  P.tombe(tl, petite, tPetite, { dy: 900, duree: 0.26, force: 0.9 });
+  bal.incliner(tl, tPetite + 0.26, 7, 0.7);
+  var grosse = P.etiquette(pG.el, { x: 0, y: bal.pend - 8, w: 380 * s0, h: 520 * s0, couleur: "alerte", mot: EXEMPLE.probleme, bouche: "plat", ombre: false });
+  P.tombe(tl, grosse, tGrosse - 0.28, { dy: 1100, duree: 0.28, force: 1.3 });
+  bal.incliner(tl, tGrosse, -20, 0.9, "elastic.out(1, 0.5)");
+  [0, 1, 2].forEach(function (k) { tl.to(monde, { y: "+=" + (k % 2 ? -22 : 12), duration: 0.04, ease: "none" }, tGrosse + k * 0.04); });
+  tl.to(monde, { y: 0, duration: 0.08 }, tGrosse + 0.12);
+  // La petite est projetée en l'air (elle prend son élan : elle s'écrase avant de sauter).
+  P.saute(tl, petite, tGrosse + 0.02, { hauteur: 120, duree: 0.46 });
+  // Le visage du problème : il sue, puis montre les dents.
+  var G = grosse.visage;
+  G.sourcilsA(tl, tGrosse + 0.1, 16, -0.05).bouche(tl, tGrosse + 0.1, "triste").goutte(tl, tGrosse + 0.3, 0.9);
+  G.bouche(tl, tDents, "dents").sourcilsA(tl, tDents, -16, 0.05);
+  P.secoue(tl, grosse, tDents + 0.04, { amp: 4, nombre: 4, duree: 0.06 });
+  tl.to(grosse.mot, { scale: 1.3, duration: 0.08, ease: "power2.out" }, tDents).to(grosse.mot, { scale: 1, duration: 0.3, ease: "power2.out" }, tDents + 0.08);
+
+  // --- La caméra : un léger recul pendant la scène, puis elle plonge dans le nom du problème ----------------
+  var vue = function (s, wx, wy) { return { scale: s, x: L / 2 - wx * s, y: H / 2 - wy * s }; };
+  gsap.set(monde, vue(1.06, L / 2, H * 0.6));
+  tl.to(monde, Object.assign({ duration: tGrosse, ease: "power2.out" }, vue(1, L / 2, H / 2)), 0);
+  var nomX = bx - 430 * s0 * Math.cos(20 * Math.PI / 180), nomY = by - 480 * s0 + 430 * s0 * Math.sin(20 * Math.PI / 180) + 230 * s0 - 8 - 520 * s0 * 0.62;
+  if (EXEMPLE.plonger) {
+    K.sortieMots(tl, mots, D - 0.42, { y: -60, duree: 0.2 });
+    tl.to(monde, Object.assign({ duration: 0.3, ease: "power3.in" }, vue(4.5, nomX, nomY)), D - 0.3);
+  }
+
+  P.coups(tl, $("t9p-cadre"), [[0.1 + 2 * 0.28, 0.03, "70% 30%"], [tDents, 0.035, "30% 55%"]]);
+  window.__timelines["t9p"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

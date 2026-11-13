@@ -108,7 +108,7 @@ seconde**.
 
 Le script écrit, ouvre la page des styles et des musiques depuis le projet du support principal
 (`musiques choisir --duree <durée du script> --ouvrir` : le style 0, **« Sur mesure », notre style
-maison**, les 8 styles et trois musiques, ton conseil marqué ; un style déjà connu : `--sans-styles`),
+maison**, les 9 styles et trois musiques, ton conseil marqué ; un style déjà connu : `--sans-styles`),
 puis envoie **un seul message** : le script plan par plan, et « Réponds par exemple « ok, 0, 1 » :
 ok pour le script, puis le style, puis la musique. Ou « ok, choisis ». » **Attends sa réponse** :
 deuxième validation obligatoire, c'est ici qu'une vidéo se réussit. Note-la dans `PLAN.md` (« Script

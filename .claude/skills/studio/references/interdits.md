@@ -18,7 +18,7 @@ envie change les gestes, jamais ces règles. Tout le reste est libre ([ambition.
   (un disque, un carré, une nuée) à la place d'un objet qui manque. Ce qui se montre est sa vraie
   matière : son produit reconstruit d'après capture, ses vrais chiffres, ses vrais résultats, les
   vrais logos de ses outils, les objets que son public connaît (un objet connu dont le plan parle
-  n'est pas une image inventée).
+  n'est pas une image inventée). Exception : le style 9 (objets dessinés, un seul visage, le problème).
 - Ni le visage d'une personne réelle généré par IA, ni une voix clonée sans son accord.
 
 ## Pas de diaporama de sa page

@@ -4,7 +4,7 @@
 geste ; chaque vidéo y prend sa forme, au niveau d'[ambition.md](../references/ambition.md). C'est
 le conseil par défaut (point 1 ci-dessous).
 
-Puis huit styles de motion design, chacun repris d'une vraie vidéo de lancement de logiciel qui a fait
+Puis neuf styles de motion design, chacun repris d'une vraie vidéo de lancement de logiciel qui a fait
 ses preuves, refait par nous (une fiche, des scènes signature déjà construites) et contrôlé en 16:9
 et en 9:16, sur une marque claire comme sur une marque sombre : chaque scène a sa mise en page
 verticale (un fichier `-vertical.html`, ou une scène qui se remet en page seule). Le client les voit
@@ -45,6 +45,7 @@ son offre (section « Sur une autre offre » de chaque fiche).
 | 6 | Nuée d'encre | page claire, cercle au pinceau autour de ses mots qui se défait en points, ses mots écrits en points puis son initiale, planches de ses vrais mots ou images, « bientôt » | Kimi | un teaser avant l'ouverture | `06-nuee-d-encre` |
 | 7 | Phrase tapée | phrases tapées derrière un gros curseur, sa vraie matière et ses outils éparpillés puis en orbite autour de l'offre | Zaro | lancer un logiciel ou une formation | `07-phrase-tapee` |
 | 8 | Fenêtre posée | phrases complètes tapées sur un fond clair, barres comparatives, l'outil dans une fenêtre posée sur sa couleur | Cursor | prouver avec des chiffres | `08-fenetre-peinte` |
+| 9 | Objets en scène | un gros mot par phrase qui fait ce qu'il dit, des objets connus sans visage qui agissent, un seul problème avec un visage, une accroche qui monte, un coup de zoom sur chaque temps fort | Ditch (Damiano) | une pub ou un Reel avec une touche drôle | `09-objets-en-scene` |
 
 Chaque style a son aperçu dans `assets/styles/` (`<dossier>.mp4` et `<dossier>.jpg` : quelques
 secondes de ses gestes, sur une marque d'essai), que la page des styles et des musiques montre.
@@ -57,7 +58,7 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    conseil** (marqué sur la page, et pris s'il répond « choisis ») : le style 0 pour sa première
    vidéo (aucune livraison dans les autres dossiers de `videos/`), et par défaut ensuite ; un des
    huit quand sa vidéo appelle nettement sa grammaire (des chiffres à comparer : 8 ; un teaser : 6 ;
-   son offre et son prix sur une marque sombre : 3 ; la colonne « Souvent utile pour » donne
+   son offre et son prix sur une marque sombre : 3 ; une pub qui doit faire sourire : 9 ; la colonne « Souvent utile pour » donne
    l'indice) ou qu'il a aimé ce look. Dis-le en une phrase, avec ce que la vidéo va montrer. Il
    hésite (« lequel tu me conseilles ? ») : demande-lui ce qu'il aime voir (fond clair ou sombre,
    interface en 3D, typo géante, phrase tapée, fenêtres), puis propose 2 ou 3 styles, numéro et
@@ -73,11 +74,11 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    grammaire du style : sa typographie, ses mises en page, ses mouvements, ses transitions (sections
    3 à 7 de la fiche). Note dans `PLAN.md`, pour chaque scène, le geste repris ou « construite dans
    le style ».
-4. **Le garde-fou** (styles 1 à 8) : chaque vidéo garde au moins trois gestes signature de son
+4. **Le garde-fou** (styles 1 à 9) : chaque vidéo garde au moins trois gestes signature de son
    style (deux sous 15 s), sinon on ne le reconnaît plus. Un geste signature est un mouvement, une
    mise en page ou un motif ; jamais une image. Le style 0 n'en a pas : sa seule exigence est le
    niveau d'[ambition.md](../references/ambition.md).
-5. **Les scènes des styles 1 à 8** sont des démonstrations de leurs gestes, pas des scènes à remplir :
+5. **Les scènes des styles 1 à 9** sont des démonstrations de leurs gestes, pas des scènes à remplir :
    on en reprend le mouvement (le code d'une entrée, d'un cadre de sélection, d'un recul de caméra),
    jamais le décor. Tu peux en copier une dans `compositions/` du projet : ses textes, chiffres, prix
    et noms d'exemple sont tous dans l'objet `EXEMPLE`, en tête de son script, et chaque valeur se

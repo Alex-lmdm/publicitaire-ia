@@ -54,7 +54,8 @@ signale un texte parti trop tôt (`line_unread`).
   pastille) dépasse sa place de 1 à 4 %, `back.out(0.6)` à `back.out(1)` ; un texte, jamais (il se
   pose net) ; la caméra, presque pas. Au-delà, tout paraît en caoutchouc et plus rien n'a l'air
   précis : `back.out(2)` dépasse de 13 %, `back.out(3)` de 25 % (le dépassement de `back.out(s)`
-  vaut 4s³ / 27(s+1)²). Jamais de rebond sur l'opacité ni la couleur.
+  vaut 4s³ / 27(s+1)²). Jamais de rebond sur l'opacité ni la couleur. Seule exception, les objets du
+  style 9 (« Objets en scène ») : leur élan fait le style ; ses mots, eux, se posent net.
 - **Deux horloges** : l'interface de son produit bouge à sa vraie vitesse, 100 à 300 ms (un menu, un
   onglet, une coche, un bouton qui réagit ; Linear anime en 100 et 160 ms, Vercel en 100 et 150) ;
   le film bouge à la sienne, 0,4 à 0,9 s (le mot fort, les objets, la caméra, les passages). Une

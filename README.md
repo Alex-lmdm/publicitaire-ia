@@ -52,9 +52,9 @@ pas recadrée.
 5. **Prête à publier** : la vidéo, le texte de publication de chaque plateforme, la couverture ou
    l'affiche, la façon de la poser sur ta page, le calendrier d'un lancement.
 
-**Le style maison et 8 styles de motion design.** Le style 0, « Sur mesure », est le nôtre : il ne
+**Le style maison et 9 styles de motion design.** Le style 0, « Sur mesure », est le nôtre : il ne
 copie aucune vidéo, prend une forme à lui pour chaque offre, et c'est celui que ton assistant te
-conseille pour ta première vidéo. Les 8 autres sont des looks repris de vraies vidéos de logiciels
+conseille pour ta première vidéo. Les 9 autres sont des looks repris de vraies vidéos de logiciels
 (Firecrawl, Polymarket, Cursor…), refaits pour ta marque. À chaque vidéo, ton assistant te les montre
 avec les musiques : tu choisis un numéro, il garde la structure de ta vidéo (ta pub, ta nouveauté, ta
 page de vente) et l'habille de ce style, avec ton offre, tes interfaces et tes couleurs. Aucun ne te
@@ -90,7 +90,7 @@ dossier Monteur IA ».
 - `tools/studio_motion.py` : marque, création des vidéos par support et par format, vérification
   de la fiche, analyse d'une vidéo de référence, logos des outils, temps de lecture, zones,
   planche, rythme, calage de la musique, pose et émergence des sons, mastering, couverture,
-  export, livraison. `tools/styles.py` : le style maison, les 8 styles et leurs aperçus, pour la page des styles et
+  export, livraison. `tools/styles.py` : le style maison, les 9 styles et leurs aperçus, pour la page des styles et
   des musiques. `tools/voix.py` : la voix off calée mot à mot, ses respirations. `tools/heygen.py` :
   les voix de HeyGen et la page d'écoute, avec le compte du client. `tools/telechargeur.py` : le
   téléchargeur des vidéos de référence, installé à la demande. `tools/marque.py` : lecture de la

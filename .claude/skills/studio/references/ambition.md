@@ -102,7 +102,7 @@ mesure, en GSAP et en CSS. Les scènes prêtes de `templates/scenes/` et celles 
 transforme-la ; aucune n'est un passage obligé. Un plan sans idée : [gestes.md](gestes.md), rangé
 par besoin. Les repères chiffrés du métier sont dans [metier.md](metier.md), quand tu hésites.
 
-Avec un style 1 à 8, sa grammaire décide des gestes (un style à plat reste à plat) ; cette page
+Avec un style 1 à 9, sa grammaire décide des gestes (un style à plat reste à plat) ; cette page
 garde le niveau : des passages causés, des interfaces qui vivent, des mots qui jouent, la finition.
 
 ## La passe du directeur artistique

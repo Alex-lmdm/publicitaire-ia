@@ -1230,7 +1230,7 @@ CONSIGNE_STYLE_MUSIQUE = ("Regarde les styles, écoute les musiques (chaque extr
 
 
 def _vitrine_styles(r: Path, a) -> list[dict]:
-    """Le style maison et les 8 styles à montrer avec les musiques (SKILL.md, étape 3 bis), ton conseil
+    """Le style maison et les 9 styles à montrer avec les musiques (SKILL.md, étape 3 bis), ton conseil
     marqué (le style maison sans `--style`) ; aucun quand son style est déjà connu (`--sans-styles`, ou
     un style gardé dans ses préférences : `--style` rouvre alors la page, s'il en veut un autre). Le
     style maison vaut 0 : tout se compare à None."""
@@ -4689,7 +4689,7 @@ def parseur() -> argparse.ArgumentParser:
     mz.add_argument("--autres", action="store_true", help="choisir : d'autres morceaux que ceux déjà proposés.")
     mz.add_argument("--nombre", type=int, default=3, help="choisir : nombre de propositions (défaut 3).")
     mz.add_argument("--ouvrir", action="store_true", help="choisir : ouvre la page d'écoute dans le navigateur.")
-    mz.add_argument("--style", type=int, help="choisir : le style que tu conseilles, marqué sur la page (0, le style maison, par défaut ; 1 à 8).")
+    mz.add_argument("--style", type=int, help="choisir : le style que tu conseilles, marqué sur la page (0, le style maison, par défaut ; 1 à 9).")
     mz.add_argument("--sans-styles", action="store_true", help="choisir : son style est déjà connu, la page ne montre que les musiques.")
     mz.set_defaults(f=cmd_musiques)
     hg = s.add_parser("heygen", help="HeyGen : relier le compte, écouter et générer une voix (payant) ; ses musiques et bruitages seulement à la demande du client (licence : usage commercial interdit sur un compte gratuit, son.md).")

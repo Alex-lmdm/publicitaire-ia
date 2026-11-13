@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="UTF-8"></head>
+<body>
+<template>
+<!--
+  Style n°9 · Objets en scène · scène « L'accroche qui monte ».
+  Ce qu'elle montre : sur l'aplat de l'accent de ta marque, la carte de ton interface arrive en zoomant ;
+  la phrase de l'accroche claque en haut dès la première image ; dans la carte, ses lignes s'ajoutent une
+  à une, chacune cochée, pendant que le compteur grimpe ; puis la carte tombe, la phrase vient au centre
+  en très gros, son dernier mot surligné ; des pastilles et des losanges se mettent en orbite autour ;
+  une étiquette claque de travers sous le mot. Un coup de zoom (tout le cadre grossit d'un coup puis
+  revient) sur chaque temps fort.
+  Pas de visage ici : l'accroche montre, elle ne joue pas (le visage est pour le problème, t9-probleme).
+  Durée : la scène la calcule (D dans le script) : 5,4 s avec l'objet EXEMPLE ; reporte-la dans
+  data-duration (ici et sur l'hôte).
+  L'accroche : la phrase porte data-accroche (`check` vérifie qu'elle se lit dès 0,5 s) ; un seul élément
+  de la vidéo le porte.
+  16:9 (1920 × 1080) ; en 9:16, la racine passe à 1080 × 1920 et la scène se remet en page seule (la
+  phrase sur deux lignes, la carte plus étroite).
+  À remplacer : l'objet EXEMPLE en tête du script (chaque champ y est décrit).
+  Les objets rebondissent plus que « presque aucun rebond » (metier.md : le dépassement de back.out(s) vaut
+  4s³ / 27(s+1)²) : c'est leur élan, la signature du style ; les mots, eux, se posent net.
+  Couleurs : seulement les jetons de ta marque : l'aplat de son accent en fond, son clair pour la carte,
+  son sombre pour les mots, un gris. Le texte posé sur l'accent prend son contraste.
+  Charge d'abord objets-en-scene.js et objets-en-scene.css du style (P.coups) : style.md, « Les compositions du kit ».
+  Identifiant : t9a (préfixe de tous les id et classes de la scène).
+-->
+<style>
+  #t9a { --t9-fond: var(--brand-accent); --t9-carte: var(--brand-clair); --t9-encre: var(--brand-sombre); --t9-sur-fond: var(--brand-contrast);
+    background: var(--t9-fond); font-family: var(--brand-font-display); color: var(--t9-sur-fond); overflow: hidden; }
+  #t9a .t9a-cadre { position: absolute; inset: 0; }
+  #t9a .t9a-monde { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  #t9a .t9a-carte { position: absolute; border-radius: 30px; overflow: hidden; background: var(--t9-carte);
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.22), 0 8px 22px rgba(0, 0, 0, 0.12); color: var(--t9-encre); }
+  #t9a .t9a-barre { position: absolute; left: 0; right: 0; top: 0; height: 58px; border-bottom: 2px solid var(--brand-gris-4); }
+  #t9a .t9a-barre i { position: absolute; top: 22px; width: 14px; height: 14px; border-radius: 50%; background: var(--brand-gris-3); }
+  #t9a .t9a-nom { position: absolute; left: 0; right: 0; top: 0; line-height: 58px; text-align: center; font-family: var(--brand-font-body); font-weight: 600; font-size: 28px; color: var(--brand-gris-2); }
+  #t9a .t9a-compte { position: absolute; right: 44px; top: 84px; font-size: 150px; line-height: 1; text-align: right; font-variant-numeric: tabular-nums; }
+  #t9a .t9a-titre { position: absolute; left: 44px; top: 96px; font-family: var(--brand-font-body); font-weight: 700; font-size: 40px; color: var(--brand-gris-2); }
+  #t9a .t9a-ligne { position: absolute; left: 44px; right: 44px; height: 74px; border-radius: 16px; background: var(--brand-gris-4);
+    font-family: var(--brand-font-body); font-weight: 600; font-size: 36px; line-height: 74px; padding-left: 92px; color: var(--t9-encre); }
+  #t9a .t9a-coche { position: absolute; left: 22px; top: 17px; width: 40px; height: 40px; border-radius: 12px; background: var(--brand-accent); }
+  #t9a .t9a-coche svg { position: absolute; inset: 8px; }
+  #t9a .t9a-phrase { position: absolute; left: 0; right: 0; text-align: center; text-transform: uppercase; line-height: 0.95; z-index: 30; transform-origin: 50% 50%; }
+  #t9a .t9a-phrase span { display: inline-block; }
+  #t9a .t9a-etiquette { position: absolute; padding: 14px 40px 4px; border-radius: 18px; text-transform: uppercase; line-height: 1.05; z-index: 32;
+    background: var(--t9-carte); color: var(--t9-encre); box-shadow: 0 16px 34px rgba(0, 0, 0, 0.22); }
+  #t9a .t9a-orbite { position: absolute; inset: 0; z-index: 25; }
+  #t9a .t9a-pil { position: absolute; left: 0; top: 0; width: 132px; height: 46px; margin: -23px 0 0 -66px; border-radius: 13px; box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16); }
+  #t9a .t9a-losange { position: absolute; left: 0; top: 0; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 6px; background: var(--t9-encre); }
+</style>
+
+<div data-composition-id="t9a" data-width="1920" data-height="1080" data-duration="5.4" style="position:absolute; inset:0;">
+  <div id="t9a" class="k-scene">
+    <div class="t9a-cadre" id="t9a-cadre">
+      <div class="t9a-monde" id="t9a-monde">
+        <div class="t9a-carte" id="t9a-carte">
+          <div class="t9a-barre"><i style="left:24px"></i><i style="left:48px"></i><i style="left:72px"></i><div class="t9a-nom" id="t9a-nom" data-layout-ignore></div></div>
+          <div class="t9a-titre" id="t9a-titre"></div>
+          <div class="b-mot t9a-compte" id="t9a-compte">0</div>
+          <div id="t9a-lignes"></div>
+        </div>
+      </div>
+      <div class="t9a-orbite" id="t9a-orbite"></div>
+      <div class="t9a-phrase" id="t9a-phrase" data-accroche data-motion-blur="off"></div>
+      <div class="t9a-etiquette" id="t9a-etiquette"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var EXEMPLE = { // À REMPLACER : chaque valeur vient de OFFRE.json ou de son script validé, ou la ligne se retire
+    phrase: ["La plus", "facile"],                 // l'accroche, 2 à 4 mots ; le dernier morceau est surligné
+    nom: "ma-video.mp4",                           // le nom de fichier de la carte (un mot ordinaire d'interface)
+    titre: "Ce qui se fait seul",                  // le titre de la carte (mots ordinaires d'interface)
+    lignes: ["Sous-titres", "Zooms", "Graphismes"], // 2 à 4 lignes qui s'ajoutent et se cochent (ce que l'offre fait)
+    compteur: { de: 0, a: 100, suffixe: " %" }, // le chiffre qui grimpe : un vrai chiffre de la fiche, ou l'avancement (0 à 100 %)
+    etiquette: "Jamais"                            // le mot de l'étiquette qui claque de travers ("" : elle se retire)
+  };
+  function lecture(t, plancher) { var n = [].concat(t).join(" ").split(/\s+/).filter(function (m) { return /[0-9A-Za-zÀ-ÿ]/.test(m); }).length; return Math.max(plancher || 1.5, 0.3 * n + 0.8); }
+  var $ = function (id) { return document.getElementById(id); };
+  var racine = $("t9a"), cadre = K.cadre(racine), L = cadre.largeur, H = cadre.hauteur, vertical = H > L;
+  var tl = gsap.timeline({ paused: true });
+  var nL = EXEMPLE.lignes.length, tPas = 0.32, tRemp = 0.15 + nL * tPas;          // les lignes, une à une
+  var tMot = tRemp + 0.35;                                                         // la phrase vient au centre
+  var tEt = tMot + 0.7, D = Math.ceil((tEt + lecture(EXEMPLE.phrase.concat(EXEMPLE.etiquette ? [EXEMPLE.etiquette] : []), 2.2)) * 10) / 10;
+
+  // --- La carte, à la taille du cadre --------------------------------------------------------------------
+  var cw = vertical ? 900 : 1000, ch = 290 + nL * 92, cx = L / 2, cy = vertical ? H * 0.56 : H * 0.6;
+  var monde = $("t9a-monde"); gsap.set(monde, { width: L, height: H });
+  var carte = $("t9a-carte"); gsap.set(carte, { left: cx - cw / 2, top: cy - ch / 2, width: cw, height: ch });
+  $("t9a-nom").textContent = EXEMPLE.nom;
+  $("t9a-titre").textContent = EXEMPLE.titre;
+  if (vertical) $("t9a-compte").style.fontSize = "118px";
+  var lignes = EXEMPLE.lignes.map(function (t, k) {
+    var e = K.el($("t9a-lignes"), "div", "t9a-ligne", "", "top:" + (260 + k * 92) + "px;");
+    var c = K.el(e, "div", "t9a-coche", '<svg viewBox="0 0 24 24"><path d="M4,13 L10,19 L20,6" fill="none" stroke="var(--brand-contrast)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    K.el(e, "span", "", t);
+    gsap.set(e, { opacity: 0, x: -40 }); gsap.set(c, { scale: 0 });
+    return { e: e, c: c };
+  });
+  // La caméra : la carte arrive en zoomant, s'approche, puis tombe.
+  var vue = function (s, fy) { return { scale: s, x: L / 2 - cx * s, y: (fy == null ? cy : fy) - cy * s }; };
+  gsap.set(monde, vue(0.5));
+  tl.to(monde, Object.assign({ duration: 0.5, ease: "power3.out" }, vue(1.1)), 0);
+  tl.to(monde, Object.assign({ duration: tMot - 0.5, ease: "sine.inOut" }, vue(vertical ? 1.12 : 1.2)), 0.5);
+  tl.to(monde, Object.assign({ duration: 0.34, ease: "power3.in" }, vue(0.6, H * 1.2)), tMot);
+  tl.to(monde, { opacity: 0, duration: 0.1 }, tMot + 0.26);
+
+  // Les lignes s'ajoutent, chacune cochée ; le compteur grimpe avec elles.
+  lignes.forEach(function (l, k) {
+    var t = 0.15 + k * tPas;
+    tl.to(l.e, { opacity: 1, x: 0, duration: 0.24, ease: "power3.out" }, t);
+    tl.to(l.c, { scale: 1, duration: 0.22, ease: "back.out(3)" }, t + 0.1);
+  });
+  var compte = $("t9a-compte"), cp = EXEMPLE.compteur;
+  K.compteur(tl, compte, cp.de, cp.a, 0.15, tRemp - 0.15, D, function (v) { return Math.round(v).toLocaleString("fr-FR").replace(/\s/g, " ") + (cp.suffixe || ""); }, "power1.inOut");
+  tl.to(compte, { scale: 1.2, duration: 0.1, ease: "power2.out", transformOrigin: "100% 50%" }, tRemp).to(compte, { scale: 1, duration: 0.3, ease: "power2.out" }, tRemp + 0.1);
+
+  // --- La phrase : en haut dès la première image, puis au centre en très gros, son dernier mot surligné -------
+  var phrase = $("t9a-phrase"), taille = vertical ? 120 : 140;
+  phrase.style.fontSize = taille + "px"; phrase.style.top = (vertical ? 120 : 52) + "px";
+  // En 9:16, le dernier morceau passe à la ligne : la phrase tient en deux lignes une fois géante.
+  var nP = EXEMPLE.phrase.length, lignesP = vertical && nP > 1 ? 2 : 1;
+  var morceaux = EXEMPLE.phrase.map(function (m, i) {
+    var s = K.el(phrase, "span", "", m);
+    if (i < nP - 1) phrase.appendChild(i === nP - 2 && lignesP === 2 ? document.createElement("br") : document.createTextNode(" "));
+    return s;
+  });
+  morceaux.forEach(function (s, i) { K.claque(tl, s, 0.04 + i * 0.12, { de: 1.5, duree: 0.3 }); });
+  var echelle = vertical ? 1.6 : 1.95, haut = (vertical ? 120 : 52) + taille * 0.475 * lignesP;
+  tl.to(phrase, { y: H / 2 - haut, scale: echelle, duration: 0.34, ease: "power3.inOut" }, tMot - 0.04);
+  K.surligner(tl, morceaux[morceaux.length - 1], tMot + 0.24, { couleur: K.jeton("--brand-clair"), encre: K.jeton("--brand-sombre") });
+
+  // --- L'orbite : des pastilles et des losanges tournent autour de la phrase -------------------------------
+  var orbite = $("t9a-orbite"), astres = [];
+  for (var k = 0; k < 12; k++) {
+    var e = k % 3 === 2 ? K.el(orbite, "div", "t9a-losange") : K.el(orbite, "div", "t9a-pil", "", "background: var(" + (k % 2 ? "--brand-clair" : "--brand-sombre") + ");");
+    astres.push({ el: e, th: k / 12 * Math.PI * 2, rot: k % 3 === 2 ? 45 : (k % 2 ? -10 : 10) });
+  }
+  var o = { r: 0, a: 0 }, rx = L * 0.45, ry = H * (vertical ? 0.3 : 0.41);
+  function placer() { astres.forEach(function (s) { var th = s.th + o.a; gsap.set(s.el, { x: L / 2 + o.r * rx * Math.cos(th), y: H / 2 + o.r * ry * Math.sin(th), rotation: s.rot + o.a * 40, scale: Math.min(1, o.r * 1.4) }); }); }
+  placer(); K.cacher(orbite);
+  var tOr = tMot + 0.4;
+  tl.set(orbite, { opacity: 1 }, tOr);
+  tl.to(o, { r: 1, duration: 0.45, ease: "back.out(1.5)", onUpdate: placer }, tOr);
+  tl.to(o, { a: Math.PI * 1.2, duration: D - tOr, ease: "power1.inOut", onUpdate: placer }, tOr);
+
+  // --- L'étiquette qui claque de travers sous le mot -------------------------------------------------------
+  var et = $("t9a-etiquette");
+  if (EXEMPLE.etiquette) {
+    et.textContent = EXEMPLE.etiquette; et.style.fontSize = (vertical ? 100 : 118) + "px";
+    gsap.set(et, { left: L / 2 + (vertical ? -150 : 100), top: H / 2 + taille * echelle * 0.475 * lignesP + 14 });
+    K.cacher(et); tl.set(et, { opacity: 1 }, tEt);
+    tl.fromTo(et, { scale: 2.4, rotation: -26 }, { scale: 1, rotation: -7, duration: 0.3, ease: "back.out(2.2)", immediateRender: false }, tEt);
+  } else { et.remove(); }
+
+  // --- Les coups de zoom sur les temps forts ----------------------------------------------------------------
+  P.coups(tl, $("t9a-cadre"), [[0.16, 0.03, "45% 40%"], [tRemp, 0.03, "70% 45%"], [tMot + 0.24, 0.045, "60% 50%"], [tEt, 0.04, "62% 72%"]]);
+  window.__timelines["t9a"] = tl;
+})();
+</script>
+</template>
+</body>
+</html>

@@ -1266,7 +1266,7 @@ class Consignes(unittest.TestCase):
     def test_le_skill_ne_cite_que_des_styles_du_catalogue(self):
         catalogue = (self.SKILL / "styles" / "README.md").read_text(encoding="utf-8")
         noms = set(re.findall(r"^\| \d+ \| ([^|]+?) \|", catalogue, re.M))
-        self.assertEqual(len(noms), 9)                  # le style maison (0) et les 8 styles
+        self.assertEqual(len(noms), 10)                 # le style maison (0) et les 9 styles
         self.assertIn("Sur mesure", noms)
         skill = " ".join((self.SKILL / "SKILL.md").read_text(encoding="utf-8").split())
         cites = re.findall(r"« dans le style ([^»]+?) »", skill)

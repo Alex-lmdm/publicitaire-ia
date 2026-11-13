@@ -23,7 +23,7 @@ import styles  # noqa: E402
 
 
 def kits() -> list[Path]:
-    """Les huit styles repris d'une vraie vidéo (01 à 08), chacun avec ses compositions."""
+    """Les neuf styles repris d'une vraie vidéo (01 à 09), chacun avec ses compositions."""
     return sorted(d for d in STYLES.iterdir() if d.is_dir() and re.match(r"^\d\d-", d.name) and d.name[:2] != "00")
 
 
@@ -49,8 +49,8 @@ def gestes(fiche: str, titre: str = GESTES) -> list[list[str]]:
 
 
 class Catalogue(unittest.TestCase):
-    def test_huit_kits_numerotes_dans_l_ordre(self):
-        self.assertEqual([int(d.name[:2]) for d in kits()], list(range(1, 9)))
+    def test_neuf_kits_numerotes_dans_l_ordre(self):
+        self.assertEqual([int(d.name[:2]) for d in kits()], list(range(1, 10)))
 
     def test_chaque_kit_a_sa_fiche_et_ses_scenes(self):
         for d in kits():
@@ -270,7 +270,7 @@ class Palette(unittest.TestCase):
 class Outil(unittest.TestCase):
     def test_catalogue_lu_dans_l_index(self):
         cat = styles.catalogue(RACINE)
-        self.assertEqual([s["n"] for s in cat], list(range(0, 9)))     # le style maison en premier
+        self.assertEqual([s["n"] for s in cat], list(range(0, 10)))     # le style maison en premier
         self.assertEqual(cat[0]["nom"], "Sur mesure")
         for s, d in zip(cat, [maison(), *kits()]):
             self.assertEqual(s["dossier"], d.name)

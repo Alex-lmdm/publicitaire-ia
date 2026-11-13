@@ -226,7 +226,7 @@ Le pivot (`--a`, l'instant où la solution apparaît) n'est pas encore fixé ? L
 suppose vers 20 % de la vidéo, et l'entrée de batterie de chaque morceau, affichée, t'aide à le
 placer. Une boucle de section de page est muette : pas de musique, la page ne montre que les styles.
 
-La page s'ouvre dans son navigateur : le style 0 et les 8 styles en vidéo, puis les 3 musiques
+La page s'ouvre dans son navigateur : le style 0 et les 9 styles en vidéo, puis les 3 musiques
 (chaque extrait démarre quelques secondes avant l'entrée de la batterie). Dis-lui, à la suite du script : « Je t'ai ouvert
 une page avec les styles et 3 musiques pour cette vidéo ; je te conseille le style 0, « Sur mesure »,
 notre style maison, construit pour ta vidéo, et la musique 1. Réponds par exemple « ok, 0, 1 » : ok

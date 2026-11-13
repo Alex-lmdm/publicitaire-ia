@@ -1,0 +1,103 @@
+/* Style n°9 · Objets en scène · les matières et le visage des objets (objets-en-scene.js). */
+:root {
+  /* Les rôles des objets, peints avec les jetons de la marque (aucune teinte tirée de l'accent : ses
+     variantes claire et ombrée restent l'accent, un objet de l'accent se peint en aplat). */
+  --o-citron: var(--brand-accent); --o-citron-clair: var(--brand-accent); --o-citron-ombre: var(--brand-accent);
+  --o-rouge: var(--brand-negative); --o-rouge-clair: var(--brand-negative); --o-rouge-ombre: var(--brand-negative);
+  --o-nuit: var(--brand-sombre); --o-nuit-clair: var(--brand-gris-1); --o-encre: var(--brand-sombre);
+  --o-papier: var(--brand-clair); --o-papier-clair: var(--brand-clair); --o-papier-ombre: var(--brand-gris-4);
+  --o-papier-fond1: var(--brand-clair); --o-papier-fond2: var(--brand-clair); --o-goutte: var(--brand-gris-3);
+  --o-or: var(--brand-accent); --o-or-clair: var(--brand-accent); --o-or-ombre: var(--brand-accent);
+  --o-orange: var(--brand-accent); --o-orange-clair: var(--brand-accent); --o-orange-ombre: var(--brand-accent);
+  --o-vert: var(--brand-accent); --o-vert-clair: var(--brand-accent); --o-vert-ombre: var(--brand-accent);
+  --o-rose: var(--brand-accent); --o-rose-clair: var(--brand-accent); --o-rose-ombre: var(--brand-accent);
+  --o-bleu: var(--brand-sombre); --o-bleu-clair: var(--brand-gris-1); --o-bleu-ombre: var(--brand-sombre);
+  --o-violet: var(--brand-sombre); --o-violet-clair: var(--brand-gris-1); --o-violet-ombre: var(--brand-sombre);
+}
+/* BANC PERSONNAGES (12/11/2026) : les personnages-objets, dessinés en code (assets/perso.js).
+   Un objet que le public connaît reçoit un visage plat (yeux, sourcils, joues, bouche) et joue la phrase.
+   Volume : un dégradé radial entre la teinte claire, la couleur et son ombre, toutes choisies à la main
+   (brand/tokens.css), et un reflet doux. Les logos réels ne reçoivent jamais de visage. */
+
+/* Le personnage : .p-perso (sa place au sol) > .p-ombre + .p-saut (le saut) > .p-corps (l'écrasement). */
+.p-perso { position: absolute; width: 0; height: 0; }
+.p-saut { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.p-corps { position: absolute; transform-origin: 50% 100%; }
+.p-ombre { position: absolute; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0)); }
+.p-part { position: absolute; }
+
+/* Les matières : clair en haut à gauche, ombre en bas à droite, et un reflet. */
+.p-mat { position: absolute; overflow: hidden; }
+.p-mat::after { content: ""; position: absolute; left: 10%; top: 6%; width: 42%; height: 30%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)); }
+.p-mat-sans-reflet::after { display: none; }
+.p-mat-rouge { background: radial-gradient(130% 125% at 30% 22%, var(--o-rouge-clair) 0%, var(--o-rouge) 48%, var(--o-rouge-ombre) 100%); }
+.p-mat-orange { background: radial-gradient(130% 125% at 30% 22%, var(--o-orange-clair) 0%, var(--o-orange) 48%, var(--o-orange-ombre) 100%); }
+.p-mat-citron { background: radial-gradient(130% 125% at 30% 22%, var(--o-citron-clair) 0%, var(--o-citron) 50%, var(--o-citron-ombre) 100%); }
+.p-mat-vert { background: radial-gradient(130% 125% at 30% 22%, var(--o-vert-clair) 0%, var(--o-vert) 48%, var(--o-vert-ombre) 100%); }
+.p-mat-bleu { background: radial-gradient(130% 125% at 30% 22%, var(--o-bleu-clair) 0%, var(--o-bleu) 48%, var(--o-bleu-ombre) 100%); }
+.p-mat-violet { background: radial-gradient(130% 125% at 30% 22%, var(--o-violet-clair) 0%, var(--o-violet) 48%, var(--o-violet-ombre) 100%); }
+.p-mat-rose { background: radial-gradient(130% 125% at 30% 22%, var(--o-rose-clair) 0%, var(--o-rose) 48%, var(--o-rose-ombre) 100%); }
+.p-mat-papier { background: radial-gradient(130% 125% at 30% 22%, var(--o-papier-clair) 0%, var(--o-papier) 50%, var(--o-papier-ombre) 100%); }
+.p-mat-nuit { background: radial-gradient(130% 125% at 30% 22%, var(--o-nuit-clair) 0%, var(--o-nuit) 60%, #000000 100%); }
+.p-mat-or { background: radial-gradient(120% 120% at 32% 26%, var(--o-or-clair) 0%, var(--o-or) 46%, var(--o-or-ombre) 100%); }
+
+/* Le visage. 1em = sa taille ; tout se place depuis son centre. */
+.p-visage { position: absolute; width: 0; height: 0; }
+.p-oeil { position: absolute; width: 0.62em; height: 0.86em; margin-left: -0.31em; margin-top: -0.43em; }
+.p-oeil-g { left: -0.95em; top: 0; }
+.p-oeil-d { left: 0.95em; top: 0; }
+.p-o { position: absolute; inset: 0; border-radius: 50%; background: var(--o-encre); overflow: hidden; transform-origin: 50% 60%; }
+.p-o::after { content: ""; position: absolute; right: 0.09em; top: 0.12em; width: 0.22em; height: 0.22em; border-radius: 50%; background: #ffffff; }
+.p-paupiere { position: absolute; left: -10%; top: -2%; width: 120%; height: 0%; }
+.p-f, .p-z { position: absolute; left: -0.06em; width: 0.74em; height: 0.36em; border: 0.13em solid var(--o-encre); opacity: 0; box-sizing: border-box; }
+.p-f { top: 0.18em; border-bottom: none; border-radius: 0.4em 0.4em 0 0; }               /* ∩ : l'œil plissé de joie */
+.p-z { top: 0.3em; border-top: none; border-radius: 0 0 0.4em 0.4em; }                    /* ∪ : l'œil fermé, détendu */
+.p-cerne { position: absolute; left: -0.08em; top: 0.78em; width: 0.78em; height: 0.3em; border-bottom: 0.08em solid rgba(0, 0, 0, 0.35); border-radius: 0 0 0.4em 0.4em; opacity: 0; box-sizing: border-box; }
+.p-sourcil { position: absolute; width: 0.78em; height: 0.17em; margin-left: -0.39em; margin-top: -0.085em; top: -0.82em; border-radius: 0.1em; background: var(--o-encre); }
+.p-sourcil-g { left: -0.95em; }
+.p-sourcil-d { left: 0.95em; }
+.p-joue { position: absolute; width: 1.05em; height: 0.56em; margin-left: -0.525em; margin-top: -0.28em; top: 0.66em; border-radius: 50%;
+  background: var(--brand-negative); opacity: 0.2; filter: blur(5px); }
+.p-joue-g { left: -1.7em; }
+.p-joue-d { left: 1.7em; }
+.p-bouche { position: absolute; left: -0.9em; top: 0.48em; width: 1.8em; height: 1.08em; }
+.p-bouche svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; opacity: 0; }
+.p-bouche svg.p-active { opacity: 1; }
+.p-bouche .p-trait { fill: none; stroke: var(--o-encre); stroke-width: 6.5; stroke-linecap: round; stroke-linejoin: round; }
+.p-bouche .p-plein { fill: var(--o-encre); }
+.p-bouche .p-langue { fill: var(--brand-negative); }
+.p-bouche .p-dent { fill: #ffffff; stroke: var(--o-encre); stroke-width: 5; stroke-linejoin: round; }
+.p-goutte { position: absolute; left: 1.55em; top: -1.1em; width: 0.42em; height: 0.6em; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 38% 62%, #ffffff 0%, var(--o-goutte) 55%, var(--o-bleu-clair) 100%); opacity: 0; }
+.p-goutte::before { content: ""; position: absolute; left: 50%; top: -0.2em; width: 0.3em; height: 0.3em; margin-left: -0.15em; transform: rotate(45deg); background: var(--o-goutte); }
+/* Le visage clair (un écran sombre) : yeux papier, traits papier. */
+.p-visage-clair .p-o { background: var(--o-papier); }
+.p-visage-clair .p-o::after { background: var(--o-nuit); width: 0.16em; height: 0.16em; }
+.p-visage-clair .p-f, .p-visage-clair .p-z { border-color: var(--o-papier); }
+.p-visage-clair .p-sourcil { background: var(--o-papier); }
+.p-visage-clair .p-bouche .p-trait { stroke: var(--o-papier); }
+.p-visage-clair .p-bouche .p-plein { fill: var(--o-papier); }
+
+/* Le clap. */
+.p-rayures { background: repeating-linear-gradient(-56deg, var(--o-nuit) 0 34px, var(--o-papier) 34px 68px); }
+.p-rayures-inv { background: repeating-linear-gradient(56deg, var(--o-nuit) 0 34px, var(--o-papier) 34px 68px); }
+.p-rayures::after, .p-rayures-inv::after { content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.18)); }
+/* L'aiguille d'un réveil. */
+.p-aiguille { position: absolute; border-radius: 6px; background: var(--o-nuit); transform-origin: 50% 100%; }
+/* Le texte porté par un objet (une étiquette, un écran). */
+.p-texte { position: absolute; font-family: var(--brand-font-display); font-weight: 400; line-height: 1; text-transform: uppercase; white-space: nowrap; text-align: center; letter-spacing: 0.01em; }
+
+/* Le fond des scènes du banc : un papier doux, plus clair au centre (un dégradé radial, sans bandes). */
+.b-papier { position: absolute; inset: 0; background: radial-gradient(120% 95% at 50% 42%, var(--o-papier-fond1) 0%, var(--o-papier-fond2) 100%); }
+.b-mot { position: absolute; font-family: var(--brand-font-display); font-weight: 400; font-synthesis: none; line-height: 0.92; text-transform: uppercase; white-space: nowrap; color: var(--o-nuit); letter-spacing: 0.005em; }
+
+/* B2 : les accessoires et les objets sans visage. */
+.p-toile path { fill: none; stroke: rgba(0, 0, 0, 0.42); stroke-width: 3; stroke-linecap: round; }
+.p-ticket { background: linear-gradient(180deg, #ffffff 0%, var(--o-papier-clair) 100%); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 95% 98.9%, 90% 100%, 85% 98.9%, 80% 100%, 75% 98.9%, 70% 100%, 65% 98.9%, 60% 100%, 55% 98.9%, 50% 100%, 45% 98.9%, 40% 100%, 35% 98.9%, 30% 100%, 25% 98.9%, 20% 100%, 15% 98.9%, 10% 100%, 5% 98.9%, 0 100%); }
+.p-pellicule { border-radius: 14px; background: radial-gradient(130% 160% at 30% 20%, var(--o-nuit-clair) 0%, var(--o-nuit) 55%); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.25); }
+.p-pellicule-img { border-radius: 6px; overflow: hidden; background: var(--o-papier-fond1); }
+/* Les sous-titres du banc B2 et le surligneur d'un mot. */
+.b-flou { filter: blur(10px); }

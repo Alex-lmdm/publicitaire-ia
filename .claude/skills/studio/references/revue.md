@@ -157,7 +157,7 @@ partout, dans les deux tours de correction : un critère encore à 7 après eux 
 une phrase, dans le message de livraison. Liste toujours les trois plus gros défauts, même si tout
 est à 8. Si le client a donné
 une vidéo de référence, mets côte à côte une planche de chaque (même cadence) : le niveau se juge
-contre elle. Avec un style 1 à 8, la planche montre au moins trois de ses gestes signature (deux
+contre elle. Avec un style 1 à 9, la planche montre au moins trois de ses gestes signature (deux
 sous 15 s) ([styles/README.md](../styles/README.md), point 4).
 
 ## Porte 4 : le son
