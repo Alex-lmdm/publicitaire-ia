@@ -32,7 +32,8 @@ ligne (dossier `~/.hyperframes/`). Pour les couper : `npx hyperframes telemetry 
 | Icônes **Lucide** | `templates/kit/icones.js` + `LICENSE-lucide.txt` | ISC, © Lucide Icons and Contributors | https://lucide.dev |
 | Objets connus (dossier, fichiers PDF, Word, Excel…, barre d'état et notification d'iPhone, bulles) | `templates/kit/objets.js`, `templates/kit/kit.js`, `kit.css` | dessinés par nous d'après leur allure courante, sans reprendre de fichier d'Apple ni de Microsoft ; les noms de ces marques restent les leurs | |
 | Module de pose des sons | `tools/sons.py` | repris de Monteur IA (LeMondeDuMarketing) | |
-| Aperçus des 9 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM, © LeMondeDuMarketing | |
+| Objets en scène du style 9 (étiquettes, réveils, balance, terminal, dés, pièces…) et leur visage | `.claude/skills/studio/styles/09-objets-en-scene/kit/` | dessinés par nous en code | |
+| Aperçus des 10 styles (vidéos muettes de quelques secondes) | `assets/styles/` | rendus par nos kits à la marque LMDM (le style 9 sur une marque d'essai), © LeMondeDuMarketing | |
 
 Aucun son du **Pack SFX** (produit vendu à part) n'est livré ici. Le client l'installe sur son
 ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monteur IA
@@ -65,9 +66,9 @@ ordinateur depuis son archive `pack-sfx.zip`, ou le reprend de son dossier Monte
 Aucun code n'en est copié tel quel ; les règles ci-dessous ont été traduites, comparées entre
 elles (la plus stricte a été retenue) et adaptées au format vertical d'Instagram.
 
-Les styles 1 à 8 (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
-mouvements) de vidéos de lancement publiques : Firecrawl, Cyera (studio Motionimo), Polymarket,
-ElevenLabs, ClaudeDevs, Kimi, Zaro et Cursor, dont chaque fiche donne le lien. Aucun de leurs textes,
+Les styles 1 à 9 (`.claude/skills/studio/styles/`) reprennent la grammaire (rythme, mise en page,
+mouvements) de vidéos publiques : Firecrawl, Cyera (studio Motionimo), Polymarket, ElevenLabs,
+ClaudeDevs, Kimi, Zaro, Cursor et le Reel « Ditch » de Damiano (@damianodesu), dont chaque fiche donne le lien. Aucun de leurs textes,
 logos, images, produits ni musiques n'est repris ; les scènes sont refaites par nous. Le style 0
 (« Sur mesure », le style maison) ne reprend aucune vidéo en particulier : c'est le langage des
 vidéos de lancement de studio (relevé notamment sur celles de Higgsfield), porté par notre kit et
