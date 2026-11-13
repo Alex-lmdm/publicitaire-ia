@@ -237,6 +237,11 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
   entre deux mots (à plus de 0,06 s de leur cœur) : calcule les candidats avec ses propres fonctions
   (`pistes_audio`, `mots_de_la_voix`, `grille_musique`, `temps_de_la_grille`, `_mot_coupe` de
   `tools/studio_motion.py`), puis déplace le texte d'une scène dans la fin de la précédente s'il le faut.
+  Piège (13/11/2026, story « vente », voix Cleo) : Parakeet prolonge la fin d'un mot dans le silence qui le
+  suit (« IA. » finie 0,3 s trop tard), si bien que `calage` ne voit que 0,18 s de silence là où l'onde en a
+  0,28 : la phrase suivante n'« ouvre » plus. Mesure les vrais silences (`silencedetect=n=-40dB:d=0.2` sur
+  `voix.wav`) et ramène la fin du mot d'avant dans `assets/audio/transcript.json` : trois scènes sur quatre
+  sont passées ainsi, sans déplacer une coupe.
 - Pose la voix avec les sons, dans `work/sons.json` : `"voix": "assets/audio/voix.wav"`,
   `"voix_debut": 0.3` (son départ dans la vidéo). La musique passe d'elle-même sous la voix, à un
   écart mesuré sur le morceau, baissée pendant la parole et remontée dans les respirations (son.md,

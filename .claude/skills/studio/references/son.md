@@ -299,6 +299,14 @@ pivot bouge en écrivant le plan ? Refais seulement le calage, avec `musique`.
   4 temps à 103,8), et le nombre de mesures entre deux entrées tombe rond. Un tempo noté faux se réécrit dans le
   fichier calé (`ffmpeg -i musique.wav -c copy -metadata comment="publicitaire-ia tempo=103.76" corrige.wav`).
   Trois temps du vrai tempo valent quatre du faux : des scènes posées sur ces multiples tombent juste.
+- **Un morceau trap d'Epidemic Sound** (13/11/2026, « Sand Box », 85 BPM) : `musique` lisait 103,7 BPM et une
+  entrée franche à 6,73 s, toutes deux fausses. Le fichier d'Epidemic porte son vrai tempo dans ses étiquettes
+  (`ffprobe -show_entries format_tags` : `TBPM=85`) ; l'onde le confirme (la mesure de 2,82 s revient). La vraie
+  entrée (la basse qui revient après deux mesures sans elle, à 21,512 s) se trouve à l'onde, graves seuls
+  (`lowpass=f=150`, énergie par tranches de 50 ms). Cale alors à la main avec les fonctions de l'outil
+  (`calage(entree, entree, bpm, 0, a)` puis `filtres_calage`), et note `tempo=85.00` dans le fichier calé. Même
+  ainsi, `calage` lit la grille de ce morceau avec un demi-temps de décalage et refuse une coupe posée sur le vrai
+  temps : garde-la, et écris-le dans `PLAN.md` (un P1 expliqué).
 - **Un morceau monté** (deux passages raccordés par une pause, pour finir sur sa vraie fin) : après la coupe,
   les temps ne prolongent plus ceux du début, et `calage` garde la grille du début. Cale les scènes d'après sur
   les attaques mesurées dans le fichier posé (la première grosse caisse du refrain, l'accord final) et écris-le
@@ -413,6 +421,13 @@ qui travaille **en dessous** :
   `emergence` le compare à un fond presque muet et demande de le baisser à chaque mesure, sans fin (10/11/2026 :
   un impact descendu à -30 dB en cinq passes). Règle-le à la main sur un son du même rôle posé en plein refrain.
   Et `alimiter` refuse un plafond sous 0,0625 : écris-le avec quatre décimales.
+- **Sous une voix, sur une basse 808** (13/11/2026, story « vente », 33 bruitages) : `emergence` trouvait des
+  sons longs (whoosh épais, page tournée, machine à écrire, impact grave) à la fois « trop faibles » sous la
+  musique et « plus forts que la voix » dès qu'on les remontait : la basse les masque, la voix non. Ne règle pas en
+  boucle sur ses conseils (trois passes l'ont fait osciller, un clavier monté à +1,7 dB) : repars des niveaux
+  d'origine, une seule passe, la voix d'abord ; retire ces sons longs ou remplace-les par un son plus aigu du même
+  rôle. Ceux qu'il dit « plus forts que la voix » dans un silence de la voix (une respiration, après le dernier
+  mot) relèvent du piège ci-dessus : garde-les.
 - Évite les sons très aigus en série : ils fatiguent à l'écoute au téléphone.
 
 ## Le niveau final
