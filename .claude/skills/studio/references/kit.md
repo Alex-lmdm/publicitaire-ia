@@ -429,6 +429,13 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `clipPath` de `circle(60px at x y)` à `circle(2300px at x y)`.
 - **Masquer les traits d'un schéma** : `calque.querySelector("svg")` trouve le premier svg, souvent le
   logo posé dans le même calque ; vise `lien.ownerSVGElement`.
+- **Un aplat qui s'ouvre en cercle sous des calques sans flou** (13/11/2026, pub Monteur IA, style 9) : l'aplat jaune
+  (`clip-path` animé) vivait dans le cadre qui reçoit `P.coups`, sous un monde et des mots en `data-motion-blur="off"`.
+  Pendant chaque coup de zoom, il passait dans la passe des objets qui bougent et se peignait par-dessus tout :
+  images entièrement jaunes au rendu (invisibles dans `snapshot`). De même, une tête de lecture qui glisse dans une
+  pellicule faisait disparaître la bande de sous-titres posée dessus pendant tout son trajet. Le correctif :
+  `data-motion-blur="off"` sur l'aplat, sur la pellicule et sur la tête de lecture. Vérifie ces passages sur le MP4
+  rendu, image par image (`ffmpeg -ss <t> -frames:v 1`), pas sur `snapshot`.
 - **Une scène en volume dans un écran qui masque** (12/11/2026, Reel motion, « rendu en vidéo » : la toile
   d'un lecteur se couche en sol, un mot s'y dresse en lettres épaisses, un cercle devient une bille) : la
   `perspective` se pose sur l'écran lui-même (`overflow: hidden` l'aplatit, mais il la donne à ses enfants), le

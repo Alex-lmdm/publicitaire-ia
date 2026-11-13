@@ -336,6 +336,11 @@ qui travaille **en dessous** :
   écart d'environ 11 LU reste clair), et **ne remonte pas les bruitages d'autant** : sous la voix, ils
   passent alors au-dessus d'elle (21 sur 30 sur l'essai). Ils perdent ces dB d'émergence sur la
   musique, et `emergence` le signale : c'est un P1 expliqué, le prix de la demande.
+- **Après une chute forte du morceau, `emergence` se contredit sous la voix** (13/11/2026, pub Monteur IA, Dreamday) :
+  monter un bruitage pour qu'il dépasse la musique de 4 dB le fait passer au-dessus de la voix, et l'inverse. Ne fais
+  pas d'allers-retours : baisse seulement ceux qui passent au-dessus de la voix (elle prime), retire ceux qui tombent
+  dans une respiration ou s'empilent à moins de 0,3 s (ils comptent ensemble), et écris les faibles restants dans
+  `PLAN.md` (un P1 expliqué).
 - **Le ducking : une courbe calculée sur les pauses de la voix**, jamais un compresseur. Une pause de
   moins de 1,5 s ne fait pas remonter la musique (elle pomperait) ; une respiration d'au moins 1,5 s,
   le temps avant le premier mot (s'il arrive après 1,5 s) et la fin après le dernier mot la font
