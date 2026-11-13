@@ -429,6 +429,14 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `clipPath` de `circle(60px at x y)` à `circle(2300px at x y)`.
 - **Masquer les traits d'un schéma** : `calque.querySelector("svg")` trouve le premier svg, souvent le
   logo posé dans le même calque ; vise `lien.ownerSVGElement`.
+- **Une plongée qui dérive** (13/11/2026, pub Monteur IA) : animer `scale`, `x` et `y` d'une caméra posée en
+  `transformOrigin: 0 0` vers une vue zoomée fait glisser la cible sur le côté pendant le zoom (les trois valeurs
+  s'interpolent chacune de leur côté) ; elle n'est au centre qu'à la dernière image. Pour plonger sans dériver,
+  un calque autour de la caméra, `transformOrigin` posé sur la cible telle qu'on la voit à l'écran au départ :
+  `scale` avec `K.courbeEchelle`, et `x` / `y` qui amènent ce point au centre.
+- **Des mots claqués un par un se chevauchent** (même vidéo) : `K.claque` sur des `span` voisins avec `de` > 1
+  grossit chacun autour de son centre, et pendant l'entrée « CHAQUE » et « VIDÉO » se recouvrent (« CHAQUVIDÉO »
+  sur la planche). Deux ou trois mots qui arrivent ensemble claquent d'un bloc, sur leur ligne.
 - **Un aplat qui s'ouvre en cercle sous des calques sans flou** (13/11/2026, pub Monteur IA, style 9) : l'aplat jaune
   (`clip-path` animé) vivait dans le cadre qui reçoit `P.coups`, sous un monde et des mots en `data-motion-blur="off"`.
   Pendant chaque coup de zoom, il passait dans la passe des objets qui bougent et se peignait par-dessus tout :
