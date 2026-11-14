@@ -251,6 +251,16 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
 
 ## 3. Caler la vidéo sur la voix
 
+- **Des mots mal placés en fin de voix** (14/11/2026, Reel Abrège, Mako, rythme soutenu) : après `voix caler`,
+  « secondes » tombait 1 s trop tard et la phrase suivante était tassée sur 0,2 s. Recale les mots sur les vrais
+  silences (`silencedetect=n=-32dB:d=0.12` sur `voix.wav`) : une phrase par segment, ses mots répartis selon leur
+  longueur, en gardant le début Parakeet d'un mot quand il tombe dans son segment ; puis ne relance plus `voix caler`
+  (il remettrait les temps bruts). Whisper écrit « Abrej » pour « Abrège » : c'est le bon son, pas une faute.
+- **Chercher un mot par son texte exact**, jamais par son début (même vidéo) : « un » trouvait « une » (4,5 s au lieu
+  de 20,3 s), la scène commençait par un temps négatif et restait figée sur toute sa durée.
+- **Avec une voix, `rythme` peut dire « les scènes durent presque toutes … s »** : il lit les durées des scènes
+  montées, que les phrases dictent ; les coupes franches à l'intérieur d'une scène n'y comptent pas. Un P1 expliqué,
+  ou une phrase courte montée comme scène à part.
 - Les animations se calent sur les mots (`assets/audio/transcript.json`, ou `work/voix-mots.json`
   pour une voix HeyGen) : un élément arrive **avec** le mot qui le nomme, pas après. Chaque scène
   commence avec la phrase qui la porte ; allonge ou raccourcis la scène (`data-duration` dans

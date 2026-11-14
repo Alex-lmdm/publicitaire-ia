@@ -439,6 +439,9 @@ qui travaille **en dessous** :
   rôle. Ceux qu'il dit « plus forts que la voix » dans un silence de la voix (une respiration, après le dernier
   mot) relèvent du piège ci-dessus : garde-les.
 - Évite les sons très aigus en série : ils fatiguent à l'écoute au téléphone.
+- **Un chrono qui grimpe sous une voix** (14/11/2026, Reel Abrège) : `ui-digital-countdown` est presque muet
+  (−62 dB RMS, le rendu le dit « silent »), `ui-counter-tick` cache un tic-tac en boucle (`sons` le refuse). Prends
+  `ui-loading-high-pitch` rogné à sa montée (`"trim": [1.6, 3.35]`, fondus courts) : il monte avec le chiffre.
 
 ## Le niveau final
 

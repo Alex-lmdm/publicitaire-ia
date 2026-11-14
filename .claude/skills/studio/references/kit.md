@@ -335,7 +335,16 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
 
 - **Sur un aplat de sa couleur, rien n'entre en fondu, en flou ni avec une ombre sombre** : un élément
   sombre à demi transparent sur un jaune fait de l'olive, et `palette` le relève. Fais-le paraître
-  à pleine opacité et grandir, ou entrer par un volet.
+  à pleine opacité et grandir, ou entrer par un volet. Même immobile (14/11/2026, Reel Abrège) : l'ombre
+  douce d'une carte blanche posée sur le jaune (`box-shadow` à 22 % de noir) sortait olive ; une ombre pleine
+  (`0 16px 0 var(--brand-sombre)`) ou aucune passe. Reste l'anticrénelage d'un texte sombre sur le jaune
+  (quelques dizaines de pixels par image) : `palette` le relève encore, c'est un P1 expliqué.
+- **Un masque arrondi sur un élément très large** (14/11/2026, Reel Abrège) : `clip-path: inset(0 Rpx 0 0
+  round 58px)` sur une pilule de 3 200 px effaçait toute sa moitié gauche dans Chrome (snapshot et rendu).
+  Pour révéler une barre qui s'allonge : une fenêtre en `overflow: hidden` qui glisse (`x = w − W`), son contenu
+  qui glisse à l'inverse (`x = W − w`), et le bout arrondi porté par l'élément qui suit le bord (le chrono).
+- **Un texte qui naît d'une échelle 0** (`gsap.set(el, { scale: 0 })` puis un pop) compte pour `check` comme un
+  texte de 1 px tant qu'il attend (`text_below_floor`, 14/11/2026) : pars aussi d'une opacité 0.
 - **Une palette propre à une vidéo** (12/11/2026, Reel motion : « n'utilise pas mes couleurs pour celle-là, plus
   de couleurs ») : écris à la main le `brand/tokens.css` du projet (et `fonts.css` pour ses polices, avec
   `police <famille>` à la racine), ses teintes en jetons `--brand-couleur-<nom>` que `palette` accepte, et une

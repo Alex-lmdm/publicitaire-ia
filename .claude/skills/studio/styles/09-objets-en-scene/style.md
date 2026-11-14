@@ -55,6 +55,9 @@ professionnelle avec une touche drôle.
   les peint avec ces jetons, en aplats : aucune teinte tirée de l'accent). Jamais une couleur de plus
   par scène, jamais un objet arc-en-ciel. Seules les vraies interfaces tierces et les vrais logos gardent
   leurs couleurs.
+- `palette` ne compte pas le jeton négatif dans la marque : la couleur de mauvaise nouvelle (« alerte ») sort
+  « hors palette » sur chaque plan du problème. C'est la règle du style : un P1 expliqué dans `PLAN.md`, jamais
+  une raison de la retirer.
 
 ## 4. La typographie
 
