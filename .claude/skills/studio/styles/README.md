@@ -58,7 +58,7 @@ secondes de ses gestes, sur une marque d'essai), que la page des styles et des m
    conseil** (marqué sur la page, et pris s'il répond « choisis ») : le style 0 pour sa première
    vidéo (aucune livraison dans les autres dossiers de `videos/`), et par défaut ensuite ; un des
    huit quand sa vidéo appelle nettement sa grammaire (des chiffres à comparer : 8 ; un teaser : 6 ;
-   son offre et son prix sur une marque sombre : 3 ; une pub qui doit faire sourire : 9 ; la colonne « Souvent utile pour » donne
+   son offre et son prix sur une marque sombre : 3 ; une pub qui doit faire sourire, ou l'idée décalée : 9 ; la colonne « Souvent utile pour » donne
    l'indice) ou qu'il a aimé ce look. Dis-le en une phrase, avec ce que la vidéo va montrer. Il
    hésite (« lequel tu me conseilles ? ») : demande-lui ce qu'il aime voir (fond clair ou sombre,
    interface en 3D, typo géante, phrase tapée, fenêtres), puis propose 2 ou 3 styles, numéro et

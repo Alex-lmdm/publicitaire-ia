@@ -118,7 +118,8 @@ Le style marche avec une voix off (les gestes calés sur ses mots) comme avec le
 ## Sur une autre offre
 
 Le visage va toujours au problème que son client connaît : l'heure perdue (un réveil épuisé), l'argent qui
-part (une étiquette qui mord, un ticket sans fin), la tâche qui revient (une pile qui grandit). Les objets
+part (une étiquette qui mord, un ticket sans fin), la tâche qui revient (une pile qui grandit) ; avec l'idée
+décalée, au coupable de sa métaphore (le vocal qui prend en otage, l'agenda geôlier). Les objets
 sans visage sont ceux de son public : un agenda, une tasse, un ticket, une balance, un terminal, un dé, une
 pièce. Pour une formation, l'interface est son espace de cours ou son programme ; pour un coaching, ses
 messages et son agenda ; pour un logiciel, son produit. Un chiffre affiché vient de la fiche

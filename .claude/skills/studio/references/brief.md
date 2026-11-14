@@ -28,8 +28,8 @@ marque et tu attends son accord. Écris ensuite `studio.config.json` : `{"page":
 vient de la réponse a, sinon du premier brief ; `voix` reste `texte` tant qu'il ne demande pas de
 voix off, puis `voix-ia` (Google AI Studio, avec `voix_ia` pour le nom de sa voix), `ma-voix` ou
 `voix-heygen` (avec `voix_heygen` pour l'id de sa voix)). Les préférences dites plus tard (« toujours
-sans musique », « choisis toujours la musique pour moi », « mes vidéos en noir ») s'y ajoutent et se
-relisent à chaque vidéo.
+sans musique », « choisis toujours la musique pour moi », « mes vidéos en noir », « pas d'humour »,
+noté `sans idée décalée`) s'y ajoutent et se relisent à chaque vidéo.
 
 **Ses musiques.** `python3 tools/studio_motion.py musiques` dit si les 35 musiques de lancement sont
 installées (le cas normal : l'installation les a mises). S'il en manque, ne pose pas de question :

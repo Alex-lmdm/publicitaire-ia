@@ -229,6 +229,45 @@ redit le problème en une phrase.
 - **Dire ce qu'on ne dit pas, c'est laisser croire le contraire** : si c'est facile, rapide, ou
   pas technique, la vidéo le dit (« Tu n'animes rien, tu ne montes rien. »), et pour qui c'est.
 
+## L'idée décalée
+
+Quand il l'a choisie, le film suit son registre ([angles.md](angles.md), « L'idée décalée ») : la
+métaphore tenue, une réplique drôle par phrase, le rebondissement s'il vient, puis le produit, le
+mécanisme, le slogan et l'appel. Ce qui change à l'écriture :
+
+- **Dis-la à voix haute d'abord**, comme tout film : c'est là qu'on entend si chaque phrase fait
+  sourire. Une phrase qui ne fait que relier se coupe.
+- **Le détail vrai fait rire, pas la blague** : « attends, je sors du métro » plutôt que « il parle
+  beaucoup ». Cherche-le dans les mots de sa page, ses légendes, les messages de ses clients.
+- **Trois morceaux qui montent**, le compteur avec eux ; le dernier dérape (« Deux minutes sur son
+  ex. ») ou retombe à plat (« L'info, tu l'auras à la fin… peut-être. »).
+- **Le rebondissement est le seul endroit où le spectateur est visé**, en complice : il sourit de
+  lui-même (« Tu as cliqué « Accepter ». »), puis l'offre le sort de là.
+- **Sans voix (le cas par défaut)**, chaque réplique devient une image et son mot héros : la barre du
+  vocal qui se remplit de morceaux, « SON EX » en très gros sur le troisième. Le budget d'un mot par
+  seconde ne bouge pas : les 80 mots dits du premier exemple deviennent 30 à 40 mots à l'écran, le
+  reste se montre.
+- **Avec une voix off**, à sa demande, les répliques se disent en entier et l'écran garde leurs mots
+  clés ([voix.md](voix.md)).
+- **Après le rire, la vente redevient précise** : le nom et ce qu'il fait, le mécanisme montré dans sa
+  vraie interface, l'appel. Le test du spectateur froid vaut comme pour tout film : s'il a ri sans
+  savoir ce qui est vendu, la métaphore a pris trop de place.
+
+Deux scripts en voix off, comme matière d'exemple (à adapter, jamais à copier) :
+
+> Ton pote t'a envoyé un vocal. Quatre minutes douze, c'est une prise d'otage. Trente secondes de
+> « attends, je sors du métro ». Une minute sur sa journée. Deux minutes sur son ex. L'info, tu
+> l'auras à la fin… peut-être. Alors on a créé Abrège. Il vit dans toutes tes applis. WhatsApp.
+> iMessage. Snapchat. Instagram. Un vocal arrive ? Sans rien toucher, la phrase est déjà dessous.
+> Quatre minutes douze. Lu en deux secondes. Abrège. Parce que ton pote ne le fera jamais.
+
+> Ton agenda est une prison. Mardi, dix heures. Huit personnes. Une seule parle. Le point d'équipe ?
+> Quarante-cinq minutes. Le point sur le point ? Une heure. […] Et le gardien ? C'est toi. Tu as
+> cliqué « Accepter ».
+
+Abrège est une appli imaginaire. Pour un vrai client, « quatre minutes douze » reste du décor (le vocal
+qu'on montre), mais « lu en deux secondes » mesure le produit : sa fiche le donne, ou la phrase saute.
+
 ## Les pièges qui font décrocher
 
 - Vendre avant d'avoir posé le problème : le spectateur n'avance pas tant qu'il n'en a pas.

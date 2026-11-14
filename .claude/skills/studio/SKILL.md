@@ -89,13 +89,13 @@ dans le message de l'étape 3. Une vidéo de référence donnée ici : `referenc
 
 ### 3. La fiche et trois idées, dans un seul message
 
-L'objectif donne la structure ; trouve **trois idées réellement différentes** dedans. Puis **un seul
-message** ([angles.md](references/angles.md), « Le format de la proposition ») : la fiche en 5 à 7
-lignes (« C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si quelque chose est faux
-ou manque. »), les trois idées, celle que tu recommandes, la question du repérage s'il y en a une.
-**Attends sa réponse** : première validation obligatoire. Un choix sans correction valide la fiche
-(note-le dans `PLAN.md`) ; une correction passe d'abord dans `OFFRE.json`. S'il t'a dit de choisir :
-la fiche et ton idée seule. Pour une pub, propose de garder les trois comme accroches à tester.
+L'objectif donne la structure ; trouve **trois idées réellement différentes** dedans, dont une
+**décalée** quand l'offre s'y prête. Puis **un seul message** ([angles.md](references/angles.md)) :
+la fiche en 5 à 7 lignes (« C'est tout ce que ta vidéo aura le droit d'affirmer. Corrige-moi si
+quelque chose est faux ou manque. »), les trois idées, celle que tu recommandes, la question du
+repérage s'il y en a une. **Attends sa réponse** : première validation obligatoire. Un choix sans
+correction valide la fiche (note-le dans `PLAN.md`) ; une correction passe d'abord dans `OFFRE.json`.
+S'il t'a dit de choisir : la fiche et ton idée seule. Pour une pub, propose de tester les trois.
 
 ### 3 bis. Le script, avec le style et la musique
 
