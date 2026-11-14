@@ -235,6 +235,20 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    les dernières phrases sur `ffmpeg -af silencedetect=n=-40dB:d=0.25` (une phrase entre deux
    silences) et corrige leurs temps dans `transcript.json` s'il le faut.
 
+   Piège (14/11/2026, pub Monteur IA, voix Enzo) : même 0,7 s au pivot, une fois la vidéo faite, sonnait trop
+   long au client (« un temps où il se passe rien »), car le blanc de la voix va de la fin du dernier mot à
+   l'attaque du suivant (0,99 s mesurés, la respiration du modèle comprise), pas seulement du silence ouvert.
+   Pour le raccourcir sans tout recaler : retire **exactement un temps de la musique** (60 / BPM) du silence
+   de la voix (`atrim` + `concat`, le silence est numérique) **et** le même temps du morceau, sur un temps de
+   sa grille, dans un passage creux plus loin (une coupure des graves avant une relance, `acrossfade` de
+   20 ms), puis avance de ce temps les scènes et les bruitages d'après (`sons --ecraser`). Entre les deux
+   coupes, l'image reste sur un temps (un temps plus tôt) ; après, tout est calé comme avant. Couper avant la
+   chute du morceau la ferait tomber sous le dernier mot. Garde `voix-avant-coupe.wav` et
+   `musique-avant-coupe.wav`. Dans l'app HyperFrames, ne décale pas `voix.transcript.json` : l'app le
+   réécrit d'elle-même pour la nouvelle voix (seuls `transcript.json` et `transcript-brut.json` sont à décaler).
+   Et `sons` refuse alors le bloc « retouché dans l'app » : si l'historique (`hyperframes history`) ne montre
+   que des « Element ids » ajoutés par l'app, `--ecraser` ne perd rien.
+
 ## 3. Caler la vidéo sur la voix
 
 - Les animations se calent sur les mots (`assets/audio/transcript.json`, ou `work/voix-mots.json`
