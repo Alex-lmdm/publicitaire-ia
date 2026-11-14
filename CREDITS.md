@@ -74,6 +74,10 @@ logos, images, produits ni musiques n'est repris ; les scènes sont refaites par
 vidéos de lancement de studio (relevé notamment sur celles de Higgsfield), porté par notre kit et
 nos scènes prêtes.
 
+L'idée décalée de l'étape 3 (`.claude/skills/studio/references/angles.md`) reprend le registre du Reel
+« Cold Case » de Damiano (@damianodesu, https://www.instagram.com/p/DfWrLIaSBTP/) : une métaphore tenue
+de bout en bout, une réplique par phrase, un rebondissement. Aucun de ses textes ni de ses images n'est repris.
+
 - **brag**, © 2026 Shunit Haviv Hakimi, licence MIT : le parcours à portes de contrôle, l'ancrage
   des affirmations dans le projet, les données sensibles remplacées par des exemples, le temps de
   lecture minimum, le mixage, la couverture posée en première image.
