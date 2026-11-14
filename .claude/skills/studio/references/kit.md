@@ -345,6 +345,13 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   qui glisse à l'inverse (`x = W − w`), et le bout arrondi porté par l'élément qui suit le bord (le chrono).
 - **Un texte qui naît d'une échelle 0** (`gsap.set(el, { scale: 0 })` puis un pop) compte pour `check` comme un
   texte de 1 px tant qu'il attend (`text_below_floor`, 14/11/2026) : pars aussi d'une opacité 0.
+- **Un compteur à rouleaux écrit sur mesure** (des bandes de chiffres « 0 à 9 » qui glissent dans une fenêtre, Reel
+  Abrège, 14/11/2026) : `check` lit toutes les bandes comme une seule phrase de 40 mots (`line_unread`). Pose
+  `data-layout-ignore` sur l'élément qui porte les rouleaux, pas seulement sur chaque bande.
+- **Un point qui suit une courbe animée** (une pulsation le long d'un câble qui bouge) : `getPointAtLength` ou
+  `getTotalLength` dans un `onUpdate` déclenche `gsap_callback_dom_measurement` (le rendu rejoue les rappels dans un
+  ordre qui n'est pas celui du temps). Calcule le point par la formule de la courbe (une quadratique :
+  `(1−u)²·P0 + 2(1−u)u·C + u²·P1`), sans mesurer le DOM.
 - **Une palette propre à une vidéo** (12/11/2026, Reel motion : « n'utilise pas mes couleurs pour celle-là, plus
   de couleurs ») : écris à la main le `brand/tokens.css` du projet (et `fonts.css` pour ses polices, avec
   `police <famille>` à la racine), ses teintes en jetons `--brand-couleur-<nom>` que `palette` accepte, et une
