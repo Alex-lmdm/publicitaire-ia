@@ -266,6 +266,12 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   les personnages qui tremblaient encore restaient dessinés par-dessus le rouge, et cela se voyait déjà dans les
   images de `snapshot`. Quand la scène doit garder sa traîne, fais finir tous ses gestes (tremblements, ondes,
   gouttes, coups de zoom) avant que le rideau parte.
+  Et l'inverse (14/11/2026, Reel Abrège, le « Ah, » qui tremble) : quand un **parent bouge vite** (une secousse de
+  l'écran, un coup de zoom sur le cadre, juste après une coupe franche), ses enfants avec flou sont découpés en
+  rectangles (l'icône réduite à un coin, le tampon aux coins coupés) tant que le geste dure. Le correctif :
+  `data-motion-blur="off"` sur ces enfants (un descendant peut le rallumer pour son propre geste). L'attribut n'est
+  lu qu'au chargement : le basculer dans la timeline ne fait rien. Pour le voir, prends les images **à la suite**
+  depuis avant le geste (`snapshot --range <avant>,<après> --frames 18`) : une image prise seule sort juste.
 - **Un volume qui se retourne (un téléphone avec son dos et sa tranche) montre sa face à travers son dos**
   (12/11/2026, le Reel écran) : dans `snapshot`, la face du téléphone (écrite en dernier, sans transformation à
   elle) se peignait par-dessus le dos, et l'écran se voyait à l'envers quand le téléphone arrivait de dos ; le
