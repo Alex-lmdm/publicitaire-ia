@@ -250,7 +250,9 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    que des « Element ids » ajoutés par l'app, `--ecraser` ne perd rien.
 
    L'inverse (14/11/2026, Reel Abrège, la prise d'otage en petits personnages) : **ouvrir un temps après coup**
-   pour qu'un gag se joue (1,1 s entre la phrase et la suivante, trop court pour une petite scène). Insère
+   pour qu'un gag se joue (1,1 s entre la phrase et la suivante, trop court pour une petite scène). **Un temps
+   suffit** : deux (0,9 s, soit 1,35 s de blanc dans la voix) sonnaient « un tout petit peu trop long » au client,
+   même avec le gag à l'écran ; le gag se resserre (le titre paraît avant le mot pour garder 1,5 s de lecture). Insère
    **un nombre entier de temps** (ici deux : 2 × 60 / 135 = 0,889 s, soit 42 667 échantillons à 48 kHz) au milieu
    du vrai silence de la voix (`silencedetect`), et **fais démarrer la musique d'autant plus tôt** dans le
    morceau au lieu de la couper : `musique.wav` est un extrait exact du morceau (retrouve son point de départ à

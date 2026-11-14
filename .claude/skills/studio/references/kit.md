@@ -262,6 +262,10 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   que soit leur `z-index`. Une fenêtre qui grandit sous une vraie vidéo la recouvre le temps de son mouvement ;
   un disque qui grandit sous une carte immobile passe devant elle. Le correctif : `data-motion-blur="off"` sur le
   sous-arbre qui bouge dessous (il perd sa traîne, il garde sa place).
+  Même chose pour un rideau qui avale la scène (14/11/2026, Reel Abrège : un disque en `clip-path` qui grandit) :
+  les personnages qui tremblaient encore restaient dessinés par-dessus le rouge, et cela se voyait déjà dans les
+  images de `snapshot`. Quand la scène doit garder sa traîne, fais finir tous ses gestes (tremblements, ondes,
+  gouttes, coups de zoom) avant que le rideau parte.
 - **Un volume qui se retourne (un téléphone avec son dos et sa tranche) montre sa face à travers son dos**
   (12/11/2026, le Reel écran) : dans `snapshot`, la face du téléphone (écrite en dernier, sans transformation à
   elle) se peignait par-dessus le dos, et l'écran se voyait à l'envers quand le téléphone arrivait de dos ; le
