@@ -249,6 +249,23 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    Et `sons` refuse alors le bloc « retouché dans l'app » : si l'historique (`hyperframes history`) ne montre
    que des « Element ids » ajoutés par l'app, `--ecraser` ne perd rien.
 
+   L'inverse (14/11/2026, Reel Abrège, la prise d'otage en petits personnages) : **ouvrir un temps après coup**
+   pour qu'un gag se joue (1,1 s entre la phrase et la suivante, trop court pour une petite scène). Insère
+   **un nombre entier de temps** (ici deux : 2 × 60 / 135 = 0,889 s, soit 42 667 échantillons à 48 kHz) au milieu
+   du vrai silence de la voix (`silencedetect`), et **fais démarrer la musique d'autant plus tôt** dans le
+   morceau au lieu de la couper : `musique.wav` est un extrait exact du morceau (retrouve son point de départ à
+   l'échantillon près par corrélation, puis `atrim=start_sample=` sur l'original). Aucune coupe ne s'entend, la
+   grille reste en phase et la chute reste sur son mot. Puis recule de ce temps : le `T0` et le `data-start` des
+   scènes d'après, la durée de la racine et du fond, les mots (`assets/mots.js`, `transcript.json`,
+   `transcript-brut.json`, ceux qui suivent l'insertion), `musique_entree` et les bruitages (dans `work/sons.py`,
+   un `DECALAGE` appliqué aux anciens instants, leurs remontées lues sur ces anciens instants), puis
+   `sons --ecraser`. Garde `voix-avant-<raison>.wav` et `musique-avant-<raison>.wav`.
+   **Piège** : le silence se fabrique avec `anullsrc=r=48000:cl=mono,atrim=end_sample=<n>`, jamais
+   `aevalsrc=0:n=<n>` (`n` y est la taille de chaque bloc, pas la durée : le flux est sans fin, et ffmpeg a
+   écrit 90 Go en dix minutes ; l'app HyperFrames, qui ouvre tout fichier posé dans `assets/`, l'a gardé ouvert
+   après sa suppression, le disque plein, quelques minutes). Écris les fichiers de travail hors d'`assets/`
+   (`.hyperframes/scratch/`) et borne chaque commande (`-t`, `timeout`).
+
 ## 3. Caler la vidéo sur la voix
 
 - **Des mots mal placés en fin de voix** (14/11/2026, Reel Abrège, Mako, rythme soutenu) : après `voix caler`,
