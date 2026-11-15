@@ -66,6 +66,13 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    Si tu pilotes toi-même le navigateur intégré, il te faut sa connexion Google : il se connecte,
    jamais toi. Le bouton Download y range le fichier dans ses Téléchargements sous le nom
    « Generated Audio <date>.wav ».
+   **Piège (15/11/2026)** : cette date n'est pas fiable (une prise du jour est arrivée nommée
+   « November 03, 2026 - 1_17PM », deux téléchargements de la même minute prennent « (1) »), et ses
+   Téléchargements gardent d'anciennes voix du même nom. Ranger les prises « par ordre de date » de
+   tout le dossier a déplacé trois de ses anciens fichiers et écrasé deux prises. Pose un repère
+   (`touch <scratchpad>/repere`) avant chaque Download, puis range **le seul** fichier
+   `find ~/Downloads -maxdepth 1 -name 'Generated Audio*' -newer <repere>`, avec `mv -n` ; s'il y en
+   a zéro ou plusieurs, arrête-toi et regarde.
    **11/11/2026, Gemini 3.8 Flash TTS** : le panneau Speaker 1 a un filtre « Gender » (Feminine,
    Masculine) ; pour une voix féminine en français, **Cleo** (« Warm and engaging ») a tout dit juste,
    question montante comprise, en 31 s pour 100 mots. Kira allait trop vite (27 s) et disait
