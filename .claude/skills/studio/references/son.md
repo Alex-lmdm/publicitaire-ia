@@ -385,6 +385,12 @@ qui travaille **en dessous** :
   notification), juste sous la voix, retire les petits bruitages que la batterie couvre de toute
   façon, et écris le refus d'`emergence` restant dans `PLAN.md` (un P1 expliqué). Ne baisse pas la
   musique pour eux.
+  Piège (15/11/2026, Reel Net, Queen Pin sous une voix rapide) : régler chaque son par passes, en montant les
+  « faibles » et en baissant les « plus forts que la voix » dans la même passe, oscille (on monte, ils passent
+  devant la voix, on baisse…). Fais deux ou trois passes de montée (au plus +5 dB par son et par passe), puis
+  **des passes de baisse seule** jusqu'à zéro son au-dessus de la voix ; un son tombé à plus de 12 dB sous son
+  gain du catalogue est inaudible : retire-le. Et retrouve chaque son par son départ **et** son nom (plusieurs
+  sons partent au même instant : un réglage par le seul départ baissait le mauvais).
 - **Les sons qui trompent** : certains noms du pack cachent une rafale. `click-short-snap` n'est pas
   un claquement sec mais un snap suivi d'un **cliquet de molette** (12 petits tics, entendus « tic
   tic tic » par le client : posé 11 fois, il a gâché la story v3) ; `click-hard` fait trois clics ;

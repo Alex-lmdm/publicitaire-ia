@@ -242,6 +242,16 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    les dernières phrases sur `ffmpeg -af silencedetect=n=-40dB:d=0.25` (une phrase entre deux
    silences) et corrige leurs temps dans `transcript.json` s'il le faut.
 
+   Piège (15/11/2026, Reel Net, voix rapide Ludo) : Parakeet colle la fin d'un mot au début du suivant ;
+   ses mots couvrent les vrais silences, et `calage` ne voit plus aucune phrase s'ouvrir (« ne part ni avec une
+   phrase… » sur des scènes qui partent pourtant sur leur phrase). Mesure les vrais blancs
+   (`ffmpeg -i assets/audio/voix.wav -af silencedetect=n=-40dB:d=0.15 -f null -`) et ramène, dans
+   `transcript.json`, la fin du mot d'avant au début du blanc et le début du mot suivant à sa fin, puis
+   régénère `assets/mots.js`. De même, `voix respiration` ne trouve que les pauses déjà longues : pour en
+   ouvrir une dans un blanc de 0,2 s, coupe la voix au milieu du blanc et insère du silence
+   (`atrim` + `anullsrc` + `concat`, en 48 kHz mono), décale les mots d'après dans `transcript.json`, les
+   bruitages d'après (`sons --ecraser`) et rallonge la musique (`musique … --duree`).
+
    Piège (14/11/2026, pub Monteur IA, voix Enzo) : même 0,7 s au pivot, une fois la vidéo faite, sonnait trop
    long au client (« un temps où il se passe rien »), car le blanc de la voix va de la fin du dernier mot à
    l'attaque du suivant (0,99 s mesurés, la respiration du modèle comprise), pas seulement du silence ouvert.
