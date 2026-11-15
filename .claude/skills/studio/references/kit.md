@@ -486,3 +486,13 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   papier sur rouge). Pose l'attribut au plus près de ce qui bouge (le cadre qui se resserre, pas la bande qui
   porte le mot) ; ce qui reste est un faux positif, qui va et vient avec les instants que `check` tire :
   note-le dans le plan.
+- **Des objets connus « réalistes » plutôt que dessinés** (15/11/2026, Reel Net, passe demandée par le client :
+  « le mockup d'iPhone, on dirait un truc dessiné ») : un téléphone, une fenêtre, un terminal de paiement montrés
+  en grand se construisent comme le vrai (tranche en couches `translateZ` écrites de l'arrière vers l'avant,
+  cadre en dégradé métal, verre, îlot, barre d'état ; fenêtre avec barre, feux et vrai contenu), jamais un
+  rectangle arrondi plat. Trois pièges rencontrés. **`check` mesure le texte à travers la perspective** : des
+  onglets ou une adresse dans une fenêtre inclinée sortent à 15 px ; les mots de texture (onglets, URL, lettres
+  d'un logo) portent `data-layout-ignore`, les mots à lire font 28 px vus à l'écran, inclinaison comprise.
+  **Une petite lettre grasse dans un disque** (un jeton) donne un faux contraste, `check` prenant l'anticrénelage
+  pour le fond : un `padding` sur la lettre l'en écarte. **GSAP 3 n'anime pas `className`** : pour changer
+  l'onglet actif d'un menu, `tl.set(el, { attr: { class: "…" } }, t)`.
