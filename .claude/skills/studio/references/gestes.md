@@ -48,6 +48,7 @@ Chaque chiffre vient de `OFFRE.json`, avec sa source.
 | **Les cases qui se remplissent** | une proportion, une progression | une grille de petites cases (10 × 10 pour un pourcentage) qui se remplissent dans l'ordre de lecture, en rafale (0,01 s par case) ; la part se lit sans légende |
 | **La courbe qui se trace** | une évolution | le chemin SVG se dessine en 1,2 s `power2.inOut` (`K.trace`), un point de l'accent le mène (`K.longer`), la valeur finale apparaît au bout |
 | **Le compteur à rouleaux** | un chiffre rond, un prix | une bande de chiffres par position qui défile dans sa fenêtre : [kit.md](kit.md), « Les pièges » |
+| **Le tableau de bord reconstruit** | une capture de résultats chargée (gestionnaire de publicités, tableau de ventes) | jamais la capture posée (16/11/2026, Reel vente Publicitaire IA : refusée, trop d'informations, image pas nette) : son interface reconstruite et simplifiée (vrai logo, vraies couleurs, son en-tête, ses onglets, la seule ligne de la preuve), puis les seuls chiffres de la fiche en grandes tuiles qui comptent (`K.compteur`) ; les tuiles se réorganisent ensuite en chaîne (dépense → × ROAS → ventes) |
 
 ## L'interface qui agit
 

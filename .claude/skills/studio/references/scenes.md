@@ -75,3 +75,12 @@ Une `<video>` ne vit jamais dans une scène : elle vit à la racine d'`index.htm
   -frames:v 1`).
 - **Le résultat qui joue dans le téléphone** : la `<video>` aux coordonnées exactes de l'écran du
   téléphone de la scène.
+- **La vidéo dans un objet qui bouge en volume** (une carte de format qui pivote, un mur de vignettes,
+  la vignette d'une interface qui grandit), qu'une `<video>` de la racine ne peut pas suivre : ses
+  images, **toutes**, à 30 par seconde (`ffmpeg -ss <début> -t <durée> -i <vidéo> -vf
+  "fps=30,scale=360:640" -q:v 3 <dossier>/%03d.jpg`), dans l'objet, chacune visible exactement une
+  image du rendu : le changement tombe entre deux images, en temps de la vidéo (`(g0 + k − 0,5) / 30 −
+  T0`, `g0` la première image du rendu où elle joue), `decoding="sync"`. Jamais un échantillon à 10
+  images/s qui boucle : il fait GIF (16/11/2026, Reel vente Publicitaire IA, remarque du client). Un
+  aperçu figé qui suit (une retouche) montre exactement la dernière image jouée, et le plan d'après
+  reprend la lecture à l'image suivante. Choisis des passages sans prix ni date d'une autre offre.
