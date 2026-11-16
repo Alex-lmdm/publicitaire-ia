@@ -94,6 +94,13 @@ son compte Google, et la formation (module « Voix off ») le lui montre écran 
    (« Sîdènse » → « Syndesia », « Ci-dense » → « Science »). **Retenu à l'oreille : « Si-danse »**
    (deux mots français liés par un tiret), écrit ainsi dans le texte de la voix. Une consigne de
    prononciation dans le champ Style aplatit l'intonation : préfère réécrire le mot.
+   **16/11/2026, Reel vente Publicitaire IA (voix féminines, 40 à 45 s demandées)** : la consigne « rythme
+   rapide et enlevé » ne raccourcit qu'à peine (Cleo 52,0 → 49,4 s pour 157 mots) ; six voix sortaient entre
+   48,6 et 51,8 s. Pour tenir la durée sans toucher au script validé, chaque prise a été ramenée à la même
+   durée (blancs du début et de la fin coupés, puis `ffmpeg -af atempo=<durée / cible>`, de × 1,09 à × 1,16 :
+   la hauteur ne change pas), et la page d'écoute a donné les deux vitesses ; le client a choisi Kira à × 1,10.
+   Au-delà de × 1,15, propose plutôt de retirer une phrase. Revers : la voix accélérée ne laisse que 0,12 à
+   0,19 s entre deux phrases, sous les 0,25 s où `calage` voit une ouverture de phrase (un P1 expliqué).
 
 ### B. Sa voix, enregistrée sur son téléphone
 
@@ -197,6 +204,13 @@ Depuis le projet de la vidéo. Sous Windows, dans PowerShell, `npx.cmd` au lieu 
    voix Google AI Studio en français (Nika) : Parakeet écrivait des mots en anglais (« It's » pour
    « C'est », « And that video? ») et sautait des passages entiers (120 mots reconnus sur 131) ;
    sans `voix caler`, des animations se calaient sur des mots absents.
+   Piège (16/11/2026, Reel vente Publicitaire IA, Kira accélérée) : `voix caler` relit `transcript-brut.json`
+   s'il existe déjà ; pour recaler sur une autre transcription, renomme d'abord l'ancien. Whisper large-v3
+   (`--engine whisper --model large-v3 --language fr`) reconnaissait tout le texte mais plaçait les débuts de
+   mots jusqu'à 0,4 s trop tard ; Parakeet (sans `--language`) glissait de l'anglais mais plaçait mieux les
+   frontières. Le texte calé sur Parakeet, puis chaque frontière recalée sur le vrai blanc le plus proche
+   (`silencedetect=n=-40dB:d=0.12`, les plus proches d'abord, sans croiser deux blancs), a donné des mots
+   justes : le script `work/regler_voix.py` de ce projet le fait, respiration comprise.
 
    À la première voix off, il répond « Parakeet is not installed » : le modèle se télécharge une
    fois sur l'ordinateur. Annonce-le d'abord (« Pour caler la vidéo sur ta voix, je télécharge une

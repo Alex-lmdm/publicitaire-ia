@@ -272,6 +272,11 @@ principe 3). `cible` accepte un sélecteur, un élément ou une liste.
   `data-motion-blur="off"` sur ces enfants (un descendant peut le rallumer pour son propre geste). L'attribut n'est
   lu qu'au chargement : le basculer dans la timeline ne fait rien. Pour le voir, prends les images **à la suite**
   depuis avant le geste (`snapshot --range <avant>,<après> --frames 18`) : une image prise seule sort juste.
+- **Le fond qui s'ouvre derrière un mot passe devant lui** (16/11/2026, Reel vente Publicitaire IA, les pastilles de
+  l'accent) : le fond qui s'ouvre (`scaleX`) part dans la passe des objets qui bougent, dessinée par-dessus le mot
+  immobile ; le mot n'apparaît qu'à la fin de l'ouverture, 0,1 à 0,3 s trop tard, déjà visible dans `snapshot`. Le
+  correctif : `data-motion-blur="off"` sur le fond (pas sur le mot). Un bloc de `K.surligner` s'ouvre de la même
+  façon : regarde l'image du mot pendant son ouverture.
 - **Un volume qui se retourne (un téléphone avec son dos et sa tranche) montre sa face à travers son dos**
   (12/11/2026, le Reel écran) : dans `snapshot`, la face du téléphone (écrite en dernier, sans transformation à
   elle) se peignait par-dessus le dos, et l'écran se voyait à l'envers quand le téléphone arrivait de dos ; le
