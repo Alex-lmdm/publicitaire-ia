@@ -1803,6 +1803,19 @@ class Reference(unittest.TestCase):
         self.assertIn("- Durée : 4 s", self.analyse("fichier"))
         self.assertTrue((self.tmp / "deuxieme.mp4").is_file())       # le fichier du client reste où il est
 
+    def test_les_plans_un_par_un(self):
+        """Seconde version (17/11/2026) : la table des plans mesurée, et mesures.json pour `grammaire`."""
+        with mock.patch.object(sm, "hyperframes_cli", return_value=None):
+            self.reference("https://exemple.test/premiere")
+        analyse = self.analyse()
+        for attendu in ("## Les plans, un par un", "| 1 | 0 s (image 0) | 2 s | — |", "- Format : 320 × 240, 10 images",
+                        "## Chaque grand mot, de son entrée à sa sortie", "## Le timing, à l'image près",
+                        "Mode : **dans l'esprit**"):
+            self.assertIn(attendu, analyse)
+        mesures = json.loads((self.dossier / "sources" / "reference" / "reference" / "mesures.json").read_text(encoding="utf-8"))
+        self.assertEqual((mesures["version"], mesures["plans_selon"], len(mesures["plans"])), (2, "ffmpeg", 1))
+        self.assertEqual(mesures["source"], "https://exemple.test/premiere")
+
 
 class Liens(unittest.TestCase):
     def test_lien_complete_comme_capture(self):
@@ -1821,6 +1834,220 @@ class Liens(unittest.TestCase):
             f.write_bytes(b"x")
             self.assertIsNone(sm.lien_video(str(f)))
 
+
+
+class ReferenceMesures(unittest.TestCase):
+    """La référence, seconde version (17/11/2026) : ce qui se calcule et se lit sans vidéo."""
+
+    def test_tempo_ramene_entre_80_et_160(self):
+        self.assertEqual(sm.tempo_ramene(62), 124.0)          # un lecteur de tempo lit souvent la moitié
+        self.assertEqual(sm.tempo_ramene(240), 120.0)
+        self.assertEqual(sm.tempo_ramene(124.04), 124.0)
+        self.assertIsNone(sm.tempo_ramene(None))
+        self.assertIsNone(sm.tempo_ramene(0))
+
+    def test_une_duree_en_temps(self):
+        self.assertEqual(sm.en_temps(1.45, 124.0), 3.0)
+        self.assertEqual(sm.en_temps(0.6, 120.0), 1.0)        # au demi-temps près
+        self.assertIsNone(sm.en_temps(1.0, None))
+
+    def test_coupes_sur_les_temps(self):
+        plans = [{"debut": 0.0}, {"debut": 0.98}, {"debut": 2.3}]
+        self.assertEqual(sm.coupes_sur_temps(plans, [0.5, 1.0, 1.5, 2.0, 2.5]), [1, 2])
+        self.assertIsNone(sm.coupes_sur_temps(plans, []))
+
+    def test_la_lumiere_d_une_image(self):
+        def image(r: int, g: int, b: int) -> bytes:
+            return bytes([r, g, b]) * 16
+        self.assertEqual(sm.lumiere_image(image(32, 32, 34)), "nuit")
+        self.assertEqual(sm.lumiere_image(image(250, 250, 250)), "clair")
+        self.assertEqual(sm.lumiere_image(image(255, 238, 0)), "aplat")       # le jaune plein
+        self.assertEqual(sm.lumiere_image(image(229, 57, 53)), "aplat")
+        self.assertEqual(sm.lumiere_image(image(128, 120, 110)), "mêlé")
+        self.assertEqual(sm.lumiere_image(image(255, 246, 160)), "clair")     # un jaune pâle reste du clair
+
+    def test_la_lumiere_des_plans(self):
+        lumieres = ["nuit"] * 10 + ["aplat"] * 5 + ["nuit"] * 5              # 5 images par seconde
+        plans = [{"debut": 0, "fin": 2}, {"debut": 2, "fin": 3}, {"debut": 3, "fin": 3.05}, {"debut": 3.05, "fin": 4}]
+        self.assertEqual(sm.lumiere_des_plans(lumieres, plans), ["nuit", "aplat", "nuit", "nuit"])
+        self.assertEqual(sm.parts_lumiere(lumieres), {"nuit": 0.75, "aplat": 0.25})
+        self.assertEqual(sm.dire_lumieres({"aplat": 0.25, "nuit": 0.75}), "nuit 75 %, aplat 25 %")
+
+    def test_les_changements_et_les_bandes_en_francais(self):
+        evenements = [{"t": 0.5, "type": "appear"}, {"t": 0.7, "type": "appear"}, {"t": 1.2, "type": "flash"},
+                      {"t": 1.5, "type": "hold"}, {"t": 2.5, "type": "change"}]
+        self.assertEqual(sm.dire_changements(sm.changements_du_plan(evenements, 0, 2)), "3 (1 flash, 2 apparitions)")
+        self.assertEqual(sm.dire_changements({}), "aucun")
+        self.assertEqual(sm.dire_changements(None), "—")
+        self.assertEqual(sm.dire_quoi("appear r0c0,r3c3"), "apparition L1C1, L4C4")
+        self.assertEqual(sm.dire_quoi("flash 1f"), "flash de 1 image")
+        deux_coupes = [{"debut": 3.4, "fin": 3.63, "quoi": ["cut"]}, {"debut": 3.43, "fin": 3.66, "quoi": ["cut"]}]
+        self.assertEqual(sm.fusionner_fenetres(deux_coupes), [{"debut": 3.4, "fin": 3.66, "quoi": ["cut", "cut"]}])
+
+    def test_la_carte_de_hyperframes(self):
+        """Le JSON de `measure events --map` (HyperFrames 0.9.26) : la carte complète se lit dans son fichier,
+        tous les temps compris (la sortie n'en montre que 64)."""
+        with tempfile.TemporaryDirectory() as d:
+            carte = Path(d) / "events-0-6s-map.json"
+            carte.write_text(json.dumps({
+                "events": [{"t": 0.3, "frame": 9, "type": "appear", "cells": ["r1c0"]}, {"t": 2.0, "frame": 60, "type": "cut"}],
+                "sound": {"bpm": 61.5, "beats": [round(i * 0.4878, 3) for i in range(80)], "onsets": []}}), encoding="utf-8")
+            sortie = {"ok": True, "counts": {"cut": 1, "flash": 0, "appear": 1, "disappear": 0, "change": 0, "hold": 2},
+                      "holds": [{"t": 3.0, "seconds": 1.2}],
+                      "sound": {"bpm": 61.5, "beats": 80, "beat_times": [0.0], "onsets": 3, "strong_onsets": []},
+                      "windows": [{"start": 0.233, "end": 0.367, "what": ["appear r1c0"], "onset_frames": [9]},
+                                  {"start": 1.933, "end": 2.067, "what": ["cut"], "onset_frames": [60]}],
+                      "file": str(carte)}
+            with mock.patch.object(sm, "mesure_hyperframes", return_value=sortie) as mesure:
+                c = sm.carte_evenements(Path("ref.mp4"), Path(d))
+        self.assertEqual(mesure.call_args[0][0][:3], ["events", "ref.mp4", "--map"])
+        self.assertEqual((len(c["temps"]), c["tempo"], sm.tempo_ramene(c["tempo"])), (80, 61.5, 123.0))
+        self.assertEqual(c["tenues"], [{"t": 3.0, "secondes": 1.2}])
+        self.assertEqual([f["quoi"] for f in c["fenetres"]], [["appear r1c0"], ["cut"]])
+        self.assertEqual([e["type"] for e in c["evenements"]], ["appear", "cut"])
+
+    def test_les_plans_de_hyperframes(self):
+        sortie = {"ok": True, "cuts": [{"t": 1.4, "frame": 42, "change": 80.1}], "not_cuts": [{"t": 3.5, "kind": "flash"}],
+                  "shots": [{"start": 0, "end": 1.4, "seconds": 1.4}, {"start": 1.4, "end": 6, "seconds": 4.6}]}
+        with mock.patch.object(sm, "mesure_hyperframes", return_value=sortie):
+            self.assertEqual(sm.plans_mesures(Path("ref.mp4")), [{"debut": 0.0, "fin": 1.4, "secondes": 1.4},
+                                                                 {"debut": 1.4, "fin": 6.0, "secondes": 4.6}])
+        with mock.patch.object(sm, "mesure_hyperframes", return_value=None):
+            self.assertIsNone(sm.plans_mesures(Path("ref.mp4")))
+
+    def test_une_mesure_en_echec_ne_compte_pas(self):
+        echec = mock.Mock(stdout='{"ok": false, "error": "x"}')
+        with mock.patch.object(sm, "hyperframes_cli", return_value=["hyperframes"]), \
+                mock.patch.object(sm, "lancer", return_value=echec):
+            self.assertIsNone(sm.mesure_hyperframes(["cuts", "x.mp4"]))
+        with mock.patch.object(sm, "hyperframes_cli", return_value=None):
+            self.assertIsNone(sm.mesure_hyperframes(["cuts", "x.mp4"]))
+
+    def test_le_mouvement_rapporte_au_contraste(self):
+        """Mêmes gestes, palette deux fois moins contrastée : autant de mouvement (essai du 17/11/2026 : 0,48
+        sans le contraste, pour un rouge sur bleu nuit contre un jaune sur la nuit)."""
+        ref = [0.2] * 10 + [40.0] + [0.2] * 9 + [12.0] + [0.2] * 19
+        notre = [v / 2 for v in ref]
+        self.assertEqual(sm.mouvement_compare(ref, notre)["rapport"], 0.5)
+        m = sm.mouvement_compare(ref, notre, contraste_ref=80.0, contraste_notre=40.0)
+        self.assertEqual((m["rapport"], m["correlation"], m["decalage"]), (1.0, 1.0, 0.0))
+        self.assertEqual(sm.mouvement_compare(ref, [0.2] * 3 + ref[:-3])["decalage"], 0.3)
+        self.assertEqual(sm.mouvement_compare(ref, [0.0] * 40)["correlation"], 0.0)       # une image fixe
+
+    def mesures(self, **autres) -> dict:
+        m = {"duree": 6.0, "tempo": 120.0, "evenements_par_s": 1.0, "contraste": 60.0, "bascules": 2,
+             "plans": [{"debut": 0, "fin": 2, "secondes": 2.0, "temps": 4.0, "lumiere": "nuit"},
+                       {"debut": 2, "fin": 3.5, "secondes": 1.5, "temps": 3.0, "lumiere": "aplat"},
+                       {"debut": 3.5, "fin": 6, "secondes": 2.5, "temps": 5.0, "lumiere": "nuit"}],
+             "mouvement": [0.2, 5.0, 0.2, 0.2, 8.0] * 12, "lumieres": {"nuit": 0.75, "aplat": 0.25},
+             "coupes_sur_temps": [2, 2]}
+        m.update(autres)
+        return m
+
+    def test_la_meme_grammaire(self):
+        constats, ecarts = sm.ecarts_grammaire(self.mesures(), self.mesures(), plan_par_plan=True)
+        self.assertEqual(ecarts, [])
+        self.assertIn("Coupes sur les temps, dans la référence : 2 sur 2", constats)
+
+    def test_les_ecarts_d_un_diaporama(self):
+        diaporama = self.mesures(plans=[{"debut": 0, "fin": 6, "secondes": 6.0, "temps": 12.0, "lumiere": "clair"}],
+                                 evenements_par_s=0.2, mouvement=[0.1] * 60, lumieres={"clair": 1.0}, bascules=0)
+        _constats, ecarts = sm.ecarts_grammaire(self.mesures(), diaporama)
+        for attendu in ("Plans : 1 contre 3", "Durée habituelle d'un plan : 12 temps", "Événements par seconde",
+                        "Mouvement :", "Lumière : nuit 0 %", "Lumière : clair 100 %", "Bascules de lumière : 0 contre 2"):
+            self.assertTrue(any(e.startswith(attendu) for e in ecarts), (attendu, ecarts))
+        self.assertFalse(any(e.startswith("Plan 1 ") for e in ecarts))     # plan par plan : au plus près seulement
+
+    def test_au_plus_pres_chaque_plan(self):
+        notre = self.mesures(plans=[dict(p) for p in self.mesures()["plans"]])
+        notre["plans"][1].update(temps=4.0, lumiere="clair")
+        _constats, ecarts = sm.ecarts_grammaire(self.mesures(), notre, plan_par_plan=True)
+        self.assertIn("Plan 2 : 4 temps contre 3 dans la référence", ecarts)
+        self.assertIn("Plan 2 : lumière clair contre aplat dans la référence", ecarts)
+
+    def test_l_analyse_avec_hyperframes(self):
+        m = self.mesures(fps=30.0, largeur=1080, hauteur=1920, ecart_median=0.4, figee=0.0, coupes_franches=[2.0, 3.5],
+                         plans_selon="HyperFrames", tempo_lu=61.5, tempo=123.0, tenues=[{"t": 4.0, "secondes": 1.2}],
+                         compte={"cut": 2, "flash": 1, "appear": 4, "disappear": 1, "change": 2, "hold": 1},
+                         bandes=[{"numero": 1, "debut": 1.93, "fin": 2.07, "quoi": ["cut", "appear r1c2"],
+                                  "fichier": "bande-01-1.93s.jpg"}])
+        m["plans"][1].update(bandes=[1], changements={"appear": 2})
+        texte = sm.texte_analyse("katana", "https://exemple.test/v", m, ["planche-01.jpg"])
+        for attendu in ("- Format : 1080 × 1920, 30 images par seconde",
+                        "- Plans (HyperFrames `measure cuts`) : 3, durée médiane 2 s",
+                        "8 (1 flash, 4 apparitions, 1 disparition, 2 changements) ; 1 tenue(s)",
+                        "- Musique : tempo 123 (lu 61,5, ramené entre 80 et 160) ; 2 coupe(s) sur 2 tombent sur un temps",
+                        "| 2 | 2 s (image 60) | 1,5 s | 3 | aplat | 2 (2 apparitions) | 01 |",
+                        "| 01 | 1,93 s | 2,07 s | coupe ; apparition L2C3 |", "L1C1 en haut à gauche"):
+            self.assertIn(attendu, texte)
+
+
+@unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg absent")
+class Grammaire(unittest.TestCase):
+    """`grammaire`, `bande` et le côte à côte, de bout en bout (sans HyperFrames : plans lus par ffmpeg)."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+        self.dossier = self.tmp / "Offre · 2026-11-17"
+        (self.dossier / "reel" / "exports").mkdir(parents=True)
+        (self.dossier / "OFFRE.json").write_text("{}", encoding="utf-8")
+        self.film(self.tmp / "ref.mp4", "0x202022", "0xFFEE00", 360, 640)
+        self.lancer("reference", str(self.dossier), str(self.tmp / "ref.mp4"), "--nom", "katana")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    @staticmethod
+    def film(chemin: Path, fond: str, accent: str, w: int, h: int, bouge: bool = True) -> None:
+        """4 s : un bloc qui entre par la gauche, un aplat de l'accent de 1,5 à 2,5 s, puis le fond."""
+        import subprocess
+        bloc = (f"[0][1]overlay=x='if(lt(t,0.3),-{w // 3},if(lt(t,0.6),-{w // 3}+(t-0.3)/0.3*{w // 2},{w // 6}))'"
+                f":y={h // 3}" if bouge else f"[0][1]overlay=x={w // 6}:y={h // 3}")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"color=c={fond}:s={w}x{h}:r=30:d=4",
+                        "-f", "lavfi", "-i", f"color=c=white:s={w // 3}x{h // 10}:r=30:d=4", "-filter_complex",
+                        bloc + (f",drawbox=x=0:y=0:w=iw:h=ih:color={accent}:t=fill:enable='between(t,1.5,2.5)'" if bouge else ""),
+                        "-pix_fmt", "yuv420p", str(chemin)], check=True)
+
+    def lancer(self, *args: str) -> str:
+        sortie = io.StringIO()
+        with mock.patch.object(sm, "hyperframes_cli", return_value=None), contextlib.redirect_stdout(sortie):
+            sm.main(list(args))
+        return sortie.getvalue()
+
+    def test_meme_grammaire_dans_d_autres_couleurs(self):
+        rendu = self.dossier / "reel" / "exports" / "reel.mp4"
+        self.film(rendu, "0x101830", "0xE53935", 540, 960)
+        sortie = self.lancer("grammaire", str(rendu), "--plan-par-plan", "--cote-a-cote")
+        self.assertIn("ok : même grammaire que la référence", sortie)
+        self.assertTrue((self.dossier / "sources" / "reference" / "katana" / "cote-a-cote.mp4").is_file())
+        self.assertFalse((self.dossier / "livraison").exists())              # jamais livré
+
+    def test_un_diaporama_s_ecarte(self):
+        rendu = self.dossier / "reel" / "exports" / "diapo.mp4"
+        self.film(rendu, "0xF5F5F5", "0x101830", 360, 640, bouge=False)
+        sortie = io.StringIO()
+        with self.assertRaises(SystemExit) as fin, contextlib.redirect_stdout(sortie), \
+                mock.patch.object(sm, "hyperframes_cli", return_value=None):
+            sm.main(["grammaire", str(rendu)])
+        self.assertEqual(fin.exception.code, 1)
+        for attendu in ("✗ Mouvement", "✗ Lumière : clair 100 %", "✗ Bascules de lumière : 0 contre 2"):
+            self.assertIn(attendu, sortie.getvalue())
+
+    def test_la_bande_d_un_moment(self):
+        video = self.dossier / "sources" / "reference" / "katana" / "video.mp4"
+        sortie = self.lancer("bande", str(video), "--de", "0.2", "--a", "0.7", "--zone", "0,200,360,80")
+        self.assertIn("12 images de 0,2 à 0,7 s", sortie)
+        self.assertTrue((video.parent / "bandes" / "moment-0.20-0.70s.jpg").is_file())
+        with self.assertRaises(SystemExit):
+            self.lancer("bande", str(video), "--de", "1", "--a", "0.5")
+
+    def test_sans_reference(self):
+        rendu = self.dossier / "reel" / "exports" / "reel.mp4"
+        self.film(rendu, "0x101830", "0xE53935", 360, 640)
+        with self.assertRaises(SystemExit) as fin:
+            self.lancer("grammaire", str(rendu), "--reference", "autre")
+        self.assertIn("pas de vidéo de référence", str(fin.exception.code))
 
 
 class Relecture(unittest.TestCase):

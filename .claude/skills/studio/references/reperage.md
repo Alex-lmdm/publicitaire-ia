@@ -88,18 +88,77 @@ le style maison (0), un des 9 styles, ou d'après une vidéo qu'il aime (section
 python3 tools/studio_motion.py reference "<dossier>" "<lien ou fichier>" --nom <nom-court>
 ```
 
-L'outil télécharge la vidéo, en tire une planche toutes les 0,5 s, compte les coupes franches et
-mesure le rythme, puis prépare `sources/reference/<nom>/ANALYSE.md`. Pas encore de téléchargeur ?
-L'outil le dit : propose-le au client (« Pour lire ce lien, j'installe un téléchargeur de vidéos,
-gratuit, une minute. Je le fais ? »), puis `python3 tools/studio_motion.py telechargeur installer` et
-relance. S'il refuse, ou si ça échoue, demande-lui d'enregistrer son écran pendant que la vidéo passe
-et de glisser le fichier dans la conversation. Regarde les planches et
-remplis l'analyse : fonds et bascules, mots par écran, ce qui vit pendant la lecture, le motif qui
-revient, les transitions, la caméra, les interfaces, la fin. Recopie dans `PLAN.md` les procédés
-retenus et les mesures à atteindre (événements par seconde, part d'image figée).
+L'outil télécharge la vidéo, puis la mesure plan par plan, sur l'ordinateur, sans rien envoyer :
+chaque plan à l'image près (HyperFrames `measure cuts`), sa durée en temps de sa musique, sa lumière
+(la nuit, le clair, l'aplat, mêlé), ce qui y change (apparitions, disparitions, flashs), et une
+**bande** par changement : les images qui se suivent, de gauche à droite (`bandes/`). Il écrit
+`sources/reference/<nom>/ANALYSE.md` (les mesures et la table des plans, à compléter) et
+`mesures.json` (que relit `grammaire`). Pas encore de téléchargeur ? L'outil le dit : propose-le au
+client (« Pour lire ce lien, j'installe un téléchargeur de vidéos, gratuit, une minute. Je le
+fais ? »), puis `python3 tools/studio_motion.py telechargeur installer` et relance. S'il refuse, ou si
+ça échoue, demande-lui d'enregistrer son écran pendant que la vidéo passe et de glisser le fichier
+dans la conversation. Sans HyperFrames (`npm ci` pas lancé), les plans viennent des seules coupes
+franches, sans tempo ni changements : installe d'abord.
 
-On reprend **la grammaire**, jamais le contenu : ni ses textes, ni ses images, ni sa musique, ni
-son produit. Sans référence, le niveau par défaut est celui d'[ambition.md](ambition.md).
+**Lis-la sur ses bandes, pas sur ses planches.** Les planches (une case par demi-seconde) donnent
+la vue d'ensemble ; une demi-seconde rate les décalages d'une à trois images, le sens d'entrée et de
+sortie, les flous et les fondus des coupes, un flash d'une image. Complète la table des plans
+d'après les bandes : ce qu'on voit (ses couches : le fond, les mots, l'interface, les objets),
+comment chaque élément entre, vit et sort, le passage au plan suivant. Puis **chaque grand mot, de
+son entrée à sa sortie**, sur sa boîte :
+
+```bash
+python3 tools/studio_motion.py bande "<dossier>/sources/reference/<nom>/video.mp4" --de 2.1 --a 3.4 --zone 120,640,840,220
+```
+
+Son entrée, sa vie à l'écran, sa sortie, sa matière, sa taille en part de l'écran (ANALYSE.md le
+détaille). Un geste qui te plaît se chiffre avec `measure curve` (ANALYSE.md, « Mesurer un geste »).
+
+**Le timing, à l'image près.** Ce qui est entièrement là sur une image y est posé d'un coup ; on
+n'anime que ce qu'on a vu bouger sur plusieurs images de sa bande. Un flash ou un fondu sur une coupe
+fait partie de la coupe. Les durées en temps se posent sur les temps du morceau du client, une fois
+calé ([son.md](son.md), « Construire l'image sur la bande-son »).
+
+### Dans son esprit, ou au plus près
+
+Ses mots décident. Dans le doute, la question part dans le message de la fiche et des trois idées
+(« a) dans son esprit · b) au plus près, plan par plan »), jamais dans un message de plus.
+
+- **Dans son esprit** (« je veux ce style-là », « dans cet esprit ») : sa grammaire (le rythme, la
+  densité de mots, la lumière, les entrées, les passages) sur une structure à nous : les trois idées
+  de l'étape 3, un script à nous.
+- **Au plus près** (« refais cette vidéo avec ma marque », « la même pour mon offre ») : le script
+  suit la table des plans, un plan à lui par plan de la référence, même durée en temps, même lumière
+  dans ses couleurs, mêmes entrées et sorties, mêmes passages. À l'étape 3, la fiche part avec cette
+  structure transposée à son offre (une ligne par plan) à la place des trois idées. Remplis la table
+  « Ce qu'on reprend » d'ANALYSE.md.
+
+Dans les deux cas, on reprend **la grammaire, jamais le contenu** : ni ses textes, ni ses images, ni
+ses logos, ni sa musique, ni son produit. Les interdits l'emportent sur la référence : un plan trop
+court pour ses mots s'allonge (la lecture), ses couleurs se rejouent dans celles du client. Une pub
+de concurrent recopiée de trop près expose le client (le parasitisme) : au plus près, on suit la mise
+en scène, jamais ce qu'elle dit ni ce qu'elle montre. Recopie dans `PLAN.md` le mode, les procédés
+retenus et les mesures à atteindre (plans, durée habituelle, événements par seconde, lumière).
+
+### Sur le rendu
+
+Depuis le projet, après le rendu :
+
+```bash
+python3 ../../../tools/studio_motion.py grammaire exports/reel.mp4
+python3 ../../../tools/studio_motion.py grammaire exports/reel.mp4 --plan-par-plan --cote-a-cote
+```
+
+`grammaire` compare le MP4 à sa référence sur ce qui ne dépend pas du contenu : le nombre de plans
+et leur durée habituelle, les événements par seconde, le mouvement (rapporté au contraste de chaque
+palette : une marque aux couleurs douces bouge autant qu'une référence jaune et noire pour les mêmes
+gestes), la part de la nuit, du clair et de l'aplat, les bascules. `--plan-par-plan` (au plus près)
+compare chaque plan au sien, en temps et en lumière, et vérifie que le mouvement tombe aux mêmes
+moments. Chaque écart se corrige, ou se justifie en une ligne dans `PLAN.md`. `--cote-a-cote` écrit
+« la référence | la tienne » dans le dossier de la référence : pour les regarder ensemble, et la
+montrer au client sur son ordinateur ; jamais publiée ni livrée, elle contient la vidéo d'un autre.
+
+Sans référence, le niveau par défaut est celui d'[ambition.md](ambition.md).
 
 ## Ce que tu écris dans PLAN.md
 
@@ -114,6 +173,7 @@ son produit. Sans référence, le niveau par défaut est celui d'[ambition.md](a
 - Photos et vidéos : portfolios d'élèves avant / après = résultat (dans la fenêtre de Behance) ;
   portrait de la formatrice, photos d'atelier = décor (hors du film).
 - Logos flottants : Behance et Instagram (les portfolios) ; aucune icône générique.
-- Référence : aucune (ou : son nom, ses événements par seconde, ses procédés retenus).
+- Référence : aucune (ou : son nom, dans son esprit ou au plus près, ses plans et leur durée
+  habituelle, ses événements par seconde, sa lumière, ses procédés retenus).
 - Manque : rien (ou : demandé au client, avec la date).
 ```

@@ -108,6 +108,9 @@ Le script et la page partent dans le même message (SKILL.md, étape 3 bis) :
 
 - Un style et une musique donnés sans retouche valident le script. Une retouche : corrige-la et
   confirme en une ligne ; la page ne se rouvre que si la durée change de plus d'un quart.
+- Une vidéo de référence au plus près : un plan du script par plan de sa table (même durée en temps,
+  mêmes entrées, mêmes passages), ses mots à lui ; un plan trop court pour ses mots s'allonge, la
+  lecture l'emporte ([reperage.md](reperage.md), section 4).
 - Un autre style (le lien d'une vidéo qu'il aime : `reference` ; une description ; « aucun ») : la
   fiche du style 0, « Quand il décrit un autre style », jamais un style improvisé. S'il a noté une
   vidéo dont il aime le style (`reference_style` de `studio.config.json`), propose-la aussi

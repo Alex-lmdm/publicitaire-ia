@@ -67,6 +67,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections import Counter
 from pathlib import Path
 
 # Windows : une sortie redirigée est en cp1252, et un « ✅ » y ferait planter l'outil.
@@ -3227,6 +3228,15 @@ def cmd_cadre(a) -> None:
 # ---------------------------------------------------------------------------
 # Une vidéo de référence (celle dont le client aime le style) : on en tire la grammaire
 # (fonds, mots par écran, motifs, transitions, caméra), jamais le contenu.
+#
+# Seconde version (17/11/2026), d'après la méthode d'observation du skill `reverse-any-video` de
+# HyperFrames (HeyGen, Apache-2.0) : la référence se lit plan par plan, sur les images qui se suivent
+# autour de chaque changement (une planche à 0,5 s rate les décalages d'une à trois images, le sens
+# d'entrée et de sortie, les fondus des coupes, un flash d'une image), avec les mesures locales de
+# HyperFrames (`measure cuts`, `measure events --map`). Le rendu du client se compare ensuite à elle
+# sur ce qui ne dépend pas du contenu : les plans, leur durée en temps de musique, la lumière, le
+# rythme et le mouvement (`grammaire`). Rien de ce que ce skill envoie hors de l'ordinateur (compte,
+# rendu en ligne, re-tournage des personnes) n'est repris.
 # ---------------------------------------------------------------------------
 def ytdlp() -> str | None:
     """Le téléchargeur de vidéos : celui du dossier (`telechargeur installer`) ou un yt-dlp récent de
@@ -3252,17 +3262,39 @@ def coupes_video(ffmpeg: str, video: Path, seuil: float = 0.2) -> list[float]:
 
 
 ANALYSE_GRILLE = """
-## Ce que la vidéo fait (à remplir en regardant les planches)
+## Chaque grand mot, de son entrée à sa sortie
 
-Chaque case de planche dure 0,5 s, de gauche à droite puis de haut en bas (24 cases = 12 s).
+Pour chaque mot qu'on lit en grand (l'accroche, les mots forts, l'appel), regarde ses images qui se
+suivent sur sa boîte, de l'image où il paraît à celle où il part :
+`python3 tools/studio_motion.py bande "<la vidéo>" --de <s> --a <s> --zone x,y,l,h`. Note :
 
-- **Fonds** : quelles couleurs, combien de bascules (sombre, clair, couleur pleine, écran coupé) ?
+- **son entrée** : il surgit d'un coup, grandit, sort d'un flou, se tape lettre à lettre, vient mot
+  par mot, glisse, se dévoile derrière un volet ; en combien d'images, de quel côté ;
+- **sa vie à l'écran** : une couleur qui balaie les lettres, un reflet qui passe, un compteur, un
+  changement de couleur, ou rien (un mot posé ne bouge plus) ;
+- **sa sortie** : une coupe, un fondu, un glissement, le mot qui devient l'objet suivant ;
+- **sa matière** : plein, dégradé, verre, contour, lueur, découpé dans l'image ;
+- **sa taille, en part de l'écran** (hauteur de ses capitales sur la hauteur de l'image, largeur de
+  la ligne sur sa largeur) : elle se reprend telle quelle dans tous les formats et avec sa police à
+  lui. `npx hyperframes measure ink "<la vidéo>" --at <s> --roi x,y,l,h` la donne en pixels.
+
+## Ce qui donne son allure
+
+- **Fonds et bascules** (la lumière des plans, ci-dessus) : ils se rejouent dans ses couleurs à lui,
+  la nuit, le clair, l'aplat de son accent.
 - **Mots par écran** : combien en général, et le plus long ?
 - **Ce qui vit pendant qu'on lit** : caméra, objets flottants, curseur ?
 - **Le motif qui revient** (un geste, un cadre, un objet qui relie les parties) :
-- **Les transitions** : un objet devient le suivant, un flash depuis un clic, un volet, une coupe ?
 - **Les interfaces montrées** : lesquelles, reconstruites comment, animées comment ?
 - **La fin** :
+
+## Le timing, à l'image près
+
+- Ce qui est entièrement là sur une image y est posé d'un coup : on n'anime que ce qu'on a vu bouger
+  sur plusieurs images de sa bande. Un mot qui surgit en deux images ne se refait pas en fondu.
+- Un flash, un flou ou un fondu sur une coupe fait partie de la coupe : il se refait sur ses images.
+- Les plans se comptent en temps de sa musique (colonne « En temps ») : ils se posent sur les temps du
+  morceau du client une fois calé (à 120 battements par minute, un temps dure 0,5 s).
 
 ## Mesurer un geste qui te plaît
 
@@ -3273,8 +3305,15 @@ la courbe GSAP la plus proche. Note-les ici : c'est son allure en chiffres, à r
 
 ## Ce qu'on reprend pour la vidéo du client
 
-La grammaire seulement (rythme, densité, procédés), avec sa marque et son offre. Jamais le
-contenu, les textes, les images ni la musique de la référence.
+Mode : **dans l'esprit** (sa grammaire, sur une structure à nous) ou **au plus près** (un plan du
+script par plan de la référence : mêmes durées en temps, mêmes entrées et sorties, mêmes passages,
+même lumière), d'après ses mots (references/reperage.md, section 4). Au plus près, remplis :
+
+| Plan de la référence | Son plan à lui (ce qu'on voit, ses mots) | Clé de OFFRE.json |
+|---|---|---|
+
+Jamais le contenu : ni les textes, ni les images, ni les logos, ni la musique de la référence. Les
+interdits l'emportent sur elle : la lecture (un mot par seconde au plus), sa palette, rien d'inventé.
 """
 
 
@@ -3312,17 +3351,36 @@ def ranger_video(source: Path, sortie: Path, copie: bool = False) -> Path:
     return dest
 
 
-def plans_mesures(video: Path) -> list[float] | None:
-    """La durée de chaque plan d'une vidéo, d'après `hyperframes measure cuts` (local, sans réseau) :
-    il voit des coupes que le seul écart d'images manque, et met à part flashs et mouvements rapides."""
+def mesure_hyperframes(args: list[str]) -> dict | None:
+    """Une mesure de HyperFrames (`hyperframes measure …`, faite sur l'ordinateur, sans compte ni envoi),
+    lue dans son JSON ; None si la CLI manque ou si la mesure échoue."""
     cli = hyperframes_cli()
     if not cli:
         return None
-    r = lancer([*cli, "measure", "cuts", str(video)])
+    r = lancer([*cli, "measure", *args])
     try:
-        return [float(s["seconds"]) for s in json.loads(r.stdout).get("shots") or []] or None
-    except (ValueError, KeyError, TypeError, AttributeError):
+        sortie = json.loads(r.stdout)
+    except ValueError:
         return None
+    return sortie if isinstance(sortie, dict) and sortie.get("ok", True) is not False else None
+
+
+def plans_mesures(video: Path) -> list[dict] | None:
+    """Les plans d'une vidéo ({debut, fin, secondes}), d'après `hyperframes measure cuts` : il voit des
+    coupes que le seul écart d'images manque, et met à part flashs et mouvements rapides."""
+    try:
+        plans = [{"debut": float(s["start"]), "fin": float(s["end"]), "secondes": float(s["seconds"])}
+                 for s in (mesure_hyperframes(["cuts", str(video)]) or {}).get("shots") or []]
+    except (ValueError, KeyError, TypeError):
+        return None
+    return plans or None
+
+
+def plans_depuis_coupes(coupes: list[float], duree: float) -> list[dict]:
+    """Les plans entre les coupes franches lues par ffmpeg, quand HyperFrames n'est pas installé."""
+    bords = [0.0, *sorted(t for t in coupes if 0 < t < duree), duree]
+    return [{"debut": round(a, 3), "fin": round(b, 3), "secondes": round(b - a, 2)}
+            for a, b in zip(bords, bords[1:]) if b - a > 0.01]
 
 
 def ligne_plans(plans: list[float] | None) -> str:
@@ -3332,6 +3390,343 @@ def ligne_plans(plans: list[float] | None) -> str:
     tries = sorted(plans)
     return (f"- Plans (HyperFrames `measure cuts`) : {len(plans)}, durée médiane {fr_nombre(tries[len(tries) // 2])} s, "
             f"de {fr_nombre(tries[0])} à {fr_nombre(tries[-1])} s\n")
+
+
+def _nombre(x) -> bool:
+    return isinstance(x, (int, float)) and not isinstance(x, bool)
+
+
+def carte_evenements(video: Path, dossier: Path) -> dict | None:
+    """Ce qui change à l'écran et quand, avec le tempo et les temps de la musique : `hyperframes measure
+    events --map`, dont la carte complète (tous les événements, tous les temps) est écrite dans `dossier`."""
+    m = mesure_hyperframes(["events", str(video), "--map", "--out", str(dossier)])
+    if not m:
+        return None
+    complet = {}
+    fichier = m.get("file")
+    if isinstance(fichier, str) and Path(fichier).is_file():
+        try:
+            complet = json.loads(Path(fichier).read_text(encoding="utf-8"))
+        except ValueError:
+            complet = {}
+    son_complet = complet.get("sound") if isinstance(complet.get("sound"), dict) else {}
+    son = m.get("sound") if isinstance(m.get("sound"), dict) else {}
+    tempo = son.get("bpm") if _nombre(son.get("bpm")) else son_complet.get("bpm")
+    fenetres = [f for f in m.get("windows") or [] if isinstance(f, dict) and _nombre(f.get("start")) and _nombre(f.get("end"))]
+    return {"compte": {k: v for k, v in (m.get("counts") or {}).items() if _nombre(v)},
+            "tenues": [{"t": float(h["t"]), "secondes": float(h["seconds"])} for h in m.get("holds") or []
+                       if isinstance(h, dict) and _nombre(h.get("t")) and _nombre(h.get("seconds"))],
+            "evenements": [{"t": float(e["t"]), "type": str(e.get("type"))} for e in complet.get("events") or []
+                           if isinstance(e, dict) and _nombre(e.get("t"))],
+            "fenetres": [{"debut": float(f["start"]), "fin": float(f["end"]), "quoi": [str(q) for q in f.get("what") or []]}
+                         for f in fenetres],
+            "tempo": float(tempo) if _nombre(tempo) else None,
+            "temps": [float(t) for t in (son_complet.get("beats") or son.get("beat_times") or []) if _nombre(t)]}
+
+
+def tempo_ramene(bpm: float | None) -> float | None:
+    """Le tempo lu, ramené entre 80 et 160 battements par minute : un lecteur de tempo lit souvent la
+    moitié ou le double, et un plan compté en temps doublerait ou fondrait d'autant."""
+    if not _nombre(bpm) or bpm <= 0:
+        return None
+    bpm = float(bpm)
+    while bpm < 80:
+        bpm *= 2
+    while bpm >= 160:
+        bpm /= 2
+    return round(bpm, 1)
+
+
+def en_temps(secondes: float, tempo: float | None) -> float | None:
+    """Une durée en temps de la musique, au demi-temps près ; None sans tempo."""
+    return round(secondes * tempo / 60 * 2) / 2 if tempo else None
+
+
+def coupes_sur_temps(plans: list[dict], temps: list[float], tolerance: float = 0.07) -> list[int] | None:
+    """[coupes tombées sur un temps de la musique (à 0,07 s près), coupes] ; None sans temps ou sans coupe."""
+    coupes = [p["debut"] for p in plans[1:]]
+    if not temps or not coupes:
+        return None
+    return [sum(1 for c in coupes if min(abs(c - t) for t in temps) <= tolerance), len(coupes)]
+
+
+# La lumière d'une image, dans les mots du skill (`metier.md`) : la nuit (un fond sombre), le clair,
+# l'aplat (une couleur pleine qui couvre l'image), et « mêlé » pour le reste (une photo, une interface
+# en couleurs, un dégradé). Lue en petit, 5 images par seconde : elle dit la place de chaque fond et
+# ses bascules, à rejouer dans les couleurs du client.
+LUMIERE_FPS, LUMIERE_TAILLE = 5, (32, 18)
+LUMIERES = ("nuit", "clair", "aplat", "mêlé")
+
+
+def lumiere_image(px: bytes) -> str:
+    n = len(px) // 3
+    if not n:
+        return "mêlé"
+    luma = sat = 0.0
+    for i in range(0, n * 3, 3):
+        r, g, b = px[i], px[i + 1], px[i + 2]
+        luma += 0.299 * r + 0.587 * g + 0.114 * b
+        haut = max(r, g, b)
+        sat += (haut - min(r, g, b)) / haut if haut else 0.0
+    luma, sat = luma / n, sat / n
+    if sat >= 0.5 and luma >= 40:
+        return "aplat"
+    if luma < 70:
+        return "nuit"
+    return "clair" if luma > 180 else "mêlé"
+
+
+def lumiere_a(ffmpeg: str, video: Path, t: float) -> str | None:
+    """La lumière de l'image affichée à `t` (un plan trop court pour l'échantillonnage : un flash)."""
+    w, h = LUMIERE_TAILLE
+    r = subprocess.run([ffmpeg, "-v", "error", "-ss", f"{max(0.0, t):.3f}", "-i", str(video), "-frames:v", "1", "-vf",
+                        f"scale={w}:{h}:flags=neighbor,format=rgb24", "-f", "rawvideo", "-"], capture_output=True)
+    return lumiere_image(r.stdout[:w * h * 3]) if r.returncode == 0 and len(r.stdout) >= w * h * 3 else None
+
+
+def contraste_video(ffmpeg: str, video: Path, fps: int = 2, taille=RYTHME_TAILLE) -> float:
+    """L'écart type de la luminosité (0-255) sur toutes les images. Pour un même geste, une palette
+    contrastée (un jaune sur la nuit) change plus de pixels qu'une palette douce (un rouge sur un bleu
+    nuit) : le mouvement d'une vidéo se compare à celui d'une autre rapporté à ce contraste."""
+    w, h = taille
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(video), "-vf", f"fps={fps},scale={w}:{h},format=gray",
+                        "-f", "rawvideo", "-"], capture_output=True)
+    if r.returncode != 0 or not r.stdout:
+        return 0.0
+    px = r.stdout
+    moyenne = sum(px) / len(px)
+    return math.sqrt(max(0.0, sum(v * v for v in px) / len(px) - moyenne * moyenne))
+
+
+def lumiere_des_plans(lumieres: list[str], plans: list[dict], fps: int = LUMIERE_FPS) -> list[str]:
+    """La lumière qui domine chaque plan (celle de son image la plus proche pour un plan très court)."""
+    sortie = []
+    for p in plans:
+        dans = [l for i, l in enumerate(lumieres) if p["debut"] <= (i + 0.5) / fps < p["fin"]]
+        if not dans and lumieres:
+            dans = [lumieres[min(len(lumieres) - 1, int(p["debut"] * fps))]]
+        sortie.append(Counter(dans).most_common(1)[0][0] if dans else "mêlé")
+    return sortie
+
+
+def parts_lumiere(lumieres: list[str]) -> dict[str, float]:
+    compte = Counter(lumieres)
+    return {k: round(compte[k] / len(lumieres), 2) for k in LUMIERES if compte[k]} if lumieres else {}
+
+
+def dire_lumieres(parts: dict[str, float]) -> str:
+    """« nuit 60 %, aplat 25 %, clair 15 % »."""
+    return ", ".join(f"{k} {round(v * 100)} %" for k, v in sorted(parts.items(), key=lambda kv: -kv[1])) or "—"
+
+
+CHANGEMENTS = {"flash": ("flash", "flashs"), "appear": ("apparition", "apparitions"),
+               "disappear": ("disparition", "disparitions"), "change": ("changement", "changements")}
+
+
+def changements_du_plan(evenements: list[dict], debut: float, fin: float) -> dict[str, int]:
+    compte = Counter(e["type"] for e in evenements if e["type"] in CHANGEMENTS and debut <= e["t"] < fin)
+    return {k: compte[k] for k in CHANGEMENTS if compte[k]}
+
+
+def dire_changements(c: dict[str, int] | None) -> str:
+    """« 4 (2 apparitions, 1 changement, 1 flash) », « aucun », « — » sans mesure."""
+    if c is None:
+        return "—"
+    total = sum(c.values())
+    if not total:
+        return "aucun"
+    return f"{total} (" + ", ".join(f"{n} {CHANGEMENTS[k][n > 1]}" for k, n in c.items()) + ")"
+
+
+BANDE_MAX, BANDE_LARGEUR, BANDES_MAX = 12, 240, 60
+TYPES_EVENEMENT = {"cut": "coupe", "flash": "flash", "appear": "apparition", "disappear": "disparition",
+                   "change": "changement"}
+
+
+def dire_quoi(quoi: str) -> str:
+    """« appear r1c2,r1c3 » (une fenêtre de `measure events --map`) -> « apparition L2C3, L2C4 » ;
+    « flash 2f » -> « flash de 2 images »."""
+    mots = quoi.split()
+    if not mots:
+        return quoi
+    sortie = [TYPES_EVENEMENT.get(mots[0], mots[0])]
+    for mot in mots[1:]:
+        if re.fullmatch(r"\d+f", mot):
+            sortie.append(f"de {mot[:-1]} image" + ("s" if int(mot[:-1]) > 1 else ""))
+        else:
+            sortie.append(", ".join(re.sub(r"^r(\d+)c(\d+)$", lambda m: f"L{int(m[1]) + 1}C{int(m[2]) + 1}", c)
+                                    for c in mot.split(",")))
+    return " ".join(sortie)
+
+
+def fusionner_fenetres(fenetres: list[dict]) -> list[dict]:
+    """Les fenêtres qui se chevauchent n'en font qu'une (deux coupes à une image l'une de l'autre)."""
+    sortie = []
+    for f in sorted(fenetres, key=lambda f: f["debut"]):
+        if sortie and f["debut"] <= sortie[-1]["fin"]:
+            sortie[-1] = {**sortie[-1], "fin": max(sortie[-1]["fin"], f["fin"]), "quoi": sortie[-1]["quoi"] + f["quoi"]}
+        else:
+            sortie.append(dict(f))
+    return sortie
+
+
+def bande(ffmpeg: str, video: Path, debut: float, fin: float, fps: float, chemin: Path,
+          largeur: int = BANDE_LARGEUR, zone: tuple[int, int, int, int] | None = None) -> int:
+    """Les images qui se suivent de `debut` à `fin`, sur une ligne (12 au plus : au-delà, une sur deux,
+    sur trois…), recadrées sur `zone` (x, y, largeur, hauteur). Rend le nombre d'images, 0 en cas d'échec.
+    Faite par ffmpeg : les bandes de HyperFrames demandent un module qu'il installe à la volée."""
+    natives = max(1, round((fin - debut) * fps))
+    n = min(BANDE_MAX, natives)
+    cadence = fps if natives <= BANDE_MAX else n / max(fin - debut, 1e-3)
+    filtres = [f"crop={zone[2]}:{zone[3]}:{zone[0]}:{zone[1]}"] if zone else []
+    filtres += [f"fps={cadence:.4f}"] + ([f"scale={largeur}:-2"] if largeur else []) + [f"tile={n}x1:padding=3:color=gray"]
+    chemin.parent.mkdir(parents=True, exist_ok=True)
+    r = lancer([ffmpeg, "-v", "error", "-y", "-ss", f"{max(0.0, debut):.3f}", "-i", str(video), "-frames:v", "1",
+                "-vf", ",".join(filtres), str(chemin)])
+    return n if r.returncode == 0 and chemin.is_file() else 0
+
+
+def faire_bandes(ffmpeg: str, video: Path, fenetres: list[dict], fps: float, dossier: Path) -> list[dict]:
+    """Une bande par moment où l'image change (les fenêtres de `measure events --map`, sinon autour de
+    chaque coupe), numérotées dans l'ordre du film."""
+    faites = []
+    for f in fenetres[:BANDES_MAX]:
+        numero = len(faites) + 1
+        chemin = dossier / f"bande-{numero:02d}-{f['debut']:.2f}s.jpg"
+        if bande(ffmpeg, video, f["debut"], f["fin"], fps, chemin):
+            faites.append({"numero": numero, "debut": round(f["debut"], 3), "fin": round(f["fin"], 3),
+                           "quoi": f.get("quoi") or [], "fichier": chemin.name})
+    return faites
+
+
+def format_video(video: Path) -> dict:
+    """Largeur, hauteur, images par seconde (fractionnaire : 29,97) et durée, lues par ffprobe."""
+    ffprobe = binaire("ffprobe")
+    info = _sonder(ffprobe, video) if ffprobe else {}
+    flux = next((s for s in info.get("streams") or [] if s.get("codec_type") == "video"), {})
+    fps = None
+    for cle in ("avg_frame_rate", "r_frame_rate"):
+        try:
+            num, den = str(flux.get(cle) or "0/0").split("/")
+            fps = float(num) / float(den) if float(den) and float(num) else None
+        except (ValueError, ZeroDivisionError):
+            fps = None
+        if fps:
+            break
+    try:
+        duree = float((info.get("format") or {}).get("duration") or 0) or None
+    except ValueError:
+        duree = None
+    return {"largeur": flux.get("width"), "hauteur": flux.get("height"), "fps": round(fps, 3) if fps else None,
+            "duree": duree}
+
+
+def mesurer_video(ffmpeg: str, video: Path, dossier: Path, bandes: bool = False) -> dict:
+    """Les mesures d'une vidéo, celles qui se comparent d'une référence à la vidéo du client sans dépendre
+    du contenu : format, plans (durée, temps de musique, lumière, changements), tempo, coupes sur les
+    temps, part de chaque lumière et bascules, rythme, mouvement. `dossier` reçoit les fichiers de
+    HyperFrames, et les bandes d'images avec `bandes`."""
+    dossier.mkdir(parents=True, exist_ok=True)
+    fmt = format_video(video)
+    ecarts = ecarts_images(ffmpeg, video)
+    v = verdict_rythme(ecarts, fin_libre=0.0)
+    duree = fmt["duree"] or v["duree"]
+    fps = fmt["fps"] or FPS
+    coupes = coupes_video(ffmpeg, video)
+    plans = plans_mesures(video)
+    selon = "HyperFrames" if plans else "ffmpeg"
+    plans = plans or plans_depuis_coupes(coupes, duree)
+    carte = carte_evenements(video, dossier / "hyperframes")
+    tempo = tempo_ramene(carte["tempo"]) if carte else None
+    lumieres = [lumiere_image(px) for px in images_rgb(ffmpeg, video, fps=LUMIERE_FPS, taille=LUMIERE_TAILLE)]
+    for p, lumiere in zip(plans, lumiere_des_plans(lumieres, plans)):
+        if p["secondes"] < 2 / LUMIERE_FPS:
+            lumiere = lumiere_a(ffmpeg, video, (p["debut"] + p["fin"]) / 2) or lumiere
+        p.update(temps=en_temps(p["secondes"], tempo), lumiere=lumiere,
+                 changements=changements_du_plan(carte["evenements"], p["debut"], p["fin"]) if carte else None)
+    lp = [p["lumiere"] for p in plans]
+    faites = []
+    if bandes:
+        fenetres = (carte or {}).get("fenetres") or fusionner_fenetres([
+            {"debut": max(0.0, p["debut"] - 3 / fps), "fin": p["debut"] + 4 / fps, "quoi": ["cut"]} for p in plans[1:]])
+        faites = faire_bandes(ffmpeg, video, fenetres, fps, dossier / "bandes")
+    for p in plans:
+        p["bandes"] = [b["numero"] for b in faites if p["debut"] <= (b["debut"] + b["fin"]) / 2 < p["fin"]]
+    return {"version": 2, "duree": round(duree, 2), "fps": fps, "largeur": fmt["largeur"], "hauteur": fmt["hauteur"],
+            "evenements_par_s": v["evenements_par_s"], "ecart_median": v["ecart_median"],
+            "figee": round(sum(l for _d, l in v["figees"]), 1), "coupes_franches": coupes, "plans_selon": selon,
+            "plans": plans, "compte": carte["compte"] if carte else None, "tenues": carte["tenues"] if carte else [],
+            "tempo_lu": carte["tempo"] if carte else None, "tempo": tempo,
+            "coupes_sur_temps": coupes_sur_temps(plans, carte["temps"]) if carte else None,
+            "lumieres": parts_lumiere(lumieres), "bascules": sum(1 for x, y in zip(lp, lp[1:]) if x != y),
+            "mouvement": [round(e, 2) for e in ecarts], "contraste": round(contraste_video(ffmpeg, video), 1),
+            "bandes": faites}
+
+
+def texte_analyse(nom: str, source: str, m: dict, planches: list[str]) -> str:
+    """ANALYSE.md : les mesures, la table des plans (mesurée, à compléter en regardant les bandes), les
+    bandes, puis la grille de lecture."""
+    fps = m["fps"] or FPS
+    compte = m.get("compte")
+    lignes = [f"# Vidéo de référence : {nom}", "", f"Source : {source}", "", "## Mesures", "",
+              f"- Durée : {m['duree']:.0f} s"]
+    if m.get("largeur"):
+        lignes.append(f"- Format : {m['largeur']} × {m['hauteur']}, {fr_nombre(fps)} images par seconde")
+    lignes += [f"- Événements : {m['evenements_par_s']:.2f} par seconde, écart médian {m['ecart_median']:.2f} s",
+              f"- Image figée : {m['figee']:.1f} s",
+              f"- Coupes franches : {len(m['coupes_franches'])} ({', '.join(f'{t:.1f}' for t in m['coupes_franches'][:30])})"]
+    if m["plans_selon"] == "HyperFrames":
+        lignes.append(ligne_plans([p["secondes"] for p in m["plans"]]).rstrip("\n"))
+    else:
+        lignes.append(f"- Plans (coupes franches de ffmpeg, HyperFrames absent) : {len(m['plans'])}")
+    if compte:
+        tenues = m.get("tenues") or []
+        lignes.append("- Ce qui change à l'écran (HyperFrames `measure events`) : " + dire_changements(
+            {k: int(compte.get(k) or 0) for k in CHANGEMENTS}) + (
+            f" ; {len(tenues)} tenue(s) d'une demi-seconde ou plus (la plus longue {fr_nombre(max(t['secondes'] for t in tenues))} s)"
+            if tenues else ""))
+    if m.get("tempo"):
+        sur = m.get("coupes_sur_temps")
+        lignes.append(f"- Musique : tempo {fr_nombre(m['tempo'])}" + (
+            f" (lu {fr_nombre(m['tempo_lu'])}, ramené entre 80 et 160)" if m.get("tempo_lu") and abs(m["tempo_lu"] - m["tempo"]) > 0.5 else "")
+            + (f" ; {sur[0]} coupe(s) sur {sur[1]} tombent sur un temps" if sur else ""))
+    else:
+        lignes.append("- Musique : pas de tempo lu (pas de son, ou HyperFrames absent) : les plans se comptent en secondes.")
+    lignes += [f"- Lumière : {dire_lumieres(m['lumieres'])} ; {m['bascules']} bascule(s) d'un plan à l'autre",
+               f"- Planches (vue d'ensemble, une case = 0,5 s, de gauche à droite puis de haut en bas) : {', '.join(planches)}"]
+    lignes.append(f"- Bandes d'images (`bandes/`, les images qui se suivent autour de chaque changement) : {len(m['bandes'])}"
+                  if m["bandes"] else "- Bandes d'images : aucune (rien ne change, ou ffmpeg n'a pas pu les écrire).")
+    lignes += ["", "## Les plans, un par un", "",
+               "Les mesures sont posées ; complète les trois dernières colonnes en ouvrant les bandes de chaque plan, "
+               "jamais d'après la seule planche : une case toutes les 0,5 s rate les décalages d'une à trois images, "
+               "le sens d'entrée et de sortie, les flous et les fondus des coupes, un flash d'une image.", "",
+               "| Plan | Début | Durée | En temps | Lumière | Changements | Bandes | Ce qu'on voit (ses couches) "
+               "| Entrées, vie, sorties | Passage au suivant |",
+               "|---|---|---|---|---|---|---|---|---|---|"]
+    for i, p in enumerate(m["plans"], 1):
+        temps = fr_nombre(p["temps"]) if p.get("temps") is not None else "—"
+        bandes_p = ", ".join(f"{n:02d}" for n in p.get("bandes") or []) or "—"
+        lignes.append(f"| {i} | {fr_nombre(p['debut'])} s (image {round(p['debut'] * fps)}) | {fr_nombre(p['secondes'])} s "
+                      f"| {temps} | {p['lumiere']} | {dire_changements(p.get('changements'))} | {bandes_p} |  |  |  |")
+    if m["bandes"]:
+        lignes += ["", "## Les bandes", "",
+                   "Chaque bande montre les images qui se suivent, de gauche à droite ; elle appartient au plan dont elle "
+                   "montre la coupe d'entrée ou un changement."
+                   + (" Les cases LxCy sont celles d'une grille de 4 × 4 posée sur l'image (L1C1 en haut à gauche)."
+                      if compte else ""), "",
+                   "| Bande | De | À | Ce qui change |", "|---|---|---|---|"]
+        lignes += [f"| {b['numero']:02d} | {fr_nombre(b['debut'])} s | {fr_nombre(b['fin'])} s | "
+                   f"{' ; '.join(dire_quoi(q) for q in b['quoi']) or '—'} |" for b in m["bandes"]]
+    return "\n".join(lignes) + "\n" + ANALYSE_GRILLE
+
+
+def lire_mesures(dossier: Path) -> dict | None:
+    """mesures.json d'une référence analysée par cette version (`version` 2), sinon None."""
+    try:
+        m = json.loads((dossier / "mesures.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return m if isinstance(m, dict) and m.get("version") == 2 else None
 
 
 def cmd_reference(a) -> None:
@@ -3366,23 +3761,243 @@ def cmd_reference(a) -> None:
         video = ranger_video(source, sortie, copie=True)
     for ancien in sortie.glob("planche-*.jpg"):
         ancien.unlink()
+    for ancien in ("bandes", "hyperframes", "cote-a-cote.mp4"):
+        chemin = sortie / ancien
+        if chemin.is_dir():
+            shutil.rmtree(chemin, ignore_errors=True)
+        elif chemin.exists():
+            chemin.unlink()
     r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(video), "-vf", "fps=2,scale=320:-2,tile=6x4:padding=4:color=gray",
                 "-start_number", "1", str(sortie / "planche-%02d.jpg")])
     if r.returncode != 0:
         sys.exit(f"ERREUR : planches impossibles : {r.stderr[-300:]}")
-    coupes = coupes_video(ffmpeg, video)
-    plans = plans_mesures(video)
-    v = verdict_rythme(ecarts_images(ffmpeg, video), fin_libre=0.0)
+    try:
+        m = mesurer_video(ffmpeg, video, sortie, bandes=True)
+    except RuntimeError as e:
+        sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    m["source"] = lien or a.source
     planches = sorted(p.name for p in sortie.glob("planche-*.jpg"))
-    texte = (f"# Vidéo de référence : {nom}\n\nSource : {lien or a.source}\n\n## Mesures\n\n"
-             f"- Durée : {v['duree']:.0f} s\n- Événements : {v['evenements_par_s']:.2f} par seconde, écart médian "
-             f"{v['ecart_median']:.2f} s\n- Image figée : {sum(l for _d, l in v['figees']):.1f} s\n"
-             f"- Coupes franches : {len(coupes)} ({', '.join(f'{t:.1f}' for t in coupes[:30])})\n" + ligne_plans(plans) +
-             f"- Planches : {', '.join(planches)}\n" + ANALYSE_GRILLE)
-    (sortie / "ANALYSE.md").write_text(texte, encoding="utf-8")
+    (sortie / "mesures.json").write_text(json.dumps(m, ensure_ascii=False, indent=1), encoding="utf-8")
+    (sortie / "ANALYSE.md").write_text(texte_analyse(nom, lien or a.source, m, planches), encoding="utf-8")
     print(f"• référence analysée : {sortie}")
-    print(f"  {v['evenements_par_s']:.2f} événement/s, écart médian {v['ecart_median']:.2f} s, {len(coupes)} coupes franches, "
-          f"{len(planches)} planches. Regarde les planches et remplis ANALYSE.md.")
+    print(f"  {len(m['plans'])} plans, {m['evenements_par_s']:.2f} événement/s, écart médian {m['ecart_median']:.2f} s"
+          + (f", tempo {fr_nombre(m['tempo'])}" if m["tempo"] else "")
+          + f", lumière {dire_lumieres(m['lumieres'])}, {len(m['bandes'])} bandes d'images, {len(planches)} planches.")
+    if m["plans_selon"] != "HyperFrames":
+        print("  HyperFrames absent : plans lus par ffmpeg, sans tempo ni carte des changements (`npm ci` à la "
+              "racine du dossier, puis relance pour les avoir).")
+    print("  Ouvre les bandes plan par plan et complète ANALYSE.md (references/reperage.md, section 4).")
+
+
+def cmd_bande(a) -> None:
+    ffmpeg = binaire("ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    video = Path(a.video)
+    if a.fin <= a.debut:
+        sys.exit("ERREUR : --a doit venir après --de (en secondes).")
+    zone = None
+    if a.zone:
+        try:
+            zone = tuple(int(round(float(x))) for x in a.zone.split(","))
+        except ValueError:
+            zone = ()
+        if len(zone) != 4 or zone[2] < 2 or zone[3] < 2:
+            sys.exit("ERREUR : --zone x,y,l,h en pixels de la vidéo (par exemple --zone 120,640,840,220).")
+    fps = format_video(video)["fps"] or FPS
+    chemin = video.parent / "bandes" / f"moment-{a.debut:.2f}-{a.fin:.2f}s.jpg"
+    n = bande(ffmpeg, video, a.debut, a.fin, fps, chemin, largeur=a.largeur, zone=zone)
+    if not n:
+        sys.exit("ERREUR : bande impossible (le moment est-il dans la vidéo, la zone dans l'image ?).")
+    pas = max(1, round((a.fin - a.debut) * fps / n))
+    print(f"• {_court(chemin)} : {n} images de {fr_nombre(a.debut)} à {fr_nombre(a.fin)} s"
+          + (f" (une sur {pas})" if pas > 1 else " (toutes, à la suite)") + ". Ouvre-la et regarde-la de gauche à droite.")
+
+
+# Ce qui fait la même grammaire, mesuré sans regarder le contenu (seuils posés le 17/11/2026) : un
+# rapport de 0,75 à 1,33 sur le nombre de plans, leur durée habituelle et les événements par seconde ;
+# la quantité de mouvement de 0,8 à 1,25 (la bande de `hyperframes measure energy`, « the same
+# amount ») ; 25 points d'écart au plus sur la part d'une lumière. Au plus près, chaque plan à un
+# demi-temps près, sa lumière, et le mouvement aux mêmes moments (corrélation d'au moins 0,5).
+GRAMMAIRE_RAPPORT = (0.75, 1.33)
+GRAMMAIRE_MOUVEMENT = (0.8, 1.25)
+GRAMMAIRE_BASCULES = (0.5, 2.0)
+GRAMMAIRE_LUMIERE = 0.25
+GRAMMAIRE_TEMPS, GRAMMAIRE_SECONDES = 0.5, 0.25
+GRAMMAIRE_MOMENTS = 0.5
+
+
+def pearson(a: list[float], b: list[float]) -> float | None:
+    n = min(len(a), len(b))
+    if n < 2:
+        return None
+    a, b = a[:n], b[:n]
+    ma, mb = sum(a) / n, sum(b) / n
+    da = sum((x - ma) ** 2 for x in a)
+    db = sum((y - mb) ** 2 for y in b)
+    if not da or not db:
+        return None
+    return sum((x - ma) * (y - mb) for x, y in zip(a, b)) / math.sqrt(da * db)
+
+
+def mouvement_compare(ref: list[float], notre: list[float], fps: int = RYTHME_FPS,
+                      contraste_ref: float = 0.0, contraste_notre: float = 0.0) -> dict:
+    """Combien la vidéo bouge par rapport à la référence (rapport des écarts moyens entre deux images,
+    chacun rapporté au contraste de sa palette quand il est connu) et si elle bouge aux mêmes moments
+    (corrélation, décalage cherché jusqu'à une seconde de part et d'autre) : la mesure de `hyperframes
+    measure energy`, refaite sur les écarts de `rythme`. Sans le contraste, une vidéo aux couleurs
+    douces paraissait bouger deux fois moins que sa référence jaune et noire pour les mêmes gestes
+    (essai du 17/11/2026)."""
+    def moyenne(v: list[float], contraste: float) -> float:
+        return (sum(v) / len(v) if v else 0.0) / (max(contraste, 5.0) if contraste_ref and contraste_notre else 1.0)
+
+    meilleure, decalage = None, 0
+    for d in range(-fps, fps + 1):
+        a, b = (ref[:len(ref) - d], notre[d:]) if d >= 0 else (ref[-d:], notre[:len(notre) + d])
+        if min(len(a), len(b)) > 8:
+            r = pearson(a, b)
+            if r is not None and (meilleure is None or r > meilleure):
+                meilleure, decalage = r, d
+    plancher = SEUIL_FIGE / (max(contraste_ref, 5.0) if contraste_ref and contraste_notre else 1.0)
+    return {"rapport": round(moyenne(notre, contraste_notre) / max(moyenne(ref, contraste_ref), plancher), 2),
+            "correlation": round(max(meilleure or 0.0, 0.0), 2), "decalage": round(decalage / fps, 2)}
+
+
+def _mediane(v: list[float]) -> float:
+    s = sorted(v)
+    return s[len(s) // 2] if s else 0.0
+
+
+def ecarts_grammaire(ref: dict, notre: dict, plan_par_plan: bool = False) -> tuple[list[str], list[str]]:
+    """(constats, écarts) entre les mesures de la référence et celles du rendu (`mesurer_video`)."""
+    constats, ecarts = [], []
+    bas, haut = GRAMMAIRE_RAPPORT
+
+    def comparer(nom: str, a: float, b: float, unite: str, conseil: str) -> None:
+        constats.append(f"{nom} : {fr_nombre(a)}{unite} dans la référence, {fr_nombre(b)}{unite} dans la tienne")
+        if a > 0 and not bas <= b / a <= haut:
+            ecarts.append(f"{nom} : {fr_nombre(b)}{unite} contre {fr_nombre(a)}{unite} dans la référence ({conseil})")
+
+    pr, pn = ref["plans"], notre["plans"]
+    constats.append(f"Durée : {fr_nombre(ref['duree'])} s dans la référence, {fr_nombre(notre['duree'])} s dans la tienne")
+    comparer("Plans", len(pr), len(pn), "", "le découpage du script, plan par plan ; jamais en raccourcissant une lecture")
+    en_temps_des_deux = ref.get("tempo") and notre.get("tempo") and all(p.get("temps") is not None for p in pr + pn)
+    if en_temps_des_deux:
+        comparer("Durée habituelle d'un plan", _mediane([p["temps"] for p in pr]), _mediane([p["temps"] for p in pn]),
+                 " temps", "allonge ou resserre les plans sur les temps du morceau")
+    else:
+        comparer("Durée habituelle d'un plan", _mediane([p["secondes"] for p in pr]), _mediane([p["secondes"] for p in pn]),
+                 " s", "allonge ou resserre les plans")
+    comparer("Événements par seconde", ref["evenements_par_s"], notre["evenements_par_s"], "",
+             "ce que montre chaque plan : un objet qui arrive, l'interface qui réagit, jamais un recadrage ajouté")
+    m = mouvement_compare(ref["mouvement"], notre["mouvement"], contraste_ref=ref.get("contraste") or 0.0,
+                          contraste_notre=notre.get("contraste") or 0.0)
+    constats.append(f"Mouvement : {fr_nombre(m['rapport'])} fois celui de la référence (de 0,8 à 1,25 : autant)")
+    if not GRAMMAIRE_MOUVEMENT[0] <= m["rapport"] <= GRAMMAIRE_MOUVEMENT[1]:
+        ecarts.append(f"Mouvement : ta vidéo bouge {fr_nombre(m['rapport'])} fois autant que la référence ("
+                      + ("les entrées, les passages d'objet et les sorties que montrent ses bandes ; jamais un "
+                         "recadrage ajouté sous une lecture" if m["rapport"] < 1 else
+                         "moins de gestes à la fois, des tenues pour lire") + ")")
+    constats.append(f"Lumière : {dire_lumieres(ref['lumieres'])} dans la référence ; {dire_lumieres(notre['lumieres'])} "
+                    f"dans la tienne ; {ref['bascules']} et {notre['bascules']} bascules")
+    for k in ("nuit", "clair", "aplat"):
+        a, b = ref["lumieres"].get(k, 0.0), notre["lumieres"].get(k, 0.0)
+        if abs(b - a) > GRAMMAIRE_LUMIERE:
+            ecarts.append(f"Lumière : {k} {round(b * 100)} % du film contre {round(a * 100)} % dans la référence "
+                          "(dans ses couleurs : la nuit de sa marque, son clair, l'aplat de son accent)")
+    rapport_bascules = (notre["bascules"] + 1) / (ref["bascules"] + 1)
+    if not GRAMMAIRE_BASCULES[0] <= rapport_bascules <= GRAMMAIRE_BASCULES[1]:
+        ecarts.append(f"Bascules de lumière : {notre['bascules']} contre {ref['bascules']} dans la référence")
+    for nom, mesures in (("la référence", ref), ("la tienne", notre)):
+        sur = mesures.get("coupes_sur_temps")
+        if sur:
+            constats.append(f"Coupes sur les temps, dans {nom} : {sur[0]} sur {sur[1]}")
+    if not plan_par_plan:
+        return constats, ecarts
+    if len(pn) != len(pr):
+        ecarts.append(f"Au plus près : {len(pn)} plans contre {len(pr)} dans la référence (un plan du script par plan "
+                      "de la référence)")
+    else:
+        for i, (p, q) in enumerate(zip(pr, pn), 1):
+            if en_temps_des_deux:
+                if abs(q["temps"] - p["temps"]) > GRAMMAIRE_TEMPS:
+                    ecarts.append(f"Plan {i} : {fr_nombre(q['temps'])} temps contre {fr_nombre(p['temps'])} dans la référence")
+            elif abs(q["secondes"] - p["secondes"]) > GRAMMAIRE_SECONDES:
+                ecarts.append(f"Plan {i} : {fr_nombre(q['secondes'])} s contre {fr_nombre(p['secondes'])} s dans la référence")
+            if q["lumiere"] != p["lumiere"]:
+                ecarts.append(f"Plan {i} : lumière {q['lumiere']} contre {p['lumiere']} dans la référence")
+    if notre["duree"] and abs(notre["duree"] / max(ref["duree"], 0.1) - 1) <= 0.1:
+        constats.append(f"Mouvement aux mêmes moments : corrélation {fr_nombre(m['correlation'])}"
+                        + (f", décalé de {fr_nombre(m['decalage'])} s" if m["decalage"] else ""))
+        if m["correlation"] < GRAMMAIRE_MOMENTS:
+            ecarts.append(f"Au plus près : le mouvement ne tombe pas aux mêmes moments (corrélation "
+                          f"{fr_nombre(m['correlation'])}, au moins {fr_nombre(GRAMMAIRE_MOMENTS)}) : les entrées et les "
+                          "passages se posent sur les images de la référence (ses bandes)")
+    else:
+        constats.append("Mouvement aux mêmes moments : non comparé (les deux durées diffèrent de plus de 10 %)")
+    return constats, ecarts
+
+
+def cote_a_cote(ffmpeg: str, ref: Path, notre: Path, chemin: Path, duree_ref: float, duree_notre: float) -> bool:
+    """La référence à gauche, la vidéo du client à droite, à la même hauteur ; la plus courte tient sa
+    dernière image ; le son est celui du client."""
+    d = max(duree_ref, duree_notre)
+    tenue = (lambda x: f",tpad=stop_mode=clone:stop_duration={d - x:.3f}" if d - x > 0.04 else "")
+    filtre = (f"[0:v]scale=-2:960,setsar=1,fps={FPS}{tenue(duree_ref)}[g];"
+              f"[1:v]scale=-2:960,setsar=1,fps={FPS}{tenue(duree_notre)}[d];[g][d]hstack=inputs=2[v]")
+    r = lancer([ffmpeg, "-v", "error", "-y", "-i", str(ref), "-i", str(notre), "-filter_complex", filtre,
+                "-map", "[v]", "-map", "1:a?", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-c:a", "aac",
+                "-t", f"{d:.3f}", str(chemin)])
+    return r.returncode == 0 and chemin.is_file()
+
+
+def cmd_grammaire(a) -> None:
+    ffmpeg = binaire("ffmpeg")
+    if not ffmpeg:
+        sys.exit("ERREUR : ffmpeg introuvable.")
+    video = Path(a.video).resolve()
+    dossier = next((d for d in video.parents if (d / "OFFRE.json").is_file()), None)
+    if not dossier:
+        sys.exit("ERREUR : donne le MP4 rendu d'une vidéo du dossier (exports/<vidéo>.mp4, depuis son projet).")
+    refs = sorted(d for d in (dossier / "sources" / "reference").glob("*") if d.is_dir() and any(d.glob("video.*")))
+    if a.reference:
+        refs = [d for d in refs if d.name == propre(a.reference, 30)]
+    if not refs:
+        sys.exit("ERREUR : pas de vidéo de référence pour cette vidéo" + (f" sous le nom « {a.reference} »" if a.reference else "")
+                 + " : `reference` d'abord, depuis la racine du dossier (references/reperage.md, section 4).")
+    if len(refs) > 1:
+        sys.exit(f"ERREUR : plusieurs références ({', '.join(d.name for d in refs)}) : choisis avec --reference <nom>.")
+    dossier_ref = refs[0]
+    video_ref = sorted(dossier_ref.glob("video.*"))[0]
+    try:
+        ref = lire_mesures(dossier_ref)
+        # Mesurées comme le rendu : sans HyperFrames, un flash compte pour deux coupes et les plans ne se
+        # comparent plus à ceux d'un rendu mesuré avec lui (et inversement).
+        if ref is None or ref.get("plans_selon") != ("HyperFrames" if hyperframes_cli() else "ffmpeg"):
+            ref = mesurer_video(ffmpeg, video_ref, dossier_ref)
+            (dossier_ref / "mesures.json").write_text(json.dumps(ref, ensure_ascii=False, indent=1), encoding="utf-8")
+        with tempfile.TemporaryDirectory(prefix="grammaire-") as tmp:
+            notre = mesurer_video(ffmpeg, video, Path(tmp))
+    except RuntimeError as e:
+        sys.exit(f"ERREUR : lecture de la vidéo impossible : {e}")
+    constats, ecarts = ecarts_grammaire(ref, notre, a.plan_par_plan)
+    print(f"• comparée à la référence « {dossier_ref.name} »" + (", plan par plan (au plus près)" if a.plan_par_plan else ""))
+    for c in constats:
+        print(f"  {c}")
+    if a.cote_a_cote:
+        chemin = dossier_ref / "cote-a-cote.mp4"
+        if cote_a_cote(ffmpeg, video_ref, video, chemin, ref["duree"], notre["duree"]):
+            print(f"• côte à côte (la référence | la tienne) : {_court(chemin)}. À regarder sur l'ordinateur : jamais "
+                  "publiée ni livrée, elle contient la vidéo d'un autre.")
+        else:
+            print("⚠️ côte à côte impossible (ffmpeg) : la comparaison ci-dessus reste valable.")
+    if ecarts:
+        for e in ecarts:
+            print(f"✗ {e}")
+        print("→ chaque écart se corrige, ou se justifie en une ligne dans PLAN.md ; un interdit l'emporte toujours sur "
+              "la référence : la lecture, sa palette, rien d'inventé (references/reperage.md, section 4).")
+        sys.exit(1)
+    print("ok : même grammaire que la référence (ce contrôle ne dit pas si c'est beau : regarde la planche).")
 
 
 # ---------------------------------------------------------------------------
@@ -4627,6 +5242,7 @@ def cmd_livrer(a) -> None:
 # Les fichiers et dossiers que chaque commande lit : absents, on le dit tout de suite, au lieu d'une
 # « vidéo muette » ou d'une erreur Python brute plus loin.
 ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("dossier",), "offre": ("dossier",), "reference": ("dossier",),
+           "bande": ("video",), "grammaire": ("video",),
            "logos": ("projet",), "rythme": ("video",), "palette": ("video",), "cadre": ("video",), "planche": ("video",), "relecture": ("video",), "musique": ("entree",),
            "emergence": ("projet",), "son": ("video",), "mastering": ("entree",), "preparer-video": ("entree",),
            "affiche": ("video",), "sans-musique": ("projet",), "export": ("video",),
@@ -4636,7 +5252,7 @@ ENTREES = {"capture": ("dossier",), "sons": ("projet", "fichier"), "ajouter": ("
 # `musiques installer`, qui ne prend pas de chemin) ; toutes les autres se lancent depuis le projet de la
 # vidéo, avec des chemins vus de chez lui.
 COMMANDES_RACINE = {"verifier", "marque", "police", "style", "pack-sfx", "supports", "zones", "nouvelle",
-                    "ajouter", "capture", "offre", "lecture", "reference", "livrer"}
+                    "ajouter", "capture", "offre", "lecture", "reference", "bande", "livrer"}
 
 
 def ou_lancer(commande: str) -> str:
@@ -4747,11 +5363,33 @@ def parseur() -> argparse.ArgumentParser:
     z.add_argument("support", choices=sorted(SUPPORTS))
     z.add_argument("--format", choices=sorted(FORMATS))
     z.set_defaults(f=cmd_zones)
-    rf = s.add_parser("reference", help="Analyse une vidéo dont le client aime le style (planches, coupes, rythme).")
+    rf = s.add_parser("reference", help="Analyse une vidéo dont le client aime le style : ses plans un par un (durée, "
+                                        "temps de sa musique, lumière, changements), les bandes d'images autour de "
+                                        "chaque changement, ses planches, son rythme.")
     rf.add_argument("dossier", help="Le dossier de la vidéo (celui de OFFRE.json).")
     rf.add_argument("source", help="Lien (Instagram, YouTube, TikTok…) ou fichier vidéo.")
     rf.add_argument("--nom", help="Nom court de la référence (défaut : reference).")
     rf.set_defaults(f=cmd_reference)
+    bd = s.add_parser("bande", help="Les images qui se suivent sur un moment d'une vidéo, recadrées sur une zone (un "
+                                    "mot de la référence, de son entrée à sa sortie).")
+    bd.add_argument("video", help="La vidéo (celle de la référence : sources/reference/<nom>/video.mp4).")
+    bd.add_argument("--de", dest="debut", type=float, required=True, help="Première seconde.")
+    bd.add_argument("--a", dest="fin", type=float, required=True, help="Dernière seconde.")
+    bd.add_argument("--zone", help="x,y,l,h en pixels de la vidéo : la boîte du mot, débordements compris.")
+    bd.add_argument("--largeur", type=int, default=BANDE_LARGEUR,
+                    help=f"Largeur d'une image (défaut {BANDE_LARGEUR} ; 0 garde la taille de la zone).")
+    bd.set_defaults(f=cmd_bande)
+    gr = s.add_parser("grammaire", help="Compare le MP4 rendu à la vidéo de référence de son dossier, sur ce qui ne "
+                                        "dépend pas du contenu : plans, temps, lumière, rythme, mouvement.")
+    gr.add_argument("video", help="Le MP4 rendu (exports/<vidéo>.mp4).")
+    gr.add_argument("--reference", help="Le nom de la référence, si la vidéo en a plusieurs.")
+    gr.add_argument("--plan-par-plan", action="store_true",
+                    help="Au plus près : chaque plan comparé au sien (durée en temps, lumière) et le mouvement aux "
+                         "mêmes moments.")
+    gr.add_argument("--cote-a-cote", action="store_true",
+                    help="Écrit la vidéo « la référence | la tienne » dans le dossier de la référence (à regarder, "
+                         "jamais livrée).")
+    gr.set_defaults(f=cmd_grammaire)
     tl = s.add_parser("telechargeur", help="Le téléchargeur de vidéos (yt-dlp) pour `reference` depuis un lien : "
                                           "`telechargeur` dit s'il est là, `telechargeur installer` l'installe dans le dossier.")
     tl.add_argument("action", nargs="?", choices=["installer"], help="installer : crée .telechargeur-venv/ (avec son accord).")

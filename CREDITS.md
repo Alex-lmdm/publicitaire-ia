@@ -94,6 +94,11 @@ de bout en bout, une réplique par phrase, un rebondissement. Aucun de ses texte
   confiée à un sous-agent qui ne voit que les planches du rendu, les défauts classés P0, P1 et P2,
   la liste d'interdits qui grandit à chaque rendu (la relecture à froid et « Interdits de cette
   vidéo », 0.9.0). https://github.com/heygen-com/hyperframes
+- **Le skill `reverse-any-video` d'HyperFrames**, HeyGen, licence Apache-2.0 : la vidéo de référence
+  lue plan par plan sur les images qui se suivent autour de chaque changement, chaque grand mot de
+  son entrée à sa sortie, le timing à l'image près, le mouvement comparé même quand les pixels
+  diffèrent (`reference`, `bande`, `grammaire`, 17/11/2026 ; la méthode seulement, aucun texte ni
+  code repris, et rien de ce qu'il envoie hors de l'ordinateur). https://github.com/heygen-com/hyperframes
 - **motion-video-kit**, echris6, licence MIT : le constructeur n'est jamais le juge, la revue par
   des relecteurs neufs devant le vrai rendu. https://github.com/echris6/motion-video-kit
 - **claude-motion**, whaleyxbt, licence MIT : la planche de contrôle obligatoire, une montée et un

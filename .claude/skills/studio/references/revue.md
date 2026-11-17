@@ -21,6 +21,10 @@ python3 ../../../tools/studio_motion.py palette exports/page.mp4
 python3 ../../../tools/studio_motion.py mouvement
 ```
 
+D'après une vidéo de référence, aussi `grammaire exports/page.mp4` (avec `--plan-par-plan` au plus
+près) : chaque écart à sa grammaire se corrige, ou se justifie en une ligne dans `PLAN.md`
+([reperage.md](reperage.md), section 4).
+
 `rythme` doit répondre « ok » (au moins 0,7 événement par seconde, 1,2 s au plus d'écart médian,
 aucune image vraiment immobile plus de 1,5 s avant l'écran final, des plans de durées variées ;
 de 0,6 à 1,5 s, un avis : rien à faire si des mots s'y lisent, sinon un événement de contenu) ; un
@@ -156,8 +160,9 @@ Tout critère à 7 ou moins se corrige, puis on refait le rendu et la planche, j
 partout, dans les deux tours de correction : un critère encore à 7 après eux se dit au client, en
 une phrase, dans le message de livraison. Liste toujours les trois plus gros défauts, même si tout
 est à 8. Si le client a donné
-une vidéo de référence, mets côte à côte une planche de chaque (même cadence) : le niveau se juge
-contre elle. Avec un style 1 à 9, la planche montre au moins trois de ses gestes signature (deux
+une vidéo de référence, regarde les deux côte à côte (`grammaire … --cote-a-cote`, ou une planche de
+chaque à la même cadence) : le niveau se juge contre elle. Avec un style 1 à 9, la planche montre au
+moins trois de ses gestes signature (deux
 sous 15 s) ([styles/README.md](../styles/README.md), point 4).
 
 ## Porte 4 : le son

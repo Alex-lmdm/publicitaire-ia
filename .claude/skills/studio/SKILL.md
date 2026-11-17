@@ -1,6 +1,6 @@
 ---
 name: studio
-description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là », or « fais-moi une vidéo dans le style 3 » (or « le template 3 »), or « mets à jour la livraison de ma vidéo », or « mets cette musique dans ma vidéo ». Pas pour monter un Reel ou une story face caméra.
+description: Fabrique des vidéos en motion design qui vendent l'offre du client (formation, coaching, logiciel, template), pour l'objectif qu'il choisit (vendre, annoncer une nouveauté, montrer une fonctionnalité, lancer, faire s'inscrire, expliquer, prouver) et sur tous supports (Reel, story, TikTok, pub, page de vente, section de page, LinkedIn, X, YouTube). Use when the client types /studio, writes « fais-moi une nouvelle vidéo » or « personnalise Publicitaire IA à ma marque », asks for « une vidéo pour ma page de vente », « une pub », « présente ma nouvelle fonctionnalité », « annonce mon lancement », « un Reel en motion design pour mon offre », or pastes a sales page link asking for a video, or a video link saying « je veux ce style-là » or « refais cette vidéo avec ma marque », or « fais-moi une vidéo dans le style 3 » (or « le template 3 »), or « mets à jour la livraison de ma vidéo », or « mets cette musique dans ma vidéo ». Pas pour monter un Reel ou une story face caméra.
 ---
 
 # Publicitaire IA : des vidéos en motion design qui vendent
@@ -34,10 +34,10 @@ Windows : `python` (ou `py -3`) au lieu de `python3`, `npm.cmd` et `npx.cmd` au 
 `npx` (PowerShell refuse souvent leurs scripts).
 - **Depuis la racine du dossier**, `python3 tools/studio_motion.py …` : `verifier`, `marque`,
   `police`, `style`, `pack-sfx`, `musiques` et `musiques installer`, `heygen` et `heygen connecter`,
-  `supports`, `zones`, `nouvelle`, `ajouter`, `capture`, `offre`, `lecture`, `reference`, `livrer`.
+  `supports`, `zones`, `nouvelle`, `ajouter`, `capture`, `offre`, `lecture`, `reference`, `bande`, `livrer`.
 - **Depuis le projet d'une vidéo** (le dossier qui contient `index.html`), `python3
   ../../../tools/studio_motion.py …` : tout le reste (`logos`, `musiques choisir`, `musiques prendre`,
-  `heygen …`, `musique`, `sons`, `rythme`, `calage`, `palette`, `cadre`, `mouvement`, `relecture`, `planche`,
+  `heygen …`, `musique`, `sons`, `rythme`, `calage`, `palette`, `cadre`, `mouvement`, `grammaire`, `relecture`, `planche`,
   `emergence`, `son`, `mastering`, `sans-musique`, `couverture`, `affiche`, `export`), avec
   `../livraison/` pour la livraison, qui vit dans le dossier de la vidéo.
 
@@ -83,9 +83,9 @@ Capture sa page, remplis `OFFRE.json` avec la source de chaque fait, `offre "<do
 
 ### 2 bis. Le repérage
 
-L'univers de sa page, l'inventaire de tout ce qui peut se montrer de vrai, les objets que son public
-reconnaît, les logos de ses outils. Une matière importante manque : **une seule question à choix**,
-dans le message de l'étape 3. Une vidéo de référence donnée ici : `reference "<dossier>" "<lien>"`.
+L'univers de sa page, l'inventaire de tout ce qui peut se montrer de vrai, les objets que son public reconnaît, les logos de ses outils.
+Une matière importante manque : **une seule question à choix**, dans le message de l'étape 3. Une vidéo de référence : `reference "<dossier>" "<lien>"`,
+lue plan par plan ; au plus près, sa structure remplace les trois idées de l'étape 3 ([reperage.md](references/reperage.md), section 4).
 
 ### 3. La fiche et trois idées, dans un seul message
 
@@ -156,7 +156,7 @@ directement la version travaillée.
 ### 6. La revue (personne d'autre ne la fera)
 
 Les portes de `revue.md`, pour **chaque** vidéo : les contrôles sur le MP4 rendu (`check`, `rythme`,
-`cadre`, `palette`, `calage`) et sur les compositions (`mouvement`), la planche regardée par toi, le relecteur neuf (une IA qui n'a pas
+`cadre`, `palette`, `calage`, `grammaire` d'après une référence) et sur les compositions (`mouvement`), la planche regardée par toi, le relecteur neuf (une IA qui n'a pas
 fait la vidéo dit ce qui est vendu, à qui, quoi faire), le son (`emergence`, `son`, puis toujours
 `mastering`), la revue critique notée, puis la couverture (`couverture`, qui écrit la vidéo de
 `livraison/`) et l'export de ce fichier. Chaque défaut corrigé s'écrit dans « Interdits de cette
